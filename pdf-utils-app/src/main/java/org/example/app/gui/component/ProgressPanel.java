@@ -6,9 +6,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public class ProgressPanel extends VBox {
 
@@ -82,9 +82,22 @@ public class ProgressPanel extends VBox {
         t.start();
     }
 
+    // Use the OS file opener via ProcessBuilder rather than java.awt.Desktop:
+    // mixing AWT with JavaFX on Linux/GTK installs conflicting X11 error handlers
+    // ("XSetErrorHandler() called with a GDK error trap pushed") and crashes the app.
     private void openPath(Path path) {
+        if (path == null) return;
+        String os = System.getProperty("os.name", "").toLowerCase();
+        List<String> command;
+        if (os.contains("mac")) {
+            command = List.of("open", path.toString());
+        } else if (os.contains("win")) {
+            command = List.of("cmd", "/c", "start", "", path.toString());
+        } else {
+            command = List.of("xdg-open", path.toString());
+        }
         try {
-            if (Desktop.isDesktopSupported()) Desktop.getDesktop().open(path.toFile());
+            new ProcessBuilder(command).start();
         } catch (IOException ignored) {}
     }
 }
