@@ -6,41 +6,52 @@ import org.example.core.exception.PdfOperationException;
 import org.example.core.model.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PdfMerger {
 
     public static MergeResult execute(MergeOptions opts) throws PdfOperationException {
-        try (PDDocument merged = new PDDocument()) {
+        List<PDDocument> srcDocs = new ArrayList<>();
+        try {
+            PDDocument merged = new PDDocument();
             int totalPages = 0;
             for (PageSource source : opts.sources()) {
-                totalPages += appendSource(merged, source);
+                totalPages += appendSource(merged, source, srcDocs);
             }
+            // importPage() keeps live references into source file handles.
+            // Sources must stay open until after save() completes.
             merged.save(opts.output().toFile());
+            merged.close();
             return new MergeResult(opts.output(), totalPages);
         } catch (IOException e) {
             throw new PdfOperationException("Merge failed: " + e.getMessage(), e);
+        } finally {
+            for (PDDocument src : srcDocs) {
+                try { src.close(); } catch (IOException ignored) {}
+            }
         }
     }
 
-    private static int appendSource(PDDocument merged, PageSource source) throws IOException {
+    private static int appendSource(PDDocument merged, PageSource source,
+                                    List<PDDocument> srcDocs) throws IOException {
         return switch (source) {
-            case PageSource.PdfPageSource ps -> appendPdf(merged, ps);
+            case PageSource.PdfPageSource ps -> appendPdf(merged, ps, srcDocs);
             case PageSource.ImageSource is   -> appendImage(merged, is);
         };
     }
 
-    private static int appendPdf(PDDocument merged, PageSource.PdfPageSource source)
-            throws IOException {
-        try (PDDocument src = Loader.loadPDF(source.file().toFile())) {
-            List<Integer> pageNums = source.range().isAll()
-                ? allPageNumbers(src.getNumberOfPages())
-                : source.range().pageNumbers();
-            for (int pageNum : pageNums) {
-                merged.importPage(src.getPage(pageNum - 1));
-            }
-            return pageNums.size();
+    private static int appendPdf(PDDocument merged, PageSource.PdfPageSource source,
+                                  List<PDDocument> srcDocs) throws IOException {
+        PDDocument src = Loader.loadPDF(source.file().toFile());
+        srcDocs.add(src);
+        List<Integer> pageNums = source.range().isAll()
+            ? allPageNumbers(src.getNumberOfPages())
+            : source.range().pageNumbers();
+        for (int pageNum : pageNums) {
+            merged.importPage(src.getPage(pageNum - 1));
         }
+        return pageNums.size();
     }
 
     private static int appendImage(PDDocument merged, PageSource.ImageSource source)
