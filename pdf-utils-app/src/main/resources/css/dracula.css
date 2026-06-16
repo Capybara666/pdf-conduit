@@ -1,0 +1,31 @@
+/* Dracula — classic dark theme with a violet accent */
+@import "base.css";
+
+.root {
+    -fx-base: #282a36;
+    -fx-background: #21222c;
+    -fx-control-inner-background: #282a36;
+    -fx-text-fill: #f8f8f2;
+    -fx-accent: #bd93f9;
+
+    -c-sidebar-bg:    #191a21;
+    -c-sidebar-fg:    #f8f8f2;
+    -c-sidebar-muted: #6272a4;
+    -c-sidebar-hover: #343746;
+    -c-content-bg:    #282a36;
+    -c-surface:       #343746;
+    -c-surface-2:     #44475a;
+    -c-border:        #44475a;
+    -c-text:          #f8f8f2;
+    -c-text-muted:    #9ea8c7;
+    -c-accent:        #bd93f9;
+    -c-accent-hover:  #caa9fa;
+    -c-on-accent:     #282a36;
+    -c-drop-border:   #6272a4;
+    -c-success:       #50fa7b;
+    -c-pending-bg:    #44475a;
+    -c-pending-fg:    #6272a4;
+    -c-warn-bg:       #f1fa8c;
+    -c-warn-fg:       #4a4a12;
+    -c-danger:        #ff5555;
+}

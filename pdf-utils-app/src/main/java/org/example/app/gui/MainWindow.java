@@ -48,21 +48,28 @@ public class MainWindow {
 
     private void buildMenuBar(Scene scene, BorderPane root) {
         MenuBar menuBar = new MenuBar();
-        Menu viewMenu = new Menu("View");
-        MenuItem light  = new MenuItem("Light");
-        MenuItem dark   = new MenuItem("Dark");
-        MenuItem system = new MenuItem("System");
-        light.setOnAction(e  -> ThemeManager.apply(scene, ThemeManager.Theme.LIGHT));
-        dark.setOnAction(e   -> ThemeManager.apply(scene, ThemeManager.Theme.DARK));
-        system.setOnAction(e -> ThemeManager.apply(scene, ThemeManager.Theme.SYSTEM));
-        viewMenu.getItems().addAll(light, dark, system);
-        menuBar.getMenus().add(viewMenu);
+        Menu themeMenu = new Menu("Theme");
+        ToggleGroup group = new ToggleGroup();
+
+        for (ThemeManager.Theme theme : ThemeManager.Theme.values()) {
+            RadioMenuItem item = new RadioMenuItem(theme.displayName);
+            item.setToggleGroup(group);
+            item.setSelected(theme == ThemeManager.getCurrent());
+            item.setOnAction(e -> ThemeManager.apply(scene, theme));
+            themeMenu.getItems().add(item);
+            if (theme == ThemeManager.Theme.SYSTEM) {
+                themeMenu.getItems().add(new SeparatorMenuItem());
+            }
+        }
+
+        menuBar.getMenus().add(themeMenu);
         root.setTop(menuBar);
     }
 
     private void showPanel(SidebarItem item) {
         Node panel = panels.computeIfAbsent(item, this::createPanel);
         contentArea.getChildren().setAll(panel);
+        Animations.fadeSlideIn(panel);
     }
 
     private Node createPanel(SidebarItem item) {

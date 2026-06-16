@@ -1,0 +1,31 @@
+/* Solarized — warm low-contrast light theme with a blue accent */
+@import "base.css";
+
+.root {
+    -fx-base: #eee8d5;
+    -fx-background: #fdf6e3;
+    -fx-control-inner-background: #fdf6e3;
+    -fx-text-fill: #586e75;
+    -fx-accent: #268bd2;
+
+    -c-sidebar-bg:    #073642;
+    -c-sidebar-fg:    #93a1a1;
+    -c-sidebar-muted: #586e75;
+    -c-sidebar-hover: #0a4250;
+    -c-content-bg:    #fdf6e3;
+    -c-surface:       #fffbf0;
+    -c-surface-2:     #eee8d5;
+    -c-border:        #e5dcc3;
+    -c-text:          #073642;
+    -c-text-muted:    #657b83;
+    -c-accent:        #268bd2;
+    -c-accent-hover:  #1c6fa8;
+    -c-on-accent:     #fdf6e3;
+    -c-drop-border:   #d9cfb0;
+    -c-success:       #859900;
+    -c-pending-bg:    #eee8d5;
+    -c-pending-fg:    #93a1a1;
+    -c-warn-bg:       #fbe9b0;
+    -c-warn-fg:       #7a5901;
+    -c-danger:        #dc322f;
+}

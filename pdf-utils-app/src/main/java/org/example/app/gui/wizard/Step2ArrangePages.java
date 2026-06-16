@@ -37,6 +37,7 @@ public class Step2ArrangePages implements WizardStep {
         hint.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
 
         ListView<PageSource> listView = new ListView<>(model.pages);
+        listView.getStyleClass().add("file-list-view");
         listView.setCellFactory(lv -> new DraggablePageCell());
         VBox.setVgrow(listView, Priority.ALWAYS);
 

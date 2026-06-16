@@ -16,6 +16,7 @@ public class FileListView extends ListView<Path> {
     public FileListView() {
         setItems(FXCollections.observableArrayList());
         setPrefHeight(160);
+        getStyleClass().add("file-list-view");
         setCellFactory(lv -> new FileCell(getItems()));
     }
 

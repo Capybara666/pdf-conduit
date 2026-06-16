@@ -1,42 +1,31 @@
+/* Graphite — deep slate dark theme with an indigo accent */
 @import "base.css";
 
 .root {
-    -fx-base: #0f172a;
+    -fx-base: #1e293b;
     -fx-background: #0f172a;
     -fx-control-inner-background: #1e293b;
     -fx-text-fill: #e2e8f0;
-    -fx-accent: #3b82f6;
-}
+    -fx-accent: #6366f1;
 
-.sidebar { -fx-background-color: #020617; }
-.sidebar-section-label { -fx-text-fill: #475569; }
-.sidebar-item { -fx-text-fill: #64748b; -fx-background-color: transparent; }
-.sidebar-item.active { -fx-background-color: #2563eb; -fx-text-fill: white; }
-
-.content-area { -fx-background-color: #0f172a; }
-.panel-title { -fx-text-fill: #f1f5f9; }
-
-.drop-zone { -fx-background-color: #1e293b; -fx-border-color: #334155; }
-.drop-zone Label { -fx-text-fill: #64748b; }
-
-.file-list-item {
-    -fx-background-color: #1e293b;
-    -fx-border-color: #334155;
-    -fx-border-width: 1;
-    -fx-border-radius: 5;
-}
-.file-list-item .label { -fx-text-fill: #e2e8f0; }
-.wizard-step-connector { -fx-background-color: #475569; }
-
-.btn-primary { -fx-background-color: #2563eb; -fx-text-fill: white; }
-.btn-primary:hover { -fx-background-color: #1d4ed8; }
-.btn-secondary { -fx-background-color: #334155; -fx-text-fill: #94a3b8; }
-
-.wizard-step-circle.done { -fx-background-color: #22c55e; -fx-text-fill: white; }
-.wizard-step-circle.current { -fx-background-color: #3b82f6; -fx-text-fill: white; }
-.wizard-step-circle.pending { -fx-background-color: #334155; -fx-text-fill: #64748b; }
-.wizard-footer {
-    -fx-background-color: #1e293b;
-    -fx-border-color: #334155;
-    -fx-border-width: 1 0 0 0;
+    -c-sidebar-bg:    #020617;
+    -c-sidebar-fg:    #cbd5e1;
+    -c-sidebar-muted: #64748b;
+    -c-sidebar-hover: #1e293b;
+    -c-content-bg:    #0f172a;
+    -c-surface:       #1e293b;
+    -c-surface-2:     #334155;
+    -c-border:        #334155;
+    -c-text:          #e2e8f0;
+    -c-text-muted:    #94a3b8;
+    -c-accent:        #6366f1;
+    -c-accent-hover:  #818cf8;
+    -c-on-accent:     #ffffff;
+    -c-drop-border:   #475569;
+    -c-success:       #22c55e;
+    -c-pending-bg:    #334155;
+    -c-pending-fg:    #64748b;
+    -c-warn-bg:       #fbbf24;
+    -c-warn-fg:       #451a03;
+    -c-danger:        #ef4444;
 }

@@ -6,6 +6,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.app.gui.Animations;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -27,17 +28,25 @@ public class DropZone extends VBox {
         setOnDragOver(e -> {
             if (e.getGestureSource() != this && e.getDragboard().hasFiles()) {
                 e.acceptTransferModes(TransferMode.COPY);
-                getStyleClass().add("drag-over");
+                if (!getStyleClass().contains("drag-over")) {
+                    getStyleClass().add("drag-over");
+                    Animations.scaleTo(this, 1.02);
+                }
             }
             e.consume();
         });
-        setOnDragExited(e -> getStyleClass().remove("drag-over"));
+        setOnDragExited(e -> {
+            getStyleClass().remove("drag-over");
+            Animations.scaleTo(this, 1.0);
+        });
         setOnDragDropped(e -> {
             Dragboard db = e.getDragboard();
             if (db.hasFiles()) {
                 onFiles.accept(db.getFiles().stream().map(File::toPath).toList());
                 e.setDropCompleted(true);
             }
+            getStyleClass().remove("drag-over");
+            Animations.scaleTo(this, 1.0);
             e.consume();
         });
         setOnMouseClicked(e -> openChooser(onFiles));

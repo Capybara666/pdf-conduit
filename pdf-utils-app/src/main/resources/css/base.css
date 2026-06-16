@@ -1,119 +1,238 @@
-/* Sidebar */
-.sidebar {
-    -fx-pref-width: 148px;
-    -fx-min-width: 148px;
-    -fx-padding: 8 6 8 6;
-    -fx-spacing: 2;
+/* ============================================================================
+   base.css — structure + semantic color tokens.
+   Each palette imports this file and overrides the -c-* looked-up colors in
+   .root. Values defined here act as a (light) fallback so nothing is undefined.
+   ============================================================================ */
+
+.root {
+    -fx-font-family: "Inter", "Segoe UI", "Roboto", "Cantarell", "Helvetica Neue", sans-serif;
+
+    /* JavaFX built-in colors (drive default controls: combo, text field, dialogs) */
+    -fx-base: #f1f5f9;
+    -fx-background: #f1f5f9;
+    -fx-control-inner-background: #ffffff;
+    -fx-text-fill: #1e293b;
+    -fx-accent: #6366f1;
+    -fx-focus-color: -c-accent;
+    -fx-faint-focus-color: transparent;
+
+    /* Semantic tokens (fallback = Daylight) */
+    -c-sidebar-bg:        #1e293b;
+    -c-sidebar-fg:        #cbd5e1;
+    -c-sidebar-muted:     #94a3b8;
+    -c-sidebar-hover:     #334155;
+    -c-content-bg:        #f1f5f9;
+    -c-surface:           #ffffff;
+    -c-surface-2:         #e2e8f0;
+    -c-border:            #e2e8f0;
+    -c-text:              #1e293b;
+    -c-text-muted:        #64748b;
+    -c-accent:            #6366f1;
+    -c-accent-hover:      #4f46e5;
+    -c-on-accent:         #ffffff;
+    -c-drop-border:       #cbd5e1;
+    -c-success:           #22c55e;
+    -c-pending-bg:        #e2e8f0;
+    -c-pending-fg:        #94a3b8;
+    -c-warn-bg:           #fde68a;
+    -c-warn-fg:           #78350f;
+    -c-danger:            #ef4444;
 }
 
+/* ---- Menu bar ---- */
+.menu-bar {
+    -fx-background-color: -c-surface;
+    -fx-border-color: -c-border;
+    -fx-border-width: 0 0 1 0;
+}
+.menu-bar .label { -fx-text-fill: -c-text; }
+
+/* ---- Sidebar ---- */
+.sidebar {
+    -fx-pref-width: 156px;
+    -fx-min-width: 156px;
+    -fx-padding: 12 8 12 8;
+    -fx-spacing: 3;
+    -fx-background-color: -c-sidebar-bg;
+}
 .sidebar-item {
     -fx-cursor: hand;
-    -fx-padding: 6 8 6 8;
-    -fx-background-radius: 5;
-    -fx-pref-width: 136px;
-    -fx-alignment: CENTER_LEFT;
-    -fx-graphic-text-gap: 8;
-}
-.sidebar-item:hover { -fx-opacity: 0.85; }
-.sidebar-item.active { -fx-text-fill: white; }
-
-.sidebar-section-label {
-    -fx-font-size: 9px;
-    -fx-letter-spacing: 1px;
-    -fx-padding: 4 6 4 6;
-    -fx-opacity: 0.55;
-}
-
-/* Content panels */
-.panel-root { -fx-padding: 18; -fx-spacing: 14; }
-.panel-title { -fx-font-size: 15px; -fx-font-weight: bold; }
-
-/* Drop zone */
-.drop-zone {
-    -fx-border-radius: 8;
+    -fx-padding: 8 10 8 10;
     -fx-background-radius: 8;
+    -fx-pref-width: 140px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 10;
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -c-sidebar-fg;
+    -fx-background-color: transparent;
+}
+.sidebar-item:hover { -fx-background-color: -c-sidebar-hover; }
+.sidebar-item.active {
+    -fx-background-color: -c-accent;
+    -fx-text-fill: -c-on-accent;
+    -fx-effect: dropshadow(gaussian, derive(-c-accent, -20%), 10, 0.0, 0, 2);
+}
+.sidebar-section-label {
+    -fx-font-size: 9.5px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 8 4 8;
+    -fx-text-fill: -c-sidebar-muted;
+}
+
+/* ---- Content panels ---- */
+.content-area { -fx-background-color: -c-content-bg; }
+.panel-root { -fx-padding: 22; -fx-spacing: 14; }
+.panel-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -c-text;
+}
+
+/* ---- Drop zone ---- */
+.drop-zone {
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
     -fx-border-width: 2;
     -fx-border-style: dashed;
-    -fx-padding: 20;
+    -fx-padding: 18;
     -fx-alignment: CENTER;
     -fx-spacing: 6;
     -fx-cursor: hand;
     -fx-pref-height: 70;
+    -fx-background-color: -c-surface;
+    -fx-border-color: -c-drop-border;
 }
-.drop-zone.drag-over { -fx-opacity: 0.7; }
+.drop-zone .label { -fx-text-fill: -c-text-muted; }
+.drop-zone.drag-over {
+    -fx-border-color: -c-accent;
+    -fx-background-color: derive(-c-accent, 86%);
+}
 
-/* File list items */
+/* ---- Lists (scoped to our file/page lists, not combo-box popups) ---- */
+.file-list-view {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.file-list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 3 0 3 0;
+}
 .file-list-item {
-    -fx-padding: 5 8 5 8;
+    -fx-padding: 8 10 8 10;
     -fx-spacing: 8;
     -fx-alignment: CENTER_LEFT;
-    -fx-background-radius: 5;
+    -fx-background-radius: 8;
+    -fx-background-color: -c-surface;
+    -fx-border-color: -c-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
 }
+.file-list-item .label { -fx-text-fill: -c-text; }
 
 /* Drop-line indicator shown while dragging a row to reorder it */
-.list-cell:drop-above {
-    -fx-border-color: #3b82f6 transparent transparent transparent;
+.file-list-view .list-cell:drop-above {
+    -fx-border-color: -c-accent transparent transparent transparent;
     -fx-border-width: 2 0 0 0;
 }
-.list-cell:drop-below {
-    -fx-border-color: transparent transparent #3b82f6 transparent;
+.file-list-view .list-cell:drop-below {
+    -fx-border-color: transparent transparent -c-accent transparent;
     -fx-border-width: 0 0 2 0;
 }
 
-/* Buttons */
+/* ---- Buttons ---- */
 .btn-primary {
-    -fx-padding: 8 18 8 18;
-    -fx-background-radius: 6;
+    -fx-padding: 9 20 9 20;
+    -fx-background-radius: 8;
     -fx-font-weight: bold;
     -fx-cursor: hand;
+    -fx-background-color: -c-accent;
+    -fx-text-fill: -c-on-accent;
+    -fx-effect: dropshadow(gaussian, derive(-c-accent, -25%), 8, 0.0, 0, 2);
 }
+.btn-primary:hover { -fx-background-color: -c-accent-hover; }
 .btn-secondary {
-    -fx-padding: 6 12 6 12;
-    -fx-background-radius: 6;
+    -fx-padding: 7 14 7 14;
+    -fx-background-radius: 8;
     -fx-cursor: hand;
+    -fx-background-color: -c-surface-2;
+    -fx-text-fill: -c-text-muted;
 }
+.btn-secondary:hover { -fx-background-color: -c-border; }
 
-/* Error banner */
+/* ---- Hyperlinks ---- */
+.hyperlink {
+    -fx-text-fill: -c-accent;
+    -fx-border-color: transparent;
+    -fx-padding: 2 2 2 2;
+}
+.hyperlink:hover { -fx-underline: true; }
+.hyperlink:visited { -fx-text-fill: -c-accent; }
+
+/* ---- Banners ---- */
 .error-banner {
-    -fx-padding: 8 12 8 12;
-    -fx-background-radius: 5;
+    -fx-padding: 9 14 9 14;
+    -fx-background-radius: 8;
     -fx-text-fill: white;
-    -fx-background-color: #ef4444;
+    -fx-background-color: -c-danger;
 }
 .warning-banner {
-    -fx-padding: 8 12 8 12;
-    -fx-background-radius: 5;
-    -fx-text-fill: #78350f;
-    -fx-background-color: #fde68a;
+    -fx-padding: 9 14 9 14;
+    -fx-background-radius: 8;
+    -fx-text-fill: -c-warn-fg;
+    -fx-background-color: -c-warn-bg;
 }
 
-/* Wizard */
+/* ---- Progress bar ---- */
+.progress-bar > .bar {
+    -fx-background-color: -c-accent;
+    -fx-background-radius: 6;
+    -fx-background-insets: 0;
+}
+.progress-bar > .track {
+    -fx-background-color: -c-surface-2;
+    -fx-background-radius: 6;
+}
+
+/* ---- Wizard ---- */
 .wizard-step-indicator {
     -fx-spacing: 0;
     -fx-alignment: CENTER;
-    -fx-padding: 10 16 10 16;
+    -fx-padding: 14 16 14 16;
 }
 .wizard-step-circle {
-    -fx-min-width: 22; -fx-min-height: 22;
-    -fx-max-width: 22; -fx-max-height: 22;
-    -fx-background-radius: 11;
+    -fx-min-width: 24; -fx-min-height: 24;
+    -fx-max-width: 24; -fx-max-height: 24;
+    -fx-background-radius: 12;
     -fx-alignment: CENTER;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
 }
+.wizard-step-circle.done    { -fx-background-color: -c-success; -fx-text-fill: white; }
+.wizard-step-circle.current {
+    -fx-background-color: -c-accent;
+    -fx-text-fill: -c-on-accent;
+    -fx-effect: dropshadow(gaussian, derive(-c-accent, -20%), 8, 0.0, 0, 1);
+}
+.wizard-step-circle.pending { -fx-background-color: -c-pending-bg; -fx-text-fill: -c-pending-fg; }
 .wizard-step-connector {
-    -fx-pref-width: 36;
+    -fx-pref-width: 38;
     -fx-min-width: 20;
     -fx-pref-height: 2;
     -fx-max-height: 2;
+    -fx-background-color: -c-border;
 }
 .wizard-step-label {
     -fx-font-size: 9px;
     -fx-alignment: CENTER;
     -fx-text-alignment: center;
+    -fx-text-fill: -c-text-muted;
 }
 .wizard-footer {
-    -fx-padding: 10 16 10 16;
+    -fx-padding: 12 16 12 16;
     -fx-spacing: 8;
     -fx-alignment: CENTER_RIGHT;
+    -fx-background-color: -c-surface;
+    -fx-border-color: -c-border;
+    -fx-border-width: 1 0 0 0;
 }

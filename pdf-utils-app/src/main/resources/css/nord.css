@@ -1,0 +1,31 @@
+/* Nord — cool arctic palette (frost accent on polar night) */
+@import "base.css";
+
+.root {
+    -fx-base: #3b4252;
+    -fx-background: #2e3440;
+    -fx-control-inner-background: #3b4252;
+    -fx-text-fill: #eceff4;
+    -fx-accent: #88c0d0;
+
+    -c-sidebar-bg:    #272c36;
+    -c-sidebar-fg:    #d8dee9;
+    -c-sidebar-muted: #7b88a1;
+    -c-sidebar-hover: #3b4252;
+    -c-content-bg:    #2e3440;
+    -c-surface:       #3b4252;
+    -c-surface-2:     #434c5e;
+    -c-border:        #434c5e;
+    -c-text:          #eceff4;
+    -c-text-muted:    #9aa4ba;
+    -c-accent:        #88c0d0;
+    -c-accent-hover:  #8fbcbb;
+    -c-on-accent:     #2e3440;
+    -c-drop-border:   #4c566a;
+    -c-success:       #a3be8c;
+    -c-pending-bg:    #434c5e;
+    -c-pending-fg:    #7b88a1;
+    -c-warn-bg:       #ebcb8b;
+    -c-warn-fg:       #4a3a12;
+    -c-danger:        #bf616a;
+}

@@ -1,0 +1,31 @@
+/* Sunset — warm light theme with a glowing orange accent */
+@import "base.css";
+
+.root {
+    -fx-base: #fff7ed;
+    -fx-background: #fff7ed;
+    -fx-control-inner-background: #ffffff;
+    -fx-text-fill: #7c2d12;
+    -fx-accent: #f97316;
+
+    -c-sidebar-bg:    #43200a;
+    -c-sidebar-fg:    #fed7aa;
+    -c-sidebar-muted: #c98a5e;
+    -c-sidebar-hover: #5c2e12;
+    -c-content-bg:    #fff7ed;
+    -c-surface:       #ffffff;
+    -c-surface-2:     #ffedd5;
+    -c-border:        #fed7aa;
+    -c-text:          #7c2d12;
+    -c-text-muted:    #b45309;
+    -c-accent:        #f97316;
+    -c-accent-hover:  #ea580c;
+    -c-on-accent:     #ffffff;
+    -c-drop-border:   #fdba74;
+    -c-success:       #16a34a;
+    -c-pending-bg:    #ffedd5;
+    -c-pending-fg:    #fdba74;
+    -c-warn-bg:       #fde68a;
+    -c-warn-fg:       #78350f;
+    -c-danger:        #e11d48;
+}

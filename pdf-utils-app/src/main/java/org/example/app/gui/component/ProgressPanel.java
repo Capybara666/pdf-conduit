@@ -5,6 +5,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.example.app.gui.Animations;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -28,6 +29,7 @@ public class ProgressPanel extends VBox {
         runBtn = new Button(runLabel);
         runBtn.getStyleClass().add("btn-primary");
         runBtn.setMaxWidth(Double.MAX_VALUE);
+        Animations.installHoverScale(runBtn, 1.02);
 
         progressBar = new ProgressBar(0);
         progressBar.setMaxWidth(Double.MAX_VALUE);
@@ -93,8 +95,10 @@ public class ProgressPanel extends VBox {
             if (warning != null) {
                 warnBanner.setText("⚠  " + warning);
                 warnBanner.setVisible(true);
+                Animations.fadeIn(warnBanner);
             }
             resultLinks.setVisible(true);
+            Animations.fadeIn(resultLinks);
             openFile.setOnAction(ev -> openPath(expectedOutput));
             openFolder.setOnAction(ev -> openPath(expectedOutput.getParent()));
         }));

@@ -3,9 +3,11 @@ package org.example.app.gui.wizard;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import org.example.app.gui.Animations;
 
 import java.util.List;
 
@@ -43,6 +45,8 @@ public class WizardController extends BorderPane {
         nextBtn.getStyleClass().add("btn-primary");
         backBtn.setOnAction(e -> navigate(-1));
         nextBtn.setOnAction(e -> navigate(+1));
+        Animations.installHoverScale(backBtn, 1.04);
+        Animations.installHoverScale(nextBtn, 1.04);
 
         HBox footer = new HBox(8, backBtn, nextBtn);
         footer.getStyleClass().add("wizard-footer");
@@ -59,7 +63,9 @@ public class WizardController extends BorderPane {
 
     private void showStep(int idx) {
         currentStep = idx;
-        stepContent.getChildren().setAll(steps.get(idx).getContent());
+        Node content = steps.get(idx).getContent();
+        stepContent.getChildren().setAll(content);
+        Animations.fadeSlideIn(content);
         backBtn.setDisable(idx == 0);
         nextBtn.setText(idx == steps.size() - 1 ? "Generate ✓" : "Next →");
         if (idx == steps.size() - 1) {

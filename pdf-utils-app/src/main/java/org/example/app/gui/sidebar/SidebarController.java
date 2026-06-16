@@ -33,6 +33,7 @@ public class SidebarController extends VBox {
         btn.getStyleClass().add("sidebar-item");
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setOnAction(e -> select(item, onSelect));
+        org.example.app.gui.Animations.installHoverScale(btn, 1.03);
         return btn;
     }
 

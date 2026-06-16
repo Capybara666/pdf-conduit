@@ -6,10 +6,38 @@ import java.util.prefs.Preferences;
 
 public class ThemeManager {
 
-    public enum Theme { LIGHT, DARK, SYSTEM }
+    /**
+     * Available colour palettes. SYSTEM is special — it follows the OS light/dark
+     * setting and maps to LIGHT or DARK. The rest are concrete skins.
+     */
+    public enum Theme {
+        SYSTEM   ("System",    null),
+        LIGHT    ("Daylight",  "/css/light.css"),
+        DARK     ("Graphite",  "/css/dark.css"),
+        NORD     ("Nord",      "/css/nord.css"),
+        DRACULA  ("Dracula",   "/css/dracula.css"),
+        SOLARIZED("Solarized", "/css/solarized.css"),
+        SUNSET   ("Sunset",    "/css/sunset.css");
+
+        public final String displayName;
+        private final String css;
+
+        Theme(String displayName, String css) {
+            this.displayName = displayName;
+            this.css = css;
+        }
+    }
 
     private static final Preferences PREFS = Preferences.userNodeForPackage(ThemeManager.class);
-    private static Theme current = Theme.valueOf(PREFS.get("theme", "SYSTEM"));
+    private static Theme current = readStored();
+
+    private static Theme readStored() {
+        try {
+            return Theme.valueOf(PREFS.get("theme", "SYSTEM"));
+        } catch (IllegalArgumentException e) {
+            return Theme.SYSTEM;
+        }
+    }
 
     public static Theme getCurrent() { return current; }
 
@@ -25,8 +53,7 @@ public class ThemeManager {
 
     private static String resolveUrl(Theme theme) {
         Theme effective = theme == Theme.SYSTEM ? detectSystem() : theme;
-        String file = effective == Theme.DARK ? "/css/dark.css" : "/css/light.css";
-        return ThemeManager.class.getResource(file).toExternalForm();
+        return ThemeManager.class.getResource(effective.css).toExternalForm();
     }
 
     private static Theme detectSystem() {
