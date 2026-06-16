@@ -38,7 +38,7 @@
     -fx-alignment: CENTER;
     -fx-spacing: 6;
     -fx-cursor: hand;
-    -fx-pref-height: 90;
+    -fx-pref-height: 70;
 }
 .drop-zone.drag-over { -fx-opacity: 0.7; }
 
