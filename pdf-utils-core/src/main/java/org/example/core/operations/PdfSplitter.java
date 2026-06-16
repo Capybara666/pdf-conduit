@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.core.exception.PdfOperationException;
 import org.example.core.model.SplitOptions;
 import org.example.core.model.SplitResult;
+import org.example.core.util.OutputPaths;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +24,7 @@ public class PdfSplitter {
             for (int pageNum : pageNums) {
                 out.importPage(src.getPage(pageNum - 1));
             }
+            OutputPaths.ensureParentDir(opts.output());
             out.save(opts.output().toFile());
             return new SplitResult(opts.output(), out.getNumberOfPages());
 

@@ -42,6 +42,22 @@ class PdfMergerTest {
     }
 
     @Test
+    void createsMissingOutputParentDir() throws Exception {
+        Path a = createTestPdf(2);
+        // Output points into a subdirectory that does not exist yet.
+        Path out = tmp.resolve("pdf-utils").resolve("merged.pdf");
+        assertFalse(out.getParent().toFile().exists());
+
+        MergeResult result = PdfMerger.execute(new MergeOptions(
+            List.of(new PageSource.PdfPageSource(a, PageRange.ALL)),
+            out
+        ));
+
+        assertEquals(2, result.pageCount());
+        assertTrue(out.toFile().exists());
+    }
+
+    @Test
     void mergesWithPageRange() throws Exception {
         Path a = createTestPdf(5);
         Path out = tmp.resolve("range.pdf");

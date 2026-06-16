@@ -4,6 +4,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.core.exception.PdfOperationException;
 import org.example.core.model.*;
+import org.example.core.util.OutputPaths;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class PdfMerger {
             }
             // importPage() keeps live references into source file handles.
             // Sources must stay open until after save() completes.
+            OutputPaths.ensureParentDir(opts.output());
             merged.save(opts.output().toFile());
             merged.close();
             return new MergeResult(opts.output(), totalPages);

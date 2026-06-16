@@ -10,6 +10,7 @@ import org.example.core.exception.PdfOperationException;
 import org.example.core.model.ImageToPdfOptions;
 import org.example.core.model.PageSize;
 import org.example.core.model.PdfResult;
+import org.example.core.util.OutputPaths;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -23,6 +24,7 @@ public class ImageToPdfConverter {
             for (Path imagePath : opts.images()) {
                 appendImagePage(doc, imagePath, opts.pageSize());
             }
+            OutputPaths.ensureParentDir(opts.output());
             doc.save(opts.output().toFile());
             return new PdfResult(opts.output(), doc.getNumberOfPages());
         } catch (IOException e) {

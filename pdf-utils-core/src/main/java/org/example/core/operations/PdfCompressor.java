@@ -11,6 +11,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.example.core.exception.PdfOperationException;
 import org.example.core.model.CompressOptions;
 import org.example.core.model.CompressResult;
+import org.example.core.util.OutputPaths;
 import org.example.core.util.SizeEstimator;
 
 import java.awt.*;
@@ -25,6 +26,7 @@ public class PdfCompressor {
     public static CompressResult execute(CompressOptions opts) throws PdfOperationException {
         try {
             long originalSize = opts.input().toFile().length();
+            OutputPaths.ensureParentDir(opts.output());
 
             for (int dpiIdx = 0; dpiIdx < DPI_LEVELS.length; dpiIdx++) {
                 for (float quality : QUALITY_LEVELS) {
