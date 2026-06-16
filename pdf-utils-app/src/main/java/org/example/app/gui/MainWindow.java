@@ -63,7 +63,6 @@ public class MainWindow {
     private void showPanel(SidebarItem item) {
         Node panel = panels.computeIfAbsent(item, this::createPanel);
         contentArea.getChildren().setAll(panel);
-        sidebar.setDisabledExceptWizard(item == SidebarItem.WIZARD);
     }
 
     private Node createPanel(SidebarItem item) {
@@ -73,8 +72,7 @@ public class MainWindow {
             case COMPRESS -> new CompressPanel();
             case ROTATE   -> new RotatePanel();
             case IMAGES   -> new ImagesToPdfPanel();
-            case WIZARD   -> new WizardController(
-                () -> sidebar.select(SidebarItem.MERGE, this::showPanel));
+            case WIZARD   -> new WizardController();
         };
     }
 

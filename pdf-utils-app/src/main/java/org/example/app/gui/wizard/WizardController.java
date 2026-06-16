@@ -1,6 +1,8 @@
 package org.example.app.gui.wizard;
 
-import javafx.geometry.Insets;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
@@ -14,17 +16,14 @@ public class WizardController extends BorderPane {
 
     private final WizardModel model = new WizardModel();
     private final List<WizardStep> steps;
-    private final Runnable onExit;
     private int currentStep = 0;
 
-    private final HBox stepIndicator = new HBox();
+    private final VBox stepIndicator = new VBox();
     private final StackPane stepContent = new StackPane();
     private final Button backBtn = new Button("← Back");
     private final Button nextBtn = new Button("Next →");
-    private final Button exitBtn = new Button("✕ Exit Wizard");
 
-    public WizardController(Runnable onExit) {
-        this.onExit = onExit;
+    public WizardController() {
         steps = List.of(
             new Step1SelectFiles(model),
             new Step2ArrangePages(model),
@@ -38,16 +37,7 @@ public class WizardController extends BorderPane {
 
     private void buildLayout() {
         stepIndicator.getStyleClass().add("wizard-step-indicator");
-        stepIndicator.setSpacing(0);
         rebuildStepIndicator(0);
-
-        exitBtn.getStyleClass().add("btn-secondary");
-        exitBtn.setOnAction(e -> onExit.run());
-
-        HBox header = new HBox();
-        HBox.setHgrow(stepIndicator, Priority.ALWAYS);
-        header.getChildren().addAll(stepIndicator, exitBtn);
-        header.setStyle("-fx-alignment: CENTER; -fx-padding: 8 12 8 12;");
 
         backBtn.getStyleClass().add("btn-secondary");
         nextBtn.getStyleClass().add("btn-primary");
@@ -57,7 +47,7 @@ public class WizardController extends BorderPane {
         HBox footer = new HBox(8, backBtn, nextBtn);
         footer.getStyleClass().add("wizard-footer");
 
-        setTop(header);
+        setTop(stepIndicator);
         setCenter(stepContent);
         setBottom(footer);
     }
@@ -82,24 +72,33 @@ public class WizardController extends BorderPane {
 
     private void rebuildStepIndicator(int current) {
         stepIndicator.getChildren().clear();
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setVgap(4);
+
         for (int i = 0; i < STEP_NAMES.size(); i++) {
+            int col = i * 2;
+
             Label circle = new Label(i < current ? "✓" : String.valueOf(i + 1));
             circle.getStyleClass().addAll("wizard-step-circle",
                 i < current ? "done" : (i == current ? "current" : "pending"));
+            grid.add(circle, col, 0);
+            GridPane.setHalignment(circle, HPos.CENTER);
+            GridPane.setValignment(circle, VPos.CENTER);
 
             Label name = new Label(STEP_NAMES.get(i));
-            name.setStyle("-fx-font-size: 9px;");
-
-            VBox item = new VBox(2, circle, name);
-            item.setStyle("-fx-alignment: CENTER;");
-            stepIndicator.getChildren().add(item);
+            name.getStyleClass().add("wizard-step-label");
+            grid.add(name, col, 1);
+            GridPane.setHalignment(name, HPos.CENTER);
 
             if (i < STEP_NAMES.size() - 1) {
-                Region line = new Region();
-                line.setStyle("-fx-pref-width: 30; -fx-pref-height: 1; -fx-background-color: #94a3b8;");
-                HBox.setMargin(line, new Insets(10, 0, 0, 0));
-                stepIndicator.getChildren().add(line);
+                Region connector = new Region();
+                connector.getStyleClass().add("wizard-step-connector");
+                grid.add(connector, col + 1, 0);
+                GridPane.setValignment(connector, VPos.CENTER);
             }
         }
+
+        stepIndicator.getChildren().add(grid);
     }
 }
