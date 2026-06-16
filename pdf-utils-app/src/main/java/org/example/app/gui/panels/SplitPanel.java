@@ -1,0 +1,64 @@
+package org.example.app.gui.panels;
+
+import javafx.concurrent.Task;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import org.example.core.model.PageRange;
+import org.example.core.model.SplitOptions;
+import org.example.core.model.SplitResult;
+import org.example.core.operations.PdfSplitter;
+import org.example.core.util.PageRangeParser;
+
+import java.nio.file.Path;
+import java.util.List;
+
+public class SplitPanel extends BasePanel {
+
+    private TextField pagesField;
+
+    public SplitPanel() { super("Split / Extract Pages", "▶  Split"); }
+
+    @Override
+    protected VBox buildOptionsArea() {
+        Label label = new Label("Pages (e.g. 1-3,5,7-9 — leave blank for all):");
+        label.setStyle("-fx-font-size: 11px;");
+        pagesField = new TextField();
+        pagesField.setPromptText("1-3,5,7  or  leave blank for all pages");
+        return new VBox(4, label, pagesField);
+    }
+
+    @Override
+    protected void onRun() {
+        List<Path> files = List.copyOf(fileList.getFiles());
+        if (files.isEmpty()) return;
+        Path input = files.get(0);
+        String pagesExpr = pagesField.getText();
+        Path output = resolveOutput(input.resolveSibling(
+            stripExt(input.getFileName().toString()) + "_split.pdf"));
+
+        Task<SplitResult> task = new Task<>() {
+            @Override
+            protected SplitResult call() throws Exception {
+                updateMessage("Splitting…");
+                PageRange range;
+                if (pagesExpr == null || pagesExpr.isBlank()) {
+                    range = PageRange.ALL;
+                } else {
+                    int total;
+                    try (var doc = org.apache.pdfbox.Loader.loadPDF(input.toFile())) {
+                        total = doc.getNumberOfPages();
+                    }
+                    range = PageRangeParser.parse(pagesExpr, total);
+                }
+                return PdfSplitter.execute(new SplitOptions(input, range, output));
+            }
+        };
+        progressPanel.run(task, output);
+    }
+
+    private static String stripExt(String n) {
+        int d = n.lastIndexOf('.');
+        return d >= 0 ? n.substring(0, d) : n;
+    }
+}

@@ -1,0 +1,41 @@
+@import "base.css";
+
+.root {
+    -fx-base: #f1f5f9;
+    -fx-background: #f1f5f9;
+    -fx-control-inner-background: #ffffff;
+    -fx-text-fill: #1e293b;
+    -fx-accent: #2563eb;
+}
+
+.sidebar { -fx-background-color: #1e293b; }
+.sidebar-section-label { -fx-text-fill: #94a3b8; }
+.sidebar-item { -fx-text-fill: #94a3b8; -fx-background-color: transparent; }
+.sidebar-item.active { -fx-background-color: #3b82f6; -fx-text-fill: white; }
+.sidebar-wizard-item { -fx-background-color: #1c1917; -fx-text-fill: #f59e0b; }
+
+.content-area { -fx-background-color: #f1f5f9; }
+.panel-title { -fx-text-fill: #1e293b; }
+
+.drop-zone { -fx-background-color: white; -fx-border-color: #94a3b8; }
+.drop-zone Label { -fx-text-fill: #64748b; }
+
+.file-list-item {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+}
+
+.btn-primary { -fx-background-color: #2563eb; -fx-text-fill: white; }
+.btn-primary:hover { -fx-background-color: #1d4ed8; }
+.btn-secondary { -fx-background-color: #e2e8f0; -fx-text-fill: #475569; }
+
+.wizard-step-circle.done { -fx-background-color: #22c55e; -fx-text-fill: white; }
+.wizard-step-circle.current { -fx-background-color: #3b82f6; -fx-text-fill: white; }
+.wizard-step-circle.pending { -fx-background-color: #e2e8f0; -fx-text-fill: #94a3b8; }
+.wizard-footer {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1 0 0 0;
+}

@@ -1,0 +1,100 @@
+/* Sidebar */
+.sidebar {
+    -fx-pref-width: 148px;
+    -fx-min-width: 148px;
+    -fx-padding: 8 6 8 6;
+    -fx-spacing: 2;
+}
+
+.sidebar-item {
+    -fx-cursor: hand;
+    -fx-padding: 6 8 6 8;
+    -fx-background-radius: 5;
+    -fx-pref-width: 136px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 8;
+}
+.sidebar-item:hover { -fx-opacity: 0.85; }
+.sidebar-item.active { -fx-text-fill: white; }
+
+.sidebar-section-label {
+    -fx-font-size: 9px;
+    -fx-letter-spacing: 1px;
+    -fx-padding: 4 6 4 6;
+    -fx-opacity: 0.55;
+}
+
+.sidebar-wizard-item {
+    -fx-cursor: hand;
+    -fx-padding: 6 8 6 8;
+    -fx-background-radius: 5;
+    -fx-pref-width: 136px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Content panels */
+.panel-root { -fx-padding: 18; -fx-spacing: 14; }
+.panel-title { -fx-font-size: 15px; -fx-font-weight: bold; }
+
+/* Drop zone */
+.drop-zone {
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-border-style: dashed;
+    -fx-padding: 20;
+    -fx-alignment: CENTER;
+    -fx-spacing: 6;
+    -fx-cursor: hand;
+    -fx-pref-height: 90;
+}
+.drop-zone.drag-over { -fx-opacity: 0.7; }
+
+/* File list items */
+.file-list-item {
+    -fx-padding: 5 8 5 8;
+    -fx-spacing: 8;
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-radius: 5;
+}
+
+/* Buttons */
+.btn-primary {
+    -fx-padding: 8 18 8 18;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.btn-secondary {
+    -fx-padding: 6 12 6 12;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+/* Error banner */
+.error-banner {
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+    -fx-background-color: #ef4444;
+}
+
+/* Wizard */
+.wizard-step-indicator {
+    -fx-spacing: 0;
+    -fx-alignment: CENTER;
+    -fx-padding: 10 16 10 16;
+}
+.wizard-step-circle {
+    -fx-min-width: 22; -fx-min-height: 22;
+    -fx-max-width: 22; -fx-max-height: 22;
+    -fx-background-radius: 11;
+    -fx-alignment: CENTER;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+.wizard-footer {
+    -fx-padding: 10 16 10 16;
+    -fx-spacing: 8;
+    -fx-alignment: CENTER_RIGHT;
+}
