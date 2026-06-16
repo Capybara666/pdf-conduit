@@ -50,6 +50,16 @@
     -fx-background-radius: 5;
 }
 
+/* Drop-line indicator shown while dragging a row to reorder it */
+.list-cell:drop-above {
+    -fx-border-color: #3b82f6 transparent transparent transparent;
+    -fx-border-width: 2 0 0 0;
+}
+.list-cell:drop-below {
+    -fx-border-color: transparent transparent #3b82f6 transparent;
+    -fx-border-width: 0 0 2 0;
+}
+
 /* Buttons */
 .btn-primary {
     -fx-padding: 8 18 8 18;

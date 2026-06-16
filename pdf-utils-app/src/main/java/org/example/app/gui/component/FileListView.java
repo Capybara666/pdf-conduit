@@ -3,7 +3,6 @@ package org.example.app.gui.component;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -59,32 +58,7 @@ public class FileListView extends ListView<Path> {
                 moveUpItem, moveDownItem, new SeparatorMenuItem(), removeItem));
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
-            setOnDragDetected(e -> {
-                if (getItem() == null) return;
-                Dragboard db = startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent cc = new ClipboardContent();
-                cc.putString(String.valueOf(getIndex()));
-                db.setContent(cc);
-                e.consume();
-            });
-            setOnDragOver(e -> {
-                if (e.getGestureSource() != this && e.getDragboard().hasString())
-                    e.acceptTransferModes(TransferMode.MOVE);
-                e.consume();
-            });
-            setOnDragDropped(e -> {
-                Dragboard db = e.getDragboard();
-                if (!db.hasString()) { e.setDropCompleted(false); e.consume(); return; }
-                int from = Integer.parseInt(db.getString());
-                int to   = getIndex();
-                if (from != to && from >= 0 && to >= 0
-                        && from < items.size() && to < items.size()) {
-                    Path moved = items.remove(from);
-                    items.add(to, moved);
-                }
-                e.setDropCompleted(true);
-                e.consume();
-            });
+            DragReorder.install(this, items);
         }
 
         @Override
