@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MergePanel extends BasePanel {
 
-    public MergePanel() { super("Merge PDFs / Images", "▶  Merge"); }
+    public MergePanel() { super("Merge PDFs / Images", "▶  Merge", "_merged"); }
 
     @Override
     protected VBox buildOptionsArea() { return new VBox(); }
@@ -39,10 +39,5 @@ public class MergePanel extends BasePanel {
             }
         };
         progressPanel.run(task, output);
-    }
-
-    private static String stripExt(String name) {
-        int dot = name.lastIndexOf('.');
-        return dot >= 0 ? name.substring(0, dot) : name;
     }
 }

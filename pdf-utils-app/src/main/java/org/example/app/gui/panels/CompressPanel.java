@@ -16,7 +16,7 @@ public class CompressPanel extends BasePanel {
     private TextField sizeField;
     private ComboBox<String> unitBox;
 
-    public CompressPanel() { super("Compress PDF", "▶  Compress"); }
+    public CompressPanel() { super("Compress PDF", "▶  Compress", "_compressed"); }
 
     @Override
     protected VBox buildOptionsArea() {
@@ -62,8 +62,4 @@ public class CompressPanel extends BasePanel {
         }
     }
 
-    private static String stripExt(String n) {
-        int d = n.lastIndexOf('.');
-        return d >= 0 ? n.substring(0, d) : n;
-    }
 }

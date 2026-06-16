@@ -18,7 +18,7 @@ public class RotatePanel extends BasePanel {
     private TextField pagesField;
     private ComboBox<Integer> angleBox;
 
-    public RotatePanel() { super("Rotate Pages", "▶  Rotate"); }
+    public RotatePanel() { super("Rotate Pages", "▶  Rotate", "_rotated"); }
 
     @Override
     protected VBox buildOptionsArea() {
@@ -66,10 +66,5 @@ public class RotatePanel extends BasePanel {
             }
         };
         progressPanel.run(task, output);
-    }
-
-    private static String stripExt(String n) {
-        int d = n.lastIndexOf('.');
-        return d >= 0 ? n.substring(0, d) : n;
     }
 }

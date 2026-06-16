@@ -16,7 +16,7 @@ public class ImagesToPdfPanel extends BasePanel {
 
     private ComboBox<PageSize> pageSizeBox;
 
-    public ImagesToPdfPanel() { super("Images → PDF", "▶  Convert"); }
+    public ImagesToPdfPanel() { super("Images → PDF", "▶  Convert", "_converted"); }
 
     @Override
     protected VBox buildOptionsArea() {
@@ -46,10 +46,5 @@ public class ImagesToPdfPanel extends BasePanel {
             }
         };
         progressPanel.run(task, output);
-    }
-
-    private static String stripExt(String n) {
-        int d = n.lastIndexOf('.');
-        return d >= 0 ? n.substring(0, d) : n;
     }
 }

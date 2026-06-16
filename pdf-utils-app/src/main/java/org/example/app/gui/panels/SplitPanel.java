@@ -17,7 +17,7 @@ public class SplitPanel extends BasePanel {
 
     private TextField pagesField;
 
-    public SplitPanel() { super("Split / Extract Pages", "▶  Split"); }
+    public SplitPanel() { super("Extract Pages", "▶  Extract", "_extracted"); }
 
     @Override
     protected VBox buildOptionsArea() {
@@ -35,12 +35,12 @@ public class SplitPanel extends BasePanel {
         Path input = files.get(0);
         String pagesExpr = pagesField.getText();
         Path output = resolveOutput(input.resolveSibling(
-            stripExt(input.getFileName().toString()) + "_split.pdf"));
+            stripExt(input.getFileName().toString()) + "_extracted.pdf"));
 
         Task<SplitResult> task = new Task<>() {
             @Override
             protected SplitResult call() throws Exception {
-                updateMessage("Splitting…");
+                updateMessage("Extracting…");
                 PageRange range;
                 if (pagesExpr == null || pagesExpr.isBlank()) {
                     range = PageRange.ALL;
@@ -55,10 +55,5 @@ public class SplitPanel extends BasePanel {
             }
         };
         progressPanel.run(task, output);
-    }
-
-    private static String stripExt(String n) {
-        int d = n.lastIndexOf('.');
-        return d >= 0 ? n.substring(0, d) : n;
     }
 }
