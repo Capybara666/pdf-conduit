@@ -24,6 +24,18 @@ public class Step5Export implements WizardStep {
 
     @Override
     public Node getContent() {
+        // Auto-fill output path from first page source when field is empty
+        if (model.outputPath.get().isBlank() && !model.pages.isEmpty()) {
+            PageSource first = model.pages.get(0);
+            Path base = switch (first) {
+                case PageSource.PdfPageSource ps -> ps.file();
+                case PageSource.ImageSource is   -> is.file();
+            };
+            String stem = base.getFileName().toString().replaceAll("\\.[^.]+$", "");
+            model.outputPath.set(
+                base.getParent().resolve("pdf-utils").resolve(stem + "_merged.pdf").toString());
+        }
+
         Label title = new Label("Step 5: Export");
         title.getStyleClass().add("panel-title");
 
@@ -32,7 +44,7 @@ public class Step5Export implements WizardStep {
         outputField.textProperty().bindBidirectional(model.outputPath);
         HBox.setHgrow(outputField, Priority.ALWAYS);
 
-        Button browseBtn = new Button("📁");
+        Button browseBtn = new Button("…");
         browseBtn.getStyleClass().add("btn-secondary");
         browseBtn.setOnAction(e -> {
             FileChooser chooser = new FileChooser();
