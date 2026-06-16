@@ -24,14 +24,6 @@
     -fx-opacity: 0.55;
 }
 
-.sidebar-wizard-item {
-    -fx-cursor: hand;
-    -fx-padding: 6 8 6 8;
-    -fx-background-radius: 5;
-    -fx-pref-width: 136px;
-    -fx-alignment: CENTER_LEFT;
-}
-
 /* Content panels */
 .panel-root { -fx-padding: 18; -fx-spacing: 14; }
 .panel-title { -fx-font-size: 15px; -fx-font-weight: bold; }
@@ -92,6 +84,17 @@
     -fx-alignment: CENTER;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
+}
+.wizard-step-connector {
+    -fx-pref-width: 36;
+    -fx-min-width: 20;
+    -fx-pref-height: 2;
+    -fx-max-height: 2;
+}
+.wizard-step-label {
+    -fx-font-size: 9px;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: center;
 }
 .wizard-footer {
     -fx-padding: 10 16 10 16;

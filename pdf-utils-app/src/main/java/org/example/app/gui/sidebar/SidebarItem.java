@@ -2,7 +2,7 @@ package org.example.app.gui.sidebar;
 
 public enum SidebarItem {
     MERGE    ("⊕", "Merge"),
-    SPLIT    ("✂", "Split"),
+    SPLIT    ("✂", "Extract"),
     COMPRESS ("⊟", "Compress"),
     ROTATE   ("↻", "Rotate"),
     IMAGES   ("🖼", "Images → PDF"),

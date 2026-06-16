@@ -12,7 +12,6 @@
 .sidebar-section-label { -fx-text-fill: #94a3b8; }
 .sidebar-item { -fx-text-fill: #94a3b8; -fx-background-color: transparent; }
 .sidebar-item.active { -fx-background-color: #3b82f6; -fx-text-fill: white; }
-.sidebar-wizard-item { -fx-background-color: #1c1917; -fx-text-fill: #f59e0b; }
 
 .content-area { -fx-background-color: #f1f5f9; }
 .panel-title { -fx-text-fill: #1e293b; }
@@ -26,6 +25,8 @@
     -fx-border-width: 1;
     -fx-border-radius: 5;
 }
+.file-list-item .label { -fx-text-fill: #1e293b; }
+.wizard-step-connector { -fx-background-color: #94a3b8; }
 
 .btn-primary { -fx-background-color: #2563eb; -fx-text-fill: white; }
 .btn-primary:hover { -fx-background-color: #1d4ed8; }
