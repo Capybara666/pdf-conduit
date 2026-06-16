@@ -4,6 +4,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.example.app.gui.component.ProgressPanel;
 import org.example.core.model.CompressOptions;
 import org.example.core.model.CompressResult;
 import org.example.core.operations.PdfCompressor;
@@ -48,7 +49,10 @@ public class CompressPanel extends BasePanel {
                 return PdfCompressor.execute(new CompressOptions(input, targetBytes, output));
             }
         };
-        progressPanel.run(task, output);
+        progressPanel.run(task, output, r -> r.targetReached() ? null
+            : "Could not reach the target size. Smallest achievable was "
+              + ProgressPanel.humanSize(r.resultBytes())
+              + " (original " + ProgressPanel.humanSize(r.originalBytes()) + ").");
     }
 
     private long parseTargetBytes() {

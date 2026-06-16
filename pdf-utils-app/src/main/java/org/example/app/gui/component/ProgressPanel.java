@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Function;
 
 public class ProgressPanel extends VBox {
 
@@ -16,6 +17,7 @@ public class ProgressPanel extends VBox {
     private final ProgressBar progressBar;
     private final Label statusLabel;
     private final Label errorBanner;
+    private final Label warnBanner;
     private final HBox resultLinks;
     private final Hyperlink openFile;
     private final Hyperlink openFolder;
@@ -40,21 +42,45 @@ public class ProgressPanel extends VBox {
         errorBanner.setVisible(false);
         errorBanner.setWrapText(true);
 
+        warnBanner = new Label();
+        warnBanner.getStyleClass().add("warning-banner");
+        warnBanner.setMaxWidth(Double.MAX_VALUE);
+        warnBanner.setWrapText(true);
+        warnBanner.setVisible(false);
+        warnBanner.managedProperty().bind(warnBanner.visibleProperty());
+
         openFile   = new Hyperlink("Open file");
         openFolder = new Hyperlink("Open folder");
         resultLinks = new HBox(12, openFile, openFolder);
         resultLinks.setVisible(false);
 
-        getChildren().addAll(runBtn, progressBar, statusLabel, errorBanner, resultLinks);
+        getChildren().addAll(runBtn, progressBar, statusLabel, errorBanner, warnBanner, resultLinks);
+    }
+
+    /** Formats a byte count as a short human-readable string (B / KB / MB). */
+    public static String humanSize(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        double kb = bytes / 1024.0;
+        if (kb < 1024) return String.format("%.0f KB", kb);
+        return String.format("%.2f MB", kb / 1024.0);
     }
 
     public Button getRunButton() { return runBtn; }
 
     public <T> void run(Task<T> task, Path expectedOutput) {
+        run(task, expectedOutput, null);
+    }
+
+    /**
+     * Runs {@code task}, and on success calls {@code warningFn} with the result; if it
+     * returns a non-null message, a warning banner is shown alongside the result links.
+     */
+    public <T> void run(Task<T> task, Path expectedOutput, Function<T, String> warningFn) {
         progressBar.setVisible(true);
         progressBar.progressProperty().bind(task.progressProperty());
         statusLabel.textProperty().bind(task.messageProperty());
         errorBanner.setVisible(false);
+        warnBanner.setVisible(false);
         resultLinks.setVisible(false);
         runBtn.setDisable(true);
 
@@ -63,6 +89,11 @@ public class ProgressPanel extends VBox {
             runBtn.setDisable(false);
             statusLabel.textProperty().unbind();
             statusLabel.setText("Done!");
+            String warning = warningFn == null ? null : warningFn.apply(task.getValue());
+            if (warning != null) {
+                warnBanner.setText("⚠  " + warning);
+                warnBanner.setVisible(true);
+            }
             resultLinks.setVisible(true);
             openFile.setOnAction(ev -> openPath(expectedOutput));
             openFolder.setOnAction(ev -> openPath(expectedOutput.getParent()));

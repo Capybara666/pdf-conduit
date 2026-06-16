@@ -73,20 +73,27 @@ public class Step5Export implements WizardStep {
         boolean compress = model.compress.get();
         long targetBytes = model.targetSizeBytes.get();
 
-        Task<Path> task = new Task<>() {
+        Task<ExportOutcome> task = new Task<>() {
             @Override
-            protected Path call() throws Exception {
+            protected ExportOutcome call() throws Exception {
                 updateMessage("Merging pages…");
                 Path merged = compress ? output.resolveSibling("_wizard_tmp.pdf") : output;
                 PdfMerger.execute(new MergeOptions(pages, merged));
                 if (compress) {
                     updateMessage("Compressing…");
-                    PdfCompressor.execute(new CompressOptions(merged, targetBytes, output));
+                    CompressResult r = PdfCompressor.execute(
+                        new CompressOptions(merged, targetBytes, output));
                     merged.toFile().delete();
+                    return new ExportOutcome(true, r.targetReached(), r.resultBytes());
                 }
-                return output;
+                return new ExportOutcome(false, true, 0);
             }
         };
-        progressPanel.run(task, output);
+        progressPanel.run(task, output, o -> (o.compressed() && !o.targetReached())
+            ? "Could not reach the target size. Smallest achievable was "
+              + ProgressPanel.humanSize(o.resultBytes()) + "."
+            : null);
     }
+
+    private record ExportOutcome(boolean compressed, boolean targetReached, long resultBytes) {}
 }

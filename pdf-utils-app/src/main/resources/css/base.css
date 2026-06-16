@@ -80,6 +80,12 @@
     -fx-text-fill: white;
     -fx-background-color: #ef4444;
 }
+.warning-banner {
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 5;
+    -fx-text-fill: #78350f;
+    -fx-background-color: #fde68a;
+}
 
 /* Wizard */
 .wizard-step-indicator {
