@@ -37,7 +37,6 @@ public class Step2ArrangePages implements WizardStep {
         private final Label nameLabel  = new Label();
         private final Button upBtn     = new Button("↑");
         private final Button downBtn   = new Button("↓");
-        private final Button removeBtn = new Button("✕");
         private final HBox row;
 
         DraggablePageCell(WizardModel model) {
@@ -47,13 +46,11 @@ public class Step2ArrangePages implements WizardStep {
             String btnStyle = "-fx-padding: 2 7 2 7; -fx-font-size: 11px;";
             upBtn.setStyle(btnStyle);
             downBtn.setStyle(btnStyle);
-            removeBtn.setStyle(btnStyle +
-                " -fx-text-fill: #ef4444; -fx-background-color: transparent;");
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            row = new HBox(6, dragHandle, nameLabel, spacer, upBtn, downBtn, removeBtn);
+            row = new HBox(6, dragHandle, nameLabel, spacer, upBtn, downBtn);
             row.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 4 8 4 4;");
             row.setMaxWidth(Double.MAX_VALUE);
 
@@ -111,7 +108,6 @@ public class Step2ArrangePages implements WizardStep {
                     model.pages.add(idx + 1, src);
                 }
             });
-            removeBtn.setOnAction(e -> model.pages.remove(src));
 
             setGraphic(row);
         }
