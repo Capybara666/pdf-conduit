@@ -55,6 +55,9 @@
     -fx-spacing: 3;
     -fx-background-color: -c-sidebar-bg;
 }
+.sidebar-brand-row { -fx-padding: 4 6 10 8; -fx-alignment: CENTER_LEFT; }
+.sidebar-brand { -fx-text-fill: -c-sidebar-fg; -fx-font-weight: bold; -fx-font-size: 13.5px; }
+
 .sidebar-item {
     -fx-cursor: hand;
     -fx-padding: 8 10 8 10;

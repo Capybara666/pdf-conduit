@@ -4,6 +4,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
@@ -44,6 +46,7 @@ public class MainWindow {
         stage.setMinWidth(640);
         stage.setMinHeight(400);
         stage.setScene(scene);
+        applyIcons();
 
         sidebar.select(SidebarItem.MERGE, this::showPanel);
     }
@@ -73,9 +76,19 @@ public class MainWindow {
         root.setTop(menuBar);
     }
 
+    /** Loads the bundled app icons onto the stage (taskbar / title bar). */
+    private void applyIcons() {
+        for (int size : new int[]{16, 24, 32, 48, 64, 128, 256}) {
+            var in = getClass().getResourceAsStream("/icons/app-" + size + ".png");
+            if (in != null) stage.getIcons().add(new Image(in));
+        }
+    }
+
     private void showAbout() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initOwner(stage);
+        var logo = getClass().getResourceAsStream("/icons/app-64.png");
+        if (logo != null) alert.setGraphic(new ImageView(new Image(logo)));
         alert.setTitle("About PDF Conduit");
         alert.setHeaderText("PDF Conduit 1.0.0");
         alert.setContentText(
