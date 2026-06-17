@@ -47,6 +47,9 @@ class PipelineCanvas extends Pane {
         setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.DELETE || e.getCode() == KeyCode.BACK_SPACE) deleteSelected();
         });
+        // A connection drag released anywhere except an input port (which consumes
+        // the event) bubbles up here and is cancelled.
+        setOnMouseDragReleased(e -> cancelConnect());
     }
 
     void setOnSelect(Consumer<PipelineNode> onSelect) { this.onSelect = onSelect; }
@@ -116,6 +119,7 @@ class PipelineCanvas extends Pane {
         tempCurve = new CubicCurve();
         tempCurve.getStyleClass().add("pipeline-connection-temp");
         tempCurve.setFill(null);
+        tempCurve.setMouseTransparent(true);   // never intercept the drop on the target port
         Point2D s = center(nodeViews.get(from.id).outPort());
         tempCurve.setStartX(s.getX()); tempCurve.setStartY(s.getY());
         tempCurve.setEndX(s.getX());   tempCurve.setEndY(s.getY());

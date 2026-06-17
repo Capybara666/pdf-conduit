@@ -73,7 +73,11 @@ class NodeView extends HBox {
             e.consume();
         });
 
-        card.setOnMousePressed(e -> canvas.selectNode(node));
+        // Consume presses on the card/ports so they don't reach the ScrollPane,
+        // which would otherwise start panning instead of selecting/connecting.
+        card.setOnMousePressed(e -> { canvas.selectNode(node); e.consume(); });
+        outPort.setOnMousePressed(javafx.scene.input.MouseEvent::consume);
+        inPort.setOnMousePressed(javafx.scene.input.MouseEvent::consume);
 
         // Connection gesture: drag from the output port to an input port.
         outPort.setOnDragDetected(e -> {
@@ -82,7 +86,8 @@ class NodeView extends HBox {
             e.consume();
         });
         outPort.setOnMouseDragged(e -> canvas.updateTempEnd(e.getSceneX(), e.getSceneY()));
-        outPort.setOnMouseReleased(e -> canvas.cancelConnect());
+        // Dropping onto an input port completes the connection; consuming the event
+        // stops it from bubbling to the canvas (which would otherwise cancel it).
         inPort.setOnMouseDragReleased(e -> {
             canvas.finishConnect(node);
             e.consume();
