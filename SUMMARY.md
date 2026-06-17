@@ -129,7 +129,15 @@ is now a `BorderPane`:
 The same top-pinned / list-fills structure was applied to the wizard's
 **Step 1 (Select files)** and **Step 2 (Arrange)** for consistency.
 
-- Files: `panels/BasePanel.java`, `wizard/Step1SelectFiles.java`,
+`ProgressPanel` previously reserved vertical space for its hidden elements
+(progress bar, error banner, result links), which — in the pinned-bottom layout —
+squeezed the list down to a row or less in panels with options (e.g. Compress).
+Those elements now bind `managed` to `visible`, so the bottom collapses to just
+the Run button when idle and the list keeps the space. Default window size
+bumped to 900×660.
+
+- Files: `panels/BasePanel.java`, `component/ProgressPanel.java`,
+  `gui/MainWindow.java`, `wizard/Step1SelectFiles.java`,
   `wizard/Step2ArrangePages.java`
 
 ## Batch operations for Extract / Compress / Rotate

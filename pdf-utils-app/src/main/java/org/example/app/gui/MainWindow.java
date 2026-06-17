@@ -35,7 +35,7 @@ public class MainWindow {
         root.setLeft(sidebar);
         root.setCenter(contentArea);
 
-        Scene scene = new Scene(root, 860, 600);
+        Scene scene = new Scene(root, 900, 660);
         ThemeManager.applyStored(scene);
 
         buildMenuBar(scene, root);

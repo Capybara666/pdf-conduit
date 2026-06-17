@@ -34,6 +34,7 @@ public class ProgressPanel extends VBox {
         progressBar = new ProgressBar(0);
         progressBar.setMaxWidth(Double.MAX_VALUE);
         progressBar.setVisible(false);
+        progressBar.managedProperty().bind(progressBar.visibleProperty());
 
         statusLabel = new Label();
         statusLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.7;");
@@ -43,6 +44,7 @@ public class ProgressPanel extends VBox {
         errorBanner.setMaxWidth(Double.MAX_VALUE);
         errorBanner.setVisible(false);
         errorBanner.setWrapText(true);
+        errorBanner.managedProperty().bind(errorBanner.visibleProperty());
 
         warnBanner = new Label();
         warnBanner.getStyleClass().add("warning-banner");
@@ -55,6 +57,10 @@ public class ProgressPanel extends VBox {
         openFolder = new Hyperlink("Open folder");
         resultLinks = new HBox(12, openFile, openFolder);
         resultLinks.setVisible(false);
+        resultLinks.managedProperty().bind(resultLinks.visibleProperty());
+
+        // statusLabel only reserves height while it has text.
+        statusLabel.managedProperty().bind(statusLabel.textProperty().isNotEmpty());
 
         getChildren().addAll(runBtn, progressBar, statusLabel, errorBanner, warnBanner, resultLinks);
     }
