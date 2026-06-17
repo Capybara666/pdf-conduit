@@ -167,3 +167,58 @@ unaffected.
 > Note: the CLI subcommands still take a single input file. Extending them with
 > multi-file + `--output-dir` would mirror the GUI batch behavior — a candidate
 > for a follow-up.
+
+---
+
+# Update: Pipelines (visual node editor)
+
+A new **Pipeline** sidebar view: a freeform canvas where you build a graph of
+operations. Design spec: `docs/superpowers/specs/2026-06-17-pipelines-design.md`.
+
+## Model (bundles of documents)
+
+Edges carry an ordered **bundle** of documents (each = file + type + base name):
+- **Source** node = chosen files.
+- **Map** ops (Extract/Compress/Rotate) apply per document: N in → N out.
+- **Reduce** ops (Merge / Images→PDF) collapse the whole bundle to one document.
+
+So a multi-file bundle flows through map ops (applied to each file) and only
+collapses when a Merge is placed after it. Outputs may fan out to many inputs.
+
+Counts and per-document types are computed **statically** (source files; map
+preserves count; reduce → 1), which drives validation and the adaptive terminal
+destination (1 result → file, many → folder — same pattern as the batch panels).
+
+## Architecture
+
+JavaFX-free, headlessly-tested **model + executor** under
+`org.example.app.pipeline`:
+- `PipelineModel` / `PipelineNode` / `Connection`, `Document`, `NodeKind`.
+- `PipelineGraph` — topological order + count/type propagation.
+- `PipelineValidator` — acyclicity, arity, type, terminal-destination rules.
+- `PipelineExecutor` — threads bundles through temp files, writes terminal
+  results, cleans up; reports progress via a callback. Reuses the existing core
+  operations unchanged.
+
+JavaFX view layer under `org.example.app.gui.pipeline`:
+- `PipelineView` (toolbar + canvas + inspector + Run/validation),
+  `PipelineCanvas` (drag nodes, draw wires, select/delete),
+  `NodeView`, `ConnectionView`, `NodeInspector`.
+
+## Interactions (v1)
+
+Add source via file chooser; add operations from a menu; drag cards by the
+header; connect by dragging from an output port (●) to an input port (○);
+Delete removes the selected node/connection; click a node to edit it in the
+inspector; Run validates (offending nodes outlined red) then executes.
+
+## Tests
+
+`PipelineValidatorTest` (cycle/type/destination/count propagation) and
+`PipelineExecutorTest` (end-to-end on temp PDFs: merge-to-file, map-to-folder,
+map→reduce chain, invalid-pipeline) — all headless. The canvas itself is
+verified manually (`mvn javafx:run`).
+
+## Scope (v1, per design)
+
+No save/load of pipeline definitions, no zoom/undo, GUI only (no CLI).
