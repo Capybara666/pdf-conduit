@@ -291,10 +291,28 @@
     -fx-stroke-dash-array: 6 6;
 }
 
-.pipeline-inspector {
+.pipeline-palette { -fx-spacing: 8; -fx-alignment: CENTER_LEFT; }
+.pipeline-chip {
+    -fx-background-color: -c-surface;
+    -fx-text-fill: -c-text;
+    -fx-font-size: 12px;
+    -fx-padding: 6 12 6 12;
+    -fx-background-radius: 8;
+    -fx-border-color: -c-border;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+.pipeline-chip:hover { -fx-background-color: -c-surface-2; }
+
+.pipeline-bottom-bar {
     -fx-background-color: -c-surface;
     -fx-border-color: -c-border;
-    -fx-border-width: 0 0 0 1;
-    -fx-padding: 16;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 10 14 10 14;
+    -fx-spacing: 12;
+    -fx-alignment: CENTER_LEFT;
 }
+.pipeline-inspector { -fx-spacing: 10; -fx-alignment: CENTER_LEFT; }
+.pipeline-inspector-title { -fx-font-weight: bold; -fx-text-fill: -c-text; }
 .pipeline-inspector-hint { -fx-text-fill: -c-text-muted; -fx-font-size: 11px; }

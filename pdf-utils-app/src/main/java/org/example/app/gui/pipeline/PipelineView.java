@@ -1,11 +1,13 @@
 package org.example.app.gui.pipeline;
 
 import javafx.concurrent.Task;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -24,59 +26,53 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** The Pipelines view: toolbar + node canvas + inspector, plus run/validation. */
+/** The Pipelines view: a draggable palette on top, the node canvas filling the
+ *  width, and a slim bottom bar with the selected node's options + Run. */
 public class PipelineView extends BorderPane {
+
+    private static final List<NodeKind> PALETTE = List.of(
+        NodeKind.SOURCE, NodeKind.MERGE, NodeKind.IMAGES_TO_PDF,
+        NodeKind.EXTRACT, NodeKind.COMPRESS, NodeKind.ROTATE);
 
     private final PipelineModel model = new PipelineModel();
     private final PipelineCanvas canvas = new PipelineCanvas(model);
     private final NodeInspector inspector = new NodeInspector(canvas);
     private final Label status = new Label();
     private final Label banner = new Label();
-    private final Button runBtn = new Button("▶  Run pipeline");
-    private int placed = 0;
+    private final Button runBtn = new Button("▶  Run");
 
     public PipelineView() {
         getStyleClass().add("panel-root");
         canvas.setOnSelect(inspector::show);
 
-        setTop(buildHeader());
+        setTop(buildTop());
         ScrollPane scroll = new ScrollPane(canvas);
-        // Panning is intentionally off: a pannable ScrollPane steals the mouse
-        // gesture and breaks port-to-port dragging. Navigate with the scrollbars.
-        scroll.setPannable(false);
+        scroll.setPannable(false);   // panning would steal the connection gesture
         scroll.getStyleClass().add("pipeline-scroll");
         setCenter(scroll);
-        setRight(inspector);
+        setBottom(buildBottom());
+
+        wirePaletteDrop();
     }
 
-    private VBox buildHeader() {
+    // --- top: title + draggable palette -----------------------------------
+
+    private VBox buildTop() {
         Label title = new Label("Pipeline");
         title.getStyleClass().add("panel-title");
 
-        Button addFiles = new Button("Add files…");
-        addFiles.getStyleClass().add("btn-secondary");
-        addFiles.setOnAction(e -> addSource());
+        HBox palette = new HBox();
+        palette.getStyleClass().add("pipeline-palette");
+        for (NodeKind kind : PALETTE) palette.getChildren().add(chip(kind));
 
-        MenuButton addOp = new MenuButton("Add operation");
-        addOp.getStyleClass().add("btn-secondary");
-        for (NodeKind kind : List.of(NodeKind.MERGE, NodeKind.IMAGES_TO_PDF,
-                                     NodeKind.EXTRACT, NodeKind.COMPRESS, NodeKind.ROTATE)) {
-            MenuItem item = new MenuItem(kind.label);
-            item.setOnAction(e -> place(kind));
-            addOp.getItems().add(item);
-        }
-
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
         Button clear = new Button("Clear");
         clear.getStyleClass().add("btn-secondary");
         clear.setOnAction(e -> { canvas.clearAll(); banner.setVisible(false); status.setText(""); });
 
-        runBtn.getStyleClass().add("btn-primary");
-        runBtn.setOnAction(e -> run());
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        HBox toolbar = new HBox(8, addFiles, addOp, clear, spacer, status, runBtn);
-        toolbar.getStyleClass().add("pipeline-toolbar");
+        HBox paletteRow = new HBox(8, palette, spacer, clear);
+        paletteRow.getStyleClass().add("pipeline-toolbar");
 
         banner.getStyleClass().add("error-banner");
         banner.setMaxWidth(Double.MAX_VALUE);
@@ -84,28 +80,79 @@ public class PipelineView extends BorderPane {
         banner.setVisible(false);
         banner.managedProperty().bind(banner.visibleProperty());
 
-        VBox header = new VBox(10, title, toolbar, banner);
-        return header;
+        VBox top = new VBox(8, title, paletteRow, banner);
+        return top;
     }
 
-    private void addSource() {
+    private Label chip(NodeKind kind) {
+        Label chip = new Label(glyph(kind) + "  " + kind.label);
+        chip.getStyleClass().add("pipeline-chip");
+        chip.setOnDragDetected(e -> {
+            Dragboard db = chip.startDragAndDrop(TransferMode.COPY);
+            ClipboardContent content = new ClipboardContent();
+            content.putString(kind.name());
+            db.setContent(content);
+            e.consume();
+        });
+        return chip;
+    }
+
+    private String glyph(NodeKind kind) {
+        return switch (kind) {
+            case SOURCE -> "⊞";
+            case MERGE -> "⊕";
+            case IMAGES_TO_PDF -> "🖼";
+            case EXTRACT -> "✂";
+            case COMPRESS -> "⊟";
+            case ROTATE -> "↻";
+        };
+    }
+
+    /** Accept palette chips dropped onto the canvas; create the node at the drop point. */
+    private void wirePaletteDrop() {
+        canvas.setOnDragOver(e -> {
+            if (e.getGestureSource() != canvas && e.getDragboard().hasString()) {
+                e.acceptTransferModes(TransferMode.COPY);
+            }
+            e.consume();
+        });
+        canvas.setOnDragDropped(e -> {
+            Dragboard db = e.getDragboard();
+            boolean done = false;
+            if (db.hasString()) {
+                NodeKind kind = NodeKind.valueOf(db.getString());
+                Point2D p = canvas.sceneToLocal(e.getSceneX(), e.getSceneY());
+                PipelineNode n = canvas.addNode(kind, Math.max(0, p.getX() - 20), Math.max(0, p.getY() - 16));
+                if (kind == NodeKind.SOURCE) addFilesTo(n);
+                inspector.show(n);
+                done = true;
+            }
+            e.setDropCompleted(done);
+            e.consume();
+        });
+    }
+
+    private void addFilesTo(PipelineNode source) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Add source files");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
             "PDF & images", "*.pdf", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.tiff", "*.tif", "*.bmp"));
         var files = chooser.showOpenMultipleDialog(window());
-        if (files == null || files.isEmpty()) return;
-        PipelineNode n = place(NodeKind.SOURCE);
-        for (File f : files) n.files.add(f.toPath());
-        canvas.refreshNode(n);
-        inspector.show(n);
+        if (files != null) {
+            for (File f : files) source.files.add(f.toPath());
+            canvas.refreshNode(source);
+        }
     }
 
-    private PipelineNode place(NodeKind kind) {
-        double x = 60 + (placed % 4) * 220;
-        double y = 60 + (placed % 3) * 150;
-        placed++;
-        return canvas.addNode(kind, x, y);
+    // --- bottom: node options + status + run ------------------------------
+
+    private HBox buildBottom() {
+        runBtn.getStyleClass().add("btn-primary");
+        runBtn.setOnAction(e -> run());
+        HBox.setHgrow(inspector, Priority.ALWAYS);
+        HBox bar = new HBox(12, inspector, status, runBtn);
+        bar.getStyleClass().add("pipeline-bottom-bar");
+        return bar;
     }
 
     private void run() {
