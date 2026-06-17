@@ -17,6 +17,7 @@ $AppName    = "pdf-conduit"
 $AppVersion = "1.0.0"          # keep in sync with pom.xml <version>
 $MainClass  = "org.example.app.Main"
 $Vendor     = "PDF Conduit"
+$Icon       = "assets\icon.ico"
 $Lib        = "pdf-utils-app\target\dist-lib"
 $AppJar     = "pdf-utils-app-$AppVersion.jar"
 $Out        = "dist\windows"
@@ -34,6 +35,7 @@ Write-Host "==> [3/4] Creating portable app-image"
 jpackage `
   --type app-image `
   --name $AppName `
+  --icon $Icon `
   --app-version $AppVersion `
   --vendor $Vendor `
   --description "Merge, extract, compress and rotate PDFs; convert images to PDF." `
@@ -50,6 +52,7 @@ Write-Host "==> [4/4] Attempting .exe installer (optional, needs WiX Toolset)"
 jpackage `
   --type exe `
   --name $AppName `
+  --icon $Icon `
   --app-version $AppVersion `
   --vendor $Vendor `
   --input $Lib `

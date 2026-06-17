@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="PDF Conduit logo">
+  <!-- Single-colour line-art mark: a PDF page (folded corner) whose contents are a
+       conduit — two inputs converging through pipes into one output node. -->
+  <g fill="none" stroke="currentColor" stroke-width="16" stroke-linejoin="round" stroke-linecap="round">
+    <!-- page with folded top-right corner -->
+    <path d="M64 32 H160 L208 80 V224 H64 Z"/>
+    <path d="M160 32 V80 H208"/>
+    <!-- conduit: two inputs piped into one output -->
+    <path d="M100 104 C 142 104 150 140 176 140"/>
+    <path d="M100 176 C 142 176 150 140 176 140"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="100" cy="104" r="13"/>
+    <circle cx="100" cy="176" r="13"/>
+    <circle cx="176" cy="140" r="13"/>
+  </g>
+</svg>

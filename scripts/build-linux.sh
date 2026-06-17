@@ -16,6 +16,7 @@ APP_NAME="pdf-conduit"
 APP_VERSION="1.0.0"            # keep in sync with pom.xml <version>
 MAIN_CLASS="org.example.app.Main"
 VENDOR="PDF Conduit"
+ICON="assets/icon-512.png"
 LIB="pdf-utils-app/target/dist-lib"
 APP_JAR="pdf-utils-app-${APP_VERSION}.jar"
 OUT="dist/linux"
@@ -32,6 +33,7 @@ echo "==> [3/4] Creating portable app-image"
 jpackage \
   --type app-image \
   --name "${APP_NAME}" \
+  --icon "${ICON}" \
   --app-version "${APP_VERSION}" \
   --vendor "${VENDOR}" \
   --description "Merge, extract, compress and rotate PDFs; convert images to PDF." \
@@ -47,6 +49,7 @@ echo "==> [4/4] Attempting .deb installer (optional)"
 if jpackage \
   --type deb \
   --name "${APP_NAME}" \
+  --icon "${ICON}" \
   --app-version "${APP_VERSION}" \
   --vendor "${VENDOR}" \
   --input "${LIB}" \

@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.svg" alt="PDF Conduit" width="112"></p>
+
 # PDF Conduit
 
 A small desktop toolkit for everyday PDF tasks — **merge, extract pages,
