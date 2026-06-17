@@ -21,6 +21,9 @@ public class RotatePanel extends BasePanel {
     public RotatePanel() { super("Rotate Pages", "▶  Rotate", "_rotated"); }
 
     @Override
+    protected String inputHint() { return "Only the first file in the list is used."; }
+
+    @Override
     protected VBox buildOptionsArea() {
         Label pagesLabel = new Label("Pages (blank = all):");
         pagesLabel.setStyle("-fx-font-size: 11px;");

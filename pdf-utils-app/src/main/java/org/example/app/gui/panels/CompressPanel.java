@@ -20,6 +20,9 @@ public class CompressPanel extends BasePanel {
     public CompressPanel() { super("Compress PDF", "▶  Compress", "_compressed"); }
 
     @Override
+    protected String inputHint() { return "Only the first file in the list is used."; }
+
+    @Override
     protected VBox buildOptionsArea() {
         Label label = new Label("Target size:");
         label.setStyle("-fx-font-size: 11px;");

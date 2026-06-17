@@ -20,6 +20,9 @@ public class SplitPanel extends BasePanel {
     public SplitPanel() { super("Extract Pages", "▶  Extract", "_extracted"); }
 
     @Override
+    protected String inputHint() { return "Only the first file in the list is used."; }
+
+    @Override
     protected VBox buildOptionsArea() {
         Label label = new Label("Pages (e.g. 1-3,5,7-9 — leave blank for all):");
         label.setStyle("-fx-font-size: 11px;");

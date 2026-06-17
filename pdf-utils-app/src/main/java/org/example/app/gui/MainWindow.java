@@ -1,10 +1,12 @@
 package org.example.app.gui;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.example.app.gui.panels.*;
 import org.example.app.gui.sidebar.SidebarController;
@@ -62,8 +64,24 @@ public class MainWindow {
             }
         }
 
-        menuBar.getMenus().add(themeMenu);
+        Menu helpMenu = new Menu("Help");
+        MenuItem about = new MenuItem("About");
+        about.setOnAction(e -> showAbout());
+        helpMenu.getItems().add(about);
+
+        menuBar.getMenus().addAll(themeMenu, helpMenu);
         root.setTop(menuBar);
+    }
+
+    private void showAbout() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initOwner(stage);
+        alert.setTitle("About pdf-utils");
+        alert.setHeaderText("pdf-utils 1.0.0");
+        alert.setContentText(
+            "Merge, extract, compress and rotate PDFs, and convert images to PDF.\n\n"
+            + "Built with Apache PDFBox and JavaFX.");
+        alert.showAndWait();
     }
 
     private void showPanel(SidebarItem item) {
@@ -83,5 +101,12 @@ public class MainWindow {
         };
     }
 
-    public void show() { stage.show(); }
+    public void show() {
+        stage.show();
+        // Center on the primary monitor (done after show() so the decorated
+        // window size is known).
+        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+        stage.setX(bounds.getMinX() + (bounds.getWidth()  - stage.getWidth())  / 2);
+        stage.setY(bounds.getMinY() + (bounds.getHeight() - stage.getHeight()) / 2);
+    }
 }

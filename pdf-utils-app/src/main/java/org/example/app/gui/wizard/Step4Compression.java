@@ -33,13 +33,15 @@ public class Step4Compression implements WizardStep {
             unitBox.setDisable(!enabled);
         });
 
-        sizeField.textProperty().addListener((obs, o, val) -> {
+        Runnable recompute = () -> {
             try {
-                double v = Double.parseDouble(val);
+                double v = Double.parseDouble(sizeField.getText());
                 model.targetSizeBytes.set(unitBox.getValue().equals("MB")
                     ? (long)(v * 1024 * 1024) : (long)(v * 1024));
             } catch (NumberFormatException ignored) {}
-        });
+        };
+        sizeField.textProperty().addListener((obs, o, val) -> recompute.run());
+        unitBox.valueProperty().addListener((obs, o, val) -> recompute.run());
 
         HBox sizeRow = new HBox(6, new Label("Target:"), sizeField, unitBox);
         sizeRow.setStyle("-fx-alignment: CENTER_LEFT;");

@@ -69,7 +69,13 @@ public class Step5Export implements WizardStep {
         String pathStr = model.outputPath.get();
         if (pathStr == null || pathStr.isBlank()) return;
         Path output = Path.of(pathStr.endsWith(".pdf") ? pathStr : pathStr + ".pdf");
-        List<PageSource> pages = List.copyOf(model.pages);
+        // Apply the page size chosen in Step 3 to every image source.
+        PageSize pageSize = model.globalPageSize.get();
+        List<PageSource> pages = model.pages.stream()
+            .map(ps -> ps instanceof PageSource.ImageSource is
+                ? new PageSource.ImageSource(is.file(), pageSize)
+                : ps)
+            .toList();
         boolean compress = model.compress.get();
         long targetBytes = model.targetSizeBytes.get();
 

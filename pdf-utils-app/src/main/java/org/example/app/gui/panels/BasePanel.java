@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -31,6 +32,23 @@ public abstract class BasePanel extends VBox {
         fileList = new FileListView();
         VBox.setVgrow(fileList, Priority.ALWAYS);
         dropZone = new DropZone(fileList::addFiles);
+
+        Label countLabel = new Label("No files");
+        countLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
+        Button clearBtn = new Button("Clear");
+        clearBtn.getStyleClass().add("btn-secondary");
+        clearBtn.setDisable(true);
+        clearBtn.setOnAction(e -> fileList.getFiles().clear());
+        Region toolbarSpacer = new Region();
+        HBox.setHgrow(toolbarSpacer, Priority.ALWAYS);
+        HBox listToolbar = new HBox(8, countLabel, toolbarSpacer, clearBtn);
+        listToolbar.setStyle("-fx-alignment: CENTER_LEFT;");
+
+        fileList.getFiles().addListener((ListChangeListener<Path>) change -> {
+            int n = fileList.getFiles().size();
+            countLabel.setText(n == 0 ? "No files" : n + (n == 1 ? " file" : " files"));
+            clearBtn.setDisable(n == 0);
+        });
 
         outputField = new TextField();
         outputField.setPromptText("Output file path…");
@@ -62,12 +80,25 @@ public abstract class BasePanel extends VBox {
         progressPanel = new ProgressPanel(runLabel);
         progressPanel.getRunButton().setOnAction(e -> onRun());
 
-        getChildren().addAll(titleLabel, dropZone, fileList, buildOptionsArea(), outputRow, progressPanel);
+        getChildren().add(titleLabel);
+        String hint = inputHint();
+        if (hint != null) {
+            Label hintLabel = new Label(hint);
+            hintLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
+            getChildren().add(hintLabel);
+        }
+        getChildren().addAll(dropZone, listToolbar, fileList, buildOptionsArea(), outputRow, progressPanel);
     }
 
     protected abstract VBox buildOptionsArea();
 
     protected abstract void onRun();
+
+    /**
+     * Optional hint shown under the title. Single-input operations override this
+     * to explain that only the first file in the list is used.
+     */
+    protected String inputHint() { return null; }
 
     protected Path resolveOutput(Path defaultPath) {
         String text = outputField.getText();
