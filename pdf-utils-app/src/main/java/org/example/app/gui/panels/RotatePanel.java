@@ -4,11 +4,9 @@ import javafx.concurrent.Task;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.example.core.model.PageRange;
 import org.example.core.model.RotateOptions;
 import org.example.core.model.RotateResult;
 import org.example.core.operations.PdfRotator;
-import org.example.core.util.PageRangeParser;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -21,7 +19,12 @@ public class RotatePanel extends BasePanel {
     public RotatePanel() { super("Rotate Pages", "▶  Rotate", "_rotated"); }
 
     @Override
-    protected String inputHint() { return "Only the first file in the list is used."; }
+    protected boolean supportsBatch() { return true; }
+
+    @Override
+    protected String inputHint() {
+        return "Add several PDFs to rotate each by the same angle into a folder.";
+    }
 
     @Override
     protected VBox buildOptionsArea() {
@@ -44,28 +47,24 @@ public class RotatePanel extends BasePanel {
     protected void onRun() {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
-        Path input = files.get(0);
         String pagesExpr = pagesField.getText();
         int angle = angleBox.getValue();
 
+        if (isBatchMode()) {
+            runPerFile("Rotating", (in, out) ->
+                PdfRotator.execute(new RotateOptions(in, SplitPanel.resolveRange(pagesExpr, in), angle, out)));
+            return;
+        }
+
+        Path input = files.get(0);
         Path output = resolveOutput(input.resolveSibling(
             stripExt(input.getFileName().toString()) + "_rotated.pdf"));
-
         Task<RotateResult> task = new Task<>() {
             @Override
             protected RotateResult call() throws Exception {
                 updateMessage("Rotating…");
-                PageRange range;
-                if (pagesExpr == null || pagesExpr.isBlank()) {
-                    range = PageRange.ALL;
-                } else {
-                    int total;
-                    try (var doc = org.apache.pdfbox.Loader.loadPDF(input.toFile())) {
-                        total = doc.getNumberOfPages();
-                    }
-                    range = PageRangeParser.parse(pagesExpr, total);
-                }
-                return PdfRotator.execute(new RotateOptions(input, range, angle, output));
+                return PdfRotator.execute(
+                    new RotateOptions(input, SplitPanel.resolveRange(pagesExpr, input), angle, output));
             }
         };
         progressPanel.run(task, output);

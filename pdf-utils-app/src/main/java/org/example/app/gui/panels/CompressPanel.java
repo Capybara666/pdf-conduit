@@ -20,7 +20,12 @@ public class CompressPanel extends BasePanel {
     public CompressPanel() { super("Compress PDF", "▶  Compress", "_compressed"); }
 
     @Override
-    protected String inputHint() { return "Only the first file in the list is used."; }
+    protected boolean supportsBatch() { return true; }
+
+    @Override
+    protected String inputHint() {
+        return "Add several PDFs to compress each to the target size into a folder.";
+    }
 
     @Override
     protected VBox buildOptionsArea() {
@@ -38,10 +43,16 @@ public class CompressPanel extends BasePanel {
     protected void onRun() {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
-        Path input = files.get(0);
         long targetBytes = parseTargetBytes();
         if (targetBytes <= 0) return;
 
+        if (isBatchMode()) {
+            runPerFile("Compressing", (in, out) ->
+                PdfCompressor.execute(new CompressOptions(in, targetBytes, out)));
+            return;
+        }
+
+        Path input = files.get(0);
         Path output = resolveOutput(input.resolveSibling(
             stripExt(input.getFileName().toString()) + "_compressed.pdf"));
 

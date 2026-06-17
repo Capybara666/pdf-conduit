@@ -20,7 +20,12 @@ public class SplitPanel extends BasePanel {
     public SplitPanel() { super("Extract Pages", "▶  Extract", "_extracted"); }
 
     @Override
-    protected String inputHint() { return "Only the first file in the list is used."; }
+    protected boolean supportsBatch() { return true; }
+
+    @Override
+    protected String inputHint() {
+        return "Add several PDFs to extract the same pages from each into a folder.";
+    }
 
     @Override
     protected VBox buildOptionsArea() {
@@ -35,28 +40,35 @@ public class SplitPanel extends BasePanel {
     protected void onRun() {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
-        Path input = files.get(0);
         String pagesExpr = pagesField.getText();
+
+        if (isBatchMode()) {
+            runPerFile("Extracting", (in, out) ->
+                PdfSplitter.execute(new SplitOptions(in, resolveRange(pagesExpr, in), out)));
+            return;
+        }
+
+        Path input = files.get(0);
         Path output = resolveOutput(input.resolveSibling(
             stripExt(input.getFileName().toString()) + "_extracted.pdf"));
-
         Task<SplitResult> task = new Task<>() {
             @Override
             protected SplitResult call() throws Exception {
                 updateMessage("Extracting…");
-                PageRange range;
-                if (pagesExpr == null || pagesExpr.isBlank()) {
-                    range = PageRange.ALL;
-                } else {
-                    int total;
-                    try (var doc = org.apache.pdfbox.Loader.loadPDF(input.toFile())) {
-                        total = doc.getNumberOfPages();
-                    }
-                    range = PageRangeParser.parse(pagesExpr, total);
-                }
-                return PdfSplitter.execute(new SplitOptions(input, range, output));
+                return PdfSplitter.execute(
+                    new SplitOptions(input, resolveRange(pagesExpr, input), output));
             }
         };
         progressPanel.run(task, output);
+    }
+
+    /** Parses a page expression against a PDF's actual page count (blank = all). */
+    static PageRange resolveRange(String expr, Path pdf) throws Exception {
+        if (expr == null || expr.isBlank()) return PageRange.ALL;
+        int total;
+        try (var doc = org.apache.pdfbox.Loader.loadPDF(pdf.toFile())) {
+            total = doc.getNumberOfPages();
+        }
+        return PageRangeParser.parse(expr, total);
     }
 }

@@ -1,7 +1,9 @@
 package org.example.app.gui.wizard;
 
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.example.app.gui.component.DropZone;
 import org.example.app.gui.component.FileListView;
@@ -32,8 +34,13 @@ public class Step1SelectFiles implements WizardStep {
         Label title = new Label("Step 1: Select files");
         title.getStyleClass().add("panel-title");
         DropZone dropZone = new DropZone(fileList::addFiles);
-        VBox box = new VBox(12, title, dropZone, fileList);
-        box.setStyle("-fx-padding: 18;");
-        return box;
+
+        VBox top = new VBox(12, title, dropZone);
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-padding: 18;");
+        root.setTop(top);
+        root.setCenter(fileList);
+        BorderPane.setMargin(fileList, new Insets(12, 0, 0, 0));
+        return root;
     }
 }

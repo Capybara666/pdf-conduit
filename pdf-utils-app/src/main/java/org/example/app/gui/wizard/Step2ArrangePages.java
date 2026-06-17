@@ -1,8 +1,10 @@
 package org.example.app.gui.wizard;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -39,11 +41,14 @@ public class Step2ArrangePages implements WizardStep {
         ListView<PageSource> listView = new ListView<>(model.pages);
         listView.getStyleClass().add("file-list-view");
         listView.setCellFactory(lv -> new DraggablePageCell());
-        VBox.setVgrow(listView, Priority.ALWAYS);
 
-        VBox box = new VBox(10, title, hint, listView);
-        box.setStyle("-fx-padding: 18;");
-        return box;
+        VBox top = new VBox(6, title, hint);
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-padding: 18;");
+        root.setTop(top);
+        root.setCenter(listView);
+        BorderPane.setMargin(listView, new Insets(10, 0, 0, 0));
+        return root;
     }
 
     /** Page count of a PDF, loaded once and cached. Returns 0 if it cannot be read. */
