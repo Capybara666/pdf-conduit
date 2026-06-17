@@ -1,4 +1,4 @@
-# pdf-utils
+# PDF Conduit
 
 A small desktop toolkit for everyday PDF tasks — **merge, extract pages,
 compress to a target size, rotate, and convert images to PDF** — with both a
@@ -46,14 +46,14 @@ CLI (see below). The window opens centered on your primary monitor.
 ## CLI
 
 The application entry point dispatches to the CLI when given arguments. Once you
-build a native package (see *Releases*), the launcher is `pdf-utils`:
+build a native package (see *Releases*), the launcher is `pdf-conduit`:
 
 ```bash
-pdf-utils merge a.pdf b.pdf images/*.png -o combined.pdf
-pdf-utils split report.pdf --pages 1-3,5,end-2 -o pages.pdf
-pdf-utils compress scan.pdf --target-size 5MB -o smaller.pdf
-pdf-utils rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
-pdf-utils images-to-pdf *.jpg --page-size A4 -o album.pdf
+pdf-conduit merge a.pdf b.pdf images/*.png -o combined.pdf
+pdf-conduit split report.pdf --pages 1-3,5,end-2 -o pages.pdf
+pdf-conduit compress scan.pdf --target-size 5MB -o smaller.pdf
+pdf-conduit rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
+pdf-conduit images-to-pdf *.jpg --page-size A4 -o album.pdf
 ```
 
 - **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).

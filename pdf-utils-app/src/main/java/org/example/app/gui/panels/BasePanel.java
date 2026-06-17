@@ -123,8 +123,8 @@ public abstract class BasePanel extends BorderPane {
         Path parent = first.getParent();
         if (parent == null) return;
         String auto = batchMode
-            ? parent.resolve("pdf-utils").toString()
-            : parent.resolve("pdf-utils")
+            ? parent.resolve("pdf-conduit").toString()
+            : parent.resolve("pdf-conduit")
                     .resolve(stripExt(first.getFileName().toString()) + outputSuffix + ".pdf")
                     .toString();
         String current = outputField.getText();

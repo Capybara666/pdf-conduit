@@ -16,8 +16,8 @@ Output goes to `dist/linux/` or `dist/windows/` (both git-ignored).
 Each script always produces a **portable app-image** — a self-contained folder
 (with its own Java runtime, no JDK needed by the user) plus a `.zip` of it:
 
-- Linux: `dist/linux/pdf-utils/bin/pdf-utils`
-- Windows: `dist/windows/pdf-utils/pdf-utils.exe`
+- Linux: `dist/linux/pdf-conduit/bin/pdf-conduit`
+- Windows: `dist/windows/pdf-conduit/pdf-conduit.exe`
 
 Each script then *attempts* a native installer (non-fatal if tooling is missing):
 

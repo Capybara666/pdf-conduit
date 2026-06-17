@@ -1,4 +1,4 @@
-# Builds a Windows release of pdf-utils with jpackage.
+# Builds a Windows release of PDF Conduit with jpackage.
 #   - Always produces a portable app-image (a self-contained folder + .zip).
 #   - Also attempts an .exe installer (needs the WiX Toolset 3.x on PATH).
 #
@@ -13,10 +13,10 @@ $ErrorActionPreference = "Stop"
 # Move to the repository root (parent of this script's dir).
 Set-Location (Join-Path $PSScriptRoot "..")
 
-$AppName    = "pdf-utils"
+$AppName    = "pdf-conduit"
 $AppVersion = "1.0.0"          # keep in sync with pom.xml <version>
 $MainClass  = "org.example.app.Main"
-$Vendor     = "pdf-utils"
+$Vendor     = "PDF Conduit"
 $Lib        = "pdf-utils-app\target\dist-lib"
 $AppJar     = "pdf-utils-app-$AppVersion.jar"
 $Out        = "dist\windows"

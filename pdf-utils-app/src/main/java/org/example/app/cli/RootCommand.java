@@ -4,9 +4,9 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(
-    name = "pdf-utils",
+    name = "pdf-conduit",
     mixinStandardHelpOptions = true,
-    version = "pdf-utils 1.0.0",
+    version = "PDF Conduit 1.0.0",
     description = "PDF manipulation utility — merge, split, compress, rotate, convert images.",
     subcommands = {
         MergeCommand.class,

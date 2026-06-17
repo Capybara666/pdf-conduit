@@ -40,7 +40,7 @@ public class MainWindow {
 
         buildMenuBar(scene, root);
 
-        stage.setTitle("pdf-utils");
+        stage.setTitle("PDF Conduit");
         stage.setMinWidth(640);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -76,8 +76,8 @@ public class MainWindow {
     private void showAbout() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initOwner(stage);
-        alert.setTitle("About pdf-utils");
-        alert.setHeaderText("pdf-utils 1.0.0");
+        alert.setTitle("About PDF Conduit");
+        alert.setHeaderText("PDF Conduit 1.0.0");
         alert.setContentText(
             "Merge, extract, compress and rotate PDFs, and convert images to PDF.\n\n"
             + "Built with Apache PDFBox and JavaFX.");

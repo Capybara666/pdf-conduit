@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Builds a Linux release of pdf-utils with jpackage.
+# Builds a Linux release of PDF Conduit with jpackage.
 #   - Always produces a portable app-image (a self-contained folder + .zip).
 #   - Also attempts a .deb installer (needs `fakeroot` and `binutils`/`dpkg`).
 #
@@ -12,10 +12,10 @@ set -euo pipefail
 # Move to the repository root (parent of this script's dir).
 cd "$(dirname "$0")/.."
 
-APP_NAME="pdf-utils"
+APP_NAME="pdf-conduit"
 APP_VERSION="1.0.0"            # keep in sync with pom.xml <version>
 MAIN_CLASS="org.example.app.Main"
-VENDOR="pdf-utils"
+VENDOR="PDF Conduit"
 LIB="pdf-utils-app/target/dist-lib"
 APP_JAR="pdf-utils-app-${APP_VERSION}.jar"
 OUT="dist/linux"
