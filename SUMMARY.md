@@ -1,0 +1,113 @@
+# Summary of changes
+
+This batch covers three requests: (1) center the window on the main monitor,
+(2) add release build scripts for Ubuntu and Windows, and (3) a functional
+review with usability improvements.
+
+---
+
+## 1. Window opens centered on the main monitor
+
+`MainWindow.show()` now positions the window in the center of the **primary**
+monitor's visual bounds, computed after `stage.show()` so the real (decorated)
+window size is known.
+
+- File: `pdf-utils-app/.../gui/MainWindow.java`
+
+---
+
+## 2. Release build scripts (Ubuntu + Windows)
+
+There was a mismatch: `CLAUDE.md` claimed `mvn package -P linux/-P windows`
+produced an AppImage/.exe, but **no such Maven profiles or jpackage config
+existed**. I built a real packaging pipeline instead.
+
+- **New Maven profile `dist`** (`pdf-utils-app/pom.xml`) collects every runtime
+  dependency — including the platform-specific JavaFX native jars resolved for
+  the build OS — into `target/dist-lib/`. Verified it bundles the JavaFX
+  `-linux` natives + the core jar.
+- **`scripts/build-linux.sh`** — builds a portable app-image (+ `.zip`) and
+  attempts a `.deb`.
+- **`scripts/build-windows.ps1`** — builds a portable app-image (+ `.zip`) and
+  attempts an `.exe` (WiX).
+- **`scripts/README.md`** — prerequisites and usage.
+
+The entry point bundled is `org.example.app.Main` (a plain class, not a JavaFX
+`Application`), so the app launches correctly from the classpath bundle.
+
+> Not run here, as requested — jpackage must run on each target OS. I did
+> validate the `mvn -Pdist package` step (dependency collection) succeeds.
+> Requirements: JDK 21+, Maven; `.deb` needs `fakeroot`+`binutils`, `.exe`
+> needs WiX. See `scripts/README.md`.
+
+Output lands in `dist/` (already git-ignored).
+
+---
+
+## 3. Functional review + improvements
+
+### Bug found and fixed: wizard "Page settings" (Step 3) did nothing
+
+The page-size chosen in Step 3 (`globalPageSize`) was never applied — image
+sources were created in Step 1 with a hard-coded `FIT` and exported unchanged.
+Step 5 now maps the chosen page size onto every image source at export, so the
+setting actually takes effect.
+
+- File: `pdf-utils-app/.../gui/wizard/Step5Export.java`
+
+### Bug fixed: wizard compression target ignored unit changes
+
+In Step 4, the target size in bytes was only recomputed when the number field
+changed, not when the MB/KB unit changed. Both now recompute.
+
+- File: `pdf-utils-app/.../gui/wizard/Step4Compression.java`
+
+### Usability: file list toolbar (count + Clear)
+
+Every operation panel now shows a live file count ("3 files") and a **Clear**
+button to empty the list in one click (previously files had to be removed one by
+one).
+
+- File: `pdf-utils-app/.../gui/panels/BasePanel.java`
+
+### Consistency: single-input panels now say so
+
+Extract, Compress and Rotate operate on a single PDF but share the multi-file
+list UI, which silently used only the first file. They now display the hint
+"Only the first file in the list is used."
+
+- Files: `BasePanel.java` (hook), `SplitPanel.java`, `CompressPanel.java`,
+  `RotatePanel.java`
+
+### Polish: About dialog
+
+Added **Help → About** with name, version and a one-line description.
+
+- File: `MainWindow.java`
+
+---
+
+## Notes / suggestions not implemented (kept out of scope)
+
+These are observations from the review worth considering later:
+
+- **Overwrite confirmation** — output files are silently overwritten if they
+  already exist. A confirm prompt would be safer.
+- **Invalid compress target feedback (panel)** — typing a non-numeric target in
+  the Compress panel silently does nothing; a small inline error would help.
+- **Multi-file batch for single-input ops** — Extract/Compress/Rotate could
+  optionally process every file in the list rather than just the first.
+- **`CLAUDE.md` packaging section is outdated** — it still references the
+  non-existent `-P linux/-P windows` profiles; consider updating it to point at
+  `scripts/` (left untouched as it is not tracked in git).
+
+---
+
+## Verification
+
+- `mvn test` — green: **25** core + **7** app tests (incl. the headless
+  `StylesheetParseTest` covering all theme stylesheets).
+- `mvn -Pdist clean package` — succeeds; `target/dist-lib/` contains all runtime
+  jars including the JavaFX native classifier jars.
+- GUI behaviors (centering, animations, dialogs) are not covered by automated
+  tests — to eyeball them run `cd pdf-utils-app && mvn javafx:run`.
