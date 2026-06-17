@@ -69,4 +69,36 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!--
+          Activated by the release scripts (scripts/build-linux.sh,
+          scripts/build-windows.ps1). Copies all runtime dependencies — including
+          the platform-specific JavaFX native jars resolved for the build OS —
+          into target/dist-lib so jpackage can bundle them on the classpath.
+        -->
+        <profile>
+            <id>dist</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.8.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-runtime-deps</id>
+                                <phase>package</phase>
+                                <goals><goal>copy-dependencies</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dist-lib</outputDirectory>
+                                    <includeScope>runtime</includeScope>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
