@@ -163,6 +163,11 @@
 }
 .btn-secondary:hover { -fx-background-color: -c-border; }
 
+/* Text inputs — keep the placeholder readable on every theme */
+.text-field, .text-area, .combo-box .text-field {
+    -fx-prompt-text-fill: -c-text-muted;
+}
+
 /* ---- Hyperlinks ---- */
 .hyperlink {
     -fx-text-fill: -c-accent;
