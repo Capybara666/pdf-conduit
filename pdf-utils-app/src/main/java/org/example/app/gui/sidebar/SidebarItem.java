@@ -6,6 +6,7 @@ public enum SidebarItem {
     COMPRESS ("⊟", "Compress"),
     ROTATE   ("↻", "Rotate"),
     IMAGES   ("🖼", "Images → PDF"),
+    PIPELINE ("⇄", "Pipeline"),
     WIZARD   ("⚙", "Wizard");
 
     public final String icon;

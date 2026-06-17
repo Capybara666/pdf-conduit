@@ -1,0 +1,216 @@
+package org.example.app.gui.pipeline;
+
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.CubicCurve;
+import org.example.app.pipeline.Connection;
+import org.example.app.pipeline.NodeKind;
+import org.example.app.pipeline.PipelineModel;
+import org.example.app.pipeline.PipelineNode;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+
+/** The editing surface: hosts node cards and connection wires, handles gestures. */
+class PipelineCanvas extends Pane {
+
+    final PipelineModel model;
+    private final Map<String, NodeView> nodeViews = new HashMap<>();
+    private final List<ConnectionView> connViews = new ArrayList<>();
+
+    private PipelineNode selected;
+    private ConnectionView selectedConn;
+    private PipelineNode pendingFrom;
+    private CubicCurve tempCurve;
+    private Consumer<PipelineNode> onSelect = n -> {};
+    private int idSeq = 0;
+
+    PipelineCanvas(PipelineModel model) {
+        this.model = model;
+        getStyleClass().add("pipeline-canvas");
+        setPrefSize(2400, 1500);
+        setFocusTraversable(true);
+        setOnMousePressed(e -> {
+            if (e.getTarget() == this) selectNode(null);
+            requestFocus();
+        });
+        setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.DELETE || e.getCode() == KeyCode.BACK_SPACE) deleteSelected();
+        });
+    }
+
+    void setOnSelect(Consumer<PipelineNode> onSelect) { this.onSelect = onSelect; }
+
+    String newId() { return "n" + (++idSeq); }
+
+    PipelineNode addNode(NodeKind kind, double x, double y) {
+        PipelineNode n = new PipelineNode(newId(), kind, x, y);
+        model.nodes.add(n);
+        NodeView v = new NodeView(n, this);
+        nodeViews.put(n.id, v);
+        getChildren().add(v);
+        selectNode(n);
+        return n;
+    }
+
+    void removeNode(PipelineNode n) {
+        List<ConnectionView> touching = connViews.stream()
+            .filter(cv -> cv.connection.fromNodeId().equals(n.id)
+                       || cv.connection.toNodeId().equals(n.id))
+            .toList();
+        for (ConnectionView cv : touching) {
+            getChildren().remove(cv);
+            connViews.remove(cv);
+        }
+        model.removeNode(n.id);
+        NodeView v = nodeViews.remove(n.id);
+        if (v != null) getChildren().remove(v);
+        if (selected == n) selectNode(null);
+        refreshAll();
+    }
+
+    void selectNode(PipelineNode n) {
+        selected = n;
+        selectedConn = null;
+        nodeViews.values().forEach(v -> v.setSelected(v.node == n));
+        connViews.forEach(cv -> cv.setSelected(false));
+        onSelect.accept(n);
+        requestFocus();
+    }
+
+    private void selectConnection(ConnectionView cv) {
+        selectedConn = cv;
+        selected = null;
+        nodeViews.values().forEach(v -> v.setSelected(false));
+        connViews.forEach(c -> c.setSelected(c == cv));
+        onSelect.accept(null);
+        requestFocus();
+    }
+
+    private void deleteSelected() {
+        if (selected != null) {
+            removeNode(selected);
+        } else if (selectedConn != null) {
+            model.removeConnection(selectedConn.connection);
+            getChildren().remove(selectedConn);
+            connViews.remove(selectedConn);
+            selectedConn = null;
+            refreshAll();
+        }
+    }
+
+    // --- connection gesture ----------------------------------------------
+
+    void beginConnect(PipelineNode from) {
+        pendingFrom = from;
+        tempCurve = new CubicCurve();
+        tempCurve.getStyleClass().add("pipeline-connection-temp");
+        tempCurve.setFill(null);
+        Point2D s = center(nodeViews.get(from.id).outPort());
+        tempCurve.setStartX(s.getX()); tempCurve.setStartY(s.getY());
+        tempCurve.setEndX(s.getX());   tempCurve.setEndY(s.getY());
+        getChildren().add(tempCurve);
+    }
+
+    void updateTempEnd(double sceneX, double sceneY) {
+        if (tempCurve == null) return;
+        Point2D p = sceneToLocal(sceneX, sceneY);
+        tempCurve.setEndX(p.getX()); tempCurve.setEndY(p.getY());
+        double dx = Math.max(40, Math.abs(tempCurve.getEndX() - tempCurve.getStartX()) / 2);
+        tempCurve.setControlX1(tempCurve.getStartX() + dx); tempCurve.setControlY1(tempCurve.getStartY());
+        tempCurve.setControlX2(tempCurve.getEndX() - dx);   tempCurve.setControlY2(tempCurve.getEndY());
+    }
+
+    void finishConnect(PipelineNode to) {
+        if (pendingFrom != null && to != null && canConnect(pendingFrom, to)) {
+            Connection c = new Connection(pendingFrom.id, to.id);
+            model.connections.add(c);
+            addConnectionView(c);
+            refreshAll();
+        }
+        cancelConnect();
+    }
+
+    void cancelConnect() {
+        if (tempCurve != null) {
+            getChildren().remove(tempCurve);
+            tempCurve = null;
+        }
+        pendingFrom = null;
+    }
+
+    private boolean canConnect(PipelineNode from, PipelineNode to) {
+        if (from == to || to.kind.isSource()) return false;
+        if (model.connected(from.id, to.id)) return false;
+        return !reaches(to.id, from.id);   // adding from→to must not close a cycle
+    }
+
+    private boolean reaches(String start, String target) {
+        Deque<String> stack = new ArrayDeque<>();
+        stack.push(start);
+        Set<String> seen = new HashSet<>();
+        while (!stack.isEmpty()) {
+            String cur = stack.pop();
+            if (cur.equals(target)) return true;
+            if (!seen.add(cur)) continue;
+            for (Connection c : model.outgoing(cur)) stack.push(c.toNodeId());
+        }
+        return false;
+    }
+
+    private void addConnectionView(Connection c) {
+        NodeView fv = nodeViews.get(c.fromNodeId());
+        NodeView tv = nodeViews.get(c.toNodeId());
+        ConnectionView cv = new ConnectionView(c, fv, tv, fv.outPort(), tv.inPort(), this);
+        cv.setOnMousePressed(e -> { selectConnection(cv); e.consume(); });
+        connViews.add(cv);
+        getChildren().add(0, cv);   // keep wires behind node cards
+    }
+
+    private Point2D center(Node port) {
+        var b = port.getBoundsInLocal();
+        return sceneToLocal(port.localToScene((b.getMinX() + b.getMaxX()) / 2,
+                                              (b.getMinY() + b.getMaxY()) / 2));
+    }
+
+    void clearAll() {
+        getChildren().clear();
+        nodeViews.clear();
+        connViews.clear();
+        model.nodes.clear();
+        model.connections.clear();
+        selected = null;
+        selectedConn = null;
+        onSelect.accept(null);
+    }
+
+    /** Refresh node summaries, redraw wires, and re-show the inspector (terminal state may change). */
+    void refreshAll() {
+        nodeViews.values().forEach(NodeView::refreshSummary);
+        connViews.forEach(ConnectionView::update);
+        onSelect.accept(selected);
+    }
+
+    /** Lightweight refresh of one node's summary + wires, without re-showing the inspector. */
+    void refreshNode(PipelineNode n) {
+        NodeView v = nodeViews.get(n.id);
+        if (v != null) v.refreshSummary();
+        connViews.forEach(ConnectionView::update);
+    }
+
+    void highlightErrors(Set<String> nodeIds) {
+        nodeViews.values().forEach(v -> v.setError(nodeIds.contains(v.node.id)));
+    }
+
+    Collection<NodeView> views() { return nodeViews.values(); }
+}

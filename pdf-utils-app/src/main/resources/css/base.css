@@ -236,3 +236,65 @@
     -fx-border-color: -c-border;
     -fx-border-width: 1 0 0 0;
 }
+
+/* Pipeline editor */
+.pipeline-toolbar { -fx-alignment: CENTER_LEFT; -fx-spacing: 8; }
+.pipeline-scroll { -fx-background-color: transparent; }
+.pipeline-scroll > .viewport { -fx-background-color: transparent; }
+.pipeline-canvas { -fx-background-color: -c-content-bg; }
+
+.pipeline-node {
+    -fx-background-color: -c-surface;
+    -fx-border-color: -c-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 0 0 8 0;
+    -fx-min-width: 130;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 8, 0.0, 0, 2);
+}
+.pipeline-node.selected { -fx-border-color: -c-accent; -fx-border-width: 2; }
+.pipeline-node.error    { -fx-border-color: -c-danger; -fx-border-width: 2; }
+
+.pipeline-node-header {
+    -fx-padding: 6 8 6 10;
+    -fx-background-color: -c-surface-2;
+    -fx-background-radius: 10 10 0 0;
+    -fx-cursor: move;
+}
+.pipeline-node-title { -fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: -c-text; }
+.pipeline-node-close {
+    -fx-background-color: transparent;
+    -fx-text-fill: -c-danger;
+    -fx-padding: 0 4 0 4;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+}
+.pipeline-node-summary { -fx-padding: 2 10 0 10; -fx-font-size: 11px; -fx-text-fill: -c-text-muted; }
+
+.pipeline-port {
+    -fx-fill: -c-surface;
+    -fx-stroke: -c-accent;
+    -fx-stroke-width: 2;
+    -fx-cursor: hand;
+}
+.pipeline-port-col { -fx-padding: 0 4 0 4; }
+
+.pipeline-connection {
+    -fx-stroke: -c-accent;
+    -fx-stroke-width: 2.5;
+}
+.pipeline-connection.selected { -fx-stroke: -c-danger; }
+.pipeline-connection-temp {
+    -fx-stroke: -c-text-muted;
+    -fx-stroke-width: 2;
+    -fx-stroke-dash-array: 6 6;
+}
+
+.pipeline-inspector {
+    -fx-background-color: -c-surface;
+    -fx-border-color: -c-border;
+    -fx-border-width: 0 0 0 1;
+    -fx-padding: 16;
+}
+.pipeline-inspector-hint { -fx-text-fill: -c-text-muted; -fx-font-size: 11px; }

@@ -97,6 +97,7 @@ public class MainWindow {
             case COMPRESS -> new CompressPanel();
             case ROTATE   -> new RotatePanel();
             case IMAGES   -> new ImagesToPdfPanel();
+            case PIPELINE -> new org.example.app.gui.pipeline.PipelineView();
             case WIZARD   -> new WizardController();
         };
     }
