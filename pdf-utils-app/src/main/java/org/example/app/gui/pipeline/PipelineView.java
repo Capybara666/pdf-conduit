@@ -41,7 +41,9 @@ public class PipelineView extends BorderPane {
 
         setTop(buildHeader());
         ScrollPane scroll = new ScrollPane(canvas);
-        scroll.setPannable(true);
+        // Panning is intentionally off: a pannable ScrollPane steals the mouse
+        // gesture and breaks port-to-port dragging. Navigate with the scrollbars.
+        scroll.setPannable(false);
         scroll.getStyleClass().add("pipeline-scroll");
         setCenter(scroll);
         setRight(inspector);

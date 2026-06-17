@@ -73,23 +73,19 @@ class NodeView extends HBox {
             e.consume();
         });
 
-        // Consume presses on the card/ports so they don't reach the ScrollPane,
-        // which would otherwise start panning instead of selecting/connecting.
-        card.setOnMousePressed(e -> { canvas.selectNode(node); e.consume(); });
-        outPort.setOnMousePressed(javafx.scene.input.MouseEvent::consume);
-        inPort.setOnMousePressed(javafx.scene.input.MouseEvent::consume);
+        card.setOnMousePressed(e -> canvas.selectNode(node));
 
-        // Connection gesture: drag from the output port to an input port.
-        outPort.setOnDragDetected(e -> {
-            outPort.startFullDrag();
-            canvas.beginConnect(node);
+        // Connection gesture: a plain press-drag from the output port. All drag
+        // and release events are delivered to the source port, so on release the
+        // canvas hit-tests which input port is under the cursor. No full-drag /
+        // target handlers, so nothing fights the ScrollPane.
+        outPort.setOnDragDetected(e -> { canvas.beginConnect(node); e.consume(); });
+        outPort.setOnMouseDragged(e -> {
+            canvas.updateTempEnd(e.getSceneX(), e.getSceneY());
             e.consume();
         });
-        outPort.setOnMouseDragged(e -> canvas.updateTempEnd(e.getSceneX(), e.getSceneY()));
-        // Dropping onto an input port completes the connection; consuming the event
-        // stops it from bubbling to the canvas (which would otherwise cancel it).
-        inPort.setOnMouseDragReleased(e -> {
-            canvas.finishConnect(node);
+        outPort.setOnMouseReleased(e -> {
+            canvas.finishConnectAt(e.getSceneX(), e.getSceneY());
             e.consume();
         });
 

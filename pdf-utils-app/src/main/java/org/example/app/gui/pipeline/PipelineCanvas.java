@@ -47,9 +47,6 @@ class PipelineCanvas extends Pane {
         setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.DELETE || e.getCode() == KeyCode.BACK_SPACE) deleteSelected();
         });
-        // A connection drag released anywhere except an input port (which consumes
-        // the event) bubbles up here and is cancelled.
-        setOnMouseDragReleased(e -> cancelConnect());
     }
 
     void setOnSelect(Consumer<PipelineNode> onSelect) { this.onSelect = onSelect; }
@@ -135,14 +132,29 @@ class PipelineCanvas extends Pane {
         tempCurve.setControlX2(tempCurve.getEndX() - dx);   tempCurve.setControlY2(tempCurve.getEndY());
     }
 
-    void finishConnect(PipelineNode to) {
-        if (pendingFrom != null && to != null && canConnect(pendingFrom, to)) {
-            Connection c = new Connection(pendingFrom.id, to.id);
-            model.connections.add(c);
-            addConnectionView(c);
-            refreshAll();
+    /** Completes a pending connection by hit-testing input ports near the cursor. */
+    void finishConnectAt(double sceneX, double sceneY) {
+        try {
+            if (pendingFrom == null) return;
+            PipelineNode best = null;
+            double bestDist = Double.MAX_VALUE;
+            for (NodeView v : nodeViews.values()) {
+                if (v.node.kind.isSource()) continue;          // sources have no input
+                var b = v.inPort().getBoundsInLocal();
+                Point2D c = v.inPort().localToScene((b.getMinX() + b.getMaxX()) / 2,
+                                                    (b.getMinY() + b.getMaxY()) / 2);
+                double d = Math.hypot(c.getX() - sceneX, c.getY() - sceneY);
+                if (d <= 26 && d < bestDist) { bestDist = d; best = v.node; }
+            }
+            if (best != null && canConnect(pendingFrom, best)) {
+                Connection conn = new Connection(pendingFrom.id, best.id);
+                model.connections.add(conn);
+                addConnectionView(conn);
+                refreshAll();
+            }
+        } finally {
+            cancelConnect();
         }
-        cancelConnect();
     }
 
     void cancelConnect() {
