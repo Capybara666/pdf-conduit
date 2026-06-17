@@ -111,3 +111,51 @@ These are observations from the review worth considering later:
   jars including the JavaFX native classifier jars.
 - GUI behaviors (centering, animations, dialogs) are not covered by automated
   tests — to eyeball them run `cd pdf-utils-app && mvn javafx:run`.
+
+---
+
+# Update: responsive layout + batch operations
+
+## Layout reworked so the file list fills the view
+
+The operation panels were a single `VBox`, so when options/output/run controls
+took space the list could collapse to ~one visible row + scrollbar. `BasePanel`
+is now a `BorderPane`:
+
+- **Top (pinned):** title, optional hint, drop zone, file toolbar.
+- **Center (fills):** the file list — takes all remaining height.
+- **Bottom (pinned):** options, output, run/progress.
+
+The same top-pinned / list-fills structure was applied to the wizard's
+**Step 1 (Select files)** and **Step 2 (Arrange)** for consistency.
+
+- Files: `panels/BasePanel.java`, `wizard/Step1SelectFiles.java`,
+  `wizard/Step2ArrangePages.java`
+
+## Batch operations for Extract / Compress / Rotate
+
+These single-input operations previously used only the *first* file in the list.
+They now process **every** file:
+
+- With **one** file selected → output is a single **file** (as before).
+- With **several** files → the output target becomes a **folder**; each input is
+  processed independently and saved as `<name><suffix>.pdf` in that folder
+  (e.g. `report_compressed.pdf`).
+
+To keep the view stable, the output row never changes shape — only its **label**
+("Output file:" ↔ "Output folder:"), prompt, and **browse dialog** (file-save ↔
+directory-chooser) adapt to the file count. The auto-filled path adapts too, and
+is only overwritten while the user hasn't typed their own. Progress shows
+`Compressing 2/5…` during a batch; errors name the offending file.
+
+Implemented generically in `BasePanel` (`supportsBatch()`, `isBatchMode()`,
+`runPerFile(...)`) so the three panels each added only a one-line mode check.
+Merge and Images→PDF are combine-operations (many in → one out) and are
+unaffected.
+
+- Files: `panels/BasePanel.java`, `panels/SplitPanel.java`,
+  `panels/CompressPanel.java`, `panels/RotatePanel.java`
+
+> Note: the CLI subcommands still take a single input file. Extending them with
+> multi-file + `--output-dir` would mirror the GUI batch behavior — a candidate
+> for a follow-up.
