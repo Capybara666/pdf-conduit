@@ -148,11 +148,21 @@ public class MainWindow {
     }
 
     public void show() {
-        stage.show();
-        // Center on the primary monitor (done after show() so the decorated
-        // window size is known).
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        stage.setX(bounds.getMinX() + (bounds.getWidth()  - stage.getWidth())  / 2);
-        stage.setY(bounds.getMinY() + (bounds.getHeight() - stage.getHeight()) / 2);
+        // Position BEFORE show() using the known scene size so the window maps
+        // onto the primary monitor, centered — otherwise the window manager
+        // places it first (often on the wrong monitor) and a post-show move can
+        // be ignored if the decorated size isn't ready yet.
+        stage.setX(bounds.getMinX() + (bounds.getWidth()  - scene.getWidth())  / 2);
+        stage.setY(bounds.getMinY() + (bounds.getHeight() - scene.getHeight()) / 2);
+
+        stage.show();
+
+        // Refine now that the real decorated size is known (skip if not yet valid).
+        double w = stage.getWidth(), h = stage.getHeight();
+        if (!Double.isNaN(w) && !Double.isNaN(h) && w > 0 && h > 0) {
+            stage.setX(bounds.getMinX() + (bounds.getWidth()  - w) / 2);
+            stage.setY(bounds.getMinY() + (bounds.getHeight() - h) / 2);
+        }
     }
 }
