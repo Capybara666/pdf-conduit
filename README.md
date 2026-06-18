@@ -65,7 +65,7 @@ pdf-conduit merge a.pdf b.pdf images/*.png -o combined.pdf
 pdf-conduit split report.pdf --pages 1-3,5,end-2 -o pages.pdf
 pdf-conduit compress scan.pdf --target-size 5MB -o smaller.pdf
 pdf-conduit rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
-pdf-conduit images-to-pdf *.jpg --page-size A4 -o album.pdf
+pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf   # alias of images-to-pdf
 ```
 
 - **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).

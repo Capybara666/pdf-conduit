@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-@Command(name = "images-to-pdf",
+@Command(name = "images-to-pdf", aliases = {"to-pdf"},
          description = "Convert image files (PNG, JPG, WEBP, TIFF, BMP) to a PDF.")
 public class ImagesToPdfCommand implements Callable<Integer> {
 
