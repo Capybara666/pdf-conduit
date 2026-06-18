@@ -35,6 +35,8 @@ class NodeView extends HBox {
         VBox rightCol = new VBox(outPort);
         rightCol.setAlignment(Pos.CENTER);
 
+        Region titleIcon = org.example.app.gui.icon.Icons.of(node.kind, 14);
+        titleIcon.getStyleClass().add("pipeline-node-title-icon");
         Label title = new Label(I18n.t("kind." + node.kind.name()));
         title.getStyleClass().add("pipeline-node-title");
         Button close = new Button("✕");
@@ -42,7 +44,7 @@ class NodeView extends HBox {
         close.setOnAction(e -> canvas.removeNode(node));
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        HBox header = new HBox(6, title, spacer, close);
+        HBox header = new HBox(6, titleIcon, title, spacer, close);
         header.getStyleClass().add("pipeline-node-header");
         header.setAlignment(Pos.CENTER_LEFT);
 

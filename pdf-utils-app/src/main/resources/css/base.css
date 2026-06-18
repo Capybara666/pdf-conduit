@@ -82,6 +82,19 @@
     -fx-text-fill: -c-sidebar-muted;
 }
 
+/* ---- Line-art icons (themeable, match the logo) ---- */
+.svg-icon {
+    -fx-fill: transparent;
+    -fx-stroke: -c-text;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
+.sidebar-item .svg-icon        { -fx-stroke: -c-sidebar-fg; }
+.sidebar-item.active .svg-icon { -fx-stroke: -c-on-accent; }
+.pipeline-chip .svg-icon       { -fx-stroke: -c-text; }
+.pipeline-node-title-icon      { -fx-stroke: -c-text; }
+
 /* ---- Content panels ---- */
 .content-area { -fx-background-color: -c-content-bg; }
 .panel-root { -fx-padding: 22; -fx-spacing: 14; }

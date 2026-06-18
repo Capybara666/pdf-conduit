@@ -53,7 +53,9 @@ public class SidebarController extends VBox {
     }
 
     private Button createItemButton(SidebarItem item, Consumer<SidebarItem> onSelect) {
-        Button btn = new Button(item.icon + "  " + I18n.t("sidebar." + item.name()));
+        Button btn = new Button(I18n.t("sidebar." + item.name()));
+        btn.setGraphic(org.example.app.gui.icon.Icons.of(item, 18));
+        btn.setGraphicTextGap(10);
         btn.getStyleClass().add("sidebar-item");
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setOnAction(e -> select(item, onSelect));

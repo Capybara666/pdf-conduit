@@ -91,7 +91,9 @@ public class PipelineView extends BorderPane {
     }
 
     private Label chip(NodeKind kind) {
-        Label chip = new Label(glyph(kind) + "  " + I18n.t("kind." + kind.name()));
+        Label chip = new Label(I18n.t("kind." + kind.name()));
+        chip.setGraphic(org.example.app.gui.icon.Icons.of(kind, 16));
+        chip.setGraphicTextGap(8);
         chip.getStyleClass().add("pipeline-chip");
         chip.setOnDragDetected(e -> {
             Dragboard db = chip.startDragAndDrop(TransferMode.COPY);
@@ -101,17 +103,6 @@ public class PipelineView extends BorderPane {
             e.consume();
         });
         return chip;
-    }
-
-    private String glyph(NodeKind kind) {
-        return switch (kind) {
-            case SOURCE -> "⊞";
-            case MERGE -> "⊕";
-            case IMAGES_TO_PDF -> "🖼";
-            case EXTRACT -> "✂";
-            case COMPRESS -> "⊟";
-            case ROTATE -> "↻";
-        };
     }
 
     /** Accept palette chips dropped onto the canvas; create the node at the drop point. */
