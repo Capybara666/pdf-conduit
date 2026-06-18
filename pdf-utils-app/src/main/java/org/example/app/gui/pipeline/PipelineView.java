@@ -3,9 +3,9 @@ package org.example.app.gui.pipeline;
 import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -71,13 +71,15 @@ public class PipelineView extends BorderPane {
         palette.getStyleClass().add("pipeline-palette");
         for (NodeKind kind : PALETTE) palette.getChildren().add(chip(kind));
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
         Button clear = new Button(I18n.t("pipeline.clear"));
         clear.getStyleClass().add("btn-secondary");
+        clear.setMinWidth(Region.USE_PREF_SIZE);
         clear.setOnAction(e -> { canvas.clearAll(); banner.setVisible(false); status.setText(""); });
 
-        HBox paletteRow = new HBox(8, palette, spacer, clear);
+        // Keep Clear next to the palette (left) so it doesn't track the canvas
+        // scrollbar at the right edge as the window resizes.
+        Separator sep = new Separator(javafx.geometry.Orientation.VERTICAL);
+        HBox paletteRow = new HBox(8, palette, sep, clear);
         paletteRow.getStyleClass().add("pipeline-toolbar");
 
         banner.getStyleClass().add("error-banner");
@@ -146,6 +148,7 @@ public class PipelineView extends BorderPane {
 
     private HBox buildBottom() {
         runBtn.getStyleClass().add("btn-primary");
+        runBtn.setMinWidth(Region.USE_PREF_SIZE);   // never truncate the Run label
         runBtn.setOnAction(e -> run());
         resultLinks.setVisible(false);
         resultLinks.managedProperty().bind(resultLinks.visibleProperty());
@@ -208,19 +211,24 @@ public class PipelineView extends BorderPane {
         if (saved.isEmpty()) { resultLinks.setVisible(false); return; }
         if (saved.size() == 1) {
             Path file = saved.get(0);
-            Hyperlink openFile = new Hyperlink(I18n.t("link.openfile"));
-            openFile.setOnAction(ev -> FileOpener.open(file));
-            Hyperlink openFolder = new Hyperlink(I18n.t("link.openfolder"));
-            openFolder.setOnAction(ev -> FileOpener.open(file.getParent()));
-            resultLinks.getChildren().addAll(openFile, openFolder);
+            resultLinks.getChildren().addAll(
+                resultLink(I18n.t("link.openfile"), () -> FileOpener.open(file)),
+                resultLink(I18n.t("link.openfolder"), () -> FileOpener.open(file.getParent())));
         } else {
             List<Path> folders = saved.stream().map(Path::getParent)
                 .filter(java.util.Objects::nonNull).distinct().toList();
-            Hyperlink openFolder = new Hyperlink(I18n.t("link.openfolder"));
-            openFolder.setOnAction(ev -> folders.forEach(FileOpener::open));
-            resultLinks.getChildren().add(openFolder);
+            resultLinks.getChildren().add(
+                resultLink(I18n.t("link.openfolder"), () -> folders.forEach(FileOpener::open)));
         }
         resultLinks.setVisible(true);
+    }
+
+    private Button resultLink(String text, Runnable action) {
+        Button b = new Button(text);
+        b.getStyleClass().add("result-link");
+        b.setMinWidth(Region.USE_PREF_SIZE);
+        b.setOnAction(e -> action.run());
+        return b;
     }
 
     private Stage window() {

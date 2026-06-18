@@ -21,8 +21,8 @@ public class ProgressPanel extends VBox {
     private final Label errorBanner;
     private final Label warnBanner;
     private final HBox resultLinks;
-    private final Hyperlink openFile;
-    private final Hyperlink openFolder;
+    private final Button openFile;
+    private final Button openFolder;
 
     public ProgressPanel(String runLabel) {
         setSpacing(8);
@@ -54,9 +54,12 @@ public class ProgressPanel extends VBox {
         warnBanner.setVisible(false);
         warnBanner.managedProperty().bind(warnBanner.visibleProperty());
 
-        openFile   = new Hyperlink(I18n.t("link.openfile"));
-        openFolder = new Hyperlink(I18n.t("link.openfolder"));
-        resultLinks = new HBox(12, openFile, openFolder);
+        openFile   = new Button(I18n.t("link.openfile"));
+        openFolder = new Button(I18n.t("link.openfolder"));
+        openFile.getStyleClass().add("result-link");
+        openFolder.getStyleClass().add("result-link");
+        resultLinks = new HBox(10, openFile, openFolder);
+        resultLinks.getStyleClass().add("result-links");
         resultLinks.setVisible(false);
         resultLinks.managedProperty().bind(resultLinks.visibleProperty());
 

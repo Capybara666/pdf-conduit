@@ -10,6 +10,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -60,6 +61,11 @@ class NodeInspector extends HBox {
         if (canvas.model.isTerminal(node)) {
             getChildren().add(new Separator(javafx.geometry.Orientation.VERTICAL));
             buildDestination(node);
+        }
+
+        // Keep labels/buttons at full width so the bottom bar never ellipsizes them.
+        for (javafx.scene.Node c : getChildren()) {
+            if (c instanceof Label || c instanceof Button) ((Region) c).setMinWidth(Region.USE_PREF_SIZE);
         }
     }
 
@@ -178,6 +184,7 @@ class NodeInspector extends HBox {
     private Button secondary(String text) {
         Button b = new Button(text);
         b.getStyleClass().add("btn-secondary");
+        b.setMinWidth(Region.USE_PREF_SIZE);
         return b;
     }
 

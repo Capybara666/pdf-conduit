@@ -181,6 +181,18 @@
     -fx-prompt-text-fill: -c-text-muted;
 }
 
+/* ---- Result links (open file / folder) ---- */
+.result-links { -fx-alignment: CENTER_LEFT; }
+.result-link {
+    -fx-background-color: -c-surface-2;
+    -fx-text-fill: -c-accent;
+    -fx-font-size: 11.5px;
+    -fx-padding: 5 12 5 12;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.result-link:hover { -fx-background-color: -c-border; }
+
 /* ---- Hyperlinks ---- */
 .hyperlink {
     -fx-text-fill: -c-accent;
