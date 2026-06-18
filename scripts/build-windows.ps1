@@ -48,7 +48,7 @@ if ($LASTEXITCODE -ne 0) { throw "jpackage app-image failed." }
 Compress-Archive -Path "$Out\$AppName" -DestinationPath "$Out\$AppName-$AppVersion-windows.zip" -Force
 Write-Host "    portable app-image: $Out\$AppName\  (zipped: $Out\$AppName-$AppVersion-windows.zip)"
 
-Write-Host "==> [4/4] Attempting .exe installer (optional, needs WiX Toolset)"
+Write-Host "==> [4/4] Building .exe installer (auto-skipped if the WiX Toolset is missing)"
 jpackage `
   --type exe `
   --name $AppName `

@@ -45,7 +45,7 @@ jpackage \
 ( cd "${OUT}" && zip -qr "${APP_NAME}-${APP_VERSION}-linux.zip" "${APP_NAME}" )
 echo "    portable app-image: ${OUT}/${APP_NAME}/  (zipped: ${OUT}/${APP_NAME}-${APP_VERSION}-linux.zip)"
 
-echo "==> [4/4] Attempting .deb installer (optional)"
+echo "==> [4/4] Building .deb installer (auto-skipped if fakeroot/dpkg are missing)"
 if jpackage \
   --type deb \
   --name "${APP_NAME}" \
