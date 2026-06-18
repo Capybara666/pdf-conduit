@@ -23,6 +23,7 @@ import org.example.app.pipeline.PipelineNode;
 import org.example.app.pipeline.PipelineValidator;
 import org.example.app.pipeline.ValidationError;
 import org.example.app.gui.util.FileOpener;
+import org.example.app.gui.util.Sfx;
 import org.example.app.i18n.I18n;
 
 import java.io.File;
@@ -193,6 +194,7 @@ public class PipelineView extends BorderPane {
                 .flatMap(List::stream).toList();
             status.setText(I18n.t("pipeline.done", saved.size()));
             showResultLinks(saved);
+            Sfx.playDone();
         });
         task.setOnFailed(e -> {
             status.textProperty().unbind();
@@ -202,6 +204,7 @@ public class PipelineView extends BorderPane {
             Throwable ex = task.getException();
             banner.setText("⚠  " + (ex == null ? I18n.t("pipeline.fail") : ex.getMessage()));
             banner.setVisible(true);
+            Sfx.playError();
         });
         Thread t = new Thread(task, "pipeline-run");
         t.setDaemon(true);

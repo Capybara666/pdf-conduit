@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.example.app.gui.Animations;
 import org.example.app.gui.util.FileOpener;
+import org.example.app.gui.util.Sfx;
 import org.example.app.i18n.I18n;
 
 import java.nio.file.Path;
@@ -107,6 +108,7 @@ public class ProgressPanel extends VBox {
             Animations.fadeIn(resultLinks);
             openFile.setOnAction(ev -> FileOpener.open(expectedOutput));
             openFolder.setOnAction(ev -> FileOpener.open(expectedOutput.getParent()));
+            Sfx.playDone();
         }));
 
         task.setOnFailed(e -> Platform.runLater(() -> {
@@ -116,6 +118,7 @@ public class ProgressPanel extends VBox {
             statusLabel.setText("");
             errorBanner.setText(task.getException().getMessage());
             errorBanner.setVisible(true);
+            Sfx.playError();
         }));
 
         Thread t = new Thread(task);

@@ -14,6 +14,7 @@ import org.example.app.gui.panels.*;
 import org.example.app.gui.sidebar.SidebarController;
 import org.example.app.gui.sidebar.SidebarItem;
 import org.example.app.gui.wizard.WizardController;
+import org.example.app.gui.util.Sfx;
 import org.example.app.i18n.I18n;
 
 import java.util.EnumMap;
@@ -93,12 +94,18 @@ public class MainWindow {
             langMenu.getItems().add(item);
         }
 
+        Menu soundMenu = new Menu(I18n.t("menu.sound"));
+        CheckMenuItem soundToggle = new CheckMenuItem(I18n.t("menu.soundeffects"));
+        soundToggle.setSelected(Sfx.isEnabled());
+        soundToggle.setOnAction(e -> Sfx.setEnabled(soundToggle.isSelected()));
+        soundMenu.getItems().add(soundToggle);
+
         Menu helpMenu = new Menu(I18n.t("menu.help"));
         MenuItem about = new MenuItem(I18n.t("menu.about"));
         about.setOnAction(e -> showAbout());
         helpMenu.getItems().add(about);
 
-        menuBar.getMenus().addAll(themeMenu, langMenu, helpMenu);
+        menuBar.getMenus().addAll(themeMenu, langMenu, soundMenu, helpMenu);
         return menuBar;
     }
 
