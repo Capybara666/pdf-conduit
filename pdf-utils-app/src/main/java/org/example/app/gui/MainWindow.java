@@ -1,5 +1,6 @@
 package org.example.app.gui;
 
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -8,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.robot.Robot;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.example.app.gui.panels.*;
@@ -148,11 +150,11 @@ public class MainWindow {
     }
 
     public void show() {
-        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        // Position BEFORE show() using the known scene size so the window maps
-        // onto the primary monitor, centered — otherwise the window manager
-        // places it first (often on the wrong monitor) and a post-show move can
-        // be ignored if the decorated size isn't ready yet.
+        // Open on the monitor the cursor is on (the one the user is using),
+        // centered. Position BEFORE show() with the known scene size so the
+        // window maps onto that monitor directly, rather than being placed by
+        // the window manager first and moved after.
+        Rectangle2D bounds = cursorScreen().getVisualBounds();
         stage.setX(bounds.getMinX() + (bounds.getWidth()  - scene.getWidth())  / 2);
         stage.setY(bounds.getMinY() + (bounds.getHeight() - scene.getHeight()) / 2);
 
@@ -164,5 +166,15 @@ public class MainWindow {
             stage.setX(bounds.getMinX() + (bounds.getWidth()  - w) / 2);
             stage.setY(bounds.getMinY() + (bounds.getHeight() - h) / 2);
         }
+    }
+
+    /** The screen the mouse pointer is currently on, falling back to primary. */
+    private Screen cursorScreen() {
+        try {
+            Point2D p = new Robot().getMousePosition();
+            var screens = Screen.getScreensForRectangle(p.getX(), p.getY(), 1, 1);
+            if (!screens.isEmpty()) return screens.get(0);
+        } catch (Exception ignored) {}
+        return Screen.getPrimary();
     }
 }
