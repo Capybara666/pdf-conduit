@@ -63,9 +63,9 @@ class ConnectionView extends Group {
         // grace period so moving from the cable to the (offset) button doesn't
         // make it vanish mid-reach.
         hideDelay.setOnFinished(e -> deleteBtn.setVisible(false));
-        hit.setOnMouseEntered(e -> showDelete());
-        hit.setOnMouseExited(e -> hideDelay.playFromStart());
-        deleteBtn.setOnMouseEntered(e -> { showDelete(); setPendingDelete(true); });
+        hit.setOnMouseEntered(e -> { showDelete(); setWireHover(true); });
+        hit.setOnMouseExited(e -> { setWireHover(false); hideDelay.playFromStart(); });
+        deleteBtn.setOnMouseEntered(e -> { showDelete(); setWireHover(false); setPendingDelete(true); });
         deleteBtn.setOnMouseExited(e -> { setPendingDelete(false); hideDelay.playFromStart(); });
         deleteBtn.setOnMouseClicked(e -> { onDelete.run(); e.consume(); });
 
@@ -85,13 +85,23 @@ class ConnectionView extends Group {
     private void showDelete() {
         hideDelay.stop();
         deleteBtn.setVisible(true);
+        deleteBtn.applyCss();     // force skin/size before measuring (first hover)
+        update();                 // ensure the button sits on the (current) cable
+    }
+
+    private void setWireHover(boolean on) {
+        toggleWireClass("hover", on);
     }
 
     private void setPendingDelete(boolean pending) {
-        if (pending) {
-            if (!wire.getStyleClass().contains("pending-delete")) wire.getStyleClass().add("pending-delete");
+        toggleWireClass("pending-delete", pending);
+    }
+
+    private void toggleWireClass(String styleClass, boolean on) {
+        if (on) {
+            if (!wire.getStyleClass().contains(styleClass)) wire.getStyleClass().add(styleClass);
         } else {
-            wire.getStyleClass().remove("pending-delete");
+            wire.getStyleClass().remove(styleClass);
         }
     }
 
