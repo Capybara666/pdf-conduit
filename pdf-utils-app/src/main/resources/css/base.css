@@ -306,6 +306,7 @@
     -fx-stroke: -c-accent;
     -fx-stroke-width: 2.5;
 }
+.pipeline-connection.hover    { -fx-stroke: -c-accent-hover; -fx-stroke-width: 3.5; }
 .pipeline-connection.selected { -fx-stroke: -c-danger; }
 .pipeline-connection-temp {
     -fx-stroke: -c-text-muted;

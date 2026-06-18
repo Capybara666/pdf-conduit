@@ -2,9 +2,12 @@ package org.example.app.gui.pipeline;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.CubicCurve;
+import org.example.app.i18n.I18n;
 import org.example.app.pipeline.Connection;
 import org.example.app.pipeline.NodeKind;
 import org.example.app.pipeline.PipelineModel;
@@ -102,12 +105,16 @@ class PipelineCanvas extends Pane {
         if (selected != null) {
             removeNode(selected);
         } else if (selectedConn != null) {
-            model.removeConnection(selectedConn.connection);
-            getChildren().remove(selectedConn);
-            connViews.remove(selectedConn);
-            selectedConn = null;
-            refreshAll();
+            removeConnectionView(selectedConn);
         }
+    }
+
+    void removeConnectionView(ConnectionView cv) {
+        model.removeConnection(cv.connection);
+        getChildren().remove(cv);
+        connViews.remove(cv);
+        if (selectedConn == cv) selectedConn = null;
+        refreshAll();
     }
 
     // --- connection gesture ----------------------------------------------
@@ -222,7 +229,23 @@ class PipelineCanvas extends Pane {
         NodeView fv = nodeViews.get(c.fromNodeId());
         NodeView tv = nodeViews.get(c.toNodeId());
         ConnectionView cv = new ConnectionView(c, fv, tv, fv.outPort(), tv.inPort(), this);
-        cv.setOnMousePressed(e -> { selectConnection(cv); e.consume(); });
+
+        ContextMenu menu = new ContextMenu();
+        MenuItem delete = new MenuItem(I18n.t("pipeline.connection.delete"));
+        delete.setOnAction(ev -> removeConnectionView(cv));
+        menu.getItems().add(delete);
+
+        cv.setOnMousePressed(e -> {
+            if (e.isSecondaryButtonDown()) {
+                selectConnection(cv);
+                menu.show(cv, e.getScreenX(), e.getScreenY());
+            } else if (e.getClickCount() == 2) {
+                removeConnectionView(cv);          // double-click to delete
+            } else {
+                selectConnection(cv);
+            }
+            e.consume();
+        });
         connViews.add(cv);
         getChildren().add(0, cv);   // keep wires behind node cards
     }
