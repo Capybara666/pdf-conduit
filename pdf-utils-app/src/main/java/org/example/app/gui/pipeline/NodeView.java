@@ -114,11 +114,20 @@ class NodeView extends HBox {
 
     /** Highlights the input port to signal a connection that would be rejected. */
     void setInPortInvalid(boolean invalid) {
-        if (invalid) {
-            if (!inPort.getStyleClass().contains("pipeline-port-invalid"))
-                inPort.getStyleClass().add("pipeline-port-invalid");
+        togglePortClass("pipeline-port-invalid", invalid);
+    }
+
+    /** Highlights the input port to signal a connection that is allowed. */
+    void setInPortValid(boolean valid) {
+        togglePortClass("pipeline-port-valid", valid);
+    }
+
+    private void togglePortClass(String styleClass, boolean on) {
+        if (on) {
+            if (!inPort.getStyleClass().contains(styleClass))
+                inPort.getStyleClass().add(styleClass);
         } else {
-            inPort.getStyleClass().remove("pipeline-port-invalid");
+            inPort.getStyleClass().remove(styleClass);
         }
     }
 

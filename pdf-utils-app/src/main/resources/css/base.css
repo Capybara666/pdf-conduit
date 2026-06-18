@@ -313,9 +313,14 @@
     -fx-stroke-dash-array: 6 6;
 }
 .pipeline-connection-temp.pipeline-wire-invalid { -fx-stroke: -c-danger; }
+.pipeline-connection-temp.pipeline-wire-valid   { -fx-stroke: -c-success; }
 .pipeline-port.pipeline-port-invalid {
     -fx-fill: -c-danger;
     -fx-stroke: -c-danger;
+}
+.pipeline-port.pipeline-port-valid {
+    -fx-fill: -c-success;
+    -fx-stroke: -c-success;
 }
 
 .pipeline-palette { -fx-spacing: 8; -fx-alignment: CENTER_LEFT; }

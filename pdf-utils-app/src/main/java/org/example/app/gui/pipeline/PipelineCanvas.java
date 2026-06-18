@@ -132,11 +132,13 @@ class PipelineCanvas extends Pane {
         tempCurve.setControlX1(tempCurve.getStartX() + dx); tempCurve.setControlY1(tempCurve.getStartY());
         tempCurve.setControlX2(tempCurve.getEndX() - dx);   tempCurve.setControlY2(tempCurve.getEndY());
 
-        // Live feedback: if the cursor is over an input port that we could not
-        // legally connect to, mark the wire and that port as invalid.
+        // Live feedback: while over an input port, colour the wire and that port
+        // green when the connection is allowed, red when it would be rejected.
         NodeView target = nearestInputTarget(sceneX, sceneY);
-        boolean invalid = target != null && !canConnect(pendingFrom, target.node);
-        setHoverTarget(invalid ? target : null);
+        boolean valid = target != null && canConnect(pendingFrom, target.node);
+        boolean invalid = target != null && !valid;
+        setHoverTarget(target, valid);
+        toggleClass(tempCurve.getStyleClass(), "pipeline-wire-valid", valid);
         toggleClass(tempCurve.getStyleClass(), "pipeline-wire-invalid", invalid);
     }
 
@@ -171,11 +173,16 @@ class PipelineCanvas extends Pane {
         return best;
     }
 
-    private void setHoverTarget(NodeView target) {
-        if (hoverTarget == target) return;
-        if (hoverTarget != null) hoverTarget.setInPortInvalid(false);
+    private void setHoverTarget(NodeView target, boolean valid) {
+        if (hoverTarget != null && hoverTarget != target) {
+            hoverTarget.setInPortValid(false);
+            hoverTarget.setInPortInvalid(false);
+        }
         hoverTarget = target;
-        if (hoverTarget != null) hoverTarget.setInPortInvalid(true);
+        if (hoverTarget != null) {
+            hoverTarget.setInPortValid(valid);
+            hoverTarget.setInPortInvalid(!valid);
+        }
     }
 
     private static void toggleClass(List<String> classes, String name, boolean on) {
@@ -188,7 +195,7 @@ class PipelineCanvas extends Pane {
             getChildren().remove(tempCurve);
             tempCurve = null;
         }
-        setHoverTarget(null);
+        setHoverTarget(null, false);
         pendingFrom = null;
     }
 
