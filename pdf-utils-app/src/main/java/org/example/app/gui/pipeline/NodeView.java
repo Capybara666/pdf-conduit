@@ -120,8 +120,7 @@ class NodeView extends HBox {
 
     void refreshSummary() {
         summary.setText(switch (node.kind) {
-            case SOURCE -> node.files.isEmpty() ? I18n.t("pipeline.summary.nofiles")
-                : I18n.t("pipeline.summary.files", node.files.size());
+            case SOURCE -> sourceSummary();
             case EXTRACT -> I18n.t("pipeline.summary.pages",
                 node.pages.isBlank() ? I18n.t("pipeline.summary.all") : node.pages);
             case ROTATE -> I18n.t("pipeline.summary.pages",
@@ -131,5 +130,20 @@ class NodeView extends HBox {
             case IMAGES_TO_PDF -> I18n.t("pipeline.node.pagesize") + " " + node.pageSize;
             case MERGE -> I18n.t("pipeline.summary.combine");
         });
+    }
+
+    /** SOURCE summary: lists the first few file names, then "+N more". */
+    private String sourceSummary() {
+        if (node.files.isEmpty()) return I18n.t("pipeline.summary.nofiles");
+        int max = 5;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < Math.min(max, node.files.size()); i++) {
+            if (i > 0) sb.append('\n');
+            sb.append(node.files.get(i).getFileName());
+        }
+        if (node.files.size() > max) {
+            sb.append('\n').append(I18n.t("pipeline.more", node.files.size() - max).trim());
+        }
+        return sb.toString();
     }
 }

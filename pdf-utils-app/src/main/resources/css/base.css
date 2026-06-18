@@ -259,6 +259,7 @@
     -fx-background-radius: 10;
     -fx-padding: 0 0 8 0;
     -fx-min-width: 130;
+    -fx-max-width: 220;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 8, 0.0, 0, 2);
 }
 .pipeline-node.selected { -fx-border-color: -c-accent; -fx-border-width: 2; }
@@ -278,7 +279,7 @@
     -fx-cursor: hand;
     -fx-font-size: 11px;
 }
-.pipeline-node-summary { -fx-padding: 2 10 0 10; -fx-font-size: 11px; -fx-text-fill: -c-text-muted; }
+.pipeline-node-summary { -fx-padding: 2 10 0 10; -fx-font-size: 10.5px; -fx-text-fill: -c-text-muted; }
 
 .pipeline-port {
     -fx-fill: -c-surface;
