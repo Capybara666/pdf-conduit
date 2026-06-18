@@ -3,6 +3,7 @@ package org.example.app.gui.pipeline;
 import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ClipboardContent;
@@ -21,9 +22,11 @@ import org.example.app.pipeline.PipelineModel;
 import org.example.app.pipeline.PipelineNode;
 import org.example.app.pipeline.PipelineValidator;
 import org.example.app.pipeline.ValidationError;
+import org.example.app.gui.util.FileOpener;
 import org.example.app.i18n.I18n;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +43,7 @@ public class PipelineView extends BorderPane {
     private final NodeInspector inspector = new NodeInspector(canvas);
     private final Label status = new Label();
     private final Label banner = new Label();
+    private final HBox resultLinks = new HBox(12);
     private final Button runBtn = new Button(I18n.t("pipeline.run"));
 
     public PipelineView() {
@@ -151,8 +155,10 @@ public class PipelineView extends BorderPane {
     private HBox buildBottom() {
         runBtn.getStyleClass().add("btn-primary");
         runBtn.setOnAction(e -> run());
+        resultLinks.setVisible(false);
+        resultLinks.managedProperty().bind(resultLinks.visibleProperty());
         HBox.setHgrow(inspector, Priority.ALWAYS);
-        HBox bar = new HBox(12, inspector, status, runBtn);
+        HBox bar = new HBox(12, inspector, status, resultLinks, runBtn);
         bar.getStyleClass().add("pipeline-bottom-bar");
         return bar;
     }
@@ -178,17 +184,21 @@ public class PipelineView extends BorderPane {
             }
         };
         runBtn.setDisable(true);
+        resultLinks.setVisible(false);
         status.textProperty().bind(task.messageProperty());
         task.setOnSucceeded(e -> {
             status.textProperty().unbind();
             runBtn.setDisable(false);
-            int n = task.getValue().savedByNode().values().stream().mapToInt(List::size).sum();
-            status.setText(I18n.t("pipeline.done", n));
+            List<Path> saved = task.getValue().savedByNode().values().stream()
+                .flatMap(List::stream).toList();
+            status.setText(I18n.t("pipeline.done", saved.size()));
+            showResultLinks(saved);
         });
         task.setOnFailed(e -> {
             status.textProperty().unbind();
             runBtn.setDisable(false);
             status.setText("");
+            resultLinks.setVisible(false);
             Throwable ex = task.getException();
             banner.setText("⚠  " + (ex == null ? I18n.t("pipeline.fail") : ex.getMessage()));
             banner.setVisible(true);
@@ -196,6 +206,27 @@ public class PipelineView extends BorderPane {
         Thread t = new Thread(task, "pipeline-run");
         t.setDaemon(true);
         t.start();
+    }
+
+    /** After a successful run, offer links to open the produced files / folders. */
+    private void showResultLinks(List<Path> saved) {
+        resultLinks.getChildren().clear();
+        if (saved.isEmpty()) { resultLinks.setVisible(false); return; }
+        if (saved.size() == 1) {
+            Path file = saved.get(0);
+            Hyperlink openFile = new Hyperlink(I18n.t("link.openfile"));
+            openFile.setOnAction(ev -> FileOpener.open(file));
+            Hyperlink openFolder = new Hyperlink(I18n.t("link.openfolder"));
+            openFolder.setOnAction(ev -> FileOpener.open(file.getParent()));
+            resultLinks.getChildren().addAll(openFile, openFolder);
+        } else {
+            List<Path> folders = saved.stream().map(Path::getParent)
+                .filter(java.util.Objects::nonNull).distinct().toList();
+            Hyperlink openFolder = new Hyperlink(I18n.t("link.openfolder"));
+            openFolder.setOnAction(ev -> folders.forEach(FileOpener::open));
+            resultLinks.getChildren().add(openFolder);
+        }
+        resultLinks.setVisible(true);
     }
 
     private Stage window() {

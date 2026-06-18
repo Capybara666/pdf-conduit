@@ -6,11 +6,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.example.app.gui.Animations;
+import org.example.app.gui.util.FileOpener;
 import org.example.app.i18n.I18n;
 
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.function.Function;
 
 public class ProgressPanel extends VBox {
@@ -106,8 +105,8 @@ public class ProgressPanel extends VBox {
             }
             resultLinks.setVisible(true);
             Animations.fadeIn(resultLinks);
-            openFile.setOnAction(ev -> openPath(expectedOutput));
-            openFolder.setOnAction(ev -> openPath(expectedOutput.getParent()));
+            openFile.setOnAction(ev -> FileOpener.open(expectedOutput));
+            openFolder.setOnAction(ev -> FileOpener.open(expectedOutput.getParent()));
         }));
 
         task.setOnFailed(e -> Platform.runLater(() -> {
@@ -122,24 +121,5 @@ public class ProgressPanel extends VBox {
         Thread t = new Thread(task);
         t.setDaemon(true);
         t.start();
-    }
-
-    // Use the OS file opener via ProcessBuilder rather than java.awt.Desktop:
-    // mixing AWT with JavaFX on Linux/GTK installs conflicting X11 error handlers
-    // ("XSetErrorHandler() called with a GDK error trap pushed") and crashes the app.
-    private void openPath(Path path) {
-        if (path == null) return;
-        String os = System.getProperty("os.name", "").toLowerCase();
-        List<String> command;
-        if (os.contains("mac")) {
-            command = List.of("open", path.toString());
-        } else if (os.contains("win")) {
-            command = List.of("cmd", "/c", "start", "", path.toString());
-        } else {
-            command = List.of("xdg-open", path.toString());
-        }
-        try {
-            new ProcessBuilder(command).start();
-        } catch (IOException ignored) {}
     }
 }
