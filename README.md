@@ -55,6 +55,10 @@ cd pdf-utils-app && mvn javafx:run
 Launching with no arguments opens the GUI; launching with arguments runs the
 CLI (see below). The window opens centered on your primary monitor.
 
+In IntelliJ IDEA, a shared **PdfUtils GUI** run configuration is checked into
+`.idea/runConfigurations/` and appears automatically after importing the
+project. The Maven `javafx:run` command above works regardless of IDE.
+
 ## CLI
 
 The application entry point dispatches to the CLI when given arguments. Once you
