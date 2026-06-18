@@ -14,6 +14,7 @@ import org.example.app.gui.panels.*;
 import org.example.app.gui.sidebar.SidebarController;
 import org.example.app.gui.sidebar.SidebarItem;
 import org.example.app.gui.wizard.WizardController;
+import org.example.app.i18n.I18n;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -21,13 +22,32 @@ import java.util.Map;
 public class MainWindow {
 
     private final Stage stage;
-    private final SidebarController sidebar;
-    private final StackPane contentArea;
+    private final Scene scene;
     private final Map<SidebarItem, Node> panels = new EnumMap<>(SidebarItem.class);
+
+    private SidebarController sidebar;
+    private StackPane contentArea;
+    private SidebarItem currentItem = SidebarItem.MERGE;
 
     public MainWindow(Stage stage) {
         this.stage = stage;
 
+        scene = new Scene(new BorderPane(), 900, 660);
+        ThemeManager.applyStored(scene);
+
+        stage.setTitle("PDF Conduit");
+        stage.setMinWidth(640);
+        stage.setMinHeight(400);
+        stage.setScene(scene);
+        applyIcons();
+
+        buildContent();
+        I18n.addListener(this::rebuild);
+        sidebar.select(currentItem, this::showPanel);
+    }
+
+    /** Builds (or rebuilds) the sidebar, menu bar and content area into the scene. */
+    private void buildContent() {
         contentArea = new StackPane();
         contentArea.getStyleClass().add("content-area");
 
@@ -36,29 +56,25 @@ public class MainWindow {
         BorderPane root = new BorderPane();
         root.setLeft(sidebar);
         root.setCenter(contentArea);
-
-        Scene scene = new Scene(root, 900, 660);
-        ThemeManager.applyStored(scene);
-
-        buildMenuBar(scene, root);
-
-        stage.setTitle("PDF Conduit");
-        stage.setMinWidth(640);
-        stage.setMinHeight(400);
-        stage.setScene(scene);
-        applyIcons();
-
-        sidebar.select(SidebarItem.MERGE, this::showPanel);
+        root.setTop(buildMenuBar());
+        scene.setRoot(root);
     }
 
-    private void buildMenuBar(Scene scene, BorderPane root) {
-        MenuBar menuBar = new MenuBar();
-        Menu themeMenu = new Menu("Theme");
-        ToggleGroup group = new ToggleGroup();
+    /** Rebuilds the whole UI in the new language (panels are recreated lazily). */
+    private void rebuild() {
+        panels.clear();
+        buildContent();
+        sidebar.select(currentItem, this::showPanel);
+    }
 
+    private MenuBar buildMenuBar() {
+        MenuBar menuBar = new MenuBar();
+
+        Menu themeMenu = new Menu(I18n.t("menu.theme"));
+        ToggleGroup themeGroup = new ToggleGroup();
         for (ThemeManager.Theme theme : ThemeManager.Theme.values()) {
             RadioMenuItem item = new RadioMenuItem(theme.displayName);
-            item.setToggleGroup(group);
+            item.setToggleGroup(themeGroup);
             item.setSelected(theme == ThemeManager.getCurrent());
             item.setOnAction(e -> ThemeManager.apply(scene, theme));
             themeMenu.getItems().add(item);
@@ -67,13 +83,23 @@ public class MainWindow {
             }
         }
 
-        Menu helpMenu = new Menu("Help");
-        MenuItem about = new MenuItem("About");
+        Menu langMenu = new Menu(I18n.t("menu.language"));
+        ToggleGroup langGroup = new ToggleGroup();
+        for (I18n.Language lang : I18n.Language.values()) {
+            RadioMenuItem item = new RadioMenuItem(lang.displayName);
+            item.setToggleGroup(langGroup);
+            item.setSelected(lang == I18n.getCurrent());
+            item.setOnAction(e -> I18n.setLanguage(lang));
+            langMenu.getItems().add(item);
+        }
+
+        Menu helpMenu = new Menu(I18n.t("menu.help"));
+        MenuItem about = new MenuItem(I18n.t("menu.about"));
         about.setOnAction(e -> showAbout());
         helpMenu.getItems().add(about);
 
-        menuBar.getMenus().addAll(themeMenu, helpMenu);
-        root.setTop(menuBar);
+        menuBar.getMenus().addAll(themeMenu, langMenu, helpMenu);
+        return menuBar;
     }
 
     /** Loads the bundled app icons onto the stage (taskbar / title bar). */
@@ -89,15 +115,14 @@ public class MainWindow {
         alert.initOwner(stage);
         var logo = getClass().getResourceAsStream("/icons/app-64.png");
         if (logo != null) alert.setGraphic(new ImageView(new Image(logo)));
-        alert.setTitle("About PDF Conduit");
+        alert.setTitle(I18n.t("about.title"));
         alert.setHeaderText("PDF Conduit 1.0.0");
-        alert.setContentText(
-            "Merge, extract, compress and rotate PDFs, and convert images to PDF.\n\n"
-            + "Built with Apache PDFBox and JavaFX.");
+        alert.setContentText(I18n.t("about.content"));
         alert.showAndWait();
     }
 
     private void showPanel(SidebarItem item) {
+        currentItem = item;
         Node panel = panels.computeIfAbsent(item, this::createPanel);
         contentArea.getChildren().setAll(panel);
         Animations.fadeSlideIn(panel);

@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.example.core.model.PageSize;
+import org.example.app.i18n.I18n;
 
 public class Step3PageSettings implements WizardStep {
 
@@ -14,10 +15,10 @@ public class Step3PageSettings implements WizardStep {
 
     @Override
     public Node getContent() {
-        Label title = new Label("Step 3: Page settings");
+        Label title = new Label(I18n.t("wizard.step3.title"));
         title.getStyleClass().add("panel-title");
 
-        Label sizeLabel = new Label("Page size for images / mixed pages:");
+        Label sizeLabel = new Label(I18n.t("wizard.step3.label"));
         sizeLabel.setStyle("-fx-font-size: 11px;");
 
         ComboBox<PageSize> sizeBox = new ComboBox<>();
@@ -27,9 +28,7 @@ public class Step3PageSettings implements WizardStep {
         HBox row = new HBox(8, sizeLabel, sizeBox);
         row.setStyle("-fx-alignment: CENTER_LEFT;");
 
-        Label note = new Label(
-            "FIT = each image becomes a page sized to match the image dimensions.\n" +
-            "A4/A3/LETTER = images are scaled to fit the selected page size.");
+        Label note = new Label(I18n.t("wizard.step3.note"));
         note.setStyle("-fx-font-size: 10px; -fx-opacity: 0.6;");
         note.setWrapText(true);
 

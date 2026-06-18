@@ -3,8 +3,8 @@ package org.example.app.pipeline;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.app.pipeline.Document.DocType;
+import org.example.core.convert.DocumentConverter;
 import org.example.core.model.*;
-import org.example.core.operations.ImageToPdfConverter;
 import org.example.core.operations.PdfCompressor;
 import org.example.core.operations.PdfMerger;
 import org.example.core.operations.PdfRotator;
@@ -66,7 +66,20 @@ public final class PipelineExecutor {
                 if (n.kind.isSource()) {
                     List<Document> docs = new ArrayList<>();
                     for (Path f : n.files) {
-                        docs.add(new Document(f, Document.typeOf(f), Document.stemOf(f)));
+                        // Office/text documents can't be a PageSource, so convert them to
+                        // PDF up front. Images stay images so reduce nodes can still place
+                        // them at a chosen page size.
+                        if (DocumentConverter.classify(f) == DocumentConverter.Kind.OFFICE) {
+                            if (progress != null) {
+                                progress.update(done, total, "Converting " + f.getFileName() + "…");
+                            }
+                            List<Path> created = new ArrayList<>();
+                            Path pdf = DocumentConverter.ensurePdf(f, PageSize.FIT, created);
+                            temps.addAll(created);
+                            docs.add(new Document(pdf, DocType.PDF, Document.stemOf(f)));
+                        } else {
+                            docs.add(new Document(f, Document.typeOf(f), Document.stemOf(f)));
+                        }
                     }
                     outputs.put(n.id, docs);
                     continue;
@@ -114,25 +127,29 @@ public final class PipelineExecutor {
         Path out = terminal ? destFile(n, baseName) : temp(temps);
         try {
             switch (n.kind) {
-                case MERGE -> {
-                    List<PageSource> sources = new ArrayList<>();
-                    for (Document d : inputs) {
-                        sources.add(d.type() == DocType.PDF
-                            ? new PageSource.PdfPageSource(d.file(), PageRange.ALL)
-                            : new PageSource.ImageSource(d.file(), PageSize.FIT));
-                    }
-                    PdfMerger.execute(new MergeOptions(sources, out));
-                }
-                case IMAGES_TO_PDF -> {
-                    List<Path> images = inputs.stream().map(Document::file).toList();
-                    ImageToPdfConverter.execute(new ImageToPdfOptions(images, n.pageSize, out));
-                }
+                // Both collapse the bundle into one PDF; IMAGES_TO_PDF lets the
+                // user pick the page size used for images, MERGE keeps them as-is.
+                case MERGE -> PdfMerger.execute(
+                    new MergeOptions(toSources(inputs, PageSize.FIT), out));
+                case IMAGES_TO_PDF -> PdfMerger.execute(
+                    new MergeOptions(toSources(inputs, n.pageSize), out));
                 default -> throw new PipelineException("Not a reduce node: " + n.kind);
             }
         } catch (Exception e) {
             throw new PipelineException(n.kind.label + ": " + e.getMessage(), e);
         }
         return List.of(new Document(out, DocType.PDF, baseName));
+    }
+
+    /** Turns a bundle into merge sources: PDFs as page sources, images at {@code imageSize}. */
+    private static List<PageSource> toSources(List<Document> inputs, PageSize imageSize) {
+        List<PageSource> sources = new ArrayList<>();
+        for (Document d : inputs) {
+            sources.add(d.type() == DocType.PDF
+                ? new PageSource.PdfPageSource(d.file(), PageRange.ALL)
+                : new PageSource.ImageSource(d.file(), imageSize));
+        }
+        return sources;
     }
 
     // --- map ops: each input document -> one output document --------------
@@ -146,13 +163,20 @@ public final class PipelineExecutor {
             String baseName = in.baseName() + n.kind.suffix;
             Path out = terminal ? destFile(n, uniqueName(baseName, usedNames)) : temp(temps);
             try {
+                // Page operations need a PDF; convert images (and anything else) first.
+                Path src = in.file();
+                if (in.type() != DocType.PDF) {
+                    List<Path> created = new ArrayList<>();
+                    src = DocumentConverter.ensurePdf(in.file(), PageSize.FIT, created);
+                    temps.addAll(created);
+                }
                 switch (n.kind) {
                     case EXTRACT -> PdfSplitter.execute(
-                        new SplitOptions(in.file(), range(n.pages, in.file()), out));
+                        new SplitOptions(src, range(n.pages, src), out));
                     case COMPRESS -> PdfCompressor.execute(
-                        new CompressOptions(in.file(), n.targetBytes, out));
+                        new CompressOptions(src, n.targetBytes, out));
                     case ROTATE -> PdfRotator.execute(
-                        new RotateOptions(in.file(), range(n.pages, in.file()), n.angle, out));
+                        new RotateOptions(src, range(n.pages, src), n.angle, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {

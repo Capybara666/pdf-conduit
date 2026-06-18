@@ -5,11 +5,16 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.example.app.gui.component.ProgressPanel;
+import org.example.core.convert.DocumentConverter;
 import org.example.core.model.CompressOptions;
 import org.example.core.model.CompressResult;
+import org.example.core.model.PageSize;
 import org.example.core.operations.PdfCompressor;
+import org.example.app.i18n.I18n;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CompressPanel extends BasePanel {
@@ -17,19 +22,19 @@ public class CompressPanel extends BasePanel {
     private TextField sizeField;
     private ComboBox<String> unitBox;
 
-    public CompressPanel() { super("Compress PDF", "▶  Compress", "_compressed"); }
+    public CompressPanel() { super(I18n.t("panel.COMPRESS.title"), I18n.t("run.COMPRESS"), "_compressed"); }
 
     @Override
     protected boolean supportsBatch() { return true; }
 
     @Override
     protected String inputHint() {
-        return "Add several PDFs to compress each to the target size into a folder.";
+        return I18n.t("hint.COMPRESS");
     }
 
     @Override
     protected VBox buildOptionsArea() {
-        Label label = new Label("Target size:");
+        Label label = new Label(I18n.t("compress.target.label"));
         label.setStyle("-fx-font-size: 11px;");
         sizeField = new TextField("5");
         unitBox = new ComboBox<>();
@@ -59,14 +64,20 @@ public class CompressPanel extends BasePanel {
         Task<CompressResult> task = new Task<>() {
             @Override
             protected CompressResult call() throws Exception {
-                updateMessage("Compressing…");
-                return PdfCompressor.execute(new CompressOptions(input, targetBytes, output));
+                updateMessage(I18n.t("msg.compressing"));
+                List<Path> temps = new ArrayList<>();
+                try {
+                    Path pdf = DocumentConverter.ensurePdf(input, PageSize.FIT, temps);
+                    return PdfCompressor.execute(new CompressOptions(pdf, targetBytes, output));
+                } finally {
+                    for (Path t : temps) Files.deleteIfExists(t);
+                }
             }
         };
         progressPanel.run(task, output, r -> r.targetReached() ? null
-            : "Could not reach the target size. Smallest achievable was "
-              + ProgressPanel.humanSize(r.resultBytes())
-              + " (original " + ProgressPanel.humanSize(r.originalBytes()) + ").");
+            : I18n.t("compress.warn",
+                ProgressPanel.humanSize(r.resultBytes()),
+                ProgressPanel.humanSize(r.originalBytes())));
     }
 
     private long parseTargetBytes() {

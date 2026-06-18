@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.example.app.i18n.I18n;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class SidebarController extends VBox {
 
         getChildren().add(buildBrand());
 
-        Label sectionLabel = new Label("OPERATIONS");
+        Label sectionLabel = new Label(I18n.t("sidebar.operations"));
         sectionLabel.getStyleClass().add("sidebar-section-label");
         getChildren().add(sectionLabel);
 
@@ -52,7 +53,7 @@ public class SidebarController extends VBox {
     }
 
     private Button createItemButton(SidebarItem item, Consumer<SidebarItem> onSelect) {
-        Button btn = new Button(item.icon + "  " + item.label);
+        Button btn = new Button(item.icon + "  " + I18n.t("sidebar." + item.name()));
         btn.getStyleClass().add("sidebar-item");
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setOnAction(e -> select(item, onSelect));

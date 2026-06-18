@@ -17,9 +17,13 @@ import javafx.stage.Stage;
 import org.example.app.gui.component.DropZone;
 import org.example.app.gui.component.FileListView;
 import org.example.app.gui.component.ProgressPanel;
+import org.example.app.i18n.I18n;
+import org.example.core.convert.DocumentConverter;
+import org.example.core.model.PageSize;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,7 +44,7 @@ public abstract class BasePanel extends BorderPane {
     protected final ProgressPanel progressPanel;
 
     private final String outputSuffix;
-    private final Label outputLabel = new Label("Output file:");
+    private final Label outputLabel = new Label(I18n.t("output.file"));
     private boolean batchMode = false;
     private String lastAuto = "";
 
@@ -55,9 +59,9 @@ public abstract class BasePanel extends BorderPane {
         dropZone = new DropZone(fileList::addFiles);
 
         // --- file list toolbar: count + clear ---
-        Label countLabel = new Label("No files");
+        Label countLabel = new Label(I18n.t("files.none"));
         countLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
-        Button clearBtn = new Button("Clear");
+        Button clearBtn = new Button(I18n.t("btn.clear"));
         clearBtn.getStyleClass().add("btn-secondary");
         clearBtn.setDisable(true);
         clearBtn.setOnAction(e -> fileList.getFiles().clear());
@@ -68,7 +72,7 @@ public abstract class BasePanel extends BorderPane {
 
         // --- output row (adapts between file / folder) ---
         outputField = new TextField();
-        outputField.setPromptText("Output file path…");
+        outputField.setPromptText(I18n.t("output.file.prompt"));
         HBox.setHgrow(outputField, Priority.ALWAYS);
         Button browseBtn = new Button("…");
         browseBtn.getStyleClass().add("btn-secondary");
@@ -82,7 +86,7 @@ public abstract class BasePanel extends BorderPane {
         // React to file-list changes: count, clear button, output mode + auto path.
         fileList.getFiles().addListener((ListChangeListener<Path>) change -> {
             int n = fileList.getFiles().size();
-            countLabel.setText(n == 0 ? "No files" : n + (n == 1 ? " file" : " files"));
+            countLabel.setText(n == 0 ? I18n.t("files.none") : I18n.t("files.count", n));
             clearBtn.setDisable(n == 0);
             refreshOutputMode();
         });
@@ -111,8 +115,8 @@ public abstract class BasePanel extends BorderPane {
 
     private void refreshOutputMode() {
         batchMode = supportsBatch() && fileList.getFiles().size() > 1;
-        outputLabel.setText(batchMode ? "Output folder:" : "Output file:");
-        outputField.setPromptText(batchMode ? "Output folder…" : "Output file path…");
+        outputLabel.setText(batchMode ? I18n.t("output.folder") : I18n.t("output.file"));
+        outputField.setPromptText(batchMode ? I18n.t("output.folder.prompt") : I18n.t("output.file.prompt"));
         updateAutoOutput();
     }
 
@@ -138,13 +142,13 @@ public abstract class BasePanel extends BorderPane {
         Stage stage = (Stage) getScene().getWindow();
         if (batchMode) {
             DirectoryChooser chooser = new DirectoryChooser();
-            chooser.setTitle("Select output folder");
+            chooser.setTitle(I18n.t("chooser.selectfolder"));
             var dir = chooser.showDialog(stage);
             if (dir != null) outputField.setText(dir.getAbsolutePath());
         } else {
             FileChooser chooser = new FileChooser();
-            chooser.setTitle("Save as");
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+            chooser.setTitle(I18n.t("chooser.saveas"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("filter.pdf"), "*.pdf"));
             var file = chooser.showSaveDialog(stage);
             if (file != null) outputField.setText(file.getAbsolutePath());
         }
@@ -190,10 +194,15 @@ public abstract class BasePanel extends BorderPane {
                     updateMessage(verb + " " + (i + 1) + "/" + files.size() + "…");
                     Path out = dir.resolve(
                         stripExt(in.getFileName().toString()) + outputSuffix + ".pdf");
+                    List<Path> temps = new ArrayList<>();
                     try {
-                        op.apply(in, out);
+                        // Non-PDF inputs (images, documents) are converted first.
+                        Path pdfIn = DocumentConverter.ensurePdf(in, PageSize.FIT, temps);
+                        op.apply(pdfIn, out);
                     } catch (Exception ex) {
                         throw new Exception(in.getFileName() + ": " + ex.getMessage(), ex);
+                    } finally {
+                        for (Path t : temps) Files.deleteIfExists(t);
                     }
                     updateProgress(i + 1, files.size());
                 }

@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.example.app.gui.component.DropZone;
+import org.example.app.i18n.I18n;
 import org.example.app.gui.component.FileListView;
 import org.example.core.model.PageRange;
 import org.example.core.model.PageSize;
@@ -31,7 +32,7 @@ public class Step1SelectFiles implements WizardStep {
 
     @Override
     public Node getContent() {
-        Label title = new Label("Step 1: Select files");
+        Label title = new Label(I18n.t("wizard.step1.title"));
         title.getStyleClass().add("panel-title");
         DropZone dropZone = new DropZone(fileList::addFiles);
 

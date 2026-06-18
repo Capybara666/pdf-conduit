@@ -13,6 +13,7 @@ import javafx.stage.Window;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.app.gui.component.DragReorder;
+import org.example.app.i18n.I18n;
 import org.example.core.exception.InvalidPageRangeException;
 import org.example.core.model.PageRange;
 import org.example.core.model.PageSource;
@@ -33,9 +34,9 @@ public class Step2ArrangePages implements WizardStep {
 
     @Override
     public Node getContent() {
-        Label title = new Label("Step 2: Arrange pages");
+        Label title = new Label(I18n.t("wizard.step2.title"));
         title.getStyleClass().add("panel-title");
-        Label hint = new Label("Drag rows to reorder. Click a PDF's page link to choose pages.");
+        Label hint = new Label(I18n.t("wizard.step2.hint"));
         hint.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
 
         ListView<PageSource> listView = new ListView<>(model.pages);
@@ -67,17 +68,17 @@ public class Step2ArrangePages implements WizardStep {
 
         Dialog<PageRange> dialog = new Dialog<>();
         dialog.initOwner(owner);
-        dialog.setTitle("Choose pages");
-        dialog.setHeaderText("Pages for " + src.file().getFileName()
-            + (total > 0 ? " (" + total + " pages)" : ""));
+        dialog.setTitle(I18n.t("wizard.pages.dialog.title"));
+        dialog.setHeaderText(I18n.t("wizard.pages.for", src.file().getFileName())
+            + (total > 0 ? " " + I18n.t("wizard.pages.count", total) : ""));
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
 
         TextField field = new TextField(src.range().isAll() ? "" : describe(src.range()));
-        field.setPromptText("e.g. 1-3,5");
+        field.setPromptText(I18n.t("wizard.pages.field.prompt"));
         Label error = new Label();
         error.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
         error.setVisible(false);
-        VBox content = new VBox(8, new Label("Pages (blank = all):"), field, error);
+        VBox content = new VBox(8, new Label(I18n.t("wizard.pages.field.label")), field, error);
         content.setStyle("-fx-padding: 6;");
         dialog.getDialogPane().setContent(content);
 
@@ -89,8 +90,8 @@ public class Step2ArrangePages implements WizardStep {
             try {
                 PageRangeParser.parse(expr, max);
             } catch (InvalidPageRangeException ex) {
-                error.setText("Invalid range. Use e.g. 1-3,5"
-                    + (total > 0 ? " (pages 1–" + total + ")" : ""));
+                error.setText(I18n.t("wizard.pages.invalid")
+                    + (total > 0 ? I18n.t("wizard.pages.invalid.max", total) : ""));
                 error.setVisible(true);
                 ev.consume();
             }
@@ -117,7 +118,7 @@ public class Step2ArrangePages implements WizardStep {
 
     /** Compact display of a page range, e.g. "all" or "1-3,5,8-9". */
     private static String describe(PageRange range) {
-        if (range.isAll()) return "all";
+        if (range.isAll()) return I18n.t("wizard.pages.all");
         List<Integer> nums = range.pageNumbers();
         StringBuilder sb = new StringBuilder();
         int i = 0;
@@ -137,8 +138,8 @@ public class Step2ArrangePages implements WizardStep {
         private final Label iconLabel  = new Label();
         private final Label nameLabel  = new Label();
         private final Hyperlink pagesLink = new Hyperlink();
-        private final MenuItem moveUpItem   = new MenuItem("Move up");
-        private final MenuItem moveDownItem = new MenuItem("Move down");
+        private final MenuItem moveUpItem   = new MenuItem(I18n.t("wizard.moveup"));
+        private final MenuItem moveDownItem = new MenuItem(I18n.t("wizard.movedown"));
         private final HBox row;
 
         DraggablePageCell() {
@@ -174,7 +175,7 @@ public class Step2ArrangePages implements WizardStep {
 
             if (src instanceof PageSource.PdfPageSource ps) {
                 pagesLink.setVisible(true);
-                pagesLink.setText("Pages: " + describe(ps.range()) + "  ✎");
+                pagesLink.setText(I18n.t("wizard.pages.link", describe(ps.range())));
                 pagesLink.setOnAction(e -> editPages(ps, getScene().getWindow()));
             } else {
                 pagesLink.setVisible(false);

@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.example.app.gui.Animations;
+import org.example.app.i18n.I18n;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -53,8 +54,8 @@ public class ProgressPanel extends VBox {
         warnBanner.setVisible(false);
         warnBanner.managedProperty().bind(warnBanner.visibleProperty());
 
-        openFile   = new Hyperlink("Open file");
-        openFolder = new Hyperlink("Open folder");
+        openFile   = new Hyperlink(I18n.t("link.openfile"));
+        openFolder = new Hyperlink(I18n.t("link.openfolder"));
         resultLinks = new HBox(12, openFile, openFolder);
         resultLinks.setVisible(false);
         resultLinks.managedProperty().bind(resultLinks.visibleProperty());
@@ -96,7 +97,7 @@ public class ProgressPanel extends VBox {
             progressBar.setVisible(false);
             runBtn.setDisable(false);
             statusLabel.textProperty().unbind();
-            statusLabel.setText("Done!");
+            statusLabel.setText(I18n.t("progress.done"));
             String warning = warningFn == null ? null : warningFn.apply(task.getValue());
             if (warning != null) {
                 warnBanner.setText("⚠  " + warning);

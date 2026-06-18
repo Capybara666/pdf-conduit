@@ -3,13 +3,20 @@
 # PDF Conduit
 
 A small desktop toolkit for everyday PDF tasks — **merge, extract pages,
-compress to a target size, rotate, and convert images to PDF** — with both a
-JavaFX GUI and a command-line interface, built on [Apache PDFBox](https://pdfbox.apache.org/).
+compress to a target size, rotate, and convert images & documents to PDF** —
+with both a JavaFX GUI and a command-line interface, built on
+[Apache PDFBox](https://pdfbox.apache.org/).
 
 ## Features
 
 - **Core operations:** merge PDFs/images, extract a page range, compress to a
   target file size (iterative image downsampling), rotate pages, images → PDF.
+- **Any supported input, anywhere:** every operation accepts images and office
+  documents (`.docx`, `.odt`, `.rtf`, `.txt`, `.xlsx`, `.pptx`, …) in addition to
+  PDFs — non-PDF files are converted to PDF automatically (images inline; office
+  documents via a headless LibreOffice). Pipelines convert source files on the
+  fly, so no separate "Images → PDF" step is needed.
+- **Languages:** English and Polish, switchable live from the Language menu.
 - **GUI (JavaFX):**
   - A panel per operation with drag-and-drop, a file list, and live progress.
   - **Batch mode** — single-input operations (Extract/Compress/Rotate) process
@@ -28,6 +35,9 @@ JavaFX GUI and a command-line interface, built on [Apache PDFBox](https://pdfbox
 
 - **JDK 21+** (the release scripts also use its bundled `jpackage`).
 - **Maven 3.9+**.
+- **LibreOffice** *(optional)* — only needed to convert office/text documents to
+  PDF. Without it, PDFs and images still work; document conversion reports a clear
+  "LibreOffice is not installed" message.
 
 ## Build & test
 

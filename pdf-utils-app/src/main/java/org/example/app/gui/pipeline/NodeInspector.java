@@ -16,6 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.app.pipeline.PipelineGraph;
 import org.example.app.pipeline.PipelineNode;
+import org.example.app.i18n.I18n;
 import org.example.core.model.PageSize;
 
 import java.io.File;
@@ -37,13 +38,13 @@ class NodeInspector extends HBox {
     void show(PipelineNode node) {
         getChildren().clear();
         if (node == null) {
-            Label hint = new Label("Select a node to edit it, or drag a block from the palette onto the canvas.");
+            Label hint = new Label(I18n.t("pipeline.inspector.empty"));
             hint.getStyleClass().add("pipeline-inspector-hint");
             getChildren().add(hint);
             return;
         }
 
-        Label title = new Label(node.kind.label);
+        Label title = new Label(I18n.t("kind." + node.kind.name()));
         title.getStyleClass().add("pipeline-inspector-title");
         getChildren().add(title);
 
@@ -53,7 +54,7 @@ class NodeInspector extends HBox {
             case ROTATE -> buildRotate(node);
             case COMPRESS -> buildCompress(node);
             case IMAGES_TO_PDF -> buildImages(node);
-            case MERGE -> getChildren().add(hint("combines all inputs into one PDF"));
+            case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
         }
 
         if (canvas.model.isTerminal(node)) {
@@ -68,12 +69,13 @@ class NodeInspector extends HBox {
         ListView<Path> list = new ListView<>(FXCollections.observableArrayList(node.files));
         list.setPrefHeight(72);
         list.setPrefWidth(260);
-        Button add = secondary("Add files…");
+        Button add = secondary(I18n.t("btn.addfiles"));
         add.setOnAction(e -> {
             FileChooser chooser = new FileChooser();
-            chooser.setTitle("Add source files");
+            chooser.setTitle(I18n.t("chooser.addfiles"));
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                "PDF & images", "*.pdf", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.tiff", "*.tif", "*.bmp"));
+                I18n.t("filter.supported"),
+                org.example.core.convert.DocumentConverter.ALL_GLOBS.toArray(String[]::new)));
             var files = chooser.showOpenMultipleDialog(window());
             if (files != null) {
                 for (File f : files) if (!node.files.contains(f.toPath())) node.files.add(f.toPath());
@@ -81,7 +83,7 @@ class NodeInspector extends HBox {
                 canvas.refreshNode(node);
             }
         });
-        Button remove = secondary("Remove");
+        Button remove = secondary(I18n.t("btn.remove"));
         remove.setOnAction(e -> {
             Path sel = list.getSelectionModel().getSelectedItem();
             if (sel != null) {
@@ -96,21 +98,22 @@ class NodeInspector extends HBox {
 
     private void buildPages(PipelineNode node) {
         TextField pages = new TextField(node.pages);
-        pages.setPromptText("1-3,5 (blank = all)");
+        pages.setPromptText(I18n.t("pipeline.node.pages.prompt"));
         pages.setPrefWidth(160);
         pages.textProperty().addListener((o, a, b) -> { node.pages = b; canvas.refreshNode(node); });
-        getChildren().addAll(new Label("Pages:"), pages);
+        getChildren().addAll(new Label(I18n.t("pipeline.node.pages")), pages);
     }
 
     private void buildRotate(PipelineNode node) {
         TextField pages = new TextField(node.pages);
-        pages.setPromptText("1-3,5 (blank = all)");
+        pages.setPromptText(I18n.t("pipeline.node.pages.prompt"));
         pages.setPrefWidth(150);
         pages.textProperty().addListener((o, a, b) -> { node.pages = b; canvas.refreshNode(node); });
         ComboBox<Integer> angle = new ComboBox<>(FXCollections.observableArrayList(90, 180, 270));
         angle.setValue(node.angle);
         angle.valueProperty().addListener((o, a, b) -> { if (b != null) { node.angle = b; canvas.refreshNode(node); } });
-        getChildren().addAll(new Label("Pages:"), pages, new Label("Angle:"), angle);
+        getChildren().addAll(new Label(I18n.t("pipeline.node.pages")), pages,
+            new Label(I18n.t("pipeline.node.angle")), angle);
     }
 
     private void buildCompress(PipelineNode node) {
@@ -129,34 +132,34 @@ class NodeInspector extends HBox {
         };
         size.textProperty().addListener((o, a, b) -> apply.run());
         unit.valueProperty().addListener((o, a, b) -> apply.run());
-        getChildren().addAll(new Label("Target size:"), size, unit);
+        getChildren().addAll(new Label(I18n.t("pipeline.node.target")), size, unit);
     }
 
     private void buildImages(PipelineNode node) {
         ComboBox<PageSize> box = new ComboBox<>(FXCollections.observableArrayList(PageSize.values()));
         box.setValue(node.pageSize);
         box.valueProperty().addListener((o, a, b) -> { if (b != null) { node.pageSize = b; canvas.refreshNode(node); } });
-        getChildren().addAll(new Label("Page size:"), box);
+        getChildren().addAll(new Label(I18n.t("pipeline.node.pagesize")), box);
     }
 
     private void buildDestination(PipelineNode node) {
         boolean multiple = PipelineGraph.outputCount(canvas.model, node.id) > 1;
-        Label label = new Label(multiple ? "Output folder:" : "Output file:");
+        Label label = new Label(multiple ? I18n.t("output.folder") : I18n.t("output.file"));
         TextField field = new TextField(node.outputDestination);
-        field.setPromptText(multiple ? "Folder for results…" : "Output file path…");
+        field.setPromptText(multiple ? I18n.t("output.folder.prompt") : I18n.t("output.file.prompt"));
         field.setPrefWidth(240);
         field.textProperty().addListener((o, a, b) -> node.outputDestination = b);
         Button browse = secondary("…");
         browse.setOnAction(e -> {
             if (multiple) {
                 DirectoryChooser dc = new DirectoryChooser();
-                dc.setTitle("Select output folder");
+                dc.setTitle(I18n.t("chooser.selectfolder"));
                 File dir = dc.showDialog(window());
                 if (dir != null) field.setText(dir.getAbsolutePath());
             } else {
                 FileChooser fc = new FileChooser();
-                fc.setTitle("Save as");
-                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+                fc.setTitle(I18n.t("chooser.saveas"));
+                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("filter.pdf"), "*.pdf"));
                 File f = fc.showSaveDialog(window());
                 if (f != null) field.setText(f.getAbsolutePath());
             }

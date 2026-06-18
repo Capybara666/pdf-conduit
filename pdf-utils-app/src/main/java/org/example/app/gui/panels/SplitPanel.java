@@ -4,35 +4,40 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import org.example.core.convert.DocumentConverter;
 import org.example.core.model.PageRange;
+import org.example.core.model.PageSize;
 import org.example.core.model.SplitOptions;
 import org.example.core.model.SplitResult;
 import org.example.core.operations.PdfSplitter;
 import org.example.core.util.PageRangeParser;
+import org.example.app.i18n.I18n;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SplitPanel extends BasePanel {
 
     private TextField pagesField;
 
-    public SplitPanel() { super("Extract Pages", "▶  Extract", "_extracted"); }
+    public SplitPanel() { super(I18n.t("panel.SPLIT.title"), I18n.t("run.SPLIT"), "_extracted"); }
 
     @Override
     protected boolean supportsBatch() { return true; }
 
     @Override
     protected String inputHint() {
-        return "Add several PDFs to extract the same pages from each into a folder.";
+        return I18n.t("hint.SPLIT");
     }
 
     @Override
     protected VBox buildOptionsArea() {
-        Label label = new Label("Pages (e.g. 1-3,5,7-9 — leave blank for all):");
+        Label label = new Label(I18n.t("split.pages.label"));
         label.setStyle("-fx-font-size: 11px;");
         pagesField = new TextField();
-        pagesField.setPromptText("1-3,5,7  or  leave blank for all pages");
+        pagesField.setPromptText(I18n.t("split.pages.prompt"));
         return new VBox(4, label, pagesField);
     }
 
@@ -54,9 +59,15 @@ public class SplitPanel extends BasePanel {
         Task<SplitResult> task = new Task<>() {
             @Override
             protected SplitResult call() throws Exception {
-                updateMessage("Extracting…");
-                return PdfSplitter.execute(
-                    new SplitOptions(input, resolveRange(pagesExpr, input), output));
+                updateMessage(I18n.t("msg.extracting"));
+                List<Path> temps = new ArrayList<>();
+                try {
+                    Path pdf = DocumentConverter.ensurePdf(input, PageSize.FIT, temps);
+                    return PdfSplitter.execute(
+                        new SplitOptions(pdf, resolveRange(pagesExpr, pdf), output));
+                } finally {
+                    for (Path t : temps) Files.deleteIfExists(t);
+                }
             }
         };
         progressPanel.run(task, output);

@@ -4,6 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.example.app.i18n.I18n;
 
 public class Step4Compression implements WizardStep {
 
@@ -13,10 +14,10 @@ public class Step4Compression implements WizardStep {
 
     @Override
     public Node getContent() {
-        Label title = new Label("Step 4: Compression (optional)");
+        Label title = new Label(I18n.t("wizard.step4.title"));
         title.getStyleClass().add("panel-title");
 
-        CheckBox enableCompress = new CheckBox("Compress output to target size");
+        CheckBox enableCompress = new CheckBox(I18n.t("wizard.step4.enable"));
         enableCompress.selectedProperty().bindBidirectional(model.compress);
 
         TextField sizeField = new TextField();
@@ -43,7 +44,7 @@ public class Step4Compression implements WizardStep {
         sizeField.textProperty().addListener((obs, o, val) -> recompute.run());
         unitBox.valueProperty().addListener((obs, o, val) -> recompute.run());
 
-        HBox sizeRow = new HBox(6, new Label("Target:"), sizeField, unitBox);
+        HBox sizeRow = new HBox(6, new Label(I18n.t("wizard.step4.target")), sizeField, unitBox);
         sizeRow.setStyle("-fx-alignment: CENTER_LEFT;");
 
         VBox box = new VBox(12, title, enableCompress, sizeRow);

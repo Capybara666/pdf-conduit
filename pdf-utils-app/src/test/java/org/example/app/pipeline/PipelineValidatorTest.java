@@ -28,7 +28,7 @@ class PipelineValidatorTest {
     }
 
     @Test
-    void rejectsImageIntoCompress() {
+    void acceptsImageIntoCompressViaAutoConversion() {
         PipelineModel m = new PipelineModel();
         m.nodes.add(source("s", "/tmp/photo.png"));
         PipelineNode compress = new PipelineNode("c", NodeKind.COMPRESS, 0, 0);
@@ -36,8 +36,22 @@ class PipelineValidatorTest {
         m.nodes.add(compress);
         m.connections.add(new Connection("s", "c"));
 
+        // Images (and other formats) are converted to PDF automatically, so a
+        // non-PDF source feeding any operation is no longer an error.
+        assertTrue(PipelineValidator.validate(m).isEmpty());
+    }
+
+    @Test
+    void rejectsUnsupportedFileType() {
+        PipelineModel m = new PipelineModel();
+        m.nodes.add(source("s", "/tmp/archive.zip"));
+        PipelineNode compress = new PipelineNode("c", NodeKind.COMPRESS, 0, 0);
+        compress.outputDestination = "/tmp/out.pdf";
+        m.nodes.add(compress);
+        m.connections.add(new Connection("s", "c"));
+
         assertTrue(PipelineValidator.validate(m).stream()
-            .anyMatch(e -> "c".equals(e.nodeId()) && e.message().contains("PDF")));
+            .anyMatch(e -> "s".equals(e.nodeId()) && e.message().toLowerCase().contains("unsupported")));
     }
 
     @Test

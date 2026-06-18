@@ -8,13 +8,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import org.example.app.gui.Animations;
+import org.example.app.i18n.I18n;
 
 import java.util.List;
 
 public class WizardController extends BorderPane {
 
-    private static final List<String> STEP_NAMES =
-        List.of("Files", "Arrange", "Settings", "Compress", "Export");
+    private static final List<String> STEP_KEYS = List.of(
+        "wizard.step.files", "wizard.step.arrange", "wizard.step.settings",
+        "wizard.step.compress", "wizard.step.export");
 
     private final WizardModel model = new WizardModel();
     private final List<WizardStep> steps;
@@ -22,8 +24,8 @@ public class WizardController extends BorderPane {
 
     private final VBox stepIndicator = new VBox();
     private final StackPane stepContent = new StackPane();
-    private final Button backBtn = new Button("← Back");
-    private final Button nextBtn = new Button("Next →");
+    private final Button backBtn = new Button(I18n.t("wizard.back"));
+    private final Button nextBtn = new Button(I18n.t("wizard.next"));
 
     public WizardController() {
         steps = List.of(
@@ -67,7 +69,7 @@ public class WizardController extends BorderPane {
         stepContent.getChildren().setAll(content);
         Animations.fadeSlideIn(content);
         backBtn.setDisable(idx == 0);
-        nextBtn.setText(idx == steps.size() - 1 ? "Generate ✓" : "Next →");
+        nextBtn.setText(idx == steps.size() - 1 ? I18n.t("wizard.generate") : I18n.t("wizard.next"));
         if (idx == steps.size() - 1) {
             nextBtn.setOnAction(e -> steps.get(idx).onFinish());
         } else {
@@ -82,7 +84,7 @@ public class WizardController extends BorderPane {
         grid.setAlignment(Pos.CENTER);
         grid.setVgap(4);
 
-        for (int i = 0; i < STEP_NAMES.size(); i++) {
+        for (int i = 0; i < STEP_KEYS.size(); i++) {
             int col = i * 2;
 
             Label circle = new Label(i < current ? "✓" : String.valueOf(i + 1));
@@ -92,12 +94,12 @@ public class WizardController extends BorderPane {
             GridPane.setHalignment(circle, HPos.CENTER);
             GridPane.setValignment(circle, VPos.CENTER);
 
-            Label name = new Label(STEP_NAMES.get(i));
+            Label name = new Label(I18n.t(STEP_KEYS.get(i)));
             name.getStyleClass().add("wizard-step-label");
             grid.add(name, col, 1);
             GridPane.setHalignment(name, HPos.CENTER);
 
-            if (i < STEP_NAMES.size() - 1) {
+            if (i < STEP_KEYS.size() - 1) {
                 Region connector = new Region();
                 connector.getStyleClass().add("wizard-step-connector");
                 grid.add(connector, col + 1, 0);

@@ -1,7 +1,9 @@
 package org.example.app.pipeline;
 
 import org.example.app.pipeline.Document.DocType;
+import org.example.core.convert.DocumentConverter;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,12 @@ public final class PipelineValidator {
                 if (n.files.isEmpty()) {
                     errors.add(new ValidationError(n.id, "Source has no files."));
                 }
+                for (Path f : n.files) {
+                    if (!DocumentConverter.isSupported(f)) {
+                        errors.add(new ValidationError(n.id,
+                            "Unsupported file type: " + f.getFileName()));
+                    }
+                }
                 continue;
             }
 
@@ -45,21 +53,8 @@ public final class PipelineValidator {
                 errors.add(new ValidationError(n.id, n.kind.label + " has no input."));
             }
 
-            switch (n.kind) {
-                case EXTRACT, COMPRESS, ROTATE -> {
-                    if (inputs.stream().anyMatch(t -> t != DocType.PDF)) {
-                        errors.add(new ValidationError(n.id,
-                            n.kind.label + " only accepts PDF input."));
-                    }
-                }
-                case IMAGES_TO_PDF -> {
-                    if (inputs.stream().anyMatch(t -> t != DocType.IMAGE)) {
-                        errors.add(new ValidationError(n.id,
-                            "Images → PDF only accepts image input."));
-                    }
-                }
-                default -> { /* MERGE accepts any mix */ }
-            }
+            // Every operation accepts any input: non-PDF documents are converted
+            // to PDF automatically (images inline, office docs via LibreOffice).
 
             if (model.isTerminal(n)
                     && (n.outputDestination == null || n.outputDestination.isBlank())) {

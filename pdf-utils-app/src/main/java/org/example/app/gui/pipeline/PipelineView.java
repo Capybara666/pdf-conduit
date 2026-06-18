@@ -21,6 +21,7 @@ import org.example.app.pipeline.PipelineModel;
 import org.example.app.pipeline.PipelineNode;
 import org.example.app.pipeline.PipelineValidator;
 import org.example.app.pipeline.ValidationError;
+import org.example.app.i18n.I18n;
 
 import java.io.File;
 import java.util.List;
@@ -39,7 +40,7 @@ public class PipelineView extends BorderPane {
     private final NodeInspector inspector = new NodeInspector(canvas);
     private final Label status = new Label();
     private final Label banner = new Label();
-    private final Button runBtn = new Button("▶  Run");
+    private final Button runBtn = new Button(I18n.t("pipeline.run"));
 
     public PipelineView() {
         getStyleClass().add("panel-root");
@@ -58,7 +59,7 @@ public class PipelineView extends BorderPane {
     // --- top: title + draggable palette -----------------------------------
 
     private VBox buildTop() {
-        Label title = new Label("Pipeline");
+        Label title = new Label(I18n.t("pipeline.title"));
         title.getStyleClass().add("panel-title");
 
         HBox palette = new HBox();
@@ -67,7 +68,7 @@ public class PipelineView extends BorderPane {
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        Button clear = new Button("Clear");
+        Button clear = new Button(I18n.t("pipeline.clear"));
         clear.getStyleClass().add("btn-secondary");
         clear.setOnAction(e -> { canvas.clearAll(); banner.setVisible(false); status.setText(""); });
 
@@ -85,7 +86,7 @@ public class PipelineView extends BorderPane {
     }
 
     private Label chip(NodeKind kind) {
-        Label chip = new Label(glyph(kind) + "  " + kind.label);
+        Label chip = new Label(glyph(kind) + "  " + I18n.t("kind." + kind.name()));
         chip.getStyleClass().add("pipeline-chip");
         chip.setOnDragDetected(e -> {
             Dragboard db = chip.startDragAndDrop(TransferMode.COPY);
@@ -134,9 +135,10 @@ public class PipelineView extends BorderPane {
 
     private void addFilesTo(PipelineNode source) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Add source files");
+        chooser.setTitle(I18n.t("chooser.addfiles"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-            "PDF & images", "*.pdf", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.tiff", "*.tif", "*.bmp"));
+            I18n.t("filter.supported"),
+            org.example.core.convert.DocumentConverter.ALL_GLOBS.toArray(String[]::new)));
         var files = chooser.showOpenMultipleDialog(window());
         if (files != null) {
             for (File f : files) source.files.add(f.toPath());
@@ -161,7 +163,7 @@ public class PipelineView extends BorderPane {
             canvas.highlightErrors(errors.stream()
                 .map(ValidationError::nodeId).filter(id -> id != null).collect(Collectors.toSet()));
             banner.setText("⚠  " + errors.get(0).message()
-                + (errors.size() > 1 ? "  (+" + (errors.size() - 1) + " more)" : ""));
+                + (errors.size() > 1 ? I18n.t("pipeline.more", errors.size() - 1) : ""));
             banner.setVisible(true);
             return;
         }
@@ -181,14 +183,14 @@ public class PipelineView extends BorderPane {
             status.textProperty().unbind();
             runBtn.setDisable(false);
             int n = task.getValue().savedByNode().values().stream().mapToInt(List::size).sum();
-            status.setText("Done — saved " + n + (n == 1 ? " file." : " files."));
+            status.setText(I18n.t("pipeline.done", n));
         });
         task.setOnFailed(e -> {
             status.textProperty().unbind();
             runBtn.setDisable(false);
             status.setText("");
             Throwable ex = task.getException();
-            banner.setText("⚠  " + (ex == null ? "Pipeline failed." : ex.getMessage()));
+            banner.setText("⚠  " + (ex == null ? I18n.t("pipeline.fail") : ex.getMessage()));
             banner.setVisible(true);
         });
         Thread t = new Thread(task, "pipeline-run");

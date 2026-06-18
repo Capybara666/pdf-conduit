@@ -7,6 +7,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.app.gui.Animations;
+import org.example.app.i18n.I18n;
+import org.example.core.convert.DocumentConverter;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -20,8 +22,8 @@ public class DropZone extends VBox {
 
         Label icon = new Label("📄");
         icon.setStyle("-fx-font-size: 20px;");
-        Label primary = new Label("Drag & drop PDF or image files here");
-        Label secondary = new Label("or click to select");
+        Label primary = new Label(I18n.t("dropzone.primary"));
+        Label secondary = new Label(I18n.t("dropzone.secondary"));
         secondary.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
         getChildren().addAll(icon, primary, secondary);
 
@@ -54,13 +56,16 @@ public class DropZone extends VBox {
 
     private void openChooser(Consumer<List<Path>> onFiles) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Select files");
+        chooser.setTitle(I18n.t("chooser.selectfiles"));
         chooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("PDF & Images",
-                "*.pdf", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.tiff", "*.tif", "*.bmp"),
-            new FileChooser.ExtensionFilter("PDF", "*.pdf"),
-            new FileChooser.ExtensionFilter("Images",
-                "*.png", "*.jpg", "*.jpeg", "*.webp", "*.tiff", "*.bmp")
+            new FileChooser.ExtensionFilter(I18n.t("filter.supported"),
+                DocumentConverter.ALL_GLOBS.toArray(String[]::new)),
+            new FileChooser.ExtensionFilter(I18n.t("filter.pdf"),
+                DocumentConverter.PDF_GLOBS.toArray(String[]::new)),
+            new FileChooser.ExtensionFilter(I18n.t("filter.images"),
+                DocumentConverter.IMAGE_GLOBS.toArray(String[]::new)),
+            new FileChooser.ExtensionFilter(I18n.t("filter.documents"),
+                DocumentConverter.OFFICE_GLOBS.toArray(String[]::new))
         );
         Stage stage = (Stage) getScene().getWindow();
         List<File> files = chooser.showOpenMultipleDialog(stage);

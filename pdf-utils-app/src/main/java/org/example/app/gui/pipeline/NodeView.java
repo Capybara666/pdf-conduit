@@ -9,6 +9,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import org.example.app.gui.component.ProgressPanel;
+import org.example.app.i18n.I18n;
 import org.example.app.pipeline.PipelineNode;
 
 /** Visual card for a {@link PipelineNode}: header (drag/close), summary, ports. */
@@ -34,7 +35,7 @@ class NodeView extends HBox {
         VBox rightCol = new VBox(outPort);
         rightCol.setAlignment(Pos.CENTER);
 
-        Label title = new Label(node.kind.label);
+        Label title = new Label(I18n.t("kind." + node.kind.name()));
         title.getStyleClass().add("pipeline-node-title");
         Button close = new Button("✕");
         close.getStyleClass().add("pipeline-node-close");
@@ -119,13 +120,16 @@ class NodeView extends HBox {
 
     void refreshSummary() {
         summary.setText(switch (node.kind) {
-            case SOURCE -> node.files.isEmpty() ? "no files"
-                : node.files.size() + (node.files.size() == 1 ? " file" : " files");
-            case EXTRACT -> "pages: " + (node.pages.isBlank() ? "all" : node.pages);
-            case ROTATE -> (node.pages.isBlank() ? "all" : node.pages) + "  ·  " + node.angle + "°";
-            case COMPRESS -> "target ≤ " + ProgressPanel.humanSize(node.targetBytes);
-            case IMAGES_TO_PDF -> "page size: " + node.pageSize;
-            case MERGE -> "combine inputs";
+            case SOURCE -> node.files.isEmpty() ? I18n.t("pipeline.summary.nofiles")
+                : I18n.t("pipeline.summary.files", node.files.size());
+            case EXTRACT -> I18n.t("pipeline.summary.pages",
+                node.pages.isBlank() ? I18n.t("pipeline.summary.all") : node.pages);
+            case ROTATE -> I18n.t("pipeline.summary.pages",
+                node.pages.isBlank() ? I18n.t("pipeline.summary.all") : node.pages)
+                + "  ·  " + node.angle + "°";
+            case COMPRESS -> I18n.t("pipeline.summary.target", ProgressPanel.humanSize(node.targetBytes));
+            case IMAGES_TO_PDF -> I18n.t("pipeline.node.pagesize") + " " + node.pageSize;
+            case MERGE -> I18n.t("pipeline.summary.combine");
         });
     }
 }
