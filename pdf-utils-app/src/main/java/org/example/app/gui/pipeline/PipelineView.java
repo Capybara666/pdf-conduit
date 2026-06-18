@@ -56,7 +56,10 @@ public class PipelineView extends BorderPane {
         scroll.setPannable(false);   // panning would steal the connection gesture
         scroll.getStyleClass().add("pipeline-scroll");
         setCenter(scroll);
-        setBottom(buildBottom());
+
+        HBox bottom = buildBottom();
+        setBottom(bottom);
+        BorderPane.setMargin(bottom, new javafx.geometry.Insets(12, 0, 0, 0));
 
         wirePaletteDrop();
     }
@@ -152,9 +155,12 @@ public class PipelineView extends BorderPane {
         runBtn.setOnAction(e -> run());
         resultLinks.setVisible(false);
         resultLinks.managedProperty().bind(resultLinks.visibleProperty());
+        status.getStyleClass().add("pipeline-status");
+        status.setMinWidth(Region.USE_PREF_SIZE);   // don't ellipsize the "saved N files" text
         HBox.setHgrow(inspector, Priority.ALWAYS);
         HBox bar = new HBox(12, inspector, status, resultLinks, runBtn);
         bar.getStyleClass().add("pipeline-bottom-bar");
+        bar.setFillHeight(false);                    // keep buttons their natural height, centered
         return bar;
     }
 

@@ -22,6 +22,7 @@
     -c-sidebar-muted:     #94a3b8;
     -c-sidebar-hover:     #334155;
     -c-content-bg:        #f1f5f9;
+    -c-canvas-bg:         derive(-c-content-bg, -4%);
     -c-surface:           #ffffff;
     -c-surface-2:         #e2e8f0;
     -c-border:            #e2e8f0;
@@ -272,9 +273,15 @@
 
 /* Pipeline editor */
 .pipeline-toolbar { -fx-alignment: CENTER_LEFT; -fx-spacing: 8; }
-.pipeline-scroll { -fx-background-color: transparent; }
-.pipeline-scroll > .viewport { -fx-background-color: transparent; }
-.pipeline-canvas { -fx-background-color: -c-content-bg; }
+.pipeline-scroll {
+    -fx-background-color: -c-canvas-bg;
+    -fx-background-radius: 12;
+    -fx-border-color: -c-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+.pipeline-scroll > .viewport { -fx-background-color: transparent; -fx-background-radius: 12; }
+.pipeline-canvas { -fx-background-color: -c-canvas-bg; }
 
 .pipeline-node {
     -fx-background-color: -c-surface;
@@ -364,12 +371,16 @@
 
 .pipeline-bottom-bar {
     -fx-background-color: -c-surface;
+    -fx-background-radius: 12;
     -fx-border-color: -c-border;
-    -fx-border-width: 1 0 0 0;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
     -fx-padding: 10 14 10 14;
     -fx-spacing: 12;
     -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0.0, 0, 2);
 }
+.pipeline-status { -fx-text-fill: -c-text-muted; -fx-font-size: 12px; }
 .pipeline-inspector { -fx-spacing: 10; -fx-alignment: CENTER_LEFT; }
 .pipeline-inspector-title { -fx-font-weight: bold; -fx-text-fill: -c-text; }
 .pipeline-inspector-hint { -fx-text-fill: -c-text-muted; -fx-font-size: 11px; }
