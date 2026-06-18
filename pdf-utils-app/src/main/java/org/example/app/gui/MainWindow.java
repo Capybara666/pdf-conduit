@@ -33,12 +33,12 @@ public class MainWindow {
     public MainWindow(Stage stage) {
         this.stage = stage;
 
-        scene = new Scene(new BorderPane(), 900, 660);
+        scene = new Scene(new BorderPane(), 1280, 800);
         ThemeManager.applyStored(scene);
 
         stage.setTitle("PDF Conduit");
-        stage.setMinWidth(640);
-        stage.setMinHeight(400);
+        stage.setMinWidth(820);
+        stage.setMinHeight(560);
         stage.setScene(scene);
         applyIcons();
 
