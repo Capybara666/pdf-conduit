@@ -32,6 +32,7 @@ class PipelineCanvas extends Pane {
     private ConnectionView selectedConn;
     private PipelineNode pendingFrom;
     private CubicCurve tempCurve;
+    private NodeView hoverTarget;
     private Consumer<PipelineNode> onSelect = n -> {};
     private int idSeq = 0;
 
@@ -130,24 +131,22 @@ class PipelineCanvas extends Pane {
         double dx = Math.max(40, Math.abs(tempCurve.getEndX() - tempCurve.getStartX()) / 2);
         tempCurve.setControlX1(tempCurve.getStartX() + dx); tempCurve.setControlY1(tempCurve.getStartY());
         tempCurve.setControlX2(tempCurve.getEndX() - dx);   tempCurve.setControlY2(tempCurve.getEndY());
+
+        // Live feedback: if the cursor is over an input port that we could not
+        // legally connect to, mark the wire and that port as invalid.
+        NodeView target = nearestInputTarget(sceneX, sceneY);
+        boolean invalid = target != null && !canConnect(pendingFrom, target.node);
+        setHoverTarget(invalid ? target : null);
+        toggleClass(tempCurve.getStyleClass(), "pipeline-wire-invalid", invalid);
     }
 
     /** Completes a pending connection by hit-testing input ports near the cursor. */
     void finishConnectAt(double sceneX, double sceneY) {
         try {
             if (pendingFrom == null) return;
-            PipelineNode best = null;
-            double bestDist = Double.MAX_VALUE;
-            for (NodeView v : nodeViews.values()) {
-                if (v.node.kind.isSource()) continue;          // sources have no input
-                var b = v.inPort().getBoundsInLocal();
-                Point2D c = v.inPort().localToScene((b.getMinX() + b.getMaxX()) / 2,
-                                                    (b.getMinY() + b.getMaxY()) / 2);
-                double d = Math.hypot(c.getX() - sceneX, c.getY() - sceneY);
-                if (d <= 26 && d < bestDist) { bestDist = d; best = v.node; }
-            }
-            if (best != null && canConnect(pendingFrom, best)) {
-                Connection conn = new Connection(pendingFrom.id, best.id);
+            NodeView target = nearestInputTarget(sceneX, sceneY);
+            if (target != null && canConnect(pendingFrom, target.node)) {
+                Connection conn = new Connection(pendingFrom.id, target.node.id);
                 model.connections.add(conn);
                 addConnectionView(conn);
                 refreshAll();
@@ -157,11 +156,39 @@ class PipelineCanvas extends Pane {
         }
     }
 
+    /** The node whose input port is nearest the cursor (within ~26px), or null. */
+    private NodeView nearestInputTarget(double sceneX, double sceneY) {
+        NodeView best = null;
+        double bestDist = Double.MAX_VALUE;
+        for (NodeView v : nodeViews.values()) {
+            if (v.node.kind.isSource()) continue;          // sources have no input
+            var b = v.inPort().getBoundsInLocal();
+            Point2D c = v.inPort().localToScene((b.getMinX() + b.getMaxX()) / 2,
+                                                (b.getMinY() + b.getMaxY()) / 2);
+            double d = Math.hypot(c.getX() - sceneX, c.getY() - sceneY);
+            if (d <= 26 && d < bestDist) { bestDist = d; best = v; }
+        }
+        return best;
+    }
+
+    private void setHoverTarget(NodeView target) {
+        if (hoverTarget == target) return;
+        if (hoverTarget != null) hoverTarget.setInPortInvalid(false);
+        hoverTarget = target;
+        if (hoverTarget != null) hoverTarget.setInPortInvalid(true);
+    }
+
+    private static void toggleClass(List<String> classes, String name, boolean on) {
+        if (on) { if (!classes.contains(name)) classes.add(name); }
+        else classes.remove(name);
+    }
+
     void cancelConnect() {
         if (tempCurve != null) {
             getChildren().remove(tempCurve);
             tempCurve = null;
         }
+        setHoverTarget(null);
         pendingFrom = null;
     }
 
