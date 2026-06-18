@@ -1,5 +1,6 @@
 package org.example.app.gui.icon;
 
+import javafx.scene.Group;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
@@ -26,22 +27,24 @@ public final class Icons {
     // two inputs converging into one output
     private static final String MERGE =
         "M5 7 H10 M5 17 H10 M10 7 C14 7 14 12 19 12 M10 17 C14 17 14 12 19 12";
-    // one input diverging into two outputs
+    // scissors: cut a page range out of a document (extract)
     private static final String SPLIT =
-        "M19 7 H14 M19 17 H14 M14 7 C10 7 10 12 5 12 M14 17 C10 17 10 12 5 12";
+        "M7 9 L20 17 M7 15 L20 7 "
+        + "M5 9 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 "
+        + "M5 15 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0";
     // two arrows squeezing toward a middle line
     private static final String COMPRESS =
         "M4 12 H20 M12 3 V8 M9 5.5 L12 8 L15 5.5 M12 21 V16 M9 18.5 L12 16 L15 18.5";
-    // circular refresh arrow
+    // clockwise circular arrow, head at the top pointing into the clockwise direction
     private static final String ROTATE =
-        "M12 6 A6 6 0 1 1 17.2 9 M12 6 L9.5 6.8 M12 6 L11.6 8.8";
-    // a page with a folded corner and a down arrow (convert "to PDF")
+        "M18 12 A6 6 0 1 1 12 6 M9.5 6 L12 6 L11 8.6";
+    // a horizontal arrow feeding into a PDF page (convert any input "to PDF")
     private static final String TO_PDF =
-        "M6 3 H13 L17 7 V21 H6 Z M13 3 V7 H17 M11.5 10 V15.5 M9 13 L11.5 15.5 L14 13";
-    // a magic wand with a sparkle
+        "M11 4 H17 L20 7 V20 H11 Z M17 4 V7 H20 M3 12 H9 M7 10 L9 12 L7 14";
+    // a wizard hat with a sparkle (the guided wizard flow)
     private static final String WIZARD =
-        "M5 19 L14.5 9.5 M13 8 L16 11 "
-        + "M18.5 1.8 L19.4 3.6 L21.2 4.5 L19.4 5.4 L18.5 7.2 L17.6 5.4 L15.8 4.5 L17.6 3.6 Z";
+        "M12 3.5 L6.5 16 L17.5 16 Z M4.5 16 H19.5 "
+        + "M12 6.8 L12.9 8.1 L14.2 9 L12.9 9.9 L12 11.2 L11.1 9.9 L9.8 9 L11.1 8.1 Z";
     // a small node graph: two inputs piped to one output
     private static final String PIPELINE =
         "M6.5 8 C11 8 12 12 15.5 12 M6.5 16 C11 16 12 12 15.5 12 "
@@ -85,7 +88,11 @@ public final class Icons {
         double scale = size / 24.0;
         path.getTransforms().add(new Scale(scale, scale, 0, 0));
 
-        StackPane holder = new StackPane(path);
+        // Wrap in a Group so its layout bounds reflect the *scaled* ink (the Scale
+        // transform is included in a Group's bounds but not in a Shape's own
+        // layoutBounds); the StackPane can then centre the real ink in the box.
+        Group inked = new Group(path);
+        StackPane holder = new StackPane(inked);
         holder.getStyleClass().add("svg-icon-holder");
         holder.setMinSize(size, size);
         holder.setPrefSize(size, size);
