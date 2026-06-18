@@ -175,7 +175,7 @@
     -fx-background-color: -c-surface-2;
     -fx-text-fill: -c-text-muted;
 }
-.btn-secondary:hover { -fx-background-color: -c-border; }
+.btn-secondary:hover { -fx-background-color: derive(-c-surface-2, -10%); }
 
 /* Text inputs — keep the placeholder readable on every theme */
 .text-field, .text-area, .combo-box .text-field {
@@ -192,7 +192,7 @@
     -fx-background-radius: 8;
     -fx-cursor: hand;
 }
-.result-link:hover { -fx-background-color: -c-border; }
+.result-link:hover { -fx-background-color: derive(-c-surface-2, -10%); }
 
 /* ---- Hyperlinks ---- */
 .hyperlink {

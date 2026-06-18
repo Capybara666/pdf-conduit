@@ -56,6 +56,7 @@ public class PipelineView extends BorderPane {
         scroll.setPannable(false);   // panning would steal the connection gesture
         scroll.getStyleClass().add("pipeline-scroll");
         setCenter(scroll);
+        BorderPane.setMargin(scroll, new javafx.geometry.Insets(12, 0, 0, 0));
 
         HBox bottom = buildBottom();
         setBottom(bottom);
