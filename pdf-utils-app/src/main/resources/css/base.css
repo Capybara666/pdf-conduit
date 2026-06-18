@@ -306,8 +306,19 @@
     -fx-stroke: -c-accent;
     -fx-stroke-width: 2.5;
 }
-.pipeline-connection.hover    { -fx-stroke: -c-accent-hover; -fx-stroke-width: 3.5; }
-.pipeline-connection.selected { -fx-stroke: -c-danger; }
+.pipeline-connection.pending-delete { -fx-stroke: -c-danger; -fx-stroke-width: 3; }
+.pipeline-connection-delete {
+    -fx-background-color: -c-danger;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-min-width: 18; -fx-min-height: 18;
+    -fx-alignment: center;
+    -fx-background-radius: 9;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0.0, 0, 1);
+}
+.pipeline-connection-delete:hover { -fx-background-color: derive(-c-danger, -12%); }
 .pipeline-connection-temp {
     -fx-stroke: -c-text-muted;
     -fx-stroke-width: 2;
