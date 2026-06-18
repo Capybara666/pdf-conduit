@@ -119,9 +119,22 @@ class ConnectionView extends Group {
         // Cubic point at t=0.5: (P0 + 3P1 + 3P2 + P3) / 8.
         double midX = (f.getX() + 3 * c1x + 3 * c2x + t.getX()) / 8;
         double midY = (f.getY() + 3 * f.getY() + 3 * t.getY() + t.getY()) / 8;
+
+        // Offset the ✕ perpendicular to the cable so it sits beside it for any
+        // orientation (not along a near-vertical cable). Tangent at t=0.5; with
+        // our control points its y-component simplifies to 1.5*(endY - startY).
+        double tanX = 0.75 * (c1x - f.getX()) + 1.5 * (c2x - c1x) + 0.75 * (t.getX() - c2x);
+        double tanY = 1.5 * (t.getY() - f.getY());
+        double nx = -tanY, ny = tanX;                 // perpendicular
+        double len = Math.hypot(nx, ny);
+        if (len < 1e-6) { nx = 0; ny = -1; len = 1; } // degenerate: straight up
+        if (ny > 0) { nx = -nx; ny = -ny; }            // keep it pointing upward
+        midX += nx / len * DELETE_OFFSET;
+        midY += ny / len * DELETE_OFFSET;
+
         deleteBtn.autosize();
         deleteBtn.relocate(midX - deleteBtn.getWidth() / 2,
-                           midY - DELETE_OFFSET - deleteBtn.getHeight() / 2);
+                           midY - deleteBtn.getHeight() / 2);
     }
 
     private Point2D center(Node port) {
