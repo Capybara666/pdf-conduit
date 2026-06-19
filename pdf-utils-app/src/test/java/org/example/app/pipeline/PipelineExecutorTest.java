@@ -75,6 +75,32 @@ class PipelineExecutorTest {
     }
 
     @Test
+    void toPdfProducesOneFilePerInputNotAMerge() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("a.pdf", 2));
+        src.files.add(pdf("b.pdf", 3));
+        PipelineNode toPdf = new PipelineNode("p", NodeKind.IMAGES_TO_PDF, 0, 0);
+        Path outDir = tmp.resolve("topdf-out"); // folder
+        toPdf.outputDestination = outDir.toString();
+        m.nodes.add(src);
+        m.nodes.add(toPdf);
+        m.connections.add(new Connection("s", "p"));
+
+        PipelineExecutor.Result result = PipelineExecutor.run(m, null);
+
+        // Two inputs -> two outputs (no merge), each keeping its own page count.
+        assertEquals(2, result.savedByNode().get("p").size());
+        try (var stream = Files.list(outDir)) {
+            assertEquals(2, stream.filter(p -> p.toString().endsWith(".pdf")).count());
+        }
+        for (Path out : result.savedByNode().get("p")) {
+            int pages = pageCount(out);
+            assertTrue(pages == 2 || pages == 3, "expected per-input page counts, got " + pages);
+        }
+    }
+
+    @Test
     void chainMapThenReduce() throws Exception {
         PipelineModel m = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);

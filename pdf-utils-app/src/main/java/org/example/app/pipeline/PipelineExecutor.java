@@ -126,14 +126,11 @@ public final class PipelineExecutor {
                                            : inputs.get(0).baseName() + n.kind.suffix;
         Path out = terminal ? destFile(n, baseName) : temp(temps);
         try {
-            switch (n.kind) {
-                // Both collapse the bundle into one PDF; IMAGES_TO_PDF lets the
-                // user pick the page size used for images, MERGE keeps them as-is.
-                case MERGE -> PdfMerger.execute(
-                    new MergeOptions(toSources(inputs, PageSize.FIT), out));
-                case IMAGES_TO_PDF -> PdfMerger.execute(
-                    new MergeOptions(toSources(inputs, n.pageSize), out));
-                default -> throw new PipelineException("Not a reduce node: " + n.kind);
+            if (n.kind == NodeKind.MERGE) {
+                // Collapse the bundle into one PDF (images kept at their natural size).
+                PdfMerger.execute(new MergeOptions(toSources(inputs, PageSize.FIT), out));
+            } else {
+                throw new PipelineException("Not a reduce node: " + n.kind);
             }
         } catch (Exception e) {
             throw new PipelineException(n.kind.label + ": " + e.getMessage(), e);
@@ -163,6 +160,17 @@ public final class PipelineExecutor {
             String baseName = in.baseName() + n.kind.suffix;
             Path out = terminal ? destFile(n, uniqueName(baseName, usedNames)) : temp(temps);
             try {
+                // TO PDF converts each input to its own PDF (no merge): PDFs pass
+                // through, images are placed at the chosen page size.
+                if (n.kind == NodeKind.IMAGES_TO_PDF) {
+                    PageSource source = in.type() == DocType.PDF
+                        ? new PageSource.PdfPageSource(in.file(), PageRange.ALL)
+                        : new PageSource.ImageSource(in.file(), n.pageSize);
+                    PdfMerger.execute(new MergeOptions(List.of(source), out));
+                    results.add(new Document(out, DocType.PDF, baseName));
+                    continue;
+                }
+
                 // Page operations need a PDF; convert images (and anything else) first.
                 Path src = in.file();
                 if (in.type() != DocType.PDF) {
