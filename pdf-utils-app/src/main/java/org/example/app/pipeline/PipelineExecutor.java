@@ -124,7 +124,7 @@ public final class PipelineExecutor {
             throws PipelineException {
         String baseName = inputs.isEmpty() ? n.kind.name().toLowerCase()
                                            : inputs.get(0).baseName() + n.kind.suffix;
-        Path out = terminal ? destFile(n, baseName) : temp(temps);
+        Path out = terminal ? destFile(n, baseName, false) : temp(temps);
         try {
             if (n.kind == NodeKind.MERGE) {
                 // Collapse the bundle into one PDF (images kept at their natural size).
@@ -156,9 +156,12 @@ public final class PipelineExecutor {
             throws PipelineException {
         List<Document> results = new ArrayList<>();
         Set<String> usedNames = new HashSet<>();
+        boolean multipleOutputs = inputs.size() > 1;
         for (Document in : inputs) {
             String baseName = in.baseName() + n.kind.suffix;
-            Path out = terminal ? destFile(n, uniqueName(baseName, usedNames)) : temp(temps);
+            Path out = terminal
+                ? destFile(n, uniqueName(baseName, usedNames), multipleOutputs)
+                : temp(temps);
             try {
                 // TO PDF converts each input to its own PDF (no merge): PDFs pass
                 // through, images are placed at the chosen page size.
@@ -201,21 +204,27 @@ public final class PipelineExecutor {
     // --- helpers ----------------------------------------------------------
 
     /**
-     * Destination path for a terminal node. The GUI sets the destination to a
-     * file when a single output is expected and to a folder when several are; we
-     * disambiguate by whether the path is/looks like a directory.
+     * Destination path for a terminal node. A single output may be an explicit
+     * {@code .pdf} file; otherwise (or whenever several outputs are produced) the
+     * destination is treated as a folder and each result is named after its
+     * input. When several outputs are expected but the destination still points
+     * at a {@code .pdf} file, its parent folder is used — so a stale single-file
+     * destination never collapses many results onto one file.
      */
-    private static Path destFile(PipelineNode n, String baseName) throws PipelineException {
+    private static Path destFile(PipelineNode n, String baseName, boolean multipleOutputs)
+            throws PipelineException {
         String dest = n.outputDestination;
         if (dest == null || dest.isBlank()) {
             throw new PipelineException(n.kind.label + " has no output destination.");
         }
         Path p = Path.of(dest);
-        boolean folder = Files.isDirectory(p) || !dest.toLowerCase().endsWith(".pdf");
+        boolean looksLikeFile = dest.toLowerCase().endsWith(".pdf") && !Files.isDirectory(p);
+        boolean asFolder = multipleOutputs || !looksLikeFile;
         try {
-            if (folder) {
-                Files.createDirectories(p);
-                return p.resolve(baseName + ".pdf");
+            if (asFolder) {
+                Path dir = (looksLikeFile && p.getParent() != null) ? p.getParent() : p;
+                Files.createDirectories(dir);
+                return dir.resolve(baseName + ".pdf");
             }
             if (p.getParent() != null) Files.createDirectories(p.getParent());
             return p;

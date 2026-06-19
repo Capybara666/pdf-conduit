@@ -152,11 +152,11 @@ class NodeInspector extends HBox {
     private void buildDestination(PipelineNode node) {
         boolean multiple = PipelineGraph.outputCount(canvas.model, node.id) > 1;
 
-        // Sensible default destination so the node is runnable out of the box.
-        if (node.outputDestination == null || node.outputDestination.isBlank()) {
-            node.outputDestination = (multiple ? OutputPaths.defaultDir()
-                                               : OutputPaths.defaultFile()).toString();
-        }
+        // Normalize the stored destination to the current output multiplicity: a
+        // folder for several outputs, a folder+file for a single one. This also
+        // fixes a stale single-file default left from before the node was wired
+        // to a multi-file source.
+        node.outputDestination = normalizeDestination(node.outputDestination, multiple);
 
         if (multiple) {
             // One file per input -> pick a folder.
@@ -192,6 +192,23 @@ class NodeInspector extends HBox {
             getChildren().addAll(new Label(I18n.t("output.folder")), folder, browse,
                                  new Label(I18n.t("output.name")), fileName);
         }
+    }
+
+    /** Coerces a stored destination to a folder (multiple outputs) or folder+file (single). */
+    private static String normalizeDestination(String dest, boolean multiple) {
+        boolean blank = dest == null || dest.isBlank();
+        boolean looksLikeFile = !blank && dest.toLowerCase().endsWith(".pdf");
+        if (multiple) {
+            if (blank) return OutputPaths.defaultDir().toString();
+            if (looksLikeFile) {                       // a file path -> use its folder
+                Path parent = Path.of(dest).getParent();
+                return (parent != null ? parent : OutputPaths.defaultDir()).toString();
+            }
+            return dest;                               // already a folder
+        }
+        if (blank) return OutputPaths.defaultFile().toString();
+        if (looksLikeFile) return dest;                // already folder+file
+        return Path.of(dest).resolve(OutputPaths.DEFAULT_FILE).toString();  // bare folder -> add name
     }
 
     private void chooseDir(TextField target) {

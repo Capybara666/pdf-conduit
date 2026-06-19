@@ -101,6 +101,30 @@ class PipelineExecutorTest {
     }
 
     @Test
+    void multiOutputWithStaleFileDestinationUsesParentFolder() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("a.pdf", 1));
+        src.files.add(pdf("b.pdf", 1));
+        PipelineNode toPdf = new PipelineNode("p", NodeKind.IMAGES_TO_PDF, 0, 0);
+        // A stale single-file destination (as if set before wiring a multi-file source).
+        Path dir = tmp.resolve("stale-out");
+        toPdf.outputDestination = dir.resolve("pdf_conduit_result.pdf").toString();
+        m.nodes.add(src);
+        m.nodes.add(toPdf);
+        m.connections.add(new Connection("s", "p"));
+
+        PipelineExecutor.Result result = PipelineExecutor.run(m, null);
+
+        // Two distinct files in the parent folder, not one overwritten file.
+        assertEquals(2, result.savedByNode().get("p").size());
+        assertEquals(2, result.savedByNode().get("p").stream().distinct().count());
+        try (var stream = Files.list(dir)) {
+            assertEquals(2, stream.filter(p -> p.toString().endsWith(".pdf")).count());
+        }
+    }
+
+    @Test
     void chainMapThenReduce() throws Exception {
         PipelineModel m = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
