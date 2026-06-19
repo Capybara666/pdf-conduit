@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.app.gui.util.OutputPaths;
 import org.example.app.pipeline.PipelineGraph;
 import org.example.app.pipeline.PipelineNode;
 import org.example.app.i18n.I18n;
@@ -150,27 +151,59 @@ class NodeInspector extends HBox {
 
     private void buildDestination(PipelineNode node) {
         boolean multiple = PipelineGraph.outputCount(canvas.model, node.id) > 1;
-        Label label = new Label(multiple ? I18n.t("output.folder") : I18n.t("output.file"));
-        TextField field = new TextField(node.outputDestination);
-        field.setPromptText(multiple ? I18n.t("output.folder.prompt") : I18n.t("output.file.prompt"));
-        field.setPrefWidth(240);
-        field.textProperty().addListener((o, a, b) -> node.outputDestination = b);
-        Button browse = secondary("…");
-        browse.setOnAction(e -> {
-            if (multiple) {
-                DirectoryChooser dc = new DirectoryChooser();
-                dc.setTitle(I18n.t("chooser.selectfolder"));
-                File dir = dc.showDialog(window());
-                if (dir != null) field.setText(dir.getAbsolutePath());
-            } else {
-                FileChooser fc = new FileChooser();
-                fc.setTitle(I18n.t("chooser.saveas"));
-                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("filter.pdf"), "*.pdf"));
-                File f = fc.showSaveDialog(window());
-                if (f != null) field.setText(f.getAbsolutePath());
-            }
-        });
-        getChildren().addAll(label, field, browse);
+
+        // Sensible default destination so the node is runnable out of the box.
+        if (node.outputDestination == null || node.outputDestination.isBlank()) {
+            node.outputDestination = (multiple ? OutputPaths.defaultDir()
+                                               : OutputPaths.defaultFile()).toString();
+        }
+
+        if (multiple) {
+            // One file per input -> pick a folder.
+            TextField folder = new TextField(node.outputDestination);
+            folder.setPromptText(I18n.t("output.folder.prompt"));
+            folder.setPrefWidth(260);
+            folder.textProperty().addListener((o, a, b) -> node.outputDestination = b);
+            Button browse = secondary("…");
+            browse.setOnAction(e -> chooseDir(folder));
+            getChildren().addAll(new Label(I18n.t("output.folder")), folder, browse);
+        } else {
+            // Single output -> folder + a separate file name.
+            Path current = Path.of(node.outputDestination);
+            String dir = current.getParent() != null ? current.getParent().toString()
+                                                      : OutputPaths.defaultDir().toString();
+            String name = current.getFileName() != null ? current.getFileName().toString()
+                                                         : OutputPaths.DEFAULT_FILE;
+            TextField folder = new TextField(dir);
+            folder.setPrefWidth(220);
+            TextField fileName = new TextField(name);
+            fileName.setPrefWidth(170);
+            Runnable apply = () -> {
+                String d = folder.getText() == null ? "" : folder.getText().strip();
+                String f = fileName.getText() == null ? "" : fileName.getText().strip();
+                if (f.isBlank()) f = OutputPaths.DEFAULT_FILE;
+                if (!f.toLowerCase().endsWith(".pdf")) f = f + ".pdf";
+                node.outputDestination = (d.isBlank() ? Path.of(f) : Path.of(d, f)).toString();
+            };
+            folder.textProperty().addListener((o, a, b) -> apply.run());
+            fileName.textProperty().addListener((o, a, b) -> apply.run());
+            Button browse = secondary("…");
+            browse.setOnAction(e -> chooseDir(folder));
+            getChildren().addAll(new Label(I18n.t("output.folder")), folder, browse,
+                                 new Label(I18n.t("output.name")), fileName);
+        }
+    }
+
+    private void chooseDir(TextField target) {
+        DirectoryChooser dc = new DirectoryChooser();
+        dc.setTitle(I18n.t("chooser.selectfolder"));
+        try {
+            String t = target.getText();
+            Path p = (t == null || t.isBlank()) ? OutputPaths.defaultDir() : Path.of(t);
+            if (java.nio.file.Files.isDirectory(p)) dc.setInitialDirectory(p.toFile());
+        } catch (Exception ignored) {}
+        File dir = dc.showDialog(window());
+        if (dir != null) target.setText(dir.getAbsolutePath());
     }
 
     // --- helpers ----------------------------------------------------------

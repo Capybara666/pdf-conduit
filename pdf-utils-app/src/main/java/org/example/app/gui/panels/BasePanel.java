@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import org.example.app.gui.component.DropZone;
 import org.example.app.gui.component.FileListView;
 import org.example.app.gui.component.ProgressPanel;
+import org.example.app.gui.util.OutputPaths;
 import org.example.app.i18n.I18n;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.PageSize;
@@ -124,13 +125,10 @@ public abstract class BasePanel extends BorderPane {
     private void updateAutoOutput() {
         if (fileList.getFiles().isEmpty()) return;
         Path first = fileList.getFiles().get(0);
-        Path parent = first.getParent();
-        if (parent == null) return;
+        Path dir = OutputPaths.defaultDir();
         String auto = batchMode
-            ? parent.resolve("pdf-conduit").toString()
-            : parent.resolve("pdf-conduit")
-                    .resolve(stripExt(first.getFileName().toString()) + outputSuffix + ".pdf")
-                    .toString();
+            ? dir.toString()
+            : dir.resolve(stripExt(first.getFileName().toString()) + outputSuffix + ".pdf").toString();
         String current = outputField.getText();
         if (current == null || current.isBlank() || current.equals(lastAuto)) {
             outputField.setText(auto);
@@ -143,15 +141,35 @@ public abstract class BasePanel extends BorderPane {
         if (batchMode) {
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setTitle(I18n.t("chooser.selectfolder"));
+            initialDir(outputField.getText()).ifPresent(chooser::setInitialDirectory);
             var dir = chooser.showDialog(stage);
             if (dir != null) outputField.setText(dir.getAbsolutePath());
         } else {
             FileChooser chooser = new FileChooser();
             chooser.setTitle(I18n.t("chooser.saveas"));
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("filter.pdf"), "*.pdf"));
+            String current = outputField.getText();
+            if (current != null && !current.isBlank()) {
+                Path p = Path.of(current);
+                initialDir(p.getParent() == null ? null : p.getParent().toString())
+                    .ifPresent(chooser::setInitialDirectory);
+                if (p.getFileName() != null) chooser.setInitialFileName(p.getFileName().toString());
+            }
             var file = chooser.showSaveDialog(stage);
             if (file != null) outputField.setText(file.getAbsolutePath());
         }
+    }
+
+    /** An existing directory to start a chooser in: the given path, else the default output dir. */
+    private java.util.Optional<java.io.File> initialDir(String pathText) {
+        try {
+            if (pathText != null && !pathText.isBlank()) {
+                Path p = Path.of(pathText);
+                if (Files.isDirectory(p)) return java.util.Optional.of(p.toFile());
+            }
+        } catch (Exception ignored) {}
+        Path def = OutputPaths.defaultDir();
+        return Files.isDirectory(def) ? java.util.Optional.of(def.toFile()) : java.util.Optional.empty();
     }
 
     // --- extension points -------------------------------------------------
