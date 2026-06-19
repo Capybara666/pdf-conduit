@@ -24,6 +24,10 @@ public class ImagesToPdfPanel extends BasePanel {
 
     public ImagesToPdfPanel() { super(I18n.t("panel.IMAGES.title"), I18n.t("run.IMAGES"), "_converted"); }
 
+    /** Each input becomes its own PDF; combining is the Merge operation's job. */
+    @Override
+    protected boolean supportsBatch() { return true; }
+
     @Override
     protected VBox buildOptionsArea() {
         Label label = new Label(I18n.t("images.pagesize.label"));
@@ -40,33 +44,58 @@ public class ImagesToPdfPanel extends BasePanel {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
         PageSize size = pageSizeBox.getValue();
-        Path output = resolveOutput(
-            files.get(0).resolveSibling(
-                stripExt(files.get(0).getFileName().toString()) + "_converted.pdf"));
 
+        if (isBatchMode()) {
+            String dirText = outputField.getText();
+            if (dirText == null || dirText.isBlank()) return;
+            Path dir = Path.of(dirText);
+            Task<Path> task = new Task<>() {
+                @Override
+                protected Path call() throws Exception {
+                    Files.createDirectories(dir);
+                    for (int i = 0; i < files.size(); i++) {
+                        Path in = files.get(i);
+                        updateMessage(I18n.t("msg.converting", 1) + " " + (i + 1) + "/" + files.size());
+                        Path out = dir.resolve(
+                            stripExt(in.getFileName().toString()) + "_converted.pdf");
+                        convertOne(in, size, out);
+                        updateProgress(i + 1, files.size());
+                    }
+                    return dir;
+                }
+            };
+            progressPanel.run(task, dir);
+            return;
+        }
+
+        // Single input -> one PDF.
+        Path input = files.get(0);
+        Path output = resolveOutput(
+            input.resolveSibling(stripExt(input.getFileName().toString()) + "_converted.pdf"));
         Task<MergeResult> task = new Task<>() {
             @Override
             protected MergeResult call() throws Exception {
-                updateMessage(I18n.t("msg.converting", files.size()));
-                List<Path> temps = new ArrayList<>();
-                try {
-                    List<PageSource> sources = new ArrayList<>();
-                    for (Path p : files) {
-                        // Images get the chosen page size; PDFs and documents are
-                        // included/converted as page sources.
-                        if (DocumentConverter.classify(p) == DocumentConverter.Kind.IMAGE) {
-                            sources.add(new PageSource.ImageSource(p, size));
-                        } else {
-                            Path pdf = DocumentConverter.ensurePdf(p, size, temps);
-                            sources.add(new PageSource.PdfPageSource(pdf, PageRange.ALL));
-                        }
-                    }
-                    return PdfMerger.execute(new MergeOptions(sources, output));
-                } finally {
-                    for (Path t : temps) Files.deleteIfExists(t);
-                }
+                updateMessage(I18n.t("msg.converting", 1));
+                return convertOne(input, size, output);
             }
         };
         progressPanel.run(task, output);
+    }
+
+    /** Converts a single input file to its own PDF (images use {@code size}). */
+    private static MergeResult convertOne(Path in, PageSize size, Path out) throws Exception {
+        List<Path> temps = new ArrayList<>();
+        try {
+            PageSource source;
+            if (DocumentConverter.classify(in) == DocumentConverter.Kind.IMAGE) {
+                source = new PageSource.ImageSource(in, size);
+            } else {
+                Path pdf = DocumentConverter.ensurePdf(in, size, temps);
+                source = new PageSource.PdfPageSource(pdf, PageRange.ALL);
+            }
+            return PdfMerger.execute(new MergeOptions(List.of(source), out));
+        } finally {
+            for (Path t : temps) Files.deleteIfExists(t);
+        }
     }
 }
