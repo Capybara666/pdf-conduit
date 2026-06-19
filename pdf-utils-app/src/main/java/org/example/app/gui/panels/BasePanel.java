@@ -12,7 +12,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.app.gui.component.DropZone;
 import org.example.app.gui.component.FileListView;
@@ -41,13 +40,18 @@ public abstract class BasePanel extends BorderPane {
 
     protected final FileListView fileList;
     protected final DropZone dropZone;
-    protected final TextField outputField;
     protected final ProgressPanel progressPanel;
 
+    // Output is always a folder plus — for single-output runs — a file name.
+    private final TextField folderField = new TextField();
+    private final TextField nameField = new TextField();
+    private final Label folderLabel = new Label(I18n.t("output.folder"));
+    private final Label nameLabel = new Label(I18n.t("output.name"));
+
     private final String outputSuffix;
-    private final Label outputLabel = new Label(I18n.t("output.file"));
     private boolean batchMode = false;
-    private String lastAuto = "";
+    private String lastAutoFolder = "";
+    private String lastAutoName = "";
 
     protected BasePanel(String title, String runLabel, String outputSuffix) {
         this.outputSuffix = outputSuffix;
@@ -71,15 +75,25 @@ public abstract class BasePanel extends BorderPane {
         HBox listToolbar = new HBox(8, countLabel, toolbarSpacer, clearBtn);
         listToolbar.setStyle("-fx-alignment: CENTER_LEFT;");
 
-        // --- output row (adapts between file / folder) ---
-        outputField = new TextField();
-        outputField.setPromptText(I18n.t("output.file.prompt"));
-        HBox.setHgrow(outputField, Priority.ALWAYS);
+        // --- output: a folder, plus a file name when there is a single output ---
+        folderField.setPromptText(I18n.t("output.folder.prompt"));
+        folderField.setText(OutputPaths.defaultDir().toString());
+        lastAutoFolder = folderField.getText();
+        HBox.setHgrow(folderField, Priority.ALWAYS);
         Button browseBtn = new Button("…");
         browseBtn.getStyleClass().add("btn-secondary");
-        browseBtn.setOnAction(e -> browseOutput());
-        HBox outputRow = new HBox(6, outputField, browseBtn);
-        VBox outputBox = new VBox(4, outputLabel, outputRow);
+        browseBtn.setOnAction(e -> browseFolder());
+        HBox folderRow = new HBox(6, folderField, browseBtn);
+
+        nameField.setPromptText(I18n.t("output.file.prompt"));
+        nameField.setText(OutputPaths.DEFAULT_FILE);
+        lastAutoName = nameField.getText();
+        HBox.setHgrow(nameField, Priority.ALWAYS);
+        // Name label + field only show for single-output runs.
+        nameLabel.managedProperty().bind(nameLabel.visibleProperty());
+        nameField.managedProperty().bind(nameField.visibleProperty());
+
+        VBox outputBox = new VBox(4, folderLabel, folderRow, nameLabel, nameField);
 
         progressPanel = new ProgressPanel(runLabel);
         progressPanel.getRunButton().setOnAction(e -> onRun());
@@ -116,48 +130,32 @@ public abstract class BasePanel extends BorderPane {
 
     private void refreshOutputMode() {
         batchMode = supportsBatch() && fileList.getFiles().size() > 1;
-        outputLabel.setText(batchMode ? I18n.t("output.folder") : I18n.t("output.file"));
-        outputField.setPromptText(batchMode ? I18n.t("output.folder.prompt") : I18n.t("output.file.prompt"));
+        // Several outputs go to a folder; a single output also gets a file name.
+        nameLabel.setVisible(!batchMode);
+        nameField.setVisible(!batchMode);
+        folderLabel.setText(I18n.t("output.folder"));
         updateAutoOutput();
     }
 
-    /** Auto-fills the output path, unless the user has typed their own. */
+    /** Auto-fills the file name from the first input, unless the user typed their own. */
     private void updateAutoOutput() {
         if (fileList.getFiles().isEmpty()) return;
         Path first = fileList.getFiles().get(0);
-        Path dir = OutputPaths.defaultDir();
-        String auto = batchMode
-            ? dir.toString()
-            : dir.resolve(stripExt(first.getFileName().toString()) + outputSuffix + ".pdf").toString();
-        String current = outputField.getText();
-        if (current == null || current.isBlank() || current.equals(lastAuto)) {
-            outputField.setText(auto);
-            lastAuto = auto;
+        String auto = stripExt(first.getFileName().toString()) + outputSuffix + ".pdf";
+        String current = nameField.getText();
+        if (current == null || current.isBlank() || current.equals(lastAutoName)) {
+            nameField.setText(auto);
+            lastAutoName = auto;
         }
     }
 
-    private void browseOutput() {
+    private void browseFolder() {
         Stage stage = (Stage) getScene().getWindow();
-        if (batchMode) {
-            DirectoryChooser chooser = new DirectoryChooser();
-            chooser.setTitle(I18n.t("chooser.selectfolder"));
-            initialDir(outputField.getText()).ifPresent(chooser::setInitialDirectory);
-            var dir = chooser.showDialog(stage);
-            if (dir != null) outputField.setText(dir.getAbsolutePath());
-        } else {
-            FileChooser chooser = new FileChooser();
-            chooser.setTitle(I18n.t("chooser.saveas"));
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("filter.pdf"), "*.pdf"));
-            String current = outputField.getText();
-            if (current != null && !current.isBlank()) {
-                Path p = Path.of(current);
-                initialDir(p.getParent() == null ? null : p.getParent().toString())
-                    .ifPresent(chooser::setInitialDirectory);
-                if (p.getFileName() != null) chooser.setInitialFileName(p.getFileName().toString());
-            }
-            var file = chooser.showSaveDialog(stage);
-            if (file != null) outputField.setText(file.getAbsolutePath());
-        }
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle(I18n.t("chooser.selectfolder"));
+        initialDir(folderField.getText()).ifPresent(chooser::setInitialDirectory);
+        var dir = chooser.showDialog(stage);
+        if (dir != null) folderField.setText(dir.getAbsolutePath());
     }
 
     /** An existing directory to start a chooser in: the given path, else the default output dir. */
@@ -187,9 +185,26 @@ public abstract class BasePanel extends BorderPane {
     /** True when several files are selected and this operation runs per-file. */
     protected final boolean isBatchMode() { return batchMode; }
 
+    /** The chosen output folder (for batch / per-file runs). */
+    protected final Path outputDir() {
+        String folder = folderField.getText();
+        return (folder == null || folder.isBlank()) ? OutputPaths.defaultDir() : Path.of(folder.strip());
+    }
+
+    /**
+     * The single-output destination: the chosen folder + file name. The name
+     * defaults to {@code defaultPath}'s file name when left blank, and always
+     * ends in {@code .pdf}.
+     */
     protected Path resolveOutput(Path defaultPath) {
-        String text = outputField.getText();
-        return (text != null && !text.isBlank()) ? Path.of(text) : defaultPath;
+        String name = nameField.getText();
+        if (name == null || name.isBlank()) {
+            name = defaultPath.getFileName() != null
+                ? defaultPath.getFileName().toString() : OutputPaths.DEFAULT_FILE;
+        }
+        name = name.strip();
+        if (!name.toLowerCase().endsWith(".pdf")) name = name + ".pdf";
+        return outputDir().resolve(name);
     }
 
     /**
@@ -200,9 +215,7 @@ public abstract class BasePanel extends BorderPane {
     protected void runPerFile(String verb, FileOp op) {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
-        String dirText = outputField.getText();
-        if (dirText == null || dirText.isBlank()) return;
-        Path dir = Path.of(dirText);
+        Path dir = outputDir();
         Task<Path> task = new Task<>() {
             @Override
             protected Path call() throws Exception {

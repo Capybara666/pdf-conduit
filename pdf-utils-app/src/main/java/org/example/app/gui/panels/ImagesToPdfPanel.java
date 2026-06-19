@@ -46,9 +46,7 @@ public class ImagesToPdfPanel extends BasePanel {
         PageSize size = pageSizeBox.getValue();
 
         if (isBatchMode()) {
-            String dirText = outputField.getText();
-            if (dirText == null || dirText.isBlank()) return;
-            Path dir = Path.of(dirText);
+            Path dir = outputDir();
             Task<Path> task = new Task<>() {
                 @Override
                 protected Path call() throws Exception {
