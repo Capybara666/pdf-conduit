@@ -13,6 +13,7 @@ import javafx.stage.Window;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.app.gui.component.DragReorder;
+import org.example.app.gui.component.PageSelectDialog;
 import org.example.app.i18n.I18n;
 import org.example.core.exception.InvalidPageRangeException;
 import org.example.core.model.PageRange;
@@ -78,7 +79,11 @@ public class Step2ArrangePages implements WizardStep {
         Label error = new Label();
         error.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
         error.setVisible(false);
-        VBox content = new VBox(8, new Label(I18n.t("wizard.pages.field.label")), field, error);
+        Button pick = new Button(I18n.t("select.pick"));
+        pick.getStyleClass().add("btn-secondary");
+        pick.setOnAction(e -> PageSelectDialog.choose(owner, src.file(), field.getText())
+            .ifPresent(field::setText));
+        VBox content = new VBox(8, new Label(I18n.t("wizard.pages.field.label")), field, pick, error);
         content.setStyle("-fx-padding: 6;");
         dialog.getDialogPane().setContent(content);
 
