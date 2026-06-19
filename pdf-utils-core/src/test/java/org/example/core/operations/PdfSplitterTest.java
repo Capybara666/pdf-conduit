@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.example.core.model.PageRange;
+import org.example.core.model.SplitMode;
 import org.example.core.model.SplitOptions;
 import org.example.core.model.SplitResult;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,35 @@ class PdfSplitterTest {
             new SplitOptions(src, PageRange.ALL, out));
 
         assertEquals(4, result.pageCount());
+    }
+
+    @Test
+    void separateWritesOneFilePerSelectedPage() throws Exception {
+        Path src = createPdf(3);
+        Path dir = tmp.resolve("burst");
+
+        SplitResult result = PdfSplitter.execute(
+            new SplitOptions(src, PageRange.ALL, SplitMode.SEPARATE, dir));
+
+        assertEquals(3, result.fileCount());
+        assertEquals(3, result.pageCount());
+        for (Path out : result.outputs()) {
+            assertTrue(java.nio.file.Files.exists(out));
+            try (PDDocument doc = Loader.loadPDF(out.toFile())) {
+                assertEquals(1, doc.getNumberOfPages());
+            }
+        }
+    }
+
+    @Test
+    void separateRespectsPageSelection() throws Exception {
+        Path src = createPdf(5);
+        Path dir = tmp.resolve("burst-sel");
+
+        SplitResult result = PdfSplitter.execute(
+            new SplitOptions(src, new PageRange(List.of(2, 4)), SplitMode.SEPARATE, dir));
+
+        assertEquals(2, result.fileCount());
     }
 
     private Path createPdf(int pages) throws IOException {

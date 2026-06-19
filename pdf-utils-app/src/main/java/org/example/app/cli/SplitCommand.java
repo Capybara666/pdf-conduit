@@ -3,6 +3,7 @@ package org.example.app.cli;
 import org.example.core.exception.InvalidPageRangeException;
 import org.example.core.exception.PdfOperationException;
 import org.example.core.model.PageRange;
+import org.example.core.model.SplitMode;
 import org.example.core.model.SplitOptions;
 import org.example.core.model.SplitResult;
 import org.example.core.operations.PdfSplitter;
@@ -26,8 +27,13 @@ public class SplitCommand implements Callable<Integer> {
             description = "Pages to extract (default: all).", defaultValue = "")
     private String pages;
 
-    @Option(names = {"-o", "--output"}, paramLabel = "FILE", description = "Output PDF path.")
+    @Option(names = {"-o", "--output"}, paramLabel = "PATH",
+            description = "Output PDF file (default), or output folder with --separate.")
     private Path output;
+
+    @Option(names = "--separate",
+            description = "Write one PDF per page into the output folder instead of one combined PDF.")
+    private boolean separate;
 
     @Option(names = "--verbose") private boolean verbose;
 
@@ -37,6 +43,13 @@ public class SplitCommand implements Callable<Integer> {
             PageRange range = pages.isBlank()
                 ? PageRange.ALL
                 : PageRangeParser.parse(pages, countPages(input));
+            if (separate) {
+                Path dir = output != null ? output : input.resolveSibling(stem(input) + "_pages");
+                SplitResult result = PdfSplitter.execute(
+                    new SplitOptions(input, range, SplitMode.SEPARATE, dir));
+                System.out.printf("Wrote %d file(s) → %s%n", result.fileCount(), dir);
+                return 0;
+            }
             Path out = output != null ? output : MergeCommand.deriveOutput(input, "_split");
             SplitResult result = PdfSplitter.execute(new SplitOptions(input, range, out));
             System.out.printf("Extracted %d pages → %s%n", result.pageCount(), result.output());
@@ -48,6 +61,12 @@ public class SplitCommand implements Callable<Integer> {
             System.err.println("Error: " + e.getMessage());
             return 2;
         }
+    }
+
+    private static String stem(Path p) {
+        String name = p.getFileName().toString();
+        int dot = name.lastIndexOf('.');
+        return dot > 0 ? name.substring(0, dot) : name;
     }
 
     private static int countPages(Path pdf) throws PdfOperationException {

@@ -128,14 +128,21 @@ public abstract class BasePanel extends BorderPane {
 
     // --- output mode (file vs folder) -------------------------------------
 
-    private void refreshOutputMode() {
-        batchMode = supportsBatch() && fileList.getFiles().size() > 1;
+    protected void refreshOutputMode() {
+        batchMode = (supportsBatch() && fileList.getFiles().size() > 1) || folderOnly();
         // Several outputs go to a folder; a single output also gets a file name.
         nameLabel.setVisible(!batchMode);
         nameField.setVisible(!batchMode);
         folderLabel.setText(I18n.t("output.folder"));
         updateAutoOutput();
     }
+
+    /**
+     * When true, output is always a folder (no single file name), regardless of how
+     * many files are selected. Panels whose run can produce several files from a
+     * single input (e.g. splitting into separate files) override this.
+     */
+    protected boolean folderOnly() { return false; }
 
     /** Auto-fills the file name from the first input, unless the user typed their own. */
     private void updateAutoOutput() {

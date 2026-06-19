@@ -48,6 +48,20 @@ class CliIntegrationTest {
     }
 
     @Test
+    void splitSeparateWritesOneFilePerPage() throws Exception {
+        Path src = createPdf(4);
+        Path dir = tmp.resolve("burst");
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("split", src.toString(), "--separate", "-o", dir.toString());
+
+        assertEquals(0, exit);
+        try (var stream = java.nio.file.Files.list(dir)) {
+            assertEquals(4, stream.filter(p -> p.toString().endsWith(".pdf")).count());
+        }
+    }
+
+    @Test
     void rotateCommandRotatesPages() throws Exception {
         Path src = createPdf(3);
         Path out = tmp.resolve("rotated.pdf");

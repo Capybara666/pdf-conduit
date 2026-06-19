@@ -9,10 +9,10 @@ documents to PDF** — with both a JavaFX GUI and a command-line interface, buil
 
 ## Features
 
-- **Core operations:** merge PDFs/images into one document, extract a page
-  range, compress to a target file size (iterative image downsampling), rotate
-  pages, arrange (reorder, duplicate or drop) pages, and convert files to PDF
-  (one PDF per input).
+- **Core operations:** merge PDFs/images into one document, extract pages — into
+  one PDF or split into a separate file per page — compress to a target file size
+  (iterative image downsampling), rotate pages, arrange (reorder, duplicate or
+  drop) pages, and convert files to PDF (one PDF per input).
 - **Any supported input, anywhere:** every operation accepts images and office
   documents (`.docx`, `.odt`, `.rtf`, `.txt`, `.xlsx`, `.pptx`, …) in addition to
   PDFs — non-PDF files are converted to PDF automatically (images inline; office
@@ -70,6 +70,7 @@ build a native package (see *Releases*), the launcher is `pdf-conduit`:
 ```bash
 pdf-conduit merge a.pdf b.pdf images/*.png -o combined.pdf
 pdf-conduit split report.pdf --pages 1-3,5,end-2 -o pages.pdf
+pdf-conduit split report.pdf --separate -o pages/   # one PDF per page into a folder
 pdf-conduit compress scan.pdf --target-size 5MB -o smaller.pdf
 pdf-conduit rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
 pdf-conduit arrange doc.pdf --order 3,1,2 -o reordered.pdf   # reorder pages; 5-1 reverses, repeat to duplicate
