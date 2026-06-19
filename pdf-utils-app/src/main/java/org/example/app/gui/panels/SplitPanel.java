@@ -1,9 +1,14 @@
 package org.example.app.gui.panels;
 
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.example.app.gui.component.PageSelectDialog;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.PageRange;
 import org.example.core.model.PageSize;
@@ -38,7 +43,19 @@ public class SplitPanel extends BasePanel {
         label.setStyle("-fx-font-size: 11px;");
         pagesField = new TextField();
         pagesField.setPromptText(I18n.t("split.pages.prompt"));
-        return new VBox(4, label, pagesField);
+        HBox.setHgrow(pagesField, Priority.ALWAYS);
+        Button pick = new Button(I18n.t("select.pick"));
+        pick.getStyleClass().add("btn-secondary");
+        pick.disableProperty().bind(Bindings.isEmpty(fileList.getFiles()));
+        pick.setOnAction(e -> pickPages());
+        return new VBox(4, label, new HBox(6, pagesField, pick));
+    }
+
+    /** Opens the visual page picker for the first file and writes the result back. */
+    private void pickPages() {
+        if (fileList.getFiles().isEmpty()) return;
+        PageSelectDialog.choose(getScene().getWindow(), fileList.getFiles().get(0),
+            pagesField.getText()).ifPresent(pagesField::setText);
     }
 
     @Override

@@ -14,13 +14,11 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.example.app.gui.component.DropZone;
 import org.example.app.gui.component.PageReorderGrid;
 import org.example.app.gui.component.ProgressPanel;
 import org.example.app.gui.util.OutputPaths;
+import org.example.app.gui.util.PdfThumbnails;
 import org.example.app.i18n.I18n;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.ArrangeOptions;
@@ -28,10 +26,6 @@ import org.example.core.model.ArrangeResult;
 import org.example.core.model.PageSize;
 import org.example.core.operations.PdfArranger;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -127,16 +121,8 @@ public class ArrangePanel extends BorderPane {
             protected List<Image> call() throws Exception {
                 List<Path> temps = new ArrayList<>();
                 pdf = DocumentConverter.ensurePdf(file, PageSize.FIT, temps);
-                List<Image> thumbs = new ArrayList<>();
-                try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
-                    PDFRenderer renderer = new PDFRenderer(doc);
-                    int pages = doc.getNumberOfPages();
-                    for (int i = 0; i < pages; i++) {
-                        BufferedImage img = renderer.renderImageWithDPI(i, THUMB_DPI);
-                        thumbs.add(toFxImage(img));
-                        updateMessage((i + 1) + "/" + pages);
-                    }
-                }
+                List<Image> thumbs = PdfThumbnails.render(pdf, THUMB_DPI,
+                    (done, total) -> updateMessage(done + "/" + total));
                 // Keep the working PDF (and any conversion temps) alive for the run.
                 synchronized (workingTemps) {
                     releaseWorking();
@@ -212,12 +198,6 @@ public class ArrangePanel extends BorderPane {
     }
 
     // --- utilities --------------------------------------------------------
-
-    private static Image toFxImage(BufferedImage img) throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write(img, "png", bos);
-        return new Image(new ByteArrayInputStream(bos.toByteArray()));
-    }
 
     private static String stripExt(String name) {
         int dot = name.lastIndexOf('.');

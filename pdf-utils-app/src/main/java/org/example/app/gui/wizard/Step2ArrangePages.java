@@ -17,12 +17,12 @@ import org.example.app.i18n.I18n;
 import org.example.core.exception.InvalidPageRangeException;
 import org.example.core.model.PageRange;
 import org.example.core.model.PageSource;
+import org.example.core.util.PageRangeFormatter;
 import org.example.core.util.PageRangeParser;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Step2ArrangePages implements WizardStep {
@@ -118,19 +118,8 @@ public class Step2ArrangePages implements WizardStep {
 
     /** Compact display of a page range, e.g. "all" or "1-3,5,8-9". */
     private static String describe(PageRange range) {
-        if (range.isAll()) return I18n.t("wizard.pages.all");
-        List<Integer> nums = range.pageNumbers();
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        while (i < nums.size()) {
-            int start = nums.get(i);
-            int end = start;
-            while (i + 1 < nums.size() && nums.get(i + 1) == end + 1) end = nums.get(++i);
-            if (sb.length() > 0) sb.append(",");
-            sb.append(end > start ? start + "-" + end : String.valueOf(start));
-            i++;
-        }
-        return sb.toString();
+        return range.isAll() ? I18n.t("wizard.pages.all")
+                             : PageRangeFormatter.format(range.pageNumbers());
     }
 
     private class DraggablePageCell extends ListCell<PageSource> {

@@ -434,3 +434,18 @@
     -fx-cursor: hand;
 }
 .page-tile-btn:hover { -fx-background-color: -c-accent; -fx-text-fill: -c-on-accent; }
+
+/* Selectable tiles (Extract/Rotate page picker): dim when unselected, accent + check when selected */
+.page-tile-selectable { -fx-opacity: 0.5; }
+.page-tile-selectable:selected { -fx-opacity: 1; -fx-border-color: -c-accent; -fx-border-width: 2; }
+.page-tile-check {
+    -fx-min-width: 20; -fx-min-height: 20;
+    -fx-alignment: CENTER;
+    -fx-background-color: -c-accent;
+    -fx-text-fill: -c-on-accent;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-opacity: 0;
+}
+.page-tile-selectable:selected .page-tile-check { -fx-opacity: 1; }
