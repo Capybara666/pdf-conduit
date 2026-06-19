@@ -62,6 +62,29 @@ class CliIntegrationTest {
     }
 
     @Test
+    void arrangeCommandReordersPages() throws Exception {
+        Path src = createPdf(3);
+        Path out = tmp.resolve("arranged.pdf");
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("arrange", src.toString(), "--order", "3,1", "-o", out.toString());
+
+        assertEquals(0, exit);
+        try (PDDocument doc = Loader.loadPDF(out.toFile())) {
+            assertEquals(2, doc.getNumberOfPages());   // page 2 dropped, 3 then 1 kept
+        }
+    }
+
+    @Test
+    void arrangeInvalidOrderReturnsExitCode1() throws Exception {
+        Path src = createPdf(2);
+        int exit = new CommandLine(new RootCommand())
+            .execute("arrange", src.toString(), "--order", "9",
+                     "-o", tmp.resolve("out.pdf").toString());
+        assertEquals(1, exit);
+    }
+
+    @Test
     void invalidAngleReturnsExitCode1() throws Exception {
         Path src = createPdf(1);
         int exit = new CommandLine(new RootCommand())

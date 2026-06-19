@@ -54,6 +54,10 @@ public final class Icons {
     // a folder (source files)
     private static final String SOURCE =
         "M4 7 H9.5 L11.5 9 H20 V19 H4 Z";
+    // reorder: an up/down arrow beside stacked rows (rearrange page order)
+    private static final String ARRANGE =
+        "M6 5 V19 M3.5 8 L6 5 L8.5 8 M3.5 16 L6 19 L8.5 16 "
+        + "M11 7 H20 M11 12 H20 M11 17 H17";
 
     // --- public factories -------------------------------------------------
 
@@ -64,6 +68,7 @@ public final class Icons {
             case COMPRESS -> COMPRESS;
             case ROTATE   -> ROTATE;
             case IMAGES   -> TO_PDF;
+            case ARRANGE  -> ARRANGE;
             case PIPELINE -> PIPELINE;
             case WIZARD   -> WIZARD;
         }, size);
@@ -77,6 +82,7 @@ public final class Icons {
             case EXTRACT       -> SPLIT;
             case COMPRESS      -> COMPRESS;
             case ROTATE        -> ROTATE;
+            case ARRANGE       -> ARRANGE;
         }, size);
     }
 

@@ -148,6 +148,25 @@ class PipelineExecutorTest {
     }
 
     @Test
+    void arrangeReordersPagesPerInput() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("a.pdf", 4));
+        PipelineNode arrange = new PipelineNode("ar", NodeKind.ARRANGE, 0, 0);
+        arrange.order = "4-1";                       // reverse the pages
+        Path out = tmp.resolve("arranged.pdf");
+        arrange.outputDestination = out.toString();
+        m.nodes.add(src);
+        m.nodes.add(arrange);
+        m.connections.add(new Connection("s", "ar"));
+
+        PipelineExecutor.run(m, null);
+
+        assertTrue(Files.exists(out));
+        assertEquals(4, pageCount(out));
+    }
+
+    @Test
     void invalidPipelineThrows() throws Exception {
         PipelineModel m = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);

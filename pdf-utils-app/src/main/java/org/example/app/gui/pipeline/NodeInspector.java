@@ -54,6 +54,7 @@ class NodeInspector extends HBox {
             case SOURCE -> buildSource(node);
             case EXTRACT -> buildPages(node);
             case ROTATE -> buildRotate(node);
+            case ARRANGE -> buildArrange(node);
             case COMPRESS -> buildCompress(node);
             case IMAGES_TO_PDF -> buildImages(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
@@ -121,6 +122,14 @@ class NodeInspector extends HBox {
         angle.valueProperty().addListener((o, a, b) -> { if (b != null) { node.angle = b; canvas.refreshNode(node); } });
         getChildren().addAll(new Label(I18n.t("pipeline.node.pages")), pages,
             new Label(I18n.t("pipeline.node.angle")), angle);
+    }
+
+    private void buildArrange(PipelineNode node) {
+        TextField order = new TextField(node.order);
+        order.setPromptText(I18n.t("pipeline.node.order.prompt"));
+        order.setPrefWidth(180);
+        order.textProperty().addListener((o, a, b) -> { node.order = b; canvas.refreshNode(node); });
+        getChildren().addAll(new Label(I18n.t("pipeline.node.order")), order);
     }
 
     private void buildCompress(PipelineNode node) {

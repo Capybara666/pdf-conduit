@@ -3,15 +3,16 @@
 # PDF Conduit
 
 A small desktop toolkit for everyday PDF tasks — **merge, extract pages,
-compress to a target size, rotate, and convert images & documents to PDF** —
-with both a JavaFX GUI and a command-line interface, built on
+compress to a target size, rotate, arrange (reorder) pages, and convert images &
+documents to PDF** — with both a JavaFX GUI and a command-line interface, built on
 [Apache PDFBox](https://pdfbox.apache.org/).
 
 ## Features
 
 - **Core operations:** merge PDFs/images into one document, extract a page
   range, compress to a target file size (iterative image downsampling), rotate
-  pages, and convert files to PDF (one PDF per input).
+  pages, arrange (reorder, duplicate or drop) pages, and convert files to PDF
+  (one PDF per input).
 - **Any supported input, anywhere:** every operation accepts images and office
   documents (`.docx`, `.odt`, `.rtf`, `.txt`, `.xlsx`, `.pptx`, …) in addition to
   PDFs — non-PDF files are converted to PDF automatically (images inline; office
@@ -71,6 +72,7 @@ pdf-conduit merge a.pdf b.pdf images/*.png -o combined.pdf
 pdf-conduit split report.pdf --pages 1-3,5,end-2 -o pages.pdf
 pdf-conduit compress scan.pdf --target-size 5MB -o smaller.pdf
 pdf-conduit rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
+pdf-conduit arrange doc.pdf --order 3,1,2 -o reordered.pdf   # reorder pages; 5-1 reverses, repeat to duplicate
 pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf   # combines images into one PDF (alias of images-to-pdf)
 ```
 

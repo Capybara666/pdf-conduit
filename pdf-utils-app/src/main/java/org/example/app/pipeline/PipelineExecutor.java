@@ -5,10 +5,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.app.pipeline.Document.DocType;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.*;
+import org.example.core.operations.PdfArranger;
 import org.example.core.operations.PdfCompressor;
 import org.example.core.operations.PdfMerger;
 import org.example.core.operations.PdfRotator;
 import org.example.core.operations.PdfSplitter;
+import org.example.core.util.PageOrderParser;
 import org.example.core.util.PageRangeParser;
 
 import java.io.IOException;
@@ -188,6 +190,8 @@ public final class PipelineExecutor {
                         new CompressOptions(src, n.targetBytes, out));
                     case ROTATE -> PdfRotator.execute(
                         new RotateOptions(src, range(n.pages, src), n.angle, out));
+                    case ARRANGE -> PdfArranger.execute(
+                        new ArrangeOptions(src, order(n.order, src), out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
@@ -259,5 +263,13 @@ public final class PipelineExecutor {
             total = doc.getNumberOfPages();
         }
         return PageRangeParser.parse(expr, total);
+    }
+
+    private static List<Integer> order(String expr, Path pdf) throws Exception {
+        int total;
+        try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
+            total = doc.getNumberOfPages();
+        }
+        return PageOrderParser.parse(expr, total);
     }
 }

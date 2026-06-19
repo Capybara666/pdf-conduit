@@ -147,6 +147,8 @@ class NodeView extends HBox {
             case ROTATE -> I18n.t("pipeline.summary.pages",
                 node.pages.isBlank() ? I18n.t("pipeline.summary.all") : node.pages)
                 + "  ·  " + node.angle + "°";
+            case ARRANGE -> I18n.t("pipeline.summary.order",
+                node.order.isBlank() ? I18n.t("pipeline.summary.natural") : node.order);
             case COMPRESS -> I18n.t("pipeline.summary.target", ProgressPanel.humanSize(node.targetBytes));
             case IMAGES_TO_PDF -> I18n.t("pipeline.node.pagesize") + " " + node.pageSize;
             case MERGE -> I18n.t("pipeline.summary.combine");

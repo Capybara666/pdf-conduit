@@ -13,6 +13,7 @@ import picocli.CommandLine.Command;
         SplitCommand.class,
         CompressCommand.class,
         RotateCommand.class,
+        ArrangeCommand.class,
         ImagesToPdfCommand.class,
         CommandLine.HelpCommand.class
     }

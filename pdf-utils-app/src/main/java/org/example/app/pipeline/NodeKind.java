@@ -7,7 +7,8 @@ public enum NodeKind {
     IMAGES_TO_PDF("To PDF", "_converted"),
     EXTRACT("Extract", "_extracted"),
     COMPRESS("Compress", "_compressed"),
-    ROTATE("Rotate", "_rotated");
+    ROTATE("Rotate", "_rotated"),
+    ARRANGE("Arrange", "_arranged");
 
     public final String label;
     public final String suffix;
@@ -28,6 +29,7 @@ public enum NodeKind {
      * MERGE node.
      */
     public boolean isMap()     {
-        return this == EXTRACT || this == COMPRESS || this == ROTATE || this == IMAGES_TO_PDF;
+        return this == EXTRACT || this == COMPRESS || this == ROTATE
+            || this == ARRANGE || this == IMAGES_TO_PDF;
     }
 }

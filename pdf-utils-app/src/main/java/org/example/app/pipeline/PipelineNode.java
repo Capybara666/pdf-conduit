@@ -23,6 +23,9 @@ public class PipelineNode {
     // EXTRACT / ROTATE
     public String pages = "";
 
+    // ARRANGE — page order expression, e.g. "3,1,2" (blank = keep natural order)
+    public String order = "";
+
     // ROTATE
     public int angle = 90;
 

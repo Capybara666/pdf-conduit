@@ -5,6 +5,7 @@ public enum SidebarItem {
     SPLIT    ("✂", "Extract"),
     COMPRESS ("⊟", "Compress"),
     ROTATE   ("↻", "Rotate"),
+    ARRANGE  ("⇅", "Arrange"),
     IMAGES   ("🖼", "To PDF"),
     PIPELINE ("⇄", "Pipeline"),
     WIZARD   ("⚙", "Wizard");

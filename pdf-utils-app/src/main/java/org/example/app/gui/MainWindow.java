@@ -147,6 +147,7 @@ public class MainWindow {
             case SPLIT    -> new SplitPanel();
             case COMPRESS -> new CompressPanel();
             case ROTATE   -> new RotatePanel();
+            case ARRANGE  -> new ArrangePanel();
             case IMAGES   -> new ImagesToPdfPanel();
             case PIPELINE -> new org.example.app.gui.pipeline.PipelineView();
             case WIZARD   -> new WizardController();
