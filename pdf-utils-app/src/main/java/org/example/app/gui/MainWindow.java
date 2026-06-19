@@ -155,17 +155,16 @@ public class MainWindow {
     }
 
     public void show() {
-        boolean restored = restoreBounds();
+        restoreSize();
         stage.show();
 
-        // Centre on the cursor's monitor on first run. Done after show() (via
-        // runLater) so the decorated size is known and the window manager honours
-        // the move — pre-show positioning is unreliable on some Linux WMs.
-        if (!restored) {
-            Platform.runLater(this::centerOnCursorScreen);
-        }
-        // Remember where the user leaves the window for next time.
-        stage.setOnHidden(e -> saveBounds());
+        // Always open centred on the monitor under the cursor — the screen the
+        // user is actually working on. Done after show() (via runLater) so the
+        // decorated size is known and the window manager honours the move;
+        // pre-show positioning is unreliable on some Linux WMs.
+        Platform.runLater(this::centerOnCursorScreen);
+        // Remember the size (not the position) for next time.
+        stage.setOnHidden(e -> saveSize());
     }
 
     private void centerOnCursorScreen() {
@@ -176,28 +175,20 @@ public class MainWindow {
         stage.setY(b.getMinY() + (b.getHeight() - h) / 2);
     }
 
-    /** Restores the saved window bounds if they are still visible on some screen. */
-    private boolean restoreBounds() {
-        double x = PREFS.getDouble("win.x", Double.NaN);
-        double y = PREFS.getDouble("win.y", Double.NaN);
+    /** Restores the saved window size (position is always re-centred on launch). */
+    private void restoreSize() {
         double w = PREFS.getDouble("win.w", Double.NaN);
         double h = PREFS.getDouble("win.h", Double.NaN);
-        if (Double.isNaN(x) || Double.isNaN(y) || w < 200 || h < 200) return false;
-        // Reject bounds that no longer fall on any monitor (e.g. a screen was unplugged).
-        if (Screen.getScreensForRectangle(x, y, w, h).isEmpty()) return false;
-        stage.setX(x);
-        stage.setY(y);
-        stage.setWidth(w);
-        stage.setHeight(h);
-        return true;
+        if (!Double.isNaN(w) && !Double.isNaN(h) && w >= 200 && h >= 200) {
+            stage.setWidth(w);
+            stage.setHeight(h);
+        }
     }
 
-    private void saveBounds() {
+    private void saveSize() {
         if (stage.isMaximized() || stage.isIconified()) return;   // keep the restorable size
         double w = stage.getWidth(), h = stage.getHeight();
         if (Double.isNaN(w) || w <= 0) return;
-        PREFS.putDouble("win.x", stage.getX());
-        PREFS.putDouble("win.y", stage.getY());
         PREFS.putDouble("win.w", w);
         PREFS.putDouble("win.h", h);
     }
