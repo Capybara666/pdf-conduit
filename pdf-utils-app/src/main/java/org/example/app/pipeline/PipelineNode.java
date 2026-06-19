@@ -23,6 +23,9 @@ public class PipelineNode {
     // EXTRACT / ROTATE
     public String pages = "";
 
+    // EXTRACT — combine selected pages into one PDF, or split into one file per page
+    public org.example.core.model.SplitMode splitMode = org.example.core.model.SplitMode.COMBINE;
+
     // ARRANGE — page order expression, e.g. "3,1,2" (blank = keep natural order)
     public String order = "";
 

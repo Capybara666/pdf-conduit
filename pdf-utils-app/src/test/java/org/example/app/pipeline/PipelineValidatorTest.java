@@ -66,6 +66,23 @@ class PipelineValidatorTest {
     }
 
     @Test
+    void rejectsSeparateSplitThatIsNotTerminal() {
+        PipelineModel m = new PipelineModel();
+        m.nodes.add(source("s", "/tmp/a.pdf"));
+        PipelineNode split = new PipelineNode("x", NodeKind.EXTRACT, 0, 0);
+        split.splitMode = org.example.core.model.SplitMode.SEPARATE;
+        PipelineNode compress = new PipelineNode("c", NodeKind.COMPRESS, 0, 0);
+        compress.outputDestination = "/tmp/out.pdf";
+        m.nodes.add(split);
+        m.nodes.add(compress);
+        m.connections.add(new Connection("s", "x"));
+        m.connections.add(new Connection("x", "c"));   // split feeds another step → invalid
+
+        assertTrue(PipelineValidator.validate(m).stream()
+            .anyMatch(e -> "x".equals(e.nodeId()) && e.message().toLowerCase().contains("last step")));
+    }
+
+    @Test
     void validChainHasNoErrors() {
         PipelineModel m = new PipelineModel();
         m.nodes.add(source("s", "/tmp/a.pdf", "/tmp/b.pdf"));

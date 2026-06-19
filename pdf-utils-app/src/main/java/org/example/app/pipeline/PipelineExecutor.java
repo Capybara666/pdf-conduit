@@ -161,6 +161,25 @@ public final class PipelineExecutor {
         boolean multipleOutputs = inputs.size() > 1;
         for (Document in : inputs) {
             String baseName = in.baseName() + n.kind.suffix;
+
+            // Extract in "separate files" mode emits one PDF per page. The validator
+            // guarantees such a node is terminal, so we write straight to its folder
+            // and add every produced file to the bundle.
+            if (n.kind == NodeKind.EXTRACT && n.splitMode == SplitMode.SEPARATE) {
+                try {
+                    Path src = ensurePdf(in, temps);
+                    SplitResult r = PdfSplitter.execute(
+                        new SplitOptions(src, range(n.pages, src), SplitMode.SEPARATE, destDir(n)));
+                    for (Path f : r.outputs()) results.add(new Document(f, DocType.PDF, baseName));
+                } catch (PipelineException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new PipelineException(
+                        n.kind.label + " (" + in.file().getFileName() + "): " + e.getMessage(), e);
+                }
+                continue;
+            }
+
             Path out = terminal
                 ? destFile(n, uniqueName(baseName, usedNames), multipleOutputs)
                 : temp(temps);
@@ -177,12 +196,7 @@ public final class PipelineExecutor {
                 }
 
                 // Page operations need a PDF; convert images (and anything else) first.
-                Path src = in.file();
-                if (in.type() != DocType.PDF) {
-                    List<Path> created = new ArrayList<>();
-                    src = DocumentConverter.ensurePdf(in.file(), PageSize.FIT, created);
-                    temps.addAll(created);
-                }
+                Path src = ensurePdf(in, temps);
                 switch (n.kind) {
                     case EXTRACT -> PdfSplitter.execute(
                         new SplitOptions(src, range(n.pages, src), out));
@@ -244,6 +258,32 @@ public final class PipelineExecutor {
             name = base + "-" + i++;
         }
         return name;
+    }
+
+    /** Returns a PDF for {@code in}, converting (and tracking the temp) if needed. */
+    private static Path ensurePdf(Document in, Set<Path> temps) throws Exception {
+        if (in.type() == DocType.PDF) return in.file();
+        List<Path> created = new ArrayList<>();
+        Path src = DocumentConverter.ensurePdf(in.file(), PageSize.FIT, created);
+        temps.addAll(created);
+        return src;
+    }
+
+    /** The output folder of a terminal node (its destination, or that file's parent). */
+    private static Path destDir(PipelineNode n) throws PipelineException {
+        String dest = n.outputDestination;
+        if (dest == null || dest.isBlank()) {
+            throw new PipelineException(n.kind.label + " has no output destination.");
+        }
+        Path p = Path.of(dest);
+        Path dir = (dest.toLowerCase().endsWith(".pdf") && !Files.isDirectory(p) && p.getParent() != null)
+            ? p.getParent() : p;
+        try {
+            Files.createDirectories(dir);
+            return dir;
+        } catch (IOException e) {
+            throw new PipelineException("Cannot create output location: " + e.getMessage(), e);
+        }
     }
 
     private static Path temp(Set<Path> temps) throws PipelineException {

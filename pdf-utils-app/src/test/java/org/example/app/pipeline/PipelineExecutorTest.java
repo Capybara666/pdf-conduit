@@ -167,6 +167,27 @@ class PipelineExecutorTest {
     }
 
     @Test
+    void extractSeparateBurstsPagesIntoFolder() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("doc.pdf", 3));
+        PipelineNode split = new PipelineNode("x", NodeKind.EXTRACT, 0, 0);
+        split.splitMode = org.example.core.model.SplitMode.SEPARATE;
+        Path outDir = tmp.resolve("burst-out");          // folder
+        split.outputDestination = outDir.toString();
+        m.nodes.add(src);
+        m.nodes.add(split);
+        m.connections.add(new Connection("s", "x"));
+
+        PipelineExecutor.Result result = PipelineExecutor.run(m, null);
+
+        assertEquals(3, result.savedByNode().get("x").size());
+        try (var stream = Files.list(outDir)) {
+            assertEquals(3, stream.filter(p -> p.toString().endsWith(".pdf")).count());
+        }
+    }
+
+    @Test
     void invalidPipelineThrows() throws Exception {
         PipelineModel m = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);

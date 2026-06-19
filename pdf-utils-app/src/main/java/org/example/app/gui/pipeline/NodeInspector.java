@@ -107,9 +107,26 @@ class NodeInspector extends HBox {
     private void buildPages(PipelineNode node) {
         TextField pages = new TextField(node.pages);
         pages.setPromptText(I18n.t("pipeline.node.pages.prompt"));
-        pages.setPrefWidth(160);
+        pages.setPrefWidth(150);
         pages.textProperty().addListener((o, a, b) -> { node.pages = b; canvas.refreshNode(node); });
-        getChildren().addAll(new Label(I18n.t("pipeline.node.pages")), pages);
+
+        ComboBox<org.example.core.model.SplitMode> mode =
+            new ComboBox<>(FXCollections.observableArrayList(
+                org.example.core.model.SplitMode.COMBINE, org.example.core.model.SplitMode.SEPARATE));
+        mode.setValue(node.splitMode);
+        mode.setConverter(new javafx.util.StringConverter<>() {
+            @Override public String toString(org.example.core.model.SplitMode m) {
+                return I18n.t(m == org.example.core.model.SplitMode.SEPARATE
+                    ? "pipeline.node.separate" : "pipeline.node.combine");
+            }
+            @Override public org.example.core.model.SplitMode fromString(String s) { return null; }
+        });
+        mode.valueProperty().addListener((o, a, b) -> {
+            if (b != null) { node.splitMode = b; canvas.refreshNode(node); }
+        });
+
+        getChildren().addAll(new Label(I18n.t("pipeline.node.pages")), pages,
+            new Label(I18n.t("pipeline.node.output")), mode);
     }
 
     private void buildRotate(PipelineNode node) {

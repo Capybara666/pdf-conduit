@@ -143,7 +143,9 @@ class NodeView extends HBox {
         summary.setText(switch (node.kind) {
             case SOURCE -> sourceSummary();
             case EXTRACT -> I18n.t("pipeline.summary.pages",
-                node.pages.isBlank() ? I18n.t("pipeline.summary.all") : node.pages);
+                node.pages.isBlank() ? I18n.t("pipeline.summary.all") : node.pages)
+                + (node.splitMode == org.example.core.model.SplitMode.SEPARATE
+                    ? "  ·  " + I18n.t("pipeline.summary.separate") : "");
             case ROTATE -> I18n.t("pipeline.summary.pages",
                 node.pages.isBlank() ? I18n.t("pipeline.summary.all") : node.pages)
                 + "  ·  " + node.angle + "°";

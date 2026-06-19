@@ -2,6 +2,7 @@ package org.example.app.pipeline;
 
 import org.example.app.pipeline.Document.DocType;
 import org.example.core.convert.DocumentConverter;
+import org.example.core.model.SplitMode;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -59,6 +60,13 @@ public final class PipelineValidator {
             if (model.isTerminal(n)
                     && (n.outputDestination == null || n.outputDestination.isBlank())) {
                 errors.add(new ValidationError(n.id, n.kind.label + " has no output destination."));
+            }
+
+            // Separate-files output produces many files per input, which only makes
+            // sense at the end of a chain — a later step can't consume a split bundle.
+            if (n.kind == NodeKind.EXTRACT && n.splitMode == SplitMode.SEPARATE && !model.isTerminal(n)) {
+                errors.add(new ValidationError(n.id,
+                    "Split into separate files must be the last step in its chain."));
             }
         }
 
