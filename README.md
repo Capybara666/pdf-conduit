@@ -9,8 +9,9 @@ with both a JavaFX GUI and a command-line interface, built on
 
 ## Features
 
-- **Core operations:** merge PDFs/images, extract a page range, compress to a
-  target file size (iterative image downsampling), rotate pages, images → PDF.
+- **Core operations:** merge PDFs/images into one document, extract a page
+  range, compress to a target file size (iterative image downsampling), rotate
+  pages, and convert files to PDF (one PDF per input).
 - **Any supported input, anywhere:** every operation accepts images and office
   documents (`.docx`, `.odt`, `.rtf`, `.txt`, `.xlsx`, `.pptx`, …) in addition to
   PDFs — non-PDF files are converted to PDF automatically (images inline; office
@@ -19,13 +20,14 @@ with both a JavaFX GUI and a command-line interface, built on
 - **Languages:** English and Polish, switchable live from the Language menu.
 - **GUI (JavaFX):**
   - A panel per operation with drag-and-drop, a file list, and live progress.
-  - **Batch mode** — single-input operations (Extract/Compress/Rotate) process
-    every selected file into an output folder.
+  - **Batch mode** — per-file operations (Extract/Compress/Rotate/To PDF)
+    process every selected file into an output folder.
   - A guided **Wizard** for the merge → arrange → compress → export flow.
   - **Pipelines** — a visual node editor: drag operation/source blocks onto a
     canvas, wire outputs into inputs, and run the whole graph. Edges carry
-    bundles of documents (map operations apply per file; Merge/Images→PDF
-    collapse a bundle into one).
+    bundles of documents (map operations — including To PDF — apply per file;
+    only Merge collapses a bundle into one).
+  - Outputs default to a `pdf-conduit` folder in your Documents directory.
   - Six color themes (Daylight, Graphite, Nord, Dracula, Solarized, Sunset) plus
     a System option, with subtle UI animations.
 - **CLI** mirroring every core operation, with exit codes (0 success, 1 bad
@@ -69,7 +71,7 @@ pdf-conduit merge a.pdf b.pdf images/*.png -o combined.pdf
 pdf-conduit split report.pdf --pages 1-3,5,end-2 -o pages.pdf
 pdf-conduit compress scan.pdf --target-size 5MB -o smaller.pdf
 pdf-conduit rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
-pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf   # alias of images-to-pdf
+pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf   # combines images into one PDF (alias of images-to-pdf)
 ```
 
 - **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).
