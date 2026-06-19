@@ -33,6 +33,7 @@ class PipelineCanvas extends Pane {
     private CubicCurve tempCurve;
     private NodeView hoverTarget;
     private Consumer<PipelineNode> onSelect = n -> {};
+    private Runnable onChange = () -> {};
     private int idSeq = 0;
 
     PipelineCanvas(PipelineModel model) {
@@ -51,6 +52,10 @@ class PipelineCanvas extends Pane {
 
     void setOnSelect(Consumer<PipelineNode> onSelect) { this.onSelect = onSelect; }
 
+    void setOnChange(Runnable onChange) { this.onChange = onChange == null ? () -> {} : onChange; }
+
+    boolean isEmpty() { return model.nodes.isEmpty(); }
+
     String newId() { return "n" + (++idSeq); }
 
     PipelineNode addNode(NodeKind kind, double x, double y) {
@@ -60,6 +65,7 @@ class PipelineCanvas extends Pane {
         nodeViews.put(n.id, v);
         getChildren().add(v);
         selectNode(n);
+        onChange.run();
         return n;
     }
 
@@ -77,6 +83,7 @@ class PipelineCanvas extends Pane {
         if (v != null) getChildren().remove(v);
         if (selected == n) selectNode(null);
         refreshAll();
+        onChange.run();
     }
 
     void selectNode(PipelineNode n) {
@@ -228,6 +235,7 @@ class PipelineCanvas extends Pane {
         model.connections.clear();
         selected = null;
         onSelect.accept(null);
+        onChange.run();
     }
 
     /** Refresh node summaries, redraw wires, and re-show the inspector (terminal state may change). */

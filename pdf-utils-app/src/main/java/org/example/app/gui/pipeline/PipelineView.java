@@ -2,6 +2,8 @@ package org.example.app.gui.pipeline;
 
 import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -13,7 +15,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.app.pipeline.NodeKind;
@@ -55,8 +59,21 @@ public class PipelineView extends BorderPane {
         ScrollPane scroll = new ScrollPane(canvas);
         scroll.setPannable(false);   // panning would steal the connection gesture
         scroll.getStyleClass().add("pipeline-scroll");
-        setCenter(scroll);
-        BorderPane.setMargin(scroll, new javafx.geometry.Insets(12, 0, 0, 0));
+
+        // Empty-state hint, centered over the canvas; vanishes once a node exists
+        // so it never clutters an in-progress pipeline.
+        Label emptyHint = new Label(I18n.t("pipeline.empty.hint"));
+        emptyHint.getStyleClass().add("pipeline-empty-hint");
+        emptyHint.setWrapText(true);
+        emptyHint.setMaxWidth(440);
+        emptyHint.setTextAlignment(TextAlignment.CENTER);
+        emptyHint.setMouseTransparent(true);   // let drops reach the canvas
+        StackPane center = new StackPane(scroll, emptyHint);
+        StackPane.setAlignment(emptyHint, Pos.CENTER);
+        setCenter(center);
+        BorderPane.setMargin(center, new javafx.geometry.Insets(12, 0, 0, 0));
+        canvas.setOnChange(() -> emptyHint.setVisible(canvas.isEmpty()));
+        emptyHint.setVisible(canvas.isEmpty());
 
         HBox bottom = buildBottom();
         setBottom(bottom);
@@ -80,10 +97,18 @@ public class PipelineView extends BorderPane {
         clear.setMinWidth(Region.USE_PREF_SIZE);
         clear.setOnAction(e -> { canvas.clearAll(); banner.setVisible(false); status.setText(""); });
 
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Button help = new Button("?");
+        help.getStyleClass().add("btn-secondary");
+        help.setMinWidth(Region.USE_PREF_SIZE);
+        help.setTooltip(new javafx.scene.control.Tooltip(I18n.t("pipeline.help.tooltip")));
+        help.setOnAction(e -> showHelp());
+
         // Keep Clear next to the palette (left) so it doesn't track the canvas
-        // scrollbar at the right edge as the window resizes.
+        // scrollbar at the right edge as the window resizes; Help sits at the right.
         Separator sep = new Separator(javafx.geometry.Orientation.VERTICAL);
-        HBox paletteRow = new HBox(8, palette, sep, clear);
+        HBox paletteRow = new HBox(8, palette, sep, clear, spacer, help);
         paletteRow.getStyleClass().add("pipeline-toolbar");
 
         banner.getStyleClass().add("error-banner");
@@ -236,6 +261,19 @@ public class PipelineView extends BorderPane {
         b.setMinWidth(Region.USE_PREF_SIZE);
         b.setOnAction(e -> action.run());
         return b;
+    }
+
+    private void showHelp() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(I18n.t("pipeline.help.title"));
+        alert.setHeaderText(I18n.t("pipeline.help.title"));
+        alert.setContentText(I18n.t("pipeline.help.body"));
+        alert.initOwner(window());
+        if (getScene() != null) {
+            alert.getDialogPane().getStylesheets().addAll(getScene().getStylesheets());
+        }
+        alert.getDialogPane().setMinWidth(460);
+        alert.showAndWait();
     }
 
     private Stage window() {
