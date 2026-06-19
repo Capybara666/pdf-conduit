@@ -1,21 +1,28 @@
 package org.example.app.gui.util;
 
-import javafx.scene.media.AudioClip;
-
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import java.io.BufferedInputStream;
+import java.net.URL;
 import java.util.prefs.Preferences;
 
 /**
- * Short UI sound effects. Clips are loaded lazily and cached; playback is a
- * no-op when sounds are disabled or the resource/media stack is unavailable, so
- * callers never need to guard.
+ * Short UI sound effects, played through the JDK's own audio stack
+ * ({@code javax.sound.sampled}) rather than JavaFX media — the JDK path goes via
+ * the platform's default mixer (ALSA/PulseAudio/PipeWire) and is reliably audible
+ * on Linux desktops, where JavaFX's bundled gstreamer-lite often plays silently.
+ *
+ * <p>Playback is best-effort: any failure (sounds disabled, missing resource, no
+ * free audio line) is swallowed, so callers never need to guard. A fresh
+ * {@link Clip} is opened per play and closed when it finishes, so rapid or
+ * overlapping plays don't fight over a single line.
  */
 public final class Sfx {
 
     private static final Preferences PREFS = Preferences.userNodeForPackage(Sfx.class);
     private static boolean enabled = PREFS.getBoolean("sfxEnabled", true);
-
-    private static AudioClip done;
-    private static AudioClip error;
 
     private Sfx() {}
 
@@ -27,32 +34,31 @@ public final class Sfx {
     }
 
     /** Plays the success chime if sounds are enabled. */
-    public static void playDone() {
-        if (!enabled) return;
-        if (done == null) done = load("/sfx/done.wav");
-        play(done);
-    }
+    public static void playDone() { play("/sfx/done.wav"); }
 
     /** Plays the (subtler) error sound if sounds are enabled. */
-    public static void playError() {
+    public static void playError() { play("/sfx/error.wav"); }
+
+    private static void play(String resource) {
         if (!enabled) return;
-        if (error == null) error = load("/sfx/error.wav");
-        play(error);
-    }
-
-    private static AudioClip load(String resource) {
-        try {
-            var url = Sfx.class.getResource(resource);
-            return url == null ? null : new AudioClip(url.toExternalForm());
-        } catch (Throwable t) {   // missing javafx.media native libs, etc.
-            return null;
-        }
-    }
-
-    private static void play(AudioClip clip) {
-        if (clip == null) return;
-        try {
-            clip.play();
-        } catch (Throwable ignored) {}
+        URL url = Sfx.class.getResource(resource);
+        if (url == null) return;
+        // Open and start off the calling (often the FX) thread — loading a clip
+        // does a little I/O we don't want to block the UI on.
+        Thread t = new Thread(() -> {
+            try (AudioInputStream in =
+                     AudioSystem.getAudioInputStream(new BufferedInputStream(url.openStream()))) {
+                Clip clip = AudioSystem.getClip();
+                clip.open(in);
+                clip.addLineListener(ev -> {
+                    if (ev.getType() == LineEvent.Type.STOP) clip.close();
+                });
+                clip.start();
+            } catch (Throwable ignored) {
+                // Audio is non-essential; never let a missing/locked device break the UI.
+            }
+        }, "sfx-play");
+        t.setDaemon(true);
+        t.start();
     }
 }
