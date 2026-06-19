@@ -1,5 +1,6 @@
 package org.example.app.gui;
 
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -23,6 +24,9 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class MainWindow {
+
+    private static final java.util.prefs.Preferences PREFS =
+        java.util.prefs.Preferences.userNodeForPackage(MainWindow.class);
 
     private final Stage stage;
     private final Scene scene;
@@ -150,22 +154,51 @@ public class MainWindow {
     }
 
     public void show() {
-        // Open on the monitor the cursor is on (the one the user is using),
-        // centered. Position BEFORE show() with the known scene size so the
-        // window maps onto that monitor directly, rather than being placed by
-        // the window manager first and moved after.
-        Rectangle2D bounds = cursorScreen().getVisualBounds();
-        stage.setX(bounds.getMinX() + (bounds.getWidth()  - scene.getWidth())  / 2);
-        stage.setY(bounds.getMinY() + (bounds.getHeight() - scene.getHeight()) / 2);
-
+        boolean restored = restoreBounds();
         stage.show();
 
-        // Refine now that the real decorated size is known (skip if not yet valid).
-        double w = stage.getWidth(), h = stage.getHeight();
-        if (!Double.isNaN(w) && !Double.isNaN(h) && w > 0 && h > 0) {
-            stage.setX(bounds.getMinX() + (bounds.getWidth()  - w) / 2);
-            stage.setY(bounds.getMinY() + (bounds.getHeight() - h) / 2);
+        // Centre on the cursor's monitor on first run. Done after show() (via
+        // runLater) so the decorated size is known and the window manager honours
+        // the move — pre-show positioning is unreliable on some Linux WMs.
+        if (!restored) {
+            Platform.runLater(this::centerOnCursorScreen);
         }
+        // Remember where the user leaves the window for next time.
+        stage.setOnHidden(e -> saveBounds());
+    }
+
+    private void centerOnCursorScreen() {
+        Rectangle2D b = cursorScreen().getVisualBounds();
+        double w = stage.getWidth(), h = stage.getHeight();
+        if (Double.isNaN(w) || w <= 0) { w = scene.getWidth(); h = scene.getHeight(); }
+        stage.setX(b.getMinX() + (b.getWidth()  - w) / 2);
+        stage.setY(b.getMinY() + (b.getHeight() - h) / 2);
+    }
+
+    /** Restores the saved window bounds if they are still visible on some screen. */
+    private boolean restoreBounds() {
+        double x = PREFS.getDouble("win.x", Double.NaN);
+        double y = PREFS.getDouble("win.y", Double.NaN);
+        double w = PREFS.getDouble("win.w", Double.NaN);
+        double h = PREFS.getDouble("win.h", Double.NaN);
+        if (Double.isNaN(x) || Double.isNaN(y) || w < 200 || h < 200) return false;
+        // Reject bounds that no longer fall on any monitor (e.g. a screen was unplugged).
+        if (Screen.getScreensForRectangle(x, y, w, h).isEmpty()) return false;
+        stage.setX(x);
+        stage.setY(y);
+        stage.setWidth(w);
+        stage.setHeight(h);
+        return true;
+    }
+
+    private void saveBounds() {
+        if (stage.isMaximized() || stage.isIconified()) return;   // keep the restorable size
+        double w = stage.getWidth(), h = stage.getHeight();
+        if (Double.isNaN(w) || w <= 0) return;
+        PREFS.putDouble("win.x", stage.getX());
+        PREFS.putDouble("win.y", stage.getY());
+        PREFS.putDouble("win.w", w);
+        PREFS.putDouble("win.h", h);
     }
 
     /** The screen the mouse pointer is currently on, falling back to primary. */
