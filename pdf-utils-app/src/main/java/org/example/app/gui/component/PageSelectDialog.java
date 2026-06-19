@@ -61,12 +61,16 @@ public final class PageSelectDialog {
         Button all = secondary(I18n.t("select.all"));
         Button none = secondary(I18n.t("select.none"));
         Button invert = secondary(I18n.t("select.invert"));
+        Button odd = secondary(I18n.t("select.odd"));
+        Button even = secondary(I18n.t("select.even"));
         all.setOnAction(e -> grid.selectAll());
         none.setOnAction(e -> grid.selectNone());
         invert.setOnAction(e -> grid.invert());
+        odd.setOnAction(e -> grid.selectOdd());
+        even.setOnAction(e -> grid.selectEven());
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        HBox toolbar = new HBox(8, all, none, invert, spacer, count);
+        HBox toolbar = new HBox(8, all, none, invert, odd, even, spacer, count);
         toolbar.setAlignment(Pos.CENTER_LEFT);
         toolbar.setVisible(false);
 

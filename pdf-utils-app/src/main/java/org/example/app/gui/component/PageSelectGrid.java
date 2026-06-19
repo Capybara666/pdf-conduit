@@ -120,4 +120,6 @@ public final class PageSelectGrid extends ScrollPane {
     public void selectAll()  { for (Cell c : cells) c.setSelected(true); }
     public void selectNone() { for (Cell c : cells) c.setSelected(false); }
     public void invert()     { for (Cell c : cells) c.setSelected(!c.selected); }
+    public void selectOdd()  { for (Cell c : cells) c.setSelected(c.page % 2 == 1); }
+    public void selectEven() { for (Cell c : cells) c.setSelected(c.page % 2 == 0); }
 }
