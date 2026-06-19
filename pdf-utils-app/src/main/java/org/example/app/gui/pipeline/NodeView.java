@@ -42,6 +42,9 @@ class NodeView extends HBox {
         Button close = new Button("✕");
         close.getStyleClass().add("pipeline-node-close");
         close.setOnAction(e -> canvas.removeNode(node));
+        // Hovering the ✕ softly highlights the whole block it would remove.
+        close.setOnMouseEntered(e -> toggle("remove-hint", true));
+        close.setOnMouseExited(e -> toggle("remove-hint", false));
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         HBox header = new HBox(6, titleIcon, title, spacer, close);

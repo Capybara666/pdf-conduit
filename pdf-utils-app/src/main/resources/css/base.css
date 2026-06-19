@@ -296,6 +296,12 @@
 }
 .pipeline-node.selected { -fx-border-color: -c-accent; -fx-border-width: 2; }
 .pipeline-node.error    { -fx-border-color: -c-danger; -fx-border-width: 2; }
+/* Hovering a node's ✕ softly highlights the whole block it will remove */
+.pipeline-node.remove-hint {
+    -fx-border-color: -c-danger;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, -c-danger, 12, 0.15, 0, 1);
+}
 
 .pipeline-node-header {
     -fx-padding: 6 8 6 10;
@@ -310,6 +316,11 @@
     -fx-padding: 0 4 0 4;
     -fx-cursor: hand;
     -fx-font-size: 11px;
+}
+.pipeline-node-close:hover {
+    -fx-background-color: -c-danger;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
 }
 .pipeline-node-summary { -fx-padding: 2 10 0 10; -fx-font-size: 10.5px; -fx-text-fill: -c-text-muted; }
 
