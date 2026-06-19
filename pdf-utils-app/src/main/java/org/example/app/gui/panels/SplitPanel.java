@@ -3,13 +3,13 @@ package org.example.app.gui.panels;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 import org.example.app.gui.component.PageSelectDialog;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.PageRange;
@@ -34,7 +34,8 @@ import java.util.List;
 public class SplitPanel extends BasePanel {
 
     private TextField pagesField;
-    private ComboBox<SplitMode> modeBox;
+    private ToggleGroup modeGroup;
+    private RadioButton separateRadio;
 
     public SplitPanel() { super(I18n.t("panel.SPLIT.title"), I18n.t("run.SPLIT"), "_extracted"); }
 
@@ -46,10 +47,14 @@ public class SplitPanel extends BasePanel {
         return I18n.t("hint.SPLIT");
     }
 
+    private SplitMode mode() {
+        return (separateRadio != null && separateRadio.isSelected()) ? SplitMode.SEPARATE : SplitMode.COMBINE;
+    }
+
     /** Separate-files mode always writes a folder, even for a single input. */
     @Override
     protected boolean folderOnly() {
-        return modeBox != null && modeBox.getValue() == SplitMode.SEPARATE;
+        return mode() == SplitMode.SEPARATE;
     }
 
     @Override
@@ -64,20 +69,22 @@ public class SplitPanel extends BasePanel {
         pick.disableProperty().bind(Bindings.isEmpty(fileList.getFiles()));
         pick.setOnAction(e -> pickPages());
 
+        // A binary output choice — radio buttons show the full labels (no
+        // truncation) and make the selection unambiguous.
         Label modeLabel = new Label(I18n.t("split.mode.label"));
         modeLabel.setStyle("-fx-font-size: 11px;");
-        modeBox = new ComboBox<>();
-        modeBox.getItems().addAll(SplitMode.COMBINE, SplitMode.SEPARATE);
-        modeBox.setValue(SplitMode.COMBINE);
-        modeBox.setConverter(new StringConverter<>() {
-            @Override public String toString(SplitMode m) {
-                return m == SplitMode.SEPARATE ? I18n.t("split.mode.separate") : I18n.t("split.mode.combine");
-            }
-            @Override public SplitMode fromString(String s) { return null; }
+        modeGroup = new ToggleGroup();
+        RadioButton combineRadio = new RadioButton(I18n.t("split.mode.combine"));
+        combineRadio.setToggleGroup(modeGroup);
+        combineRadio.setSelected(true);
+        separateRadio = new RadioButton(I18n.t("split.mode.separate"));
+        separateRadio.setToggleGroup(modeGroup);
+        // Switching mode flips the single file-name field on/off.
+        modeGroup.selectedToggleProperty().addListener((o, a, b) -> {
+            if (b == null) a.setSelected(true);     // keep one always selected
+            refreshOutputMode();
         });
-        // Switching to "separate files" drops the single file-name field.
-        modeBox.valueProperty().addListener((o, a, b) -> refreshOutputMode());
-        HBox modeRow = new HBox(8, modeLabel, modeBox);
+        HBox modeRow = new HBox(14, modeLabel, combineRadio, separateRadio);
         modeRow.setStyle("-fx-alignment: CENTER_LEFT;");
 
         return new VBox(8, new VBox(4, label, new HBox(6, pagesField, pick)), modeRow);
@@ -96,7 +103,7 @@ public class SplitPanel extends BasePanel {
         if (files.isEmpty()) return;
         String pagesExpr = pagesField.getText();
 
-        if (modeBox.getValue() == SplitMode.SEPARATE) {
+        if (mode() == SplitMode.SEPARATE) {
             runSeparate(files, pagesExpr);
             return;
         }
