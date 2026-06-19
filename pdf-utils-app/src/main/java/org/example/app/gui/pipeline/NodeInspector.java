@@ -16,6 +16,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.app.gui.util.OutputPaths;
+import org.example.app.pipeline.NodeKind;
 import org.example.app.pipeline.PipelineGraph;
 import org.example.app.pipeline.PipelineNode;
 import org.example.app.i18n.I18n;
@@ -121,8 +122,16 @@ class NodeInspector extends HBox {
             }
             @Override public org.example.core.model.SplitMode fromString(String s) { return null; }
         });
+        // The combo sizes itself from the short enum names, so the (longer)
+        // converted labels would render as "…" — pin a width that fits them.
+        mode.setPrefWidth(130);
+        mode.setMinWidth(Region.USE_PREF_SIZE);
         mode.valueProperty().addListener((o, a, b) -> {
-            if (b != null) { node.splitMode = b; canvas.refreshNode(node); }
+            if (b != null) {
+                node.splitMode = b;
+                canvas.refreshNode(node);
+                show(node);          // re-render: the destination switches folder ↔ folder+name
+            }
         });
 
         getChildren().addAll(new Label(I18n.t("pipeline.node.pages")), pages,
@@ -176,7 +185,11 @@ class NodeInspector extends HBox {
     }
 
     private void buildDestination(PipelineNode node) {
-        boolean multiple = PipelineGraph.outputCount(canvas.model, node.id) > 1;
+        // Several inputs each yield a file, and Extract in "separate" mode yields one
+        // file per page — both mean the destination is a folder, not a single file.
+        boolean separate = node.kind == NodeKind.EXTRACT
+            && node.splitMode == org.example.core.model.SplitMode.SEPARATE;
+        boolean multiple = separate || PipelineGraph.outputCount(canvas.model, node.id) > 1;
 
         // Normalize the stored destination to the current output multiplicity: a
         // folder for several outputs, a folder+file for a single one. This also
