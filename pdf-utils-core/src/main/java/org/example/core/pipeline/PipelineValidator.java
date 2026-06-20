@@ -1,6 +1,6 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
-import org.example.app.pipeline.Document.DocType;
+import org.example.core.pipeline.Document.DocType;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.SplitMode;
 

@@ -1,4 +1,4 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
 import java.nio.file.Path;
 

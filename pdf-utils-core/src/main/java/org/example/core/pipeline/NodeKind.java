@@ -1,4 +1,4 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
 /** The kinds of node a pipeline can contain. */
 public enum NodeKind {

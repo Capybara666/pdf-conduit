@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
 import javafx.util.Duration;
 import org.example.app.i18n.I18n;
-import org.example.app.pipeline.Connection;
+import org.example.core.pipeline.Connection;
 
 /**
  * A bezier wire between an output port and an input port; follows node movement.

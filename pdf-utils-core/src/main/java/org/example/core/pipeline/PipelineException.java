@@ -1,4 +1,4 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
 /** Thrown when a pipeline fails validation or execution. */
 public class PipelineException extends Exception {

@@ -7,7 +7,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Scale;
 
 import org.example.app.gui.sidebar.SidebarItem;
-import org.example.app.pipeline.NodeKind;
+import org.example.core.pipeline.NodeKind;
 
 /**
  * Themeable line-art icons matching the app logo (stroke-only, rounded caps).

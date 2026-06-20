@@ -17,9 +17,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.app.gui.util.DefaultLocations;
-import org.example.app.pipeline.NodeKind;
-import org.example.app.pipeline.PipelineGraph;
-import org.example.app.pipeline.PipelineNode;
+import org.example.core.pipeline.NodeKind;
+import org.example.core.pipeline.PipelineGraph;
+import org.example.core.pipeline.PipelineNode;
 import org.example.app.i18n.I18n;
 import org.example.core.model.PageSize;
 

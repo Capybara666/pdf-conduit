@@ -1,4 +1,4 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
 import org.example.core.model.PageSize;
 import org.example.core.model.SplitMode;

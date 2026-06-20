@@ -1,4 +1,4 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
 /**
  * A directed edge from one node's output to another node's input. Input ordering

@@ -5,10 +5,10 @@ import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.CubicCurve;
-import org.example.app.pipeline.Connection;
-import org.example.app.pipeline.NodeKind;
-import org.example.app.pipeline.PipelineModel;
-import org.example.app.pipeline.PipelineNode;
+import org.example.core.pipeline.Connection;
+import org.example.core.pipeline.NodeKind;
+import org.example.core.pipeline.PipelineModel;
+import org.example.core.pipeline.PipelineNode;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

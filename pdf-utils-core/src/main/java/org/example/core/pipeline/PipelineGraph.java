@@ -1,6 +1,6 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
-import org.example.app.pipeline.Document.DocType;
+import org.example.core.pipeline.Document.DocType;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

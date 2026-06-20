@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import org.example.app.gui.component.ProgressPanel;
 import org.example.app.i18n.I18n;
-import org.example.app.pipeline.PipelineNode;
+import org.example.core.pipeline.PipelineNode;
 
 /** Visual card for a {@link PipelineNode}: header (drag/close), summary, ports. */
 class NodeView extends HBox {

@@ -1,4 +1,4 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
 /**
  * A single validation problem. {@code nodeId} is the offending node (may be null

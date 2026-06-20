@@ -1,8 +1,8 @@
-package org.example.app.pipeline;
+package org.example.core.pipeline;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.example.app.pipeline.Document.DocType;
+import org.example.core.pipeline.Document.DocType;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.*;
 import org.example.core.operations.PdfArranger;
