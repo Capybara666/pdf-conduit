@@ -39,6 +39,11 @@ public class PipelineNode {
     // IMAGES_TO_PDF
     public PageSize pageSize = PageSize.FIT;
 
+    // PROTECT / UNLOCK — password to set (protect) or to open with (unlock);
+    // ownerPassword (protect only) defaults to the user password when blank.
+    public String password = "";
+    public String ownerPassword = "";
+
     // terminal nodes only — a file path (single output) or folder (multiple)
     public String outputDestination = "";
 

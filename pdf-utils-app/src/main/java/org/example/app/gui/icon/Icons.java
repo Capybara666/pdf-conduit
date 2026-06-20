@@ -91,6 +91,8 @@ public final class Icons {
             case COMPRESS      -> COMPRESS;
             case ROTATE        -> ROTATE;
             case ARRANGE       -> ARRANGE;
+            case PROTECT       -> PROTECT;
+            case UNLOCK        -> UNLOCK;
         }, size);
     }
 

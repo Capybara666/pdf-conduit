@@ -68,6 +68,12 @@ public final class PipelineValidator {
                 errors.add(new ValidationError(n.id,
                     "Split into separate files must be the last step in its chain."));
             }
+
+            // Protect and Unlock both need a password to work.
+            if ((n.kind == NodeKind.PROTECT || n.kind == NodeKind.UNLOCK)
+                    && (n.password == null || n.password.isBlank())) {
+                errors.add(new ValidationError(n.id, n.kind.label + " needs a password."));
+            }
         }
 
         return errors;

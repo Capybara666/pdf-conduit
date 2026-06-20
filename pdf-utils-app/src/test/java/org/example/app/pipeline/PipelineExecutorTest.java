@@ -188,6 +188,55 @@ class PipelineExecutorTest {
     }
 
     @Test
+    void protectNodeRequiresPasswordToOpen() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("a.pdf", 2));
+        PipelineNode protect = new PipelineNode("p", NodeKind.PROTECT, 0, 0);
+        protect.password = "secret";
+        Path out = tmp.resolve("locked.pdf");
+        protect.outputDestination = out.toString();
+        m.nodes.add(src);
+        m.nodes.add(protect);
+        m.connections.add(new Connection("s", "p"));
+
+        PipelineExecutor.run(m, null);
+
+        assertTrue(Files.exists(out));
+        assertThrows(IOException.class, () -> {
+            try (PDDocument d = Loader.loadPDF(out.toFile())) { d.getNumberOfPages(); }
+        });
+        try (PDDocument d = Loader.loadPDF(out.toFile(), "secret")) {
+            assertEquals(2, d.getNumberOfPages());
+        }
+    }
+
+    @Test
+    void unlockNodeRemovesPassword() throws Exception {
+        Path plain = pdf("a.pdf", 2);
+        Path locked = tmp.resolve("locked-src.pdf");
+        org.example.core.operations.PdfProtector.execute(
+            new org.example.core.model.ProtectOptions(plain, "pw", "", locked));
+
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(locked);
+        PipelineNode unlock = new PipelineNode("u", NodeKind.UNLOCK, 0, 0);
+        unlock.password = "pw";
+        Path out = tmp.resolve("unlocked.pdf");
+        unlock.outputDestination = out.toString();
+        m.nodes.add(src);
+        m.nodes.add(unlock);
+        m.connections.add(new Connection("s", "u"));
+
+        PipelineExecutor.run(m, null);
+
+        try (PDDocument d = Loader.loadPDF(out.toFile())) {   // opens with no password
+            assertEquals(2, d.getNumberOfPages());
+        }
+    }
+
+    @Test
     void invalidPipelineThrows() throws Exception {
         PipelineModel m = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);

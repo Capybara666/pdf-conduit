@@ -164,6 +164,8 @@ class NodeView extends HBox {
             case COMPRESS -> I18n.t("pipeline.summary.target", ProgressPanel.humanSize(node.targetBytes));
             case IMAGES_TO_PDF -> I18n.t("pipeline.node.pagesize") + " " + node.pageSize;
             case MERGE -> I18n.t("pipeline.summary.combine");
+            case PROTECT, UNLOCK -> I18n.t(node.password == null || node.password.isBlank()
+                ? "pipeline.summary.nopassword" : "pipeline.summary.haspassword");
         });
     }
 

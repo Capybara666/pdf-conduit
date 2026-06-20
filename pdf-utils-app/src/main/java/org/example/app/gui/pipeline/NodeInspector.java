@@ -58,6 +58,8 @@ class NodeInspector extends HBox {
             case ARRANGE -> buildArrange(node);
             case COMPRESS -> buildCompress(node);
             case IMAGES_TO_PDF -> buildImages(node);
+            case PROTECT -> buildProtect(node);
+            case UNLOCK -> buildUnlock(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
         }
 
@@ -182,6 +184,31 @@ class NodeInspector extends HBox {
         box.setValue(node.pageSize);
         box.valueProperty().addListener((o, a, b) -> { if (b != null) { node.pageSize = b; canvas.refreshNode(node); } });
         getChildren().addAll(new Label(I18n.t("pipeline.node.pagesize")), box);
+    }
+
+    private void buildProtect(PipelineNode node) {
+        javafx.scene.control.PasswordField pwd = new javafx.scene.control.PasswordField();
+        pwd.setText(node.password);
+        pwd.setPromptText(I18n.t("pipeline.node.password.prompt"));
+        pwd.setPrefWidth(140);
+        pwd.textProperty().addListener((o, a, b) -> { node.password = b; canvas.refreshNode(node); });
+
+        javafx.scene.control.PasswordField owner = new javafx.scene.control.PasswordField();
+        owner.setText(node.ownerPassword);
+        owner.setPrefWidth(140);
+        owner.textProperty().addListener((o, a, b) -> { node.ownerPassword = b; canvas.refreshNode(node); });
+
+        getChildren().addAll(new Label(I18n.t("pipeline.node.password")), pwd,
+            new Label(I18n.t("pipeline.node.ownerpassword")), owner);
+    }
+
+    private void buildUnlock(PipelineNode node) {
+        javafx.scene.control.PasswordField pwd = new javafx.scene.control.PasswordField();
+        pwd.setText(node.password);
+        pwd.setPromptText(I18n.t("pipeline.node.password.prompt"));
+        pwd.setPrefWidth(140);
+        pwd.textProperty().addListener((o, a, b) -> { node.password = b; canvas.refreshNode(node); });
+        getChildren().addAll(new Label(I18n.t("pipeline.node.password")), pwd);
     }
 
     private void buildDestination(PipelineNode node) {

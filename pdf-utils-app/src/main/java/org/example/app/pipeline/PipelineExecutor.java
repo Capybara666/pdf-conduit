@@ -8,8 +8,10 @@ import org.example.core.model.*;
 import org.example.core.operations.PdfArranger;
 import org.example.core.operations.PdfCompressor;
 import org.example.core.operations.PdfMerger;
+import org.example.core.operations.PdfProtector;
 import org.example.core.operations.PdfRotator;
 import org.example.core.operations.PdfSplitter;
+import org.example.core.operations.PdfUnlocker;
 import org.example.core.util.PageOrderParser;
 import org.example.core.util.PageRangeParser;
 
@@ -206,6 +208,10 @@ public final class PipelineExecutor {
                         new RotateOptions(src, range(n.pages, src), n.angle, out));
                     case ARRANGE -> PdfArranger.execute(
                         new ArrangeOptions(src, order(n.order, src), out));
+                    case PROTECT -> PdfProtector.execute(
+                        new ProtectOptions(src, n.password, n.ownerPassword, out));
+                    case UNLOCK -> PdfUnlocker.execute(
+                        new UnlockOptions(src, n.password, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
