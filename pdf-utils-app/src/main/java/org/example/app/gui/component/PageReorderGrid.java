@@ -33,6 +33,9 @@ public final class PageReorderGrid extends ScrollPane {
 
     private static final double TILE_WIDTH = 116;
 
+    /** Pointer travel (px) before a press becomes a drag — keeps a click a click. */
+    private static final double DRAG_THRESHOLD = 8;
+
     private final FlowPane flow = new FlowPane(14, 14);
     private final ObservableList<Tile> tiles = FXCollections.observableArrayList();
     private List<Tile> original = List.of();
@@ -163,7 +166,27 @@ public final class PageReorderGrid extends ScrollPane {
     // --- drag-and-drop reordering -----------------------------------------
 
     private void installDrag(VBox cell, Tile tile) {
-        cell.setOnDragDetected(e -> {
+        // Start the drag only after a deliberate movement, not on a plain click.
+        // Relying on onDragDetected (which fires after ~1px) meant an ordinary
+        // click started — and on Linux could leave hanging — a drag-and-drop
+        // gesture, which suppresses the ScrollPane's wheel scrolling until the
+        // gesture is cleared by another click. A movement threshold makes a click
+        // stay a click, so scrolling keeps working.
+        final double[] press = new double[2];
+        final boolean[] started = {false};
+
+        cell.setOnMousePressed(e -> {
+            press[0] = e.getX();
+            press[1] = e.getY();
+            started[0] = false;
+        });
+
+        cell.setOnMouseDragged(e -> {
+            if (started[0]) return;
+            double dx = e.getX() - press[0];
+            double dy = e.getY() - press[1];
+            if (dx * dx + dy * dy < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
+            started[0] = true;
             dragging = tile;
             Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
             ClipboardContent cc = new ClipboardContent();
