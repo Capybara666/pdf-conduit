@@ -397,7 +397,7 @@
     -fx-font-size: 13.5px;
     -fx-line-spacing: 4;
 }
-.pipeline-inspector { -fx-spacing: 10; -fx-alignment: CENTER_LEFT; }
+.pipeline-inspector { -fx-hgap: 12; -fx-vgap: 8; -fx-alignment: CENTER_LEFT; }
 .pipeline-inspector-title { -fx-font-weight: bold; -fx-text-fill: -c-text; }
 .pipeline-inspector-hint { -fx-text-fill: -c-text-muted; -fx-font-size: 11px; }
 

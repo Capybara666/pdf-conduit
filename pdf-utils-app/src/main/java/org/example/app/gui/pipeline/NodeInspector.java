@@ -2,15 +2,19 @@ package org.example.app.gui.pipeline;
 
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -26,16 +30,23 @@ import org.example.core.model.PageSize;
 import java.io.File;
 import java.nio.file.Path;
 
-/** Compact, horizontal options panel for the selected node — lives in the bottom bar. */
-class NodeInspector extends HBox {
+/**
+ * Options panel for the selected node — lives in the slim bottom bar. Its
+ * controls are grouped into label+field units that <em>wrap</em> onto extra rows
+ * when they don't fit, so dense nodes (e.g. Watermark, Metadata) stay readable
+ * instead of being squeezed/clipped.
+ */
+class NodeInspector extends FlowPane {
 
     private final PipelineCanvas canvas;
 
     NodeInspector(PipelineCanvas canvas) {
         this.canvas = canvas;
         getStyleClass().add("pipeline-inspector");
-        setSpacing(10);
+        setHgap(12);
+        setVgap(8);
         setAlignment(Pos.CENTER_LEFT);
+        setRowValignment(VPos.CENTER);
         show(null);
     }
 
@@ -50,6 +61,7 @@ class NodeInspector extends HBox {
 
         Label title = new Label(I18n.t("kind." + node.kind.name()));
         title.getStyleClass().add("pipeline-inspector-title");
+        title.setMinWidth(Region.USE_PREF_SIZE);
         getChildren().add(title);
 
         switch (node.kind) {
@@ -70,14 +82,9 @@ class NodeInspector extends HBox {
             getChildren().add(new Separator(javafx.geometry.Orientation.VERTICAL));
             buildDestination(node);
         }
-
-        // Keep labels/buttons at full width so the bottom bar never ellipsizes them.
-        for (javafx.scene.Node c : getChildren()) {
-            if (c instanceof Label || c instanceof Button) ((Region) c).setMinWidth(Region.USE_PREF_SIZE);
-        }
     }
 
-    // --- per-kind controls (all laid out horizontally) --------------------
+    // --- per-kind controls (each a label+field group that can wrap) -------
 
     private void buildSource(PipelineNode node) {
         ListView<Path> list = new ListView<>(FXCollections.observableArrayList(node.files));
@@ -107,7 +114,7 @@ class NodeInspector extends HBox {
             }
         });
         VBox buttons = new VBox(6, add, remove);
-        getChildren().addAll(list, buttons);
+        getChildren().add(row(list, buttons));
     }
 
     private void buildPages(PipelineNode node) {
@@ -139,8 +146,8 @@ class NodeInspector extends HBox {
             }
         });
 
-        getChildren().addAll(new Label(I18n.t("pipeline.node.pages")), pages,
-            new Label(I18n.t("pipeline.node.output")), mode);
+        getChildren().addAll(group("pipeline.node.pages", pages),
+            group("pipeline.node.output", mode));
     }
 
     private void buildRotate(PipelineNode node) {
@@ -151,8 +158,7 @@ class NodeInspector extends HBox {
         ComboBox<Integer> angle = new ComboBox<>(FXCollections.observableArrayList(90, 180, 270));
         angle.setValue(node.angle);
         angle.valueProperty().addListener((o, a, b) -> { if (b != null) { node.angle = b; canvas.refreshNode(node); } });
-        getChildren().addAll(new Label(I18n.t("pipeline.node.pages")), pages,
-            new Label(I18n.t("pipeline.node.angle")), angle);
+        getChildren().addAll(group("pipeline.node.pages", pages), group("pipeline.node.angle", angle));
     }
 
     private void buildArrange(PipelineNode node) {
@@ -160,7 +166,7 @@ class NodeInspector extends HBox {
         order.setPromptText(I18n.t("pipeline.node.order.prompt"));
         order.setPrefWidth(180);
         order.textProperty().addListener((o, a, b) -> { node.order = b; canvas.refreshNode(node); });
-        getChildren().addAll(new Label(I18n.t("pipeline.node.order")), order);
+        getChildren().add(group("pipeline.node.order", order));
     }
 
     private void buildCompress(PipelineNode node) {
@@ -179,44 +185,45 @@ class NodeInspector extends HBox {
         };
         size.textProperty().addListener((o, a, b) -> apply.run());
         unit.valueProperty().addListener((o, a, b) -> apply.run());
-        getChildren().addAll(new Label(I18n.t("pipeline.node.target")), size, unit);
+        getChildren().add(group("pipeline.node.target", size, unit));
     }
 
     private void buildImages(PipelineNode node) {
         ComboBox<PageSize> box = new ComboBox<>(FXCollections.observableArrayList(PageSize.values()));
         box.setValue(node.pageSize);
         box.valueProperty().addListener((o, a, b) -> { if (b != null) { node.pageSize = b; canvas.refreshNode(node); } });
-        getChildren().addAll(new Label(I18n.t("pipeline.node.pagesize")), box);
+        getChildren().add(group("pipeline.node.pagesize", box));
     }
 
     private void buildProtect(PipelineNode node) {
-        javafx.scene.control.PasswordField pwd = new javafx.scene.control.PasswordField();
+        PasswordField pwd = new PasswordField();
         pwd.setText(node.password);
         pwd.setPromptText(I18n.t("pipeline.node.password.prompt"));
         pwd.setPrefWidth(140);
         pwd.textProperty().addListener((o, a, b) -> { node.password = b; canvas.refreshNode(node); });
 
-        javafx.scene.control.PasswordField owner = new javafx.scene.control.PasswordField();
+        PasswordField owner = new PasswordField();
         owner.setText(node.ownerPassword);
         owner.setPrefWidth(140);
         owner.textProperty().addListener((o, a, b) -> { node.ownerPassword = b; canvas.refreshNode(node); });
 
-        getChildren().addAll(new Label(I18n.t("pipeline.node.password")), pwd,
-            new Label(I18n.t("pipeline.node.ownerpassword")), owner);
+        getChildren().addAll(group("pipeline.node.password", pwd),
+            group("pipeline.node.ownerpassword", owner));
     }
 
     private void buildUnlock(PipelineNode node) {
-        javafx.scene.control.PasswordField pwd = new javafx.scene.control.PasswordField();
+        PasswordField pwd = new PasswordField();
         pwd.setText(node.password);
         pwd.setPromptText(I18n.t("pipeline.node.password.prompt"));
         pwd.setPrefWidth(140);
         pwd.textProperty().addListener((o, a, b) -> { node.password = b; canvas.refreshNode(node); });
-        getChildren().addAll(new Label(I18n.t("pipeline.node.password")), pwd);
+        getChildren().add(group("pipeline.node.password", pwd));
     }
 
     private void buildMetadata(PipelineNode node) {
-        javafx.scene.control.CheckBox strip = new javafx.scene.control.CheckBox(I18n.t("metadata.strip"));
+        CheckBox strip = new CheckBox(I18n.t("metadata.strip"));
         strip.setSelected(node.metaStrip);
+        strip.setMinWidth(Region.USE_PREF_SIZE);
 
         TextField title = metaField(node.metaTitle, v -> node.metaTitle = v, node);
         TextField author = metaField(node.metaAuthor, v -> node.metaAuthor = v, node);
@@ -229,16 +236,16 @@ class NodeInspector extends HBox {
         strip.selectedProperty().addListener((o, a, b) -> { node.metaStrip = b; canvas.refreshNode(node); });
 
         getChildren().addAll(
-            new Label(I18n.t("metadata.title.label")), title,
-            new Label(I18n.t("metadata.author.label")), author,
-            new Label(I18n.t("metadata.subject.label")), subject,
-            new Label(I18n.t("metadata.keywords.label")), keywords,
+            group("metadata.title.label", title),
+            group("metadata.author.label", author),
+            group("metadata.subject.label", subject),
+            group("metadata.keywords.label", keywords),
             strip);
     }
 
     private TextField metaField(String value, java.util.function.Consumer<String> setter, PipelineNode node) {
         TextField f = new TextField(value);
-        f.setPrefWidth(90);
+        f.setPrefWidth(110);
         f.textProperty().addListener((o, a, b) -> { setter.accept(b); canvas.refreshNode(node); });
         return f;
     }
@@ -246,11 +253,11 @@ class NodeInspector extends HBox {
     private void buildWatermark(PipelineNode node) {
         TextField text = new TextField(node.wmText);
         text.setPromptText(I18n.t("watermark.text.prompt"));
-        text.setPrefWidth(120);
+        text.setPrefWidth(130);
         text.textProperty().addListener((o, a, b) -> { node.wmText = b; canvas.refreshNode(node); });
 
         TextField image = new TextField(node.wmImage);
-        image.setPrefWidth(110);
+        image.setPrefWidth(130);
         image.textProperty().addListener((o, a, b) -> { node.wmImage = b; canvas.refreshNode(node); });
         Button browse = secondary("…");
         browse.setOnAction(e -> {
@@ -263,11 +270,11 @@ class NodeInspector extends HBox {
         });
 
         Slider size = new Slider(0.1, 2.0, node.wmScale);
-        size.setPrefWidth(90);
+        size.setPrefWidth(110);
         size.valueProperty().addListener((o, a, b) -> { node.wmScale = b.doubleValue(); canvas.refreshNode(node); });
 
         Slider opacity = new Slider(0.05, 1.0, node.wmOpacity);
-        opacity.setPrefWidth(90);
+        opacity.setPrefWidth(110);
         opacity.valueProperty().addListener((o, a, b) -> { node.wmOpacity = b.doubleValue(); canvas.refreshNode(node); });
 
         ComboBox<Integer> rot = new ComboBox<>(FXCollections.observableArrayList(0, 45, 90));
@@ -275,11 +282,11 @@ class NodeInspector extends HBox {
         rot.valueProperty().addListener((o, a, b) -> { if (b != null) { node.wmRotation = b; canvas.refreshNode(node); } });
 
         getChildren().addAll(
-            new Label(I18n.t("watermark.text.label")), text,
-            new Label(I18n.t("watermark.image.label")), image, browse,
-            new Label(I18n.t("watermark.size.label")), size,
-            new Label(I18n.t("watermark.opacity.label")), opacity,
-            new Label(I18n.t("watermark.rotation.label")), rot);
+            group("watermark.text.label", text),
+            group("watermark.image.label", image, browse),
+            group("watermark.size.label", size),
+            group("watermark.opacity.label", opacity),
+            group("watermark.rotation.label", rot));
     }
 
     private void buildDestination(PipelineNode node) {
@@ -303,7 +310,7 @@ class NodeInspector extends HBox {
             folder.textProperty().addListener((o, a, b) -> node.outputDestination = b);
             Button browse = secondary("…");
             browse.setOnAction(e -> chooseDir(folder));
-            getChildren().addAll(new Label(I18n.t("output.folder")), folder, browse);
+            getChildren().add(group("output.folder", folder, browse));
         } else {
             // Single output -> folder + a separate file name.
             Path current = Path.of(node.outputDestination);
@@ -326,8 +333,8 @@ class NodeInspector extends HBox {
             fileName.textProperty().addListener((o, a, b) -> apply.run());
             Button browse = secondary("…");
             browse.setOnAction(e -> chooseDir(folder));
-            getChildren().addAll(new Label(I18n.t("output.folder")), folder, browse,
-                                 new Label(I18n.t("output.name")), fileName);
+            getChildren().addAll(group("output.folder", folder, browse),
+                                 group("output.name", fileName));
         }
     }
 
@@ -361,6 +368,23 @@ class NodeInspector extends HBox {
     }
 
     // --- helpers ----------------------------------------------------------
+
+    /** A label + its control(s) as one unit, so they wrap onto a new row together. */
+    private Region group(String labelKey, Node... controls) {
+        Label l = new Label(I18n.t(labelKey));
+        l.setMinWidth(Region.USE_PREF_SIZE);
+        HBox box = new HBox(6, l);
+        box.setAlignment(Pos.CENTER_LEFT);
+        box.getChildren().addAll(controls);
+        return box;
+    }
+
+    /** Groups controls (no label) into one wrap-as-a-unit row. */
+    private Region row(Node... controls) {
+        HBox box = new HBox(8, controls);
+        box.setAlignment(Pos.CENTER_LEFT);
+        return box;
+    }
 
     private Label hint(String text) {
         Label l = new Label(text);

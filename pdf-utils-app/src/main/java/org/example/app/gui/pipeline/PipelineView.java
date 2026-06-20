@@ -208,7 +208,8 @@ public class PipelineView extends BorderPane {
         HBox.setHgrow(inspector, Priority.ALWAYS);
         HBox bar = new HBox(12, inspector, status, resultLinks, runBtn);
         bar.getStyleClass().add("pipeline-bottom-bar");
-        bar.setFillHeight(false);                    // keep buttons their natural height, centered
+        bar.setFillHeight(false);                    // keep buttons their natural height
+        bar.setAlignment(Pos.CENTER_LEFT);           // centre status/Run against a taller (wrapped) inspector
         return bar;
     }
 
