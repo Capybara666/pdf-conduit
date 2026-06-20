@@ -39,7 +39,7 @@ public class ProgressPanel extends VBox {
         progressBar.managedProperty().bind(progressBar.visibleProperty());
 
         statusLabel = new Label();
-        statusLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.7;");
+        statusLabel.getStyleClass().add("text-status");
 
         errorBanner = new Label();
         errorBanner.getStyleClass().add("error-banner");

@@ -39,7 +39,7 @@ public class RotatePanel extends BasePanel {
     protected VBox buildOptionsArea() {
         Label pagesLabel = new Label();
         I18n.bindText(pagesLabel::setText, "rotate.pages.label");
-        pagesLabel.setStyle("-fx-font-size: 11px;");
+        pagesLabel.getStyleClass().add("text-sm");
         pagesField = new TextField();
         I18n.bindText(pagesField::setPromptText, "rotate.pages.prompt");
         HBox.setHgrow(pagesField, Priority.ALWAYS);
@@ -51,7 +51,7 @@ public class RotatePanel extends BasePanel {
 
         Label angleLabel = new Label();
         I18n.bindText(angleLabel::setText, "rotate.angle.label");
-        angleLabel.setStyle("-fx-font-size: 11px;");
+        angleLabel.getStyleClass().add("text-sm");
         angleBox = new ComboBox<>();
         angleBox.getItems().addAll(90, 180, 270);
         angleBox.setValue(90);

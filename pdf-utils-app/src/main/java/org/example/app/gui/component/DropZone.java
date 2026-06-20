@@ -21,12 +21,12 @@ public class DropZone extends VBox {
         getStyleClass().add("drop-zone");
 
         Label icon = new Label("📄");
-        icon.setStyle("-fx-font-size: 20px;");
+        icon.getStyleClass().add("drop-icon");
         Label primary = new Label();
         I18n.bindText(primary::setText, "dropzone.primary");
         Label secondary = new Label();
         I18n.bindText(secondary::setText, "dropzone.secondary");
-        secondary.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
+        secondary.getStyleClass().add("text-caption");
         getChildren().addAll(icon, primary, secondary);
 
         setOnDragOver(e -> {

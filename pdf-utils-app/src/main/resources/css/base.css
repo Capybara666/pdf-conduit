@@ -40,6 +40,20 @@
     -c-danger:            #ef4444;
 }
 
+/* ---- Typography & layout utilities ----
+   Centralised replacements for former inline setStyle(...) calls, so font sizes,
+   muted text and small paddings live in one place (and restyle/theme cleanly). */
+.text-sm      { -fx-font-size: 11px; }
+.text-caption { -fx-font-size: 11px; -fx-opacity: 0.6; }
+.text-status  { -fx-font-size: 11px; -fx-opacity: 0.7; }
+.text-note    { -fx-font-size: 10px; -fx-opacity: 0.6; }
+.text-handle  { -fx-font-size: 10px; -fx-opacity: 0.35; }
+.text-error   { -fx-font-size: 11px; -fx-text-fill: -c-danger; }
+.drop-icon    { -fx-font-size: 20px; }
+.row-left     { -fx-alignment: CENTER_LEFT; }
+.wizard-step  { -fx-padding: 18; }
+.pad-sm       { -fx-padding: 6; }
+
 /* ---- Menu bar ---- */
 .menu-bar {
     -fx-background-color: -c-surface;

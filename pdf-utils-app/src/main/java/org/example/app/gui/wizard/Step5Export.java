@@ -76,7 +76,7 @@ public class Step5Export implements WizardStep {
         Label outputLabel = new Label();
         I18n.bindText(outputLabel::setText, "wizard.step5.outputlabel");
         VBox box = new VBox(14, title, outputLabel, outputRow, progressPanel);
-        box.setStyle("-fx-padding: 18;");
+        box.getStyleClass().add("wizard-step");
         return box;
     }
 

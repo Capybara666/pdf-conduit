@@ -63,7 +63,7 @@ public class MetadataPanel extends BasePanel {
     private VBox labelFor(String labelKey, TextField f) {
         Label l = new Label();
         I18n.bindText(l::setText, labelKey);
-        l.setStyle("-fx-font-size: 11px;");
+        l.getStyleClass().add("text-sm");
         return new VBox(2, l, f);
     }
 

@@ -62,7 +62,7 @@ public class SplitPanel extends BasePanel {
     protected VBox buildOptionsArea() {
         Label label = new Label();
         I18n.bindText(label::setText, "split.pages.label");
-        label.setStyle("-fx-font-size: 11px;");
+        label.getStyleClass().add("text-sm");
         pagesField = new TextField();
         I18n.bindText(pagesField::setPromptText, "split.pages.prompt");
         HBox.setHgrow(pagesField, Priority.ALWAYS);
@@ -76,7 +76,7 @@ public class SplitPanel extends BasePanel {
         // truncation) and make the selection unambiguous.
         Label modeLabel = new Label();
         I18n.bindText(modeLabel::setText, "split.mode.label");
-        modeLabel.setStyle("-fx-font-size: 11px;");
+        modeLabel.getStyleClass().add("text-sm");
         modeGroup = new ToggleGroup();
         RadioButton combineRadio = new RadioButton();
         I18n.bindText(combineRadio::setText, "split.mode.combine");
@@ -91,7 +91,7 @@ public class SplitPanel extends BasePanel {
             refreshOutputMode();
         });
         HBox modeRow = new HBox(14, modeLabel, combineRadio, separateRadio);
-        modeRow.setStyle("-fx-alignment: CENTER_LEFT;");
+        modeRow.getStyleClass().add("row-left");
 
         return new VBox(8, new VBox(4, label, new HBox(6, pagesField, pick)), modeRow);
     }

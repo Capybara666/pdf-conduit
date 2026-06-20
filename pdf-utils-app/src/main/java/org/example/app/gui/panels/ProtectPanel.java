@@ -32,13 +32,13 @@ public class ProtectPanel extends BasePanel {
     protected VBox buildOptionsArea() {
         Label passwordLabel = new Label();
         I18n.bindText(passwordLabel::setText, "password.field.label");
-        passwordLabel.setStyle("-fx-font-size: 11px;");
+        passwordLabel.getStyleClass().add("text-sm");
         passwordField = new PasswordField();
         I18n.bindText(passwordField::setPromptText, "password.field.prompt");
 
         Label ownerLabel = new Label();
         I18n.bindText(ownerLabel::setText, "password.owner.label");
-        ownerLabel.setStyle("-fx-font-size: 11px;");
+        ownerLabel.getStyleClass().add("text-sm");
         ownerField = new PasswordField();
         I18n.bindText(ownerField::setPromptText, "password.owner.prompt");
 

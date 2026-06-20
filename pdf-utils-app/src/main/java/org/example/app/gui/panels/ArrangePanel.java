@@ -61,12 +61,12 @@ public class ArrangePanel extends BorderPane {
         title.getStyleClass().add("panel-title");
         Label hint = new Label();
         I18n.bindText(hint::setText, "hint.ARRANGE");
-        hint.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
+        hint.getStyleClass().add("text-caption");
         hint.setWrapText(true);
 
         DropZone dropZone = new DropZone(files -> { if (!files.isEmpty()) loadFile(files.get(0)); });
 
-        statusLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.7;");
+        statusLabel.getStyleClass().add("text-status");
         // The status text reflects live state; re-derive it on language change
         // (transient loading/error messages are left as-is).
         I18n.addListener(this::refreshControls);

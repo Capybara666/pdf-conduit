@@ -46,7 +46,7 @@ public class Step2ArrangePages implements WizardStep {
         title.getStyleClass().add("panel-title");
         Label hint = new Label();
         I18n.bindText(hint::setText, "wizard.step2.hint");
-        hint.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
+        hint.getStyleClass().add("text-caption");
 
         ListView<PageSource> listView = new ListView<>(model.pages);
         listView.getStyleClass().add("file-list-view");
@@ -56,7 +56,7 @@ public class Step2ArrangePages implements WizardStep {
 
         VBox top = new VBox(6, title, hint);
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-padding: 18;");
+        root.getStyleClass().add("wizard-step");
         root.setTop(top);
         root.setCenter(listView);
         BorderPane.setMargin(listView, new Insets(10, 0, 0, 0));
@@ -87,14 +87,14 @@ public class Step2ArrangePages implements WizardStep {
         TextField field = new TextField(src.range().isAll() ? "" : describe(src.range()));
         field.setPromptText(I18n.t("wizard.pages.field.prompt"));
         Label error = new Label();
-        error.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
+        error.getStyleClass().add("text-error");
         error.setVisible(false);
         Button pick = new Button(I18n.t("select.pick"));
         pick.getStyleClass().add("btn-secondary");
         pick.setOnAction(e -> PageSelectDialog.choose(owner, src.file(), field.getText())
             .ifPresent(field::setText));
         VBox content = new VBox(8, new Label(I18n.t("wizard.pages.field.label")), field, pick, error);
-        content.setStyle("-fx-padding: 6;");
+        content.getStyleClass().add("pad-sm");
         dialog.getDialogPane().setContent(content);
 
         int max = total > 0 ? total : Integer.MAX_VALUE;
@@ -149,9 +149,9 @@ public class Step2ArrangePages implements WizardStep {
         DraggablePageCell() {
             I18n.bindText(moveUpItem::setText, "wizard.moveup");
             I18n.bindText(moveDownItem::setText, "wizard.movedown");
-            dragHandle.setStyle("-fx-font-size: 10px; -fx-opacity: 0.35;");
-            nameLabel.setStyle("-fx-font-size: 11px;");
-            pagesLink.setStyle("-fx-font-size: 11px;");
+            dragHandle.getStyleClass().add("text-handle");
+            nameLabel.getStyleClass().add("text-sm");
+            pagesLink.getStyleClass().add("text-sm");
             pagesLink.managedProperty().bind(pagesLink.visibleProperty());
 
             Region spacer = new Region();

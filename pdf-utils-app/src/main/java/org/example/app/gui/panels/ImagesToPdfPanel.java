@@ -33,7 +33,7 @@ public class ImagesToPdfPanel extends BasePanel {
     protected VBox buildOptionsArea() {
         Label label = new Label();
         I18n.bindText(label::setText, "images.pagesize.label");
-        label.setStyle("-fx-font-size: 11px;");
+        label.getStyleClass().add("text-sm");
         pageSizeBox = new ComboBox<>();
         pageSizeBox.getItems().addAll(PageSize.values());
         pageSizeBox.setValue(PageSize.FIT);

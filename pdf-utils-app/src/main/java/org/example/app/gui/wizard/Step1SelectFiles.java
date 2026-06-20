@@ -45,7 +45,7 @@ public class Step1SelectFiles implements WizardStep {
 
         VBox top = new VBox(12, title, dropZone);
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-padding: 18;");
+        root.getStyleClass().add("wizard-step");
         root.setTop(top);
         root.setCenter(fileList);
         BorderPane.setMargin(fileList, new Insets(12, 0, 0, 0));

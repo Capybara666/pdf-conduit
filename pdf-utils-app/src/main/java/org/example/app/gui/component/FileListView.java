@@ -42,8 +42,8 @@ public class FileListView extends ListView<Path> {
         FileCell(ObservableList<Path> items) {
             this.items = items;
 
-            dragHandle.setStyle("-fx-font-size: 10px; -fx-opacity: 0.35;");
-            nameLabel.setStyle("-fx-font-size: 11px;");
+            dragHandle.getStyleClass().add("text-handle");
+            nameLabel.getStyleClass().add("text-sm");
             deleteBtn.setStyle(
                 "-fx-background-color: transparent; -fx-text-fill: #ef4444;" +
                 " -fx-cursor: hand; -fx-padding: 0 4 0 4; -fx-font-size: 11px;");

@@ -27,7 +27,7 @@ public class UnlockPanel extends BasePanel {
     protected VBox buildOptionsArea() {
         Label passwordLabel = new Label();
         I18n.bindText(passwordLabel::setText, "password.field.label");
-        passwordLabel.setStyle("-fx-font-size: 11px;");
+        passwordLabel.getStyleClass().add("text-sm");
         passwordField = new PasswordField();
         I18n.bindText(passwordField::setPromptText, "password.field.prompt");
         return new VBox(6, passwordLabel, passwordField);

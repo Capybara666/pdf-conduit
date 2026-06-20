@@ -55,10 +55,10 @@ public class Step4Compression implements WizardStep {
         Label targetLabel = new Label();
         I18n.bindText(targetLabel::setText, "wizard.step4.target");
         HBox sizeRow = new HBox(6, targetLabel, sizeField, unitBox);
-        sizeRow.setStyle("-fx-alignment: CENTER_LEFT;");
+        sizeRow.getStyleClass().add("row-left");
 
         VBox box = new VBox(12, title, enableCompress, sizeRow);
-        box.setStyle("-fx-padding: 18;");
+        box.getStyleClass().add("wizard-step");
         return box;
     }
 }

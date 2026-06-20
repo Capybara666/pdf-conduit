@@ -98,7 +98,7 @@ public class WatermarkPanel extends BasePanel {
     private Label label(String key) {
         Label l = new Label();
         I18n.bindText(l::setText, key);
-        l.setStyle("-fx-font-size: 11px;");
+        l.getStyleClass().add("text-sm");
         return l;
     }
 

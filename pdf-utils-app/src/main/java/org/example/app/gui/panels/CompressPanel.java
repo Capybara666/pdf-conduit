@@ -34,7 +34,7 @@ public class CompressPanel extends BasePanel {
     protected VBox buildOptionsArea() {
         Label label = new Label();
         I18n.bindText(label::setText, "compress.target.label");
-        label.setStyle("-fx-font-size: 11px;");
+        label.getStyleClass().add("text-sm");
         sizeField = new TextField("5");
         unitBox = new ComboBox<>();
         unitBox.getItems().addAll("MB", "KB");

@@ -27,22 +27,22 @@ public class Step3PageSettings implements WizardStep {
 
         Label sizeLabel = new Label();
         I18n.bindText(sizeLabel::setText, "wizard.step3.label");
-        sizeLabel.setStyle("-fx-font-size: 11px;");
+        sizeLabel.getStyleClass().add("text-sm");
 
         ComboBox<PageSize> sizeBox = new ComboBox<>();
         sizeBox.getItems().addAll(PageSize.values());
         sizeBox.valueProperty().bindBidirectional(model.globalPageSize);
 
         HBox row = new HBox(8, sizeLabel, sizeBox);
-        row.setStyle("-fx-alignment: CENTER_LEFT;");
+        row.getStyleClass().add("row-left");
 
         Label note = new Label();
         I18n.bindText(note::setText, "wizard.step3.note");
-        note.setStyle("-fx-font-size: 10px; -fx-opacity: 0.6;");
+        note.getStyleClass().add("text-note");
         note.setWrapText(true);
 
         VBox box = new VBox(14, title, row, note);
-        box.setStyle("-fx-padding: 18;");
+        box.getStyleClass().add("wizard-step");
         return box;
     }
 }

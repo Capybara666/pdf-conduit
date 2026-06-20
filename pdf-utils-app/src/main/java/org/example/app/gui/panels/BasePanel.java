@@ -67,7 +67,7 @@ public abstract class BasePanel extends BorderPane {
 
         // --- file list toolbar: count + clear ---
         Label countLabel = new Label();
-        countLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
+        countLabel.getStyleClass().add("text-caption");
         // The count is computed from live state, so it can't be a static bindText;
         // recompute it on file-list changes and on every language change.
         Runnable refreshCount = () -> {
@@ -84,7 +84,7 @@ public abstract class BasePanel extends BorderPane {
         Region toolbarSpacer = new Region();
         HBox.setHgrow(toolbarSpacer, Priority.ALWAYS);
         HBox listToolbar = new HBox(8, countLabel, toolbarSpacer, clearBtn);
-        listToolbar.setStyle("-fx-alignment: CENTER_LEFT;");
+        listToolbar.getStyleClass().add("row-left");
 
         // --- output: a folder, plus a file name when there is a single output ---
         I18n.bindText(folderField::setPromptText, "output.folder.prompt");
@@ -125,7 +125,7 @@ public abstract class BasePanel extends BorderPane {
         if (hintKey != null) {
             Label hintLabel = new Label();
             I18n.bindText(hintLabel::setText, hintKey);
-            hintLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
+            hintLabel.getStyleClass().add("text-caption");
             hintLabel.setWrapText(true);
             top.getChildren().add(hintLabel);
         }
