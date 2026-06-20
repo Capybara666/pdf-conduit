@@ -4,6 +4,7 @@ import org.example.core.exception.PdfOperationException;
 import org.example.core.model.PdfResult;
 import org.example.core.model.WatermarkOptions;
 import org.example.core.operations.PdfWatermarker;
+import org.example.core.service.OperationType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -42,7 +43,7 @@ public class WatermarkCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            Path out = output != null ? output : MergeCommand.deriveOutput(input, "_watermarked");
+            Path out = output != null ? output : MergeCommand.deriveOutput(input, OperationType.WATERMARK.suffix());
             PdfResult result = PdfWatermarker.execute(
                 new WatermarkOptions(input, text, image, opacity, rotation, scale, out));
             System.out.printf("Watermarked %d page(s) → %s%n", result.pageCount(), result.output());

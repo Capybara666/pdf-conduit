@@ -6,6 +6,7 @@ import org.example.core.model.PageRange;
 import org.example.core.model.RotateOptions;
 import org.example.core.model.RotateResult;
 import org.example.core.operations.PdfRotator;
+import org.example.core.service.OperationType;
 import org.example.core.util.PageRangeParser;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -42,7 +43,7 @@ public class RotateCommand implements Callable<Integer> {
             PageRange range = pages.isBlank()
                 ? PageRange.ALL
                 : PageRangeParser.parse(pages, countPages(input));
-            Path out = output != null ? output : MergeCommand.deriveOutput(input, "_rotated");
+            Path out = output != null ? output : MergeCommand.deriveOutput(input, OperationType.ROTATE.suffix());
             RotateResult result = PdfRotator.execute(new RotateOptions(input, range, angle, out));
             System.out.printf("Rotated %d pages by %d° → %s%n",
                 result.rotatedPageCount(), angle, result.output());

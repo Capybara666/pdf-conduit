@@ -4,6 +4,7 @@ import org.example.core.exception.PdfOperationException;
 import org.example.core.model.CompressOptions;
 import org.example.core.model.CompressResult;
 import org.example.core.operations.PdfCompressor;
+import org.example.core.service.OperationType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -31,7 +32,7 @@ public class CompressCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            Path out = output != null ? output : MergeCommand.deriveOutput(input, "_compressed");
+            Path out = output != null ? output : MergeCommand.deriveOutput(input, OperationType.COMPRESS.suffix());
             CompressResult result = PdfCompressor.execute(new CompressOptions(input, targetSizeBytes, out));
             long kbResult = result.resultBytes() / 1024;
             long kbOrig   = result.originalBytes() / 1024;

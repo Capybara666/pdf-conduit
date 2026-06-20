@@ -6,6 +6,7 @@ import org.example.core.model.MergeResult;
 import org.example.core.model.PageSize;
 import org.example.core.model.PageSource;
 import org.example.core.operations.PdfMerger;
+import org.example.core.service.OperationType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -35,7 +36,7 @@ public class MergeCommand implements Callable<Integer> {
         List<Path> temps = new ArrayList<>();
         try {
             List<PageSource> sources = CliSources.build(inputs, PageSize.FIT, temps);
-            Path out = output != null ? output : deriveOutput(inputs.get(0), "_merged");
+            Path out = output != null ? output : deriveOutput(inputs.get(0), OperationType.MERGE.suffix());
             MergeResult result = PdfMerger.execute(new MergeOptions(sources, out));
             System.out.printf("Merged %d pages → %s%n", result.pageCount(), result.output());
             return 0;

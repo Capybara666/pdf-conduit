@@ -4,6 +4,7 @@ import org.example.core.exception.PdfOperationException;
 import org.example.core.model.PdfResult;
 import org.example.core.model.ProtectOptions;
 import org.example.core.operations.PdfProtector;
+import org.example.core.service.OperationType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -32,7 +33,7 @@ public class ProtectCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            Path out = output != null ? output : MergeCommand.deriveOutput(input, "_protected");
+            Path out = output != null ? output : MergeCommand.deriveOutput(input, OperationType.PROTECT.suffix());
             PdfResult result = PdfProtector.execute(new ProtectOptions(
                 input, password, ownerPassword == null ? "" : ownerPassword, out));
             System.out.printf("Protected %d page(s) → %s%n", result.pageCount(), result.output());

@@ -5,6 +5,7 @@ import org.example.core.model.MetadataOptions;
 import org.example.core.model.PdfMetadata;
 import org.example.core.model.PdfResult;
 import org.example.core.operations.PdfMetadataEditor;
+import org.example.core.service.OperationType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -51,7 +52,7 @@ public class MetadataCommand implements Callable<Integer> {
                 System.out.println("Keywords: " + nz(md.keywords()));
                 return 0;
             }
-            Path out = output != null ? output : MergeCommand.deriveOutput(input, "_metadata");
+            Path out = output != null ? output : MergeCommand.deriveOutput(input, OperationType.METADATA.suffix());
             PdfResult result = PdfMetadataEditor.execute(new MetadataOptions(
                 input, title, author, subject, keywords, strip, out));
             System.out.printf("Updated metadata → %s%n", result.output());

@@ -5,6 +5,7 @@ import org.example.core.exception.PdfOperationException;
 import org.example.core.model.ArrangeOptions;
 import org.example.core.model.ArrangeResult;
 import org.example.core.operations.PdfArranger;
+import org.example.core.service.OperationType;
 import org.example.core.util.PageOrderParser;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -34,7 +35,7 @@ public class ArrangeCommand implements Callable<Integer> {
     public Integer call() {
         try {
             List<Integer> pageOrder = PageOrderParser.parse(order, countPages(input));
-            Path out = output != null ? output : MergeCommand.deriveOutput(input, "_arranged");
+            Path out = output != null ? output : MergeCommand.deriveOutput(input, OperationType.ARRANGE.suffix());
             ArrangeResult result = PdfArranger.execute(new ArrangeOptions(input, pageOrder, out));
             System.out.printf("Arranged %d pages → %s%n", result.pageCount(), result.output());
             return 0;

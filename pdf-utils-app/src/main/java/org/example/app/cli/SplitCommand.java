@@ -7,6 +7,7 @@ import org.example.core.model.SplitMode;
 import org.example.core.model.SplitOptions;
 import org.example.core.model.SplitResult;
 import org.example.core.operations.PdfSplitter;
+import org.example.core.service.OperationType;
 import org.example.core.util.PageRangeParser;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -50,7 +51,7 @@ public class SplitCommand implements Callable<Integer> {
                 System.out.printf("Wrote %d file(s) → %s%n", result.fileCount(), dir);
                 return 0;
             }
-            Path out = output != null ? output : MergeCommand.deriveOutput(input, "_split");
+            Path out = output != null ? output : MergeCommand.deriveOutput(input, OperationType.EXTRACT.suffix());
             SplitResult result = PdfSplitter.execute(new SplitOptions(input, range, out));
             System.out.printf("Extracted %d pages → %s%n", result.pageCount(), result.output());
             return 0;

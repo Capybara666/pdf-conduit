@@ -6,6 +6,7 @@ import org.example.core.model.MergeResult;
 import org.example.core.model.PageSize;
 import org.example.core.model.PageSource;
 import org.example.core.operations.PdfMerger;
+import org.example.core.service.OperationType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -35,7 +36,7 @@ public class ImagesToPdfCommand implements Callable<Integer> {
     public Integer call() {
         List<Path> temps = new ArrayList<>();
         try {
-            Path out = output != null ? output : MergeCommand.deriveOutput(images.get(0), "_converted");
+            Path out = output != null ? output : MergeCommand.deriveOutput(images.get(0), OperationType.IMAGES_TO_PDF.suffix());
             List<PageSource> sources = CliSources.build(images, pageSize, temps);
             MergeResult result = PdfMerger.execute(new MergeOptions(sources, out));
             System.out.printf("Wrote %d page(s) → %s%n", result.pageCount(), result.output());
