@@ -169,6 +169,19 @@ class CliIntegrationTest {
     }
 
     @Test
+    void compressingAProtectedPdfReturnsExitCode2() throws Exception {
+        Path src = createPdf(2);
+        Path locked = tmp.resolve("locked-c.pdf");
+        new CommandLine(new RootCommand())
+            .execute("protect", src.toString(), "--password", "pw", "-o", locked.toString());
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("compress", locked.toString(), "--target-size", "100KB",
+                     "-o", tmp.resolve("out.pdf").toString());
+        assertEquals(2, exit);   // operation failed (protected), not a crash
+    }
+
+    @Test
     void unlockWithWrongPasswordReturnsExitCode2() throws Exception {
         Path src = createPdf(1);
         Path locked = tmp.resolve("locked.pdf");
