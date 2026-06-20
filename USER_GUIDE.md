@@ -59,6 +59,8 @@ Every operation screen accepts files the same way:
 | **Rotate** | Rotate selected pages by 90°, 180° or 270°. |
 | **Arrange** | Reorder pages, and optionally duplicate or drop them. |
 | **To PDF** | Convert each input to its **own** PDF (images placed at a chosen page size). |
+| **Protect** | Add a password (AES-128) so the PDF can't be opened without it. |
+| **Unlock** | Remove a password from a protected PDF (you must supply the current one). |
 
 A few details worth knowing:
 
@@ -125,6 +127,8 @@ pdf-conduit compress scan.pdf --target-size 5MB -o smaller.pdf
 pdf-conduit rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
 pdf-conduit arrange doc.pdf --order 3,1,2 -o reordered.pdf  # 5-1 reverses; repeat to duplicate
 pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf        # alias of images-to-pdf
+pdf-conduit protect secret.pdf --password s3cret -o locked.pdf
+pdf-conduit unlock locked.pdf --password s3cret -o open.pdf
 ```
 
 Run `pdf-conduit --help`, or `pdf-conduit <command> --help`, for the full options

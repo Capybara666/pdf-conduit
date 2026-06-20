@@ -43,7 +43,8 @@ auto-registered with ImageIO, so `.webp` inputs decode — stock JDK ImageIO has
 WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
 - `operations/` — stateless utility classes (`final`, private constructor, static
   `execute(Options)`): `PdfMerger`, `PdfSplitter`, `PdfCompressor`, `PdfRotator`,
-  `PdfArranger`, `ImageToPdfConverter`. Each takes an options record and returns a
+  `PdfArranger`, `ImageToPdfConverter`, `PdfProtector` (AES-128 password),
+  `PdfUnlocker` (remove password). Each takes an options record and returns a
   typed result record.
 - `convert/` — `DocumentConverter`: turns any supported input into a PDF so every
   operation can accept more than PDFs. PDFs pass through, images render inline,
@@ -67,7 +68,8 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
 - `Main.java` — dispatches: args present → picocli `RootCommand`; no args →
   `GuiLauncher` (JavaFX).
 - `cli/` — picocli subcommands mirroring each core operation (`merge`, `split`,
-  `compress`, `rotate`, `arrange`, `to-pdf`/`images-to-pdf`); `SizeConverter`
+  `compress`, `rotate`, `arrange`, `to-pdf`/`images-to-pdf`, `protect`, `unlock`);
+  `SizeConverter`
   handles `500KB`/`5MB`/`1.5MB` syntax. `CliSources` routes each input by type
   (PDF / image / office) through `DocumentConverter`, so `merge` and `to-pdf`
   accept the same inputs as the GUI (office docs need LibreOffice). Exit codes:
@@ -87,7 +89,9 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
 - `gui/` — JavaFX. `MainWindow` owns a `SidebarController` (`SidebarItem` enum:
   Merge, Extract, Compress, Rotate, Arrange, To PDF, Pipeline, Wizard) and a
   `StackPane` content area that swaps between panels, the pipeline view and the
-  wizard. The window re-centres on the monitor under the cursor each launch and
+  wizard. Adding a sidebar operation means: a `SidebarItem` enum value, an icon
+  in `Icons.of(SidebarItem)`, a `MainWindow.createPanel` case, a panel, and
+  i18n keys in **all four** `messages*.properties` (guarded by `MessagesParityTest`). The window re-centres on the monitor under the cursor each launch and
   remembers its size.
   - `panels/` — `BasePanel` (abstract `VBox`) provides the shared DropZone +
     FileListView + output path + ProgressPanel layout; each operation subclasses
