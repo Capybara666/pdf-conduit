@@ -18,6 +18,7 @@ import org.example.core.model.SplitMode;
 import org.example.core.model.SplitOptions;
 import org.example.core.model.SplitResult;
 import org.example.core.operations.PdfSplitter;
+import org.example.core.service.OperationType;
 import org.example.core.util.PageRangeParser;
 import org.example.app.i18n.I18n;
 
@@ -37,7 +38,7 @@ public class SplitPanel extends BasePanel {
     private ToggleGroup modeGroup;
     private RadioButton separateRadio;
 
-    public SplitPanel() { super("panel.SPLIT.title", "run.SPLIT", "_extracted"); }
+    public SplitPanel() { super("panel.SPLIT.title", "run.SPLIT", OperationType.EXTRACT); }
 
     @Override
     protected boolean supportsBatch() { return true; }

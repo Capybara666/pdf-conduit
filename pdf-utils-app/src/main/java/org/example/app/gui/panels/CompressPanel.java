@@ -5,16 +5,14 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.example.app.gui.component.ProgressPanel;
-import org.example.core.convert.DocumentConverter;
 import org.example.core.model.CompressOptions;
 import org.example.core.model.CompressResult;
-import org.example.core.model.PageSize;
 import org.example.core.operations.PdfCompressor;
+import org.example.core.service.OperationRunner;
+import org.example.core.service.OperationType;
 import org.example.app.i18n.I18n;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CompressPanel extends BasePanel {
@@ -22,7 +20,7 @@ public class CompressPanel extends BasePanel {
     private TextField sizeField;
     private ComboBox<String> unitBox;
 
-    public CompressPanel() { super("panel.COMPRESS.title", "run.COMPRESS", "_compressed"); }
+    public CompressPanel() { super("panel.COMPRESS.title", "run.COMPRESS", OperationType.COMPRESS); }
 
     @Override
     protected boolean supportsBatch() { return true; }
@@ -66,13 +64,8 @@ public class CompressPanel extends BasePanel {
             @Override
             protected CompressResult call() throws Exception {
                 updateMessage(I18n.t("msg.compressing"));
-                List<Path> temps = new ArrayList<>();
-                try {
-                    Path pdf = DocumentConverter.ensurePdf(input, PageSize.FIT, temps);
-                    return PdfCompressor.execute(new CompressOptions(pdf, targetBytes, output));
-                } finally {
-                    for (Path t : temps) Files.deleteIfExists(t);
-                }
+                return OperationRunner.run(input, output,
+                    (pdf, out) -> PdfCompressor.execute(new CompressOptions(pdf, targetBytes, out)));
             }
         };
         progressPanel.run(task, output, r -> r.targetReached() ? null

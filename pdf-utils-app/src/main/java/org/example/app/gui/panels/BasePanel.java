@@ -18,12 +18,11 @@ import org.example.app.gui.component.FileListView;
 import org.example.app.gui.component.ProgressPanel;
 import org.example.app.gui.util.DefaultLocations;
 import org.example.app.i18n.I18n;
-import org.example.core.convert.DocumentConverter;
-import org.example.core.model.PageSize;
+import org.example.core.service.OperationRunner;
+import org.example.core.service.OperationType;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,12 +48,14 @@ public abstract class BasePanel extends BorderPane {
     private final Label nameLabel = new Label();
 
     private final String outputSuffix;
+    private final OperationType operationType;
     private boolean batchMode = false;
     private String lastAutoFolder = "";
     private String lastAutoName = "";
 
-    protected BasePanel(String titleKey, String runKey, String outputSuffix) {
-        this.outputSuffix = outputSuffix;
+    protected BasePanel(String titleKey, String runKey, OperationType operationType) {
+        this.operationType = operationType;
+        this.outputSuffix = operationType.suffix();
         getStyleClass().add("panel-root");
 
         Label titleLabel = new Label();
@@ -200,6 +201,9 @@ public abstract class BasePanel extends BorderPane {
     /** Whether this operation processes each input independently (one output per input). */
     protected boolean supportsBatch() { return false; }
 
+    /** The catalog operation this panel runs. */
+    protected final OperationType operationType() { return operationType; }
+
     /** True when several files are selected and this operation runs per-file. */
     protected final boolean isBatchMode() { return batchMode; }
 
@@ -234,28 +238,16 @@ public abstract class BasePanel extends BorderPane {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
         Path dir = outputDir();
-        Task<Path> task = new Task<>() {
+        Task<List<Path>> task = new Task<>() {
             @Override
-            protected Path call() throws Exception {
-                Files.createDirectories(dir);
-                for (int i = 0; i < files.size(); i++) {
-                    Path in = files.get(i);
-                    updateMessage(verb + " " + (i + 1) + "/" + files.size() + "…");
-                    Path out = dir.resolve(
-                        stripExt(in.getFileName().toString()) + outputSuffix + ".pdf");
-                    List<Path> temps = new ArrayList<>();
-                    try {
-                        // Non-PDF inputs (images, documents) are converted first.
-                        Path pdfIn = DocumentConverter.ensurePdf(in, PageSize.FIT, temps);
-                        op.apply(pdfIn, out);
-                    } catch (Exception ex) {
-                        throw new Exception(in.getFileName() + ": " + ex.getMessage(), ex);
-                    } finally {
-                        for (Path t : temps) Files.deleteIfExists(t);
-                    }
-                    updateProgress(i + 1, files.size());
-                }
-                return dir;
+            protected List<Path> call() throws Exception {
+                updateMessage(verb + " …");
+                return OperationRunner.runBatch(operationType(), files, dir,
+                    (in, out) -> { op.apply(in, out); return null; },
+                    (completed, total) -> {
+                        updateMessage(verb + " " + completed + "/" + total + "…");
+                        updateProgress(completed, total);
+                    });
             }
         };
         progressPanel.run(task, dir);

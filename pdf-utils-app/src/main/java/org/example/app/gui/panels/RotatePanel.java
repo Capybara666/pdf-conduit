@@ -12,6 +12,7 @@ import org.example.core.model.PageSize;
 import org.example.core.model.RotateOptions;
 import org.example.core.model.RotateResult;
 import org.example.core.operations.PdfRotator;
+import org.example.core.service.OperationType;
 import org.example.app.i18n.I18n;
 
 import java.nio.file.Files;
@@ -24,7 +25,7 @@ public class RotatePanel extends BasePanel {
     private TextField pagesField;
     private ComboBox<Integer> angleBox;
 
-    public RotatePanel() { super("panel.ROTATE.title", "run.ROTATE", "_rotated"); }
+    public RotatePanel() { super("panel.ROTATE.title", "run.ROTATE", OperationType.ROTATE); }
 
     @Override
     protected boolean supportsBatch() { return true; }

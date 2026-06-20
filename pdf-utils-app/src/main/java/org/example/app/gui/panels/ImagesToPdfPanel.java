@@ -11,6 +11,7 @@ import org.example.core.model.PageRange;
 import org.example.core.model.PageSize;
 import org.example.core.model.PageSource;
 import org.example.core.operations.PdfMerger;
+import org.example.core.service.OperationType;
 import org.example.app.i18n.I18n;
 
 import java.nio.file.Files;
@@ -22,7 +23,7 @@ public class ImagesToPdfPanel extends BasePanel {
 
     private ComboBox<PageSize> pageSizeBox;
 
-    public ImagesToPdfPanel() { super("panel.IMAGES.title", "run.IMAGES", "_converted"); }
+    public ImagesToPdfPanel() { super("panel.IMAGES.title", "run.IMAGES", OperationType.IMAGES_TO_PDF); }
 
     /** Each input becomes its own PDF; combining is the Merge operation's job. */
     @Override

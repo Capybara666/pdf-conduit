@@ -5,6 +5,7 @@ import javafx.scene.layout.VBox;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.*;
 import org.example.core.operations.PdfMerger;
+import org.example.core.service.OperationType;
 import org.example.app.i18n.I18n;
 
 import java.nio.file.Files;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class MergePanel extends BasePanel {
 
-    public MergePanel() { super("panel.MERGE.title", "run.MERGE", "_merged"); }
+    public MergePanel() { super("panel.MERGE.title", "run.MERGE", OperationType.MERGE); }
 
     @Override
     protected VBox buildOptionsArea() { return new VBox(); }

@@ -18,6 +18,7 @@ import org.example.app.i18n.I18n;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.PageSize;
 import org.example.core.model.PdfResult;
+import org.example.core.service.OperationType;
 import org.example.core.model.WatermarkOptions;
 import org.example.core.operations.PdfWatermarker;
 
@@ -36,7 +37,7 @@ public class WatermarkPanel extends BasePanel {
     private Slider size;
     private ComboBox<Integer> rotation;
 
-    public WatermarkPanel() { super("panel.WATERMARK.title", "run.WATERMARK", "_watermarked"); }
+    public WatermarkPanel() { super("panel.WATERMARK.title", "run.WATERMARK", OperationType.WATERMARK); }
 
     @Override
     protected String inputHintKey() { return "hint.WATERMARK"; }

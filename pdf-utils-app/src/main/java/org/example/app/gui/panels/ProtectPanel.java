@@ -10,6 +10,7 @@ import org.example.core.model.PageSize;
 import org.example.core.model.PdfResult;
 import org.example.core.model.ProtectOptions;
 import org.example.core.operations.PdfProtector;
+import org.example.core.service.OperationType;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +23,7 @@ public class ProtectPanel extends BasePanel {
     private PasswordField passwordField;
     private PasswordField ownerField;
 
-    public ProtectPanel() { super("panel.PROTECT.title", "run.PROTECT", "_protected"); }
+    public ProtectPanel() { super("panel.PROTECT.title", "run.PROTECT", OperationType.PROTECT); }
 
     @Override
     protected String inputHintKey() { return "hint.PROTECT"; }

@@ -13,6 +13,7 @@ import org.example.core.model.PageSize;
 import org.example.core.model.PdfMetadata;
 import org.example.core.model.PdfResult;
 import org.example.core.operations.PdfMetadataEditor;
+import org.example.core.service.OperationType;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +29,7 @@ public class MetadataPanel extends BasePanel {
     private TextField keywordsField;
     private CheckBox stripBox;
 
-    public MetadataPanel() { super("panel.METADATA.title", "run.METADATA", "_metadata"); }
+    public MetadataPanel() { super("panel.METADATA.title", "run.METADATA", OperationType.METADATA); }
 
     @Override
     protected String inputHintKey() { return "hint.METADATA"; }

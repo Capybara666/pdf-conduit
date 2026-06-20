@@ -8,6 +8,7 @@ import org.example.app.i18n.I18n;
 import org.example.core.model.PdfResult;
 import org.example.core.model.UnlockOptions;
 import org.example.core.operations.PdfUnlocker;
+import org.example.core.service.OperationType;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -17,7 +18,7 @@ public class UnlockPanel extends BasePanel {
 
     private PasswordField passwordField;
 
-    public UnlockPanel() { super("panel.UNLOCK.title", "run.UNLOCK", "_unlocked"); }
+    public UnlockPanel() { super("panel.UNLOCK.title", "run.UNLOCK", OperationType.UNLOCK); }
 
     @Override
     protected String inputHintKey() { return "hint.UNLOCK"; }
