@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,23 @@ class DocumentConverterTest {
 
         assertEquals(pdf, result);          // same file, no copy
         assertTrue(temps.isEmpty());        // nothing to clean up
+    }
+
+    @Test
+    void webpIsConvertedToPdf() throws Exception {
+        // WebP is advertised as a supported image type, so it must actually decode.
+        Path webp = tmp.resolve("sample.webp");
+        try (var in = getClass().getResourceAsStream("/sample.webp")) {
+            assertNotNull(in, "missing test fixture sample.webp");
+            Files.copy(in, webp);
+        }
+        assertEquals(DocumentConverter.Kind.IMAGE, DocumentConverter.classify(webp));
+
+        List<Path> temps = new ArrayList<>();
+        Path pdf = DocumentConverter.ensurePdf(webp, null, temps);
+        try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
+            assertEquals(1, doc.getNumberOfPages());
+        }
     }
 
     @Test

@@ -22,6 +22,7 @@
         <javafx.version>21.0.6</javafx.version>
         <picocli.version>4.7.6</picocli.version>
         <junit.version>5.11.4</junit.version>
+        <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
     </properties>
 
     <dependencyManagement>
@@ -50,6 +51,12 @@
                 <groupId>info.picocli</groupId>
                 <artifactId>picocli</artifactId>
                 <version>${picocli.version}</version>
+            </dependency>
+            <!-- Pure-Java WebP decoder, registered via ImageIO ServiceLoader -->
+            <dependency>
+                <groupId>com.twelvemonkeys.imageio</groupId>
+                <artifactId>imageio-webp</artifactId>
+                <version>${twelvemonkeys.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
