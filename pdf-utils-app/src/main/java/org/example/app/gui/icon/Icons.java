@@ -64,6 +64,9 @@ public final class Icons {
     // an open padlock (remove password protection)
     private static final String UNLOCK =
         "M6 11 H18 V20 H6 Z M8.5 11 V8 a3.5 3.5 0 0 1 7 0 M12 14.5 V17";
+    // a tag/label with a hole (document metadata)
+    private static final String METADATA =
+        "M4 13 L11 6 H18 V13 L11 20 Z M15 9.5 a1.1 1.1 0 1 0 0.02 0";
 
     // --- public factories -------------------------------------------------
 
@@ -77,6 +80,7 @@ public final class Icons {
             case ARRANGE  -> ARRANGE;
             case PROTECT  -> PROTECT;
             case UNLOCK   -> UNLOCK;
+            case METADATA -> METADATA;
             case PIPELINE -> PIPELINE;
             case WIZARD   -> WIZARD;
         }, size);

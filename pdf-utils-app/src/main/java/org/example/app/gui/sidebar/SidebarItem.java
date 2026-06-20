@@ -9,6 +9,7 @@ public enum SidebarItem {
     IMAGES   ("🖼", "To PDF"),
     PROTECT  ("🔒", "Protect"),
     UNLOCK   ("🔓", "Unlock"),
+    METADATA ("🏷", "Metadata"),
     PIPELINE ("⇄", "Pipeline"),
     WIZARD   ("⚙", "Wizard");
 

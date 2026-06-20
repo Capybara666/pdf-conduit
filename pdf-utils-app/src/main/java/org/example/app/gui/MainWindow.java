@@ -150,6 +150,7 @@ public class MainWindow {
             case IMAGES   -> new ImagesToPdfPanel();
             case PROTECT  -> new ProtectPanel();
             case UNLOCK   -> new UnlockPanel();
+            case METADATA -> new MetadataPanel();
             case PIPELINE -> new org.example.app.gui.pipeline.PipelineView();
             case WIZARD   -> new WizardController();
         };
