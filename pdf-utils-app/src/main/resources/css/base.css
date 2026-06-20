@@ -211,6 +211,18 @@
 .result-link:hover { -fx-background-color: derive(-c-surface-2, -10%); }
 .result-link:pressed { -fx-background-color: derive(-c-surface-2, -18%); }
 
+/* ---- File-list remove button ---- */
+.file-delete-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: -c-danger;
+    -fx-cursor: hand;
+    -fx-padding: 0 4 0 4;
+    -fx-font-size: 11px;
+    -fx-background-radius: 6;
+}
+.file-delete-btn:hover { -fx-background-color: -c-surface-2; }
+.file-delete-btn:pressed { -fx-background-color: derive(-c-surface-2, -12%); }
+
 /* ---- Hyperlinks ---- */
 .hyperlink {
     -fx-text-fill: -c-accent;

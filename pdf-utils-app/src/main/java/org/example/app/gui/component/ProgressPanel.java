@@ -118,7 +118,7 @@ public class ProgressPanel extends VBox {
                 Animations.fadeIn(warnBanner);
             }
             resultLinks.setVisible(true);
-            Animations.fadeIn(resultLinks);
+            Animations.popIn(resultLinks);
             openFile.setOnAction(ev -> FileOpener.open(expectedOutput));
             openFolder.setOnAction(ev -> FileOpener.open(expectedOutput.getParent()));
             Sfx.playDone();

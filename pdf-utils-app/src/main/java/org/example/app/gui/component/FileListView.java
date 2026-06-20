@@ -44,9 +44,7 @@ public class FileListView extends ListView<Path> {
 
             dragHandle.getStyleClass().add("text-handle");
             nameLabel.getStyleClass().add("text-sm");
-            deleteBtn.setStyle(
-                "-fx-background-color: transparent; -fx-text-fill: #ef4444;" +
-                " -fx-cursor: hand; -fx-padding: 0 4 0 4; -fx-font-size: 11px;");
+            deleteBtn.getStyleClass().add("file-delete-btn");
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);

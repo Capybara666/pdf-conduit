@@ -44,6 +44,27 @@ public final class Animations {
         fade.play();
     }
 
+    /** Fades a node in with a slight pop (scale 0.96 → 1.0) — for success / result reveals. */
+    public static void popIn(Node node) {
+        node.setOpacity(0);
+        node.setScaleX(0.96);
+        node.setScaleY(0.96);
+
+        FadeTransition fade = new FadeTransition(Duration.millis(200), node);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition scale = new ScaleTransition(Duration.millis(200), node);
+        scale.setFromX(0.96);
+        scale.setFromY(0.96);
+        scale.setToX(1.0);
+        scale.setToY(1.0);
+        scale.setInterpolator(Interpolator.EASE_OUT);
+
+        new ParallelTransition(fade, scale).play();
+    }
+
     /** Animates a node's scale toward {@code target}. */
     public static void scaleTo(Node node, double target) {
         ScaleTransition scale = new ScaleTransition(Duration.millis(120), node);
