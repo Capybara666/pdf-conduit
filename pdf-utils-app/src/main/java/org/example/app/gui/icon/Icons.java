@@ -97,6 +97,7 @@ public final class Icons {
             case ARRANGE       -> ARRANGE;
             case PROTECT       -> PROTECT;
             case UNLOCK        -> UNLOCK;
+            case METADATA      -> METADATA;
         }, size);
     }
 

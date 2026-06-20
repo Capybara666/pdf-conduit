@@ -237,6 +237,25 @@ class PipelineExecutorTest {
     }
 
     @Test
+    void metadataNodeSetsTitleAndLeavesBlankFieldsAlone() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("a.pdf", 1));
+        PipelineNode meta = new PipelineNode("m", NodeKind.METADATA, 0, 0);
+        meta.metaTitle = "Piped";          // author/subject/keywords left blank
+        Path out = tmp.resolve("meta.pdf");
+        meta.outputDestination = out.toString();
+        m.nodes.add(src);
+        m.nodes.add(meta);
+        m.connections.add(new Connection("s", "m"));
+
+        PipelineExecutor.run(m, null);
+
+        assertEquals("Piped",
+            org.example.core.operations.PdfMetadataEditor.read(out).title());
+    }
+
+    @Test
     void invalidPipelineThrows() throws Exception {
         PipelineModel m = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);

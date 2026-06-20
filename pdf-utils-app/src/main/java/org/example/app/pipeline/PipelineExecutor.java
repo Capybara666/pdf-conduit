@@ -8,6 +8,7 @@ import org.example.core.model.*;
 import org.example.core.operations.PdfArranger;
 import org.example.core.operations.PdfCompressor;
 import org.example.core.operations.PdfMerger;
+import org.example.core.operations.PdfMetadataEditor;
 import org.example.core.operations.PdfProtector;
 import org.example.core.operations.PdfRotator;
 import org.example.core.operations.PdfSplitter;
@@ -212,6 +213,9 @@ public final class PipelineExecutor {
                         new ProtectOptions(src, n.password, n.ownerPassword, out));
                     case UNLOCK -> PdfUnlocker.execute(
                         new UnlockOptions(src, n.password, out));
+                    case METADATA -> PdfMetadataEditor.execute(new MetadataOptions(src,
+                        blankToNull(n.metaTitle), blankToNull(n.metaAuthor),
+                        blankToNull(n.metaSubject), blankToNull(n.metaKeywords), n.metaStrip, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
@@ -309,6 +313,11 @@ public final class PipelineExecutor {
 
     private static List<Integer> order(String expr, Path pdf) throws Exception {
         return PageOrderParser.parse(expr, pageCount(pdf));
+    }
+
+    /** Blank → null (a metadata field left empty means "leave unchanged"). */
+    private static String blankToNull(String s) {
+        return (s == null || s.isBlank()) ? null : s;
     }
 
     private static int pageCount(Path pdf) throws IOException {

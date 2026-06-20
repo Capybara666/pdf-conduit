@@ -166,6 +166,8 @@ class NodeView extends HBox {
             case MERGE -> I18n.t("pipeline.summary.combine");
             case PROTECT, UNLOCK -> I18n.t(node.password == null || node.password.isBlank()
                 ? "pipeline.summary.nopassword" : "pipeline.summary.haspassword");
+            case METADATA -> I18n.t(node.metaStrip
+                ? "pipeline.summary.metastrip" : "pipeline.summary.metaedit");
         });
     }
 

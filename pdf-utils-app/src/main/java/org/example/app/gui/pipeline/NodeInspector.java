@@ -60,6 +60,7 @@ class NodeInspector extends HBox {
             case IMAGES_TO_PDF -> buildImages(node);
             case PROTECT -> buildProtect(node);
             case UNLOCK -> buildUnlock(node);
+            case METADATA -> buildMetadata(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
         }
 
@@ -209,6 +210,35 @@ class NodeInspector extends HBox {
         pwd.setPrefWidth(140);
         pwd.textProperty().addListener((o, a, b) -> { node.password = b; canvas.refreshNode(node); });
         getChildren().addAll(new Label(I18n.t("pipeline.node.password")), pwd);
+    }
+
+    private void buildMetadata(PipelineNode node) {
+        javafx.scene.control.CheckBox strip = new javafx.scene.control.CheckBox(I18n.t("metadata.strip"));
+        strip.setSelected(node.metaStrip);
+
+        TextField title = metaField(node.metaTitle, v -> node.metaTitle = v, node);
+        TextField author = metaField(node.metaAuthor, v -> node.metaAuthor = v, node);
+        TextField subject = metaField(node.metaSubject, v -> node.metaSubject = v, node);
+        TextField keywords = metaField(node.metaKeywords, v -> node.metaKeywords = v, node);
+        // When stripping, the fields are irrelevant — grey them out.
+        for (TextField f : java.util.List.of(title, author, subject, keywords)) {
+            f.disableProperty().bind(strip.selectedProperty());
+        }
+        strip.selectedProperty().addListener((o, a, b) -> { node.metaStrip = b; canvas.refreshNode(node); });
+
+        getChildren().addAll(
+            new Label(I18n.t("metadata.title.label")), title,
+            new Label(I18n.t("metadata.author.label")), author,
+            new Label(I18n.t("metadata.subject.label")), subject,
+            new Label(I18n.t("metadata.keywords.label")), keywords,
+            strip);
+    }
+
+    private TextField metaField(String value, java.util.function.Consumer<String> setter, PipelineNode node) {
+        TextField f = new TextField(value);
+        f.setPrefWidth(90);
+        f.textProperty().addListener((o, a, b) -> { setter.accept(b); canvas.refreshNode(node); });
+        return f;
     }
 
     private void buildDestination(PipelineNode node) {

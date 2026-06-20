@@ -10,7 +10,8 @@ public enum NodeKind {
     ROTATE("Rotate", "_rotated"),
     ARRANGE("Arrange", "_arranged"),
     PROTECT("Protect", "_protected"),
-    UNLOCK("Unlock", "_unlocked");
+    UNLOCK("Unlock", "_unlocked"),
+    METADATA("Metadata", "_metadata");
 
     public final String label;
     public final String suffix;
@@ -33,6 +34,6 @@ public enum NodeKind {
     public boolean isMap()     {
         return this == EXTRACT || this == COMPRESS || this == ROTATE
             || this == ARRANGE || this == IMAGES_TO_PDF
-            || this == PROTECT || this == UNLOCK;
+            || this == PROTECT || this == UNLOCK || this == METADATA;
     }
 }

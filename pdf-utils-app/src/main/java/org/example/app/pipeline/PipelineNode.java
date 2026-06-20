@@ -44,6 +44,14 @@ public class PipelineNode {
     public String password = "";
     public String ownerPassword = "";
 
+    // METADATA — set the non-blank fields (blank = leave unchanged); metaStrip
+    // removes all metadata and ignores the fields.
+    public String metaTitle = "";
+    public String metaAuthor = "";
+    public String metaSubject = "";
+    public String metaKeywords = "";
+    public boolean metaStrip = false;
+
     // terminal nodes only — a file path (single output) or folder (multiple)
     public String outputDestination = "";
 

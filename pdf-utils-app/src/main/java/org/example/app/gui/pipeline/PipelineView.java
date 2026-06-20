@@ -7,11 +7,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -42,7 +42,7 @@ public class PipelineView extends BorderPane {
     private static final List<NodeKind> PALETTE = List.of(
         NodeKind.SOURCE, NodeKind.MERGE, NodeKind.IMAGES_TO_PDF,
         NodeKind.EXTRACT, NodeKind.COMPRESS, NodeKind.ROTATE, NodeKind.ARRANGE,
-        NodeKind.PROTECT, NodeKind.UNLOCK);
+        NodeKind.PROTECT, NodeKind.UNLOCK, NodeKind.METADATA);
 
     private final PipelineModel model = new PipelineModel();
     private final PipelineCanvas canvas = new PipelineCanvas(model);
@@ -91,7 +91,7 @@ public class PipelineView extends BorderPane {
         I18n.bindText(title::setText, "pipeline.title");
         title.getStyleClass().add("panel-title");
 
-        HBox palette = new HBox();
+        FlowPane palette = new FlowPane(6, 6);
         palette.getStyleClass().add("pipeline-palette");
         for (NodeKind kind : PALETTE) palette.getChildren().add(chip(kind));
 
@@ -111,11 +111,11 @@ public class PipelineView extends BorderPane {
         help.setTooltip(helpTip);
         help.setOnAction(e -> showHelp());
 
-        // Keep Clear next to the palette (left) so it doesn't track the canvas
-        // scrollbar at the right edge as the window resizes; Help sits at the right.
-        Separator sep = new Separator(javafx.geometry.Orientation.VERTICAL);
-        HBox paletteRow = new HBox(8, palette, sep, clear, spacer, help);
-        paletteRow.getStyleClass().add("pipeline-toolbar");
+        // The palette wraps to as many rows as needed (so it scales as blocks are
+        // added); Clear/Help sit on their own row below it.
+        HBox controls = new HBox(8, clear, spacer, help);
+        controls.setAlignment(Pos.CENTER_LEFT);
+        controls.getStyleClass().add("pipeline-toolbar");
 
         banner.getStyleClass().add("error-banner");
         banner.setMaxWidth(Double.MAX_VALUE);
@@ -123,7 +123,7 @@ public class PipelineView extends BorderPane {
         banner.setVisible(false);
         banner.managedProperty().bind(banner.visibleProperty());
 
-        VBox top = new VBox(8, title, paletteRow, banner);
+        VBox top = new VBox(8, title, palette, controls, banner);
         return top;
     }
 
