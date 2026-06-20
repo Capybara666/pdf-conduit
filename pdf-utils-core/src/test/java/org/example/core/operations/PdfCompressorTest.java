@@ -10,6 +10,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.example.core.model.CompressOptions;
 import org.example.core.model.CompressResult;
 import org.junit.jupiter.api.Test;
@@ -105,6 +106,25 @@ class PdfCompressorTest {
             doc.save(path.toFile());
         }
         return path;
+    }
+
+    @Test
+    void losslesslyShrinksAnUncompressedPdf() throws Exception {
+        // An image-free PDF saved without object streams (so it is larger than it
+        // needs to be). Compression should shrink it purely by re-saving with
+        // object-stream compression — no images, no quality loss.
+        Path src = tmp.resolve("uncompressed.pdf");
+        try (PDDocument doc = new PDDocument()) {
+            for (int i = 0; i < 30; i++) doc.addPage(new PDPage(PDRectangle.A4));
+            doc.save(src.toFile(), CompressParameters.NO_COMPRESSION);
+        }
+        long original = src.toFile().length();
+        Path out = tmp.resolve("lossless.pdf");
+
+        CompressResult result = PdfCompressor.execute(new CompressOptions(src, original - 1, out));
+
+        assertTrue(result.targetReached(), "a sub-original target should be met losslessly");
+        assertTrue(result.resultBytes() < original, "object-stream compression should shrink it");
     }
 
     private Path createImageHeavyPdf() throws IOException {

@@ -122,7 +122,11 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
   inputs through `DocumentConverter` first, so panels and pipeline nodes don't
   need a separate "convert to PDF" step. Office conversion needs LibreOffice; its
   absence yields a clear "LibreOffice is not installed" message rather than a crash.
-- `PdfCompressor` walks a ladder of `(scale, quality)` steps, gentlest first. The
+- `PdfCompressor` first does a **lossless pass** — re-saving with object-stream
+  compression (PDFBox's default, which also drops orphaned objects). If that meets
+  the target, or the PDF has no images to downsample, it stops there (no quality
+  loss, and image-free PDFs skip the ladder entirely). Otherwise it walks a ladder
+  of `(scale, quality)` steps, gentlest first. The
   **full-resolution** rungs (scale `1.0`, decreasing JPEG quality) come *before*
   any downscaling, so a target reachable by re-encoding alone never sacrifices
   resolution; only once those are exhausted are images shrunk (`0.75 → 0.5 →

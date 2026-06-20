@@ -49,6 +49,30 @@ public final class PdfCompressor {
             long originalSize = opts.input().toFile().length();
             OutputPaths.ensureParentDir(opts.output());
 
+            // 1) Lossless pass: re-save with object-stream compression (PDFBox's
+            //    default), which also drops orphaned objects. This is the only
+            //    lever for text/vector PDFs and never degrades quality.
+            boolean hasImages;
+            try (PDDocument doc = Loader.loadPDF(opts.input().toFile())) {
+                hasImages = hasImages(doc);
+                doc.save(opts.output().toFile());
+            }
+            long losslessBytes = opts.output().toFile().length();
+            if (losslessBytes <= opts.targetSizeBytes()) {
+                return new CompressResult(opts.output(), originalSize, losslessBytes, true);
+            }
+
+            // 2) Nothing to downsample: the lossless copy is the best we can do
+            //    (guard against the rare case where it ended up larger).
+            if (!hasImages) {
+                if (losslessBytes > originalSize) {
+                    Files.copy(opts.input(), opts.output(), StandardCopyOption.REPLACE_EXISTING);
+                }
+                return new CompressResult(opts.output(), originalSize,
+                    opts.output().toFile().length(), false);
+            }
+
+            // 3) Lossy image ladder, gentlest first; stop as soon as the target is met.
             for (Step step : STEPS) {
                 try (PDDocument compressed = Loader.loadPDF(opts.input().toFile())) {
                     recompressImages(compressed, step.scale(), step.quality());
@@ -60,7 +84,7 @@ public final class PdfCompressor {
                 }
             }
 
-            // Target unreachable — save the most-compressed version, but never larger than original.
+            // 4) Target unreachable — save the most-compressed version, but never larger than original.
             try (PDDocument compressed = Loader.loadPDF(opts.input().toFile())) {
                 Step strongest = STEPS.get(STEPS.size() - 1);
                 recompressImages(compressed, strongest.scale(), strongest.quality());
@@ -76,6 +100,17 @@ public final class PdfCompressor {
         } catch (IOException e) {
             throw new PdfOperationException("Compression failed: " + e.getMessage(), e);
         }
+    }
+
+    private static boolean hasImages(PDDocument doc) throws IOException {
+        for (PDPage page : doc.getPages()) {
+            PDResources resources = page.getResources();
+            if (resources == null) continue;
+            for (COSName name : resources.getXObjectNames()) {
+                if (resources.getXObject(name) instanceof PDImageXObject) return true;
+            }
+        }
+        return false;
     }
 
     /**
