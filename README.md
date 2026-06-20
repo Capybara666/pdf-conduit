@@ -15,8 +15,8 @@ documents to PDF** — with both a JavaFX GUI and a command-line interface, buil
 - **Core operations:** merge PDFs/images into one document, extract pages — into
   one PDF or split into a separate file per page — compress to a target file size
   (iterative image downsampling), rotate pages, arrange (reorder, duplicate or
-  drop) pages, convert files to PDF (one PDF per input), and password-protect or
-  unlock PDFs (AES-128).
+  drop) pages, convert files to PDF (one PDF per input), password-protect or
+  unlock PDFs (AES-128), and view/edit/strip metadata.
 - **Any supported input, anywhere:** every operation accepts images and office
   documents (`.docx`, `.odt`, `.rtf`, `.txt`, `.xlsx`, `.pptx`, …) in addition to
   PDFs — non-PDF files are converted to PDF automatically (images inline; office
@@ -82,6 +82,9 @@ pdf-conduit arrange doc.pdf --order 3,1,2 -o reordered.pdf   # reorder pages; 5-
 pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf   # combines images into one PDF (alias of images-to-pdf)
 pdf-conduit protect secret.pdf --password s3cret -o locked.pdf      # AES-128 password protection
 pdf-conduit unlock locked.pdf --password s3cret -o open.pdf         # remove the password
+pdf-conduit metadata report.pdf --show                             # print title/author/subject/keywords
+pdf-conduit metadata report.pdf --title "Q3 Report" --author Me -o tagged.pdf
+pdf-conduit metadata report.pdf --strip -o clean.pdf               # remove all metadata
 ```
 
 - **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).

@@ -61,6 +61,7 @@ Every operation screen accepts files the same way:
 | **To PDF** | Convert each input to its **own** PDF (images placed at a chosen page size). |
 | **Protect** | Add a password (AES-128) so the PDF can't be opened without it. |
 | **Unlock** | Remove a password from a protected PDF (you must supply the current one). |
+| **Metadata** | View, edit, or strip the title / author / subject / keywords. |
 
 A few details worth knowing:
 
@@ -129,6 +130,9 @@ pdf-conduit arrange doc.pdf --order 3,1,2 -o reordered.pdf  # 5-1 reverses; repe
 pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf        # alias of images-to-pdf
 pdf-conduit protect secret.pdf --password s3cret -o locked.pdf
 pdf-conduit unlock locked.pdf --password s3cret -o open.pdf
+pdf-conduit metadata report.pdf --show
+pdf-conduit metadata report.pdf --title "Q3 Report" --author Me -o tagged.pdf
+pdf-conduit metadata report.pdf --strip -o clean.pdf
 ```
 
 Run `pdf-conduit --help`, or `pdf-conduit <command> --help`, for the full options

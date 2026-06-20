@@ -44,8 +44,8 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
 - `operations/` — stateless utility classes (`final`, private constructor, static
   `execute(Options)`): `PdfMerger`, `PdfSplitter`, `PdfCompressor`, `PdfRotator`,
   `PdfArranger`, `ImageToPdfConverter`, `PdfProtector` (AES-128 password),
-  `PdfUnlocker` (remove password). Each takes an options record and returns a
-  typed result record.
+  `PdfUnlocker` (remove password), `PdfMetadataEditor` (read/edit/strip document
+  info). Each takes an options record and returns a typed result record.
 - `convert/` — `DocumentConverter`: turns any supported input into a PDF so every
   operation can accept more than PDFs. PDFs pass through, images render inline,
   and office/text documents (`.docx`, `.odt`, `.rtf`, `.xlsx`, `.pptx`, `.txt`, …)
@@ -68,8 +68,8 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
 - `Main.java` — dispatches: args present → picocli `RootCommand`; no args →
   `GuiLauncher` (JavaFX).
 - `cli/` — picocli subcommands mirroring each core operation (`merge`, `split`,
-  `compress`, `rotate`, `arrange`, `to-pdf`/`images-to-pdf`, `protect`, `unlock`);
-  `SizeConverter`
+  `compress`, `rotate`, `arrange`, `to-pdf`/`images-to-pdf`, `protect`, `unlock`,
+  `metadata`); `SizeConverter`
   handles `500KB`/`5MB`/`1.5MB` syntax. `CliSources` routes each input by type
   (PDF / image / office) through `DocumentConverter`, so `merge` and `to-pdf`
   accept the same inputs as the GUI (office docs need LibreOffice). Exit codes:
