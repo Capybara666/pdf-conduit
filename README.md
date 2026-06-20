@@ -86,8 +86,8 @@ pdf-conduit unlock locked.pdf --password s3cret -o open.pdf         # remove the
 pdf-conduit metadata report.pdf --show                             # print title/author/subject/keywords
 pdf-conduit metadata report.pdf --title "Q3 Report" --author Me -o tagged.pdf
 pdf-conduit metadata report.pdf --strip -o clean.pdf               # remove all metadata
-pdf-conduit watermark report.pdf --text DRAFT --opacity 0.3 -o stamped.pdf
-pdf-conduit watermark report.pdf --image logo.png --rotation 0 -o branded.pdf
+pdf-conduit watermark report.pdf --text DRAFT --opacity 0.3 --scale 0.9 -o stamped.pdf
+pdf-conduit watermark report.pdf --image logo.png --rotation 0 -o branded.pdf  # --scale 0.05-2 sizes it
 ```
 
 - **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).
