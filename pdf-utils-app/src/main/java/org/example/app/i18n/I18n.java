@@ -9,7 +9,8 @@ import java.util.prefs.Preferences;
 
 /**
  * Tiny localisation helper. Strings live in {@code i18n/messages*.properties}
- * (UTF-8). English is the base bundle; Polish is {@code messages_pl}. The chosen
+ * (UTF-8). English is the base bundle; Polish is {@code messages_pl} and Spanish
+ * is {@code messages_es} and Chinese is {@code messages_zh}. The chosen
  * language is persisted like the theme, and listeners are notified so the UI can
  * rebuild itself live.
  */
@@ -17,7 +18,9 @@ public final class I18n {
 
     public enum Language {
         ENGLISH("English", "en"),
-        POLISH("Polski", "pl");
+        POLISH("Polski", "pl"),
+        SPANISH("Español", "es"),
+        CHINESE("中文", "zh");
 
         public final String displayName;
         public final String code;
