@@ -11,10 +11,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
+import javafx.scene.Node;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -34,10 +32,16 @@ public final class PageReorderGrid extends ScrollPane {
 
     private static final double TILE_WIDTH = 116;
 
+    /** Pointer travel (px) before a press becomes a drag — keeps a click a click. */
+    private static final double DRAG_THRESHOLD = 8;
+
     private final FlowPane flow = new FlowPane(14, 14);
     private final ObservableList<Tile> tiles = FXCollections.observableArrayList();
     private List<Tile> original = List.of();
     private Tile dragging;
+    private VBox draggingCell;
+    private double pressX, pressY;
+    private boolean dragActive;
     private Runnable onChange = () -> {};
 
     /** One page in the grid: the 1-based source page number and its thumbnail. */
@@ -55,10 +59,8 @@ public final class PageReorderGrid extends ScrollPane {
         flow.setAlignment(Pos.TOP_LEFT);
         setContent(flow);
 
-        // Drive wheel scrolling explicitly. A native drag-and-drop gesture (used to
-        // reorder tiles) leaves the ScrollPane unable to scroll with the wheel on
-        // Linux/GTK until the next click; handling ScrollEvent in the capturing
-        // phase bypasses that stale state so the wheel always works.
+        // Drive wheel scrolling explicitly so it stays consistent regardless of
+        // focus/gesture state (handled in the capturing phase, before the skin).
         addEventFilter(ScrollEvent.SCROLL, e -> {
             double extent = flow.getBoundsInLocal().getHeight() - getViewportBounds().getHeight();
             if (extent <= 0 || e.getDeltaY() == 0) return;
@@ -71,20 +73,6 @@ public final class PageReorderGrid extends ScrollPane {
 
         // Re-render the tiles (badges + tooltips) in the new language, keeping order.
         I18n.addListener(this::relayout);
-
-        // Dropping onto empty pane area appends to the end.
-        flow.setOnDragOver(e -> {
-            if (dragging != null) e.acceptTransferModes(TransferMode.MOVE);
-            e.consume();
-        });
-        flow.setOnDragDropped(e -> {
-            if (dragging != null) {
-                tiles.remove(dragging);
-                tiles.add(dragging);
-                e.setDropCompleted(true);
-            }
-            e.consume();
-        });
     }
 
     /** Called whenever the arrangement changes (reorder, remove, duplicate, reset). */
@@ -173,50 +161,91 @@ public final class PageReorderGrid extends ScrollPane {
         return b;
     }
 
-    // --- drag-and-drop reordering -----------------------------------------
+    // --- reordering (plain mouse events) ----------------------------------
+    //
+    // Deliberately NOT JavaFX's startDragAndDrop: on Linux/GTK a native drag
+    // gesture leaves the ScrollPane unable to deliver wheel-scroll events until
+    // the next click. Reordering is done with press/drag/release instead, hit-
+    // testing tiles by scene coordinates, so no native drag gesture is involved.
 
     private void installDrag(VBox cell, Tile tile) {
-        cell.setOnDragDetected(e -> {
+        cell.setOnMousePressed(e -> {
             dragging = tile;
-            Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
-            ClipboardContent cc = new ClipboardContent();
-            cc.putString(String.valueOf(tile.sourcePage));   // payload required, value unused
-            db.setContent(cc);
-            db.setDragView(cell.snapshot(null, null));
-            cell.setOpacity(0.4);
-            e.consume();
+            draggingCell = cell;
+            pressX = e.getSceneX();
+            pressY = e.getSceneY();
+            dragActive = false;
         });
 
-        cell.setOnDragOver(e -> {
-            if (dragging != null && dragging != tile) {
-                e.acceptTransferModes(TransferMode.MOVE);
-                boolean after = e.getX() >= cell.getWidth() / 2;
-                cell.pseudoClassStateChanged(DROP_AFTER, after);
-                cell.pseudoClassStateChanged(DROP_BEFORE, !after);
+        cell.setOnMouseDragged(e -> {
+            if (dragging == null) return;
+            if (!dragActive) {
+                double dx = e.getSceneX() - pressX, dy = e.getSceneY() - pressY;
+                if (dx * dx + dy * dy < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
+                dragActive = true;
+                cell.setOpacity(0.4);
             }
-            e.consume();
+            updateDropMarkers(e.getSceneX(), e.getSceneY());
         });
 
-        cell.setOnDragExited(e -> clearMarkers(cell));
-
-        cell.setOnDragDropped(e -> {
-            if (dragging == null) { e.setDropCompleted(false); e.consume(); return; }
-            int from = tiles.indexOf(dragging);
-            int target = tiles.indexOf(tile) + (e.getX() >= cell.getWidth() / 2 ? 1 : 0);
-            tiles.remove(from);
-            if (from < target) target--;          // removal shifted later items left
-            target = Math.max(0, Math.min(target, tiles.size()));
-            tiles.add(target, dragging);
-            clearMarkers(cell);
-            e.setDropCompleted(true);
-            e.consume();
-        });
-
-        cell.setOnDragDone(e -> {
-            cell.setOpacity(1.0);
-            clearMarkers(cell);
+        cell.setOnMouseReleased(e -> {
+            if (dragging != null && dragActive) dropAt(e.getSceneX(), e.getSceneY());
+            clearAllMarkers();
+            if (draggingCell != null) draggingCell.setOpacity(1.0);
             dragging = null;
+            draggingCell = null;
+            dragActive = false;
         });
+    }
+
+    /** The flow child index whose bounds contain the scene point, or -1. */
+    private int indexAt(double sceneX, double sceneY) {
+        for (int i = 0; i < flow.getChildren().size(); i++) {
+            Node n = flow.getChildren().get(i);
+            if (n.localToScene(n.getBoundsInLocal()).contains(sceneX, sceneY)) return i;
+        }
+        return -1;
+    }
+
+    /** Shows a drop-before/after marker on the tile under the cursor (not the dragged one). */
+    private void updateDropMarkers(double sceneX, double sceneY) {
+        int idx = indexAt(sceneX, sceneY);
+        for (int i = 0; i < flow.getChildren().size(); i++) {
+            if (!(flow.getChildren().get(i) instanceof VBox c)) continue;
+            if (i == idx && tiles.get(i) != dragging) {
+                var b = c.localToScene(c.getBoundsInLocal());
+                boolean after = sceneX >= b.getMinX() + b.getWidth() / 2;
+                c.pseudoClassStateChanged(DROP_AFTER, after);
+                c.pseudoClassStateChanged(DROP_BEFORE, !after);
+            } else {
+                clearMarkers(c);
+            }
+        }
+    }
+
+    /** Moves the dragged tile to where the cursor is (appends if over empty area). */
+    private void dropAt(double sceneX, double sceneY) {
+        int from = tiles.indexOf(dragging);
+        if (from < 0) return;
+        int idx = indexAt(sceneX, sceneY);
+        int target;
+        if (idx < 0) {
+            target = tiles.size();                 // released over empty area → append
+        } else {
+            Node n = flow.getChildren().get(idx);
+            var b = n.localToScene(n.getBoundsInLocal());
+            target = idx + (sceneX >= b.getMinX() + b.getWidth() / 2 ? 1 : 0);
+        }
+        tiles.remove(from);
+        if (from < target) target--;               // removal shifted later items left
+        target = Math.min(target, tiles.size());
+        tiles.add(target, dragging);
+    }
+
+    private void clearAllMarkers() {
+        for (Node n : flow.getChildren()) {
+            if (n instanceof VBox c) clearMarkers(c);
+        }
     }
 
     private static final javafx.css.PseudoClass DROP_BEFORE =
