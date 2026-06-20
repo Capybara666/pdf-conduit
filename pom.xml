@@ -23,6 +23,7 @@
         <picocli.version>4.7.6</picocli.version>
         <junit.version>5.11.4</junit.version>
         <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
+        <gson.version>2.11.0</gson.version>
     </properties>
 
     <dependencyManagement>
@@ -57,6 +58,12 @@
                 <groupId>com.twelvemonkeys.imageio</groupId>
                 <artifactId>imageio-webp</artifactId>
                 <version>${twelvemonkeys.version}</version>
+            </dependency>
+            <!-- JSON (used to persist pipelines) -->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
