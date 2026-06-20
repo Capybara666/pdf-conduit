@@ -31,7 +31,7 @@ class PdfWatermarkerTest {
         Path src = pdf(3);
         Path out = tmp.resolve("text-wm.pdf");
 
-        PdfWatermarker.execute(new WatermarkOptions(src, "CONFIDENTIAL", null, 0.3, 45, out));
+        PdfWatermarker.execute(new WatermarkOptions(src, "CONFIDENTIAL", null, 0.3, 45, 0.7, out));
 
         assertTrue(out.toFile().exists());
         try (PDDocument doc = Loader.loadPDF(out.toFile())) {
@@ -45,7 +45,7 @@ class PdfWatermarkerTest {
         Path logo = logo();
         Path out = tmp.resolve("img-wm.pdf");
 
-        PdfWatermarker.execute(new WatermarkOptions(src, null, logo, 0.4, 0, out));
+        PdfWatermarker.execute(new WatermarkOptions(src, null, logo, 0.4, 0, 0.7, out));
 
         try (PDDocument doc = Loader.loadPDF(out.toFile())) {
             for (PDPage page : doc.getPages()) {
@@ -59,8 +59,24 @@ class PdfWatermarkerTest {
         Path src = pdf(1);
         PdfOperationException ex = assertThrows(PdfOperationException.class,
             () -> PdfWatermarker.execute(
-                new WatermarkOptions(src, null, null, 0.3, 45, tmp.resolve("x.pdf"))));
+                new WatermarkOptions(src, null, null, 0.3, 45, 0.7, tmp.resolve("x.pdf"))));
         assertTrue(ex.getMessage().toLowerCase().contains("text") || ex.getMessage().toLowerCase().contains("image"));
+    }
+
+    @Test
+    void fontSizeScalesWithScale() {
+        PDRectangle a4 = PDRectangle.A4;
+        float small = PdfWatermarker.fontSizeFor(0.4f, a4, 3f);
+        float big = PdfWatermarker.fontSizeFor(0.8f, a4, 3f);
+        assertEquals(2.0, big / small, 0.01, "doubling scale should double the font size");
+    }
+
+    @Test
+    void imageWidthScalesWithScale() {
+        PDRectangle a4 = PDRectangle.A4;
+        float[] small = PdfWatermarker.imageSizeFor(0.3f, a4, 100, 100);
+        float[] big = PdfWatermarker.imageSizeFor(0.6f, a4, 100, 100);
+        assertEquals(2.0, big[0] / small[0], 0.01, "doubling scale should double the image width");
     }
 
     private boolean hasImage(PDResources res) throws IOException {

@@ -222,7 +222,7 @@ public final class PipelineExecutor {
                         PdfWatermarker.execute(new WatermarkOptions(src,
                             useImage ? null : blankToNull(n.wmText),
                             useImage ? Path.of(n.wmImage) : null,
-                            n.wmOpacity, n.wmRotation, out));
+                            n.wmOpacity, n.wmRotation, n.wmScale, out));
                     }
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }

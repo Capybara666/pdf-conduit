@@ -33,6 +33,7 @@ public class WatermarkPanel extends BasePanel {
     private TextField textField;
     private TextField imageField;
     private Slider opacity;
+    private Slider size;
     private ComboBox<Integer> rotation;
 
     public WatermarkPanel() { super("panel.WATERMARK.title", "run.WATERMARK", "_watermarked"); }
@@ -76,12 +77,21 @@ public class WatermarkPanel extends BasePanel {
         HBox opacityRow = new HBox(8, label("watermark.opacity.label"), opacity, opacityValue);
         opacityRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
+        size = new Slider(0.1, 2.0, 0.7);
+        size.setPrefWidth(160);
+        Label sizeValue = new Label();
+        size.valueProperty().addListener((o, a, b) ->
+            sizeValue.setText(Math.round(b.doubleValue() * 100) + "%"));
+        sizeValue.setText("70%");
+        HBox sizeRow = new HBox(8, label("watermark.size.label"), size, sizeValue);
+        sizeRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
         rotation = new ComboBox<>(FXCollections.observableArrayList(0, 45, 90));
         rotation.setValue(45);
         HBox rotationRow = new HBox(8, label("watermark.rotation.label"), rotation);
         rotationRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-        return new VBox(8, modeRow, textRow, imageRow, opacityRow, rotationRow);
+        return new VBox(8, modeRow, textRow, imageRow, sizeRow, opacityRow, rotationRow);
     }
 
     private Label label(String key) {
@@ -109,6 +119,7 @@ public class WatermarkPanel extends BasePanel {
         String imagePath = imageField.getText();
         Path image = (!useText && imagePath != null && !imagePath.isBlank()) ? Path.of(imagePath) : null;
         double op = opacity.getValue();
+        double sc = size.getValue();
         double rot = rotation.getValue() == null ? 45 : rotation.getValue();
 
         Path input = files.get(0);
@@ -122,7 +133,7 @@ public class WatermarkPanel extends BasePanel {
                 try {
                     Path pdf = DocumentConverter.ensurePdf(input, PageSize.FIT, temps);
                     return PdfWatermarker.execute(
-                        new WatermarkOptions(pdf, text, image, op, rot, output));
+                        new WatermarkOptions(pdf, text, image, op, rot, sc, output));
                 } finally {
                     for (Path t : temps) Files.deleteIfExists(t);
                 }

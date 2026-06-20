@@ -39,6 +39,7 @@ public final class PdfWatermarker {
         }
         float opacity = (float) Math.max(0, Math.min(1, opts.opacity()));
         double radians = Math.toRadians(opts.rotationDegrees());
+        float scale = (float) Math.max(0.05, Math.min(2.0, opts.scale()));
 
         try (PDDocument doc = Loader.loadPDF(opts.input().toFile())) {
             PDImageXObject stamp = hasImage ? loadImage(doc, opts) : null;
@@ -59,8 +60,8 @@ public final class PdfWatermarker {
                     cs.transform(Matrix.getTranslateInstance(cx, cy));
                     cs.transform(Matrix.getRotateInstance(radians, 0, 0));
 
-                    if (hasText) drawText(cs, font, opts.text(), box);
-                    else drawImage(cs, stamp, box);
+                    if (hasText) drawText(cs, font, opts.text(), box, scale);
+                    else drawImage(cs, stamp, box, scale);
 
                     cs.restoreGraphicsState();
                 }
@@ -74,16 +75,15 @@ public final class PdfWatermarker {
         }
     }
 
-    private static void drawText(PDPageContentStream cs, PDFont font, String text, PDRectangle box)
-            throws IOException {
+    private static void drawText(PDPageContentStream cs, PDFont font, String text,
+                                 PDRectangle box, float scale) throws IOException {
         float widthAtSize1;
         try {
             widthAtSize1 = font.getStringWidth(text) / 1000f;
         } catch (IllegalArgumentException e) {
             throw new IOException("Watermark text contains characters this font cannot draw.");
         }
-        float fontSize = widthAtSize1 > 0 ? (box.getWidth() * 0.7f) / widthAtSize1 : 48f;
-        fontSize = Math.min(fontSize, box.getHeight() * 0.5f);
+        float fontSize = fontSizeFor(scale, box, widthAtSize1);
         float textWidth = widthAtSize1 * fontSize;
 
         cs.beginText();
@@ -94,16 +94,28 @@ public final class PdfWatermarker {
         cs.endText();
     }
 
-    private static void drawImage(PDPageContentStream cs, PDImageXObject img, PDRectangle box)
-            throws IOException {
-        float drawW = box.getWidth() * 0.4f;
-        float drawH = drawW * img.getHeight() / img.getWidth();
-        float maxH = box.getHeight() * 0.6f;
+    private static void drawImage(PDPageContentStream cs, PDImageXObject img,
+                                  PDRectangle box, float scale) throws IOException {
+        float[] size = imageSizeFor(scale, box, img.getWidth(), img.getHeight());
+        cs.drawImage(img, -size[0] / 2f, -size[1] / 2f, size[0], size[1]);
+    }
+
+    /** Font size so the text spans {@code scale} × page width, capped to fit the page height. */
+    static float fontSizeFor(float scale, PDRectangle box, float widthAtSize1) {
+        float fontSize = widthAtSize1 > 0 ? (box.getWidth() * scale) / widthAtSize1 : 48f;
+        return Math.min(fontSize, box.getHeight() * 0.9f);
+    }
+
+    /** Drawn {@code [width, height]} so the image spans {@code scale} × page width, capped to the page height. */
+    static float[] imageSizeFor(float scale, PDRectangle box, float imgW, float imgH) {
+        float drawW = box.getWidth() * scale;
+        float drawH = drawW * imgH / imgW;
+        float maxH = box.getHeight() * 0.95f;
         if (drawH > maxH) {
             drawH = maxH;
-            drawW = drawH * img.getWidth() / img.getHeight();
+            drawW = drawH * imgW / imgH;
         }
-        cs.drawImage(img, -drawW / 2f, -drawH / 2f, drawW, drawH);
+        return new float[]{drawW, drawH};
     }
 
     private static PDImageXObject loadImage(PDDocument doc, WatermarkOptions opts) throws IOException {

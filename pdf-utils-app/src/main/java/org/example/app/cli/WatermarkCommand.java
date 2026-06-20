@@ -32,6 +32,10 @@ public class WatermarkCommand implements Callable<Integer> {
             description = "Rotation in degrees (default 45 = diagonal).")
     private double rotation;
 
+    @Option(names = "--scale", paramLabel = "0.05-2", defaultValue = "0.7",
+            description = "Size as a fraction of page width (default 0.7 ≈ 70%).")
+    private double scale;
+
     @Option(names = {"-o", "--output"}, paramLabel = "FILE", description = "Output PDF path.")
     private Path output;
 
@@ -40,7 +44,7 @@ public class WatermarkCommand implements Callable<Integer> {
         try {
             Path out = output != null ? output : MergeCommand.deriveOutput(input, "_watermarked");
             PdfResult result = PdfWatermarker.execute(
-                new WatermarkOptions(input, text, image, opacity, rotation, out));
+                new WatermarkOptions(input, text, image, opacity, rotation, scale, out));
             System.out.printf("Watermarked %d page(s) → %s%n", result.pageCount(), result.output());
             return 0;
         } catch (PdfOperationException e) {

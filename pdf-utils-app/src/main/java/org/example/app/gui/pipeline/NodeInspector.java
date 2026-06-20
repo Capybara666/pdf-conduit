@@ -262,6 +262,10 @@ class NodeInspector extends HBox {
             if (f != null) image.setText(f.getAbsolutePath());
         });
 
+        Slider size = new Slider(0.1, 2.0, node.wmScale);
+        size.setPrefWidth(90);
+        size.valueProperty().addListener((o, a, b) -> { node.wmScale = b.doubleValue(); canvas.refreshNode(node); });
+
         Slider opacity = new Slider(0.05, 1.0, node.wmOpacity);
         opacity.setPrefWidth(90);
         opacity.valueProperty().addListener((o, a, b) -> { node.wmOpacity = b.doubleValue(); canvas.refreshNode(node); });
@@ -273,6 +277,7 @@ class NodeInspector extends HBox {
         getChildren().addAll(
             new Label(I18n.t("watermark.text.label")), text,
             new Label(I18n.t("watermark.image.label")), image, browse,
+            new Label(I18n.t("watermark.size.label")), size,
             new Label(I18n.t("watermark.opacity.label")), opacity,
             new Label(I18n.t("watermark.rotation.label")), rot);
     }

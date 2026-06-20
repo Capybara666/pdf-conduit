@@ -57,6 +57,7 @@ public class PipelineNode {
     public String wmImage = "";
     public double wmOpacity = 0.3;
     public double wmRotation = 45;
+    public double wmScale = 0.7;
 
     // terminal nodes only — a file path (single output) or folder (multiple)
     public String outputDestination = "";
