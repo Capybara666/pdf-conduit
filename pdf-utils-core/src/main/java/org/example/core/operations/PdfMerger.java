@@ -9,8 +9,11 @@ import org.example.core.util.OutputPaths;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
-public class PdfMerger {
+public final class PdfMerger {
+
+    private PdfMerger() {}
 
     public static MergeResult execute(MergeOptions opts) throws PdfOperationException {
         List<PDDocument> srcDocs = new ArrayList<>();
@@ -63,6 +66,6 @@ public class PdfMerger {
     }
 
     private static List<Integer> allPageNumbers(int count) {
-        return java.util.stream.IntStream.rangeClosed(1, count).boxed().toList();
+        return IntStream.rangeClosed(1, count).boxed().toList();
     }
 }

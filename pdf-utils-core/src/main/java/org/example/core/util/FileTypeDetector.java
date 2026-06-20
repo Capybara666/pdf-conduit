@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class FileTypeDetector {
+public final class FileTypeDetector {
+
+    private FileTypeDetector() {}
 
     public static boolean isPdf(Path file) {
         return matchesMagic(file, new byte[]{0x25, 0x50, 0x44, 0x46});

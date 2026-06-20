@@ -16,7 +16,9 @@ import java.util.List;
  * (duplicating it) and may omit pages (dropping them). An empty order copies the
  * document unchanged. Stateless and thread-safe.
  */
-public class PdfArranger {
+public final class PdfArranger {
+
+    private PdfArranger() {}
 
     public static ArrangeResult execute(ArrangeOptions opts) throws PdfOperationException {
         try (PDDocument src = Loader.loadPDF(opts.input().toFile());

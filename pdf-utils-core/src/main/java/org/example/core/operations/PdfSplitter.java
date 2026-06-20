@@ -13,8 +13,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
-public class PdfSplitter {
+public final class PdfSplitter {
+
+    private PdfSplitter() {}
 
     public static SplitResult execute(SplitOptions opts) throws PdfOperationException {
         try (PDDocument src = Loader.loadPDF(opts.input().toFile())) {
@@ -59,7 +62,7 @@ public class PdfSplitter {
     }
 
     private static List<Integer> allPages(int count) {
-        return java.util.stream.IntStream.rangeClosed(1, count).boxed().toList();
+        return IntStream.rangeClosed(1, count).boxed().toList();
     }
 
     /** The input's file name without extension, used to name per-page outputs. */

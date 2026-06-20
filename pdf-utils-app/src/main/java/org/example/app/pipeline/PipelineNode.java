@@ -1,6 +1,7 @@
 package org.example.app.pipeline;
 
 import org.example.core.model.PageSize;
+import org.example.core.model.SplitMode;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class PipelineNode {
     public String pages = "";
 
     // EXTRACT — combine selected pages into one PDF, or split into one file per page
-    public org.example.core.model.SplitMode splitMode = org.example.core.model.SplitMode.COMBINE;
+    public SplitMode splitMode = SplitMode.COMBINE;
 
     // ARRANGE — page order expression, e.g. "3,1,2" (blank = keep natural order)
     public String order = "";

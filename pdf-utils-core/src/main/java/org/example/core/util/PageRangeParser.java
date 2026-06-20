@@ -5,7 +5,9 @@ import org.example.core.model.PageRange;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-public class PageRangeParser {
+public final class PageRangeParser {
+
+    private PageRangeParser() {}
 
     public static PageRange parse(String expression, int totalPages) throws InvalidPageRangeException {
         if (expression == null || expression.isBlank()) throw new InvalidPageRangeException(expression);

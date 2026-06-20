@@ -17,7 +17,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class ImageToPdfConverter {
+public final class ImageToPdfConverter {
+
+    private ImageToPdfConverter() {}
 
     public static PdfResult execute(ImageToPdfOptions opts) throws PdfOperationException {
         try (PDDocument doc = new PDDocument()) {

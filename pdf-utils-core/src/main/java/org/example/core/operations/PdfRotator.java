@@ -13,7 +13,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class PdfRotator {
+public final class PdfRotator {
+
+    private PdfRotator() {}
 
     public static RotateResult execute(RotateOptions opts) throws PdfOperationException {
         try (PDDocument doc = Loader.loadPDF(opts.input().toFile())) {

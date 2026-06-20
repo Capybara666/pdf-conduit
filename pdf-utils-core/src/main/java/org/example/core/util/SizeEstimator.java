@@ -4,7 +4,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class SizeEstimator {
+public final class SizeEstimator {
+
+    private SizeEstimator() {}
 
     public static long estimateBytes(PDDocument doc) throws IOException {
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
