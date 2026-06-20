@@ -13,6 +13,7 @@ import org.example.core.operations.PdfProtector;
 import org.example.core.operations.PdfRotator;
 import org.example.core.operations.PdfSplitter;
 import org.example.core.operations.PdfUnlocker;
+import org.example.core.operations.PdfWatermarker;
 import org.example.core.util.PageOrderParser;
 import org.example.core.util.PageRangeParser;
 
@@ -216,6 +217,13 @@ public final class PipelineExecutor {
                     case METADATA -> PdfMetadataEditor.execute(new MetadataOptions(src,
                         blankToNull(n.metaTitle), blankToNull(n.metaAuthor),
                         blankToNull(n.metaSubject), blankToNull(n.metaKeywords), n.metaStrip, out));
+                    case WATERMARK -> {
+                        boolean useImage = n.wmImage != null && !n.wmImage.isBlank();
+                        PdfWatermarker.execute(new WatermarkOptions(src,
+                            useImage ? null : blankToNull(n.wmText),
+                            useImage ? Path.of(n.wmImage) : null,
+                            n.wmOpacity, n.wmRotation, out));
+                    }
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {

@@ -168,6 +168,11 @@ class NodeView extends HBox {
                 ? "pipeline.summary.nopassword" : "pipeline.summary.haspassword");
             case METADATA -> I18n.t(node.metaStrip
                 ? "pipeline.summary.metastrip" : "pipeline.summary.metaedit");
+            case WATERMARK -> {
+                boolean img = node.wmImage != null && !node.wmImage.isBlank();
+                yield img ? I18n.t("pipeline.summary.watermarkimg")
+                    : (node.wmText == null || node.wmText.isBlank() ? "—" : node.wmText);
+            }
         });
     }
 

@@ -102,6 +102,7 @@ public final class Icons {
             case PROTECT       -> PROTECT;
             case UNLOCK        -> UNLOCK;
             case METADATA      -> METADATA;
+            case WATERMARK     -> WATERMARK;
         }, size);
     }
 

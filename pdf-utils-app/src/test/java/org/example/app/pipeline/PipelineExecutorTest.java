@@ -256,6 +256,26 @@ class PipelineExecutorTest {
     }
 
     @Test
+    void watermarkNodeStampsEveryPage() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("a.pdf", 2));
+        PipelineNode wm = new PipelineNode("w", NodeKind.WATERMARK, 0, 0);
+        wm.wmText = "DRAFT";
+        Path out = tmp.resolve("wm.pdf");
+        wm.outputDestination = out.toString();
+        m.nodes.add(src);
+        m.nodes.add(wm);
+        m.connections.add(new Connection("s", "w"));
+
+        PipelineExecutor.run(m, null);
+
+        try (PDDocument d = Loader.loadPDF(out.toFile())) {
+            assertEquals(2, d.getNumberOfPages());
+        }
+    }
+
+    @Test
     void invalidPipelineThrows() throws Exception {
         PipelineModel m = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);

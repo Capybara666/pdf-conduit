@@ -7,6 +7,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -61,6 +62,7 @@ class NodeInspector extends HBox {
             case PROTECT -> buildProtect(node);
             case UNLOCK -> buildUnlock(node);
             case METADATA -> buildMetadata(node);
+            case WATERMARK -> buildWatermark(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
         }
 
@@ -239,6 +241,40 @@ class NodeInspector extends HBox {
         f.setPrefWidth(90);
         f.textProperty().addListener((o, a, b) -> { setter.accept(b); canvas.refreshNode(node); });
         return f;
+    }
+
+    private void buildWatermark(PipelineNode node) {
+        TextField text = new TextField(node.wmText);
+        text.setPromptText(I18n.t("watermark.text.prompt"));
+        text.setPrefWidth(120);
+        text.textProperty().addListener((o, a, b) -> { node.wmText = b; canvas.refreshNode(node); });
+
+        TextField image = new TextField(node.wmImage);
+        image.setPrefWidth(110);
+        image.textProperty().addListener((o, a, b) -> { node.wmImage = b; canvas.refreshNode(node); });
+        Button browse = secondary("…");
+        browse.setOnAction(e -> {
+            FileChooser fc = new FileChooser();
+            fc.setTitle(I18n.t("watermark.image.label"));
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("filter.images"),
+                org.example.core.convert.DocumentConverter.IMAGE_GLOBS.toArray(String[]::new)));
+            File f = fc.showOpenDialog(window());
+            if (f != null) image.setText(f.getAbsolutePath());
+        });
+
+        Slider opacity = new Slider(0.05, 1.0, node.wmOpacity);
+        opacity.setPrefWidth(90);
+        opacity.valueProperty().addListener((o, a, b) -> { node.wmOpacity = b.doubleValue(); canvas.refreshNode(node); });
+
+        ComboBox<Integer> rot = new ComboBox<>(FXCollections.observableArrayList(0, 45, 90));
+        rot.setValue((int) Math.round(node.wmRotation));
+        rot.valueProperty().addListener((o, a, b) -> { if (b != null) { node.wmRotation = b; canvas.refreshNode(node); } });
+
+        getChildren().addAll(
+            new Label(I18n.t("watermark.text.label")), text,
+            new Label(I18n.t("watermark.image.label")), image, browse,
+            new Label(I18n.t("watermark.opacity.label")), opacity,
+            new Label(I18n.t("watermark.rotation.label")), rot);
     }
 
     private void buildDestination(PipelineNode node) {

@@ -52,6 +52,12 @@ public class PipelineNode {
     public String metaKeywords = "";
     public boolean metaStrip = false;
 
+    // WATERMARK — text or image path (image wins if both set); opacity 0–1, rotation in degrees.
+    public String wmText = "";
+    public String wmImage = "";
+    public double wmOpacity = 0.3;
+    public double wmRotation = 45;
+
     // terminal nodes only — a file path (single output) or folder (multiple)
     public String outputDestination = "";
 

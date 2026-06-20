@@ -74,6 +74,13 @@ public final class PipelineValidator {
                     && (n.password == null || n.password.isBlank())) {
                 errors.add(new ValidationError(n.id, n.kind.label + " needs a password."));
             }
+
+            // A watermark needs either text or an image.
+            if (n.kind == NodeKind.WATERMARK
+                    && (n.wmText == null || n.wmText.isBlank())
+                    && (n.wmImage == null || n.wmImage.isBlank())) {
+                errors.add(new ValidationError(n.id, n.kind.label + " needs text or an image."));
+            }
         }
 
         return errors;
