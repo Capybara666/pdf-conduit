@@ -148,6 +148,8 @@ public class MainWindow {
             case ROTATE   -> new RotatePanel();
             case ARRANGE  -> new ArrangePanel();
             case IMAGES   -> new ImagesToPdfPanel();
+            case PROTECT  -> new ProtectPanel();
+            case UNLOCK   -> new UnlockPanel();
             case PIPELINE -> new org.example.app.gui.pipeline.PipelineView();
             case WIZARD   -> new WizardController();
         };

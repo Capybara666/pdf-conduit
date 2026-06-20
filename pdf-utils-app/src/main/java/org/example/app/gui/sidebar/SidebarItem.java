@@ -7,6 +7,8 @@ public enum SidebarItem {
     ROTATE   ("↻", "Rotate"),
     ARRANGE  ("⇅", "Arrange"),
     IMAGES   ("🖼", "To PDF"),
+    PROTECT  ("🔒", "Protect"),
+    UNLOCK   ("🔓", "Unlock"),
     PIPELINE ("⇄", "Pipeline"),
     WIZARD   ("⚙", "Wizard");
 

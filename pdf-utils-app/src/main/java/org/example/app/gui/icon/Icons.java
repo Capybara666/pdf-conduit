@@ -58,6 +58,12 @@ public final class Icons {
     private static final String ARRANGE =
         "M6 5 V19 M3.5 8 L6 5 L8.5 8 M3.5 16 L6 19 L8.5 16 "
         + "M11 7 H20 M11 12 H20 M11 17 H17";
+    // a closed padlock (add password protection)
+    private static final String PROTECT =
+        "M6 11 H18 V20 H6 Z M8.5 11 V8 a3.5 3.5 0 0 1 7 0 V11 M12 14.5 V17";
+    // an open padlock (remove password protection)
+    private static final String UNLOCK =
+        "M6 11 H18 V20 H6 Z M8.5 11 V8 a3.5 3.5 0 0 1 7 0 M12 14.5 V17";
 
     // --- public factories -------------------------------------------------
 
@@ -69,6 +75,8 @@ public final class Icons {
             case ROTATE   -> ROTATE;
             case IMAGES   -> TO_PDF;
             case ARRANGE  -> ARRANGE;
+            case PROTECT  -> PROTECT;
+            case UNLOCK   -> UNLOCK;
             case PIPELINE -> PIPELINE;
             case WIZARD   -> WIZARD;
         }, size);
