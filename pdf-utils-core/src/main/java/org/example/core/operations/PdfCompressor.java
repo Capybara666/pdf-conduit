@@ -17,41 +17,57 @@ import org.example.core.util.SizeEstimator;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 
-public class PdfCompressor {
+public final class PdfCompressor {
 
-    private static final int[]   DPI_LEVELS     = {300, 200, 150, 96};
-    private static final float[] QUALITY_LEVELS = {0.9f, 0.7f, 0.5f, 0.3f};
+    /** One rung of the compression ladder: scale the images, then JPEG-encode at {@code quality}. */
+    private record Step(float scale, float quality) {}
+
+    /**
+     * Tried in order, gentlest first. The full-resolution rungs (scale 1.0) come
+     * before any downscaling, so a target reachable by re-encoding alone never
+     * sacrifices resolution; only once those are exhausted do we shrink images.
+     */
+    private static final List<Step> STEPS = List.of(
+        new Step(1.00f, 0.85f),
+        new Step(1.00f, 0.60f),
+        new Step(1.00f, 0.40f),
+        new Step(0.75f, 0.60f),
+        new Step(0.75f, 0.40f),
+        new Step(0.50f, 0.60f),
+        new Step(0.50f, 0.40f),
+        new Step(0.33f, 0.40f)
+    );
+
+    private PdfCompressor() {}
 
     public static CompressResult execute(CompressOptions opts) throws PdfOperationException {
         try {
             long originalSize = opts.input().toFile().length();
             OutputPaths.ensureParentDir(opts.output());
 
-            for (int dpiIdx = 0; dpiIdx < DPI_LEVELS.length; dpiIdx++) {
-                for (float quality : QUALITY_LEVELS) {
-                    try (PDDocument compressed = Loader.loadPDF(opts.input().toFile())) {
-                        downsampleImages(compressed, DPI_LEVELS[dpiIdx], quality);
-                        long estimated = SizeEstimator.estimateBytes(compressed);
-                        if (estimated <= opts.targetSizeBytes()) {
-                            compressed.save(opts.output().toFile());
-                            return new CompressResult(opts.output(), originalSize,
-                                opts.output().toFile().length(), true);
-                        }
+            for (Step step : STEPS) {
+                try (PDDocument compressed = Loader.loadPDF(opts.input().toFile())) {
+                    recompressImages(compressed, step.scale(), step.quality());
+                    if (SizeEstimator.estimateBytes(compressed) <= opts.targetSizeBytes()) {
+                        compressed.save(opts.output().toFile());
+                        return new CompressResult(opts.output(), originalSize,
+                            opts.output().toFile().length(), true);
                     }
                 }
             }
 
-            // Target unreachable — save most-compressed version, but never larger than original
+            // Target unreachable — save the most-compressed version, but never larger than original.
             try (PDDocument compressed = Loader.loadPDF(opts.input().toFile())) {
-                downsampleImages(compressed, DPI_LEVELS[DPI_LEVELS.length - 1],
-                                 QUALITY_LEVELS[QUALITY_LEVELS.length - 1]);
-                long estimatedBest = SizeEstimator.estimateBytes(compressed);
-                if (estimatedBest < originalSize) {
+                Step strongest = STEPS.get(STEPS.size() - 1);
+                recompressImages(compressed, strongest.scale(), strongest.quality());
+                if (SizeEstimator.estimateBytes(compressed) < originalSize) {
                     compressed.save(opts.output().toFile());
                 } else {
-                    java.nio.file.Files.copy(opts.input(), opts.output(),
-                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(opts.input(), opts.output(), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
             return new CompressResult(opts.output(), originalSize,
@@ -62,7 +78,12 @@ public class PdfCompressor {
         }
     }
 
-    private static void downsampleImages(PDDocument doc, int targetDpi, float quality)
+    /**
+     * Re-encodes every image on every page as JPEG at {@code quality}, first scaling
+     * it by {@code scale} (1.0 keeps the pixel dimensions but still re-encodes —
+     * which is what shrinks losslessly-stored images). Images are never upscaled.
+     */
+    private static void recompressImages(PDDocument doc, float scale, float quality)
             throws IOException {
         for (PDPage page : doc.getPages()) {
             PDResources resources = page.getResources();
@@ -71,21 +92,23 @@ public class PdfCompressor {
                 PDXObject xobj = resources.getXObject(name);
                 if (!(xobj instanceof PDImageXObject image)) continue;
 
-                float scale = Math.min(1f, (float) targetDpi / 150f);
-                int newW = Math.max(1, (int)(image.getWidth()  * scale));
-                int newH = Math.max(1, (int)(image.getHeight() * scale));
-                if (newW >= image.getWidth() && newH >= image.getHeight()) continue;
+                int newW = clampDimension(image.getWidth(), scale);
+                int newH = clampDimension(image.getHeight(), scale);
 
-                BufferedImage bi = image.getImage();
-                BufferedImage scaled = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
-                Graphics2D g = scaled.createGraphics();
+                BufferedImage rgb = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = rgb.createGraphics();
                 g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                g.drawImage(bi, 0, 0, newW, newH, null);
+                g.drawImage(image.getImage(), 0, 0, newW, newH, null);
                 g.dispose();
 
-                resources.put(name, JPEGFactory.createFromImage(doc, scaled, quality));
+                resources.put(name, JPEGFactory.createFromImage(doc, rgb, quality));
             }
         }
+    }
+
+    /** Scaled dimension, at least 1px and never larger than the original. */
+    private static int clampDimension(int original, float scale) {
+        return Math.max(1, Math.min(original, Math.round(original * scale)));
     }
 }
