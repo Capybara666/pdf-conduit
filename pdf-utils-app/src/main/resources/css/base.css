@@ -182,6 +182,7 @@
     -fx-effect: dropshadow(gaussian, derive(-c-accent, -25%), 8, 0.0, 0, 2);
 }
 .btn-primary:hover { -fx-background-color: -c-accent-hover; }
+.btn-primary:pressed { -fx-background-color: derive(-c-accent-hover, -8%); }
 .btn-secondary {
     -fx-padding: 7 14 7 14;
     -fx-background-radius: 8;
@@ -190,6 +191,7 @@
     -fx-text-fill: -c-text-muted;
 }
 .btn-secondary:hover { -fx-background-color: derive(-c-surface-2, -10%); }
+.btn-secondary:pressed { -fx-background-color: derive(-c-surface-2, -18%); }
 
 /* Text inputs — keep the placeholder readable on every theme */
 .text-field, .text-area, .combo-box .text-field {
@@ -207,6 +209,7 @@
     -fx-cursor: hand;
 }
 .result-link:hover { -fx-background-color: derive(-c-surface-2, -10%); }
+.result-link:pressed { -fx-background-color: derive(-c-surface-2, -18%); }
 
 /* ---- Hyperlinks ---- */
 .hyperlink {
