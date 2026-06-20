@@ -15,7 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.example.app.gui.util.OutputPaths;
+import org.example.app.gui.util.DefaultLocations;
 import org.example.app.pipeline.NodeKind;
 import org.example.app.pipeline.PipelineGraph;
 import org.example.app.pipeline.PipelineNode;
@@ -210,9 +210,9 @@ class NodeInspector extends HBox {
             // Single output -> folder + a separate file name.
             Path current = Path.of(node.outputDestination);
             String dir = current.getParent() != null ? current.getParent().toString()
-                                                      : OutputPaths.defaultDir().toString();
+                                                      : DefaultLocations.defaultDir().toString();
             String name = current.getFileName() != null ? current.getFileName().toString()
-                                                         : OutputPaths.DEFAULT_FILE;
+                                                         : DefaultLocations.DEFAULT_FILE;
             TextField folder = new TextField(dir);
             folder.setPrefWidth(220);
             TextField fileName = new TextField(name);
@@ -220,7 +220,7 @@ class NodeInspector extends HBox {
             Runnable apply = () -> {
                 String d = folder.getText() == null ? "" : folder.getText().strip();
                 String f = fileName.getText() == null ? "" : fileName.getText().strip();
-                if (f.isBlank()) f = OutputPaths.DEFAULT_FILE;
+                if (f.isBlank()) f = DefaultLocations.DEFAULT_FILE;
                 if (!f.toLowerCase().endsWith(".pdf")) f = f + ".pdf";
                 node.outputDestination = (d.isBlank() ? Path.of(f) : Path.of(d, f)).toString();
             };
@@ -238,16 +238,16 @@ class NodeInspector extends HBox {
         boolean blank = dest == null || dest.isBlank();
         boolean looksLikeFile = !blank && dest.toLowerCase().endsWith(".pdf");
         if (multiple) {
-            if (blank) return OutputPaths.defaultDir().toString();
+            if (blank) return DefaultLocations.defaultDir().toString();
             if (looksLikeFile) {                       // a file path -> use its folder
                 Path parent = Path.of(dest).getParent();
-                return (parent != null ? parent : OutputPaths.defaultDir()).toString();
+                return (parent != null ? parent : DefaultLocations.defaultDir()).toString();
             }
             return dest;                               // already a folder
         }
-        if (blank) return OutputPaths.defaultFile().toString();
+        if (blank) return DefaultLocations.defaultFile().toString();
         if (looksLikeFile) return dest;                // already folder+file
-        return Path.of(dest).resolve(OutputPaths.DEFAULT_FILE).toString();  // bare folder -> add name
+        return Path.of(dest).resolve(DefaultLocations.DEFAULT_FILE).toString();  // bare folder -> add name
     }
 
     private void chooseDir(TextField target) {
@@ -255,7 +255,7 @@ class NodeInspector extends HBox {
         dc.setTitle(I18n.t("chooser.selectfolder"));
         try {
             String t = target.getText();
-            Path p = (t == null || t.isBlank()) ? OutputPaths.defaultDir() : Path.of(t);
+            Path p = (t == null || t.isBlank()) ? DefaultLocations.defaultDir() : Path.of(t);
             if (java.nio.file.Files.isDirectory(p)) dc.setInitialDirectory(p.toFile());
         } catch (Exception ignored) {}
         File dir = dc.showDialog(window());

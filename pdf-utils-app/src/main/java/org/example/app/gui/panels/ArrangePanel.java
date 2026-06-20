@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import org.example.app.gui.component.DropZone;
 import org.example.app.gui.component.PageReorderGrid;
 import org.example.app.gui.component.ProgressPanel;
-import org.example.app.gui.util.OutputPaths;
+import org.example.app.gui.util.DefaultLocations;
 import org.example.app.gui.util.PdfThumbnails;
 import org.example.app.i18n.I18n;
 import org.example.core.convert.DocumentConverter;
@@ -85,14 +85,14 @@ public class ArrangePanel extends BorderPane {
 
         // --- output: folder + name ---
         I18n.bindText(folderField::setPromptText, "output.folder.prompt");
-        folderField.setText(OutputPaths.defaultDir().toString());
+        folderField.setText(DefaultLocations.defaultDir().toString());
         HBox.setHgrow(folderField, Priority.ALWAYS);
         Button browse = new Button("…");
         browse.getStyleClass().add("btn-secondary");
         browse.setOnAction(e -> browseFolder());
         HBox folderRow = new HBox(6, folderField, browse);
         I18n.bindText(nameField::setPromptText, "output.file.prompt");
-        nameField.setText(OutputPaths.DEFAULT_FILE);
+        nameField.setText(DefaultLocations.DEFAULT_FILE);
         Label folderLabel = new Label();
         I18n.bindText(folderLabel::setText, "output.folder");
         Label nameLabel = new Label();
@@ -180,9 +180,9 @@ public class ArrangePanel extends BorderPane {
     private Path resolveOutput() {
         String folder = folderField.getText();
         Path dir = (folder == null || folder.isBlank())
-            ? OutputPaths.defaultDir() : Path.of(folder.strip());
+            ? DefaultLocations.defaultDir() : Path.of(folder.strip());
         String name = nameField.getText();
-        if (name == null || name.isBlank()) name = OutputPaths.DEFAULT_FILE;
+        if (name == null || name.isBlank()) name = DefaultLocations.DEFAULT_FILE;
         name = name.strip();
         if (!name.toLowerCase().endsWith(".pdf")) name = name + ".pdf";
         return dir.resolve(name);

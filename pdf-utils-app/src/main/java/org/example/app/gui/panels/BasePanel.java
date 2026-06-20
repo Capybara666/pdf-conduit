@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 import org.example.app.gui.component.DropZone;
 import org.example.app.gui.component.FileListView;
 import org.example.app.gui.component.ProgressPanel;
-import org.example.app.gui.util.OutputPaths;
+import org.example.app.gui.util.DefaultLocations;
 import org.example.app.i18n.I18n;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.PageSize;
@@ -87,7 +87,7 @@ public abstract class BasePanel extends BorderPane {
 
         // --- output: a folder, plus a file name when there is a single output ---
         I18n.bindText(folderField::setPromptText, "output.folder.prompt");
-        folderField.setText(OutputPaths.defaultDir().toString());
+        folderField.setText(DefaultLocations.defaultDir().toString());
         lastAutoFolder = folderField.getText();
         HBox.setHgrow(folderField, Priority.ALWAYS);
         Button browseBtn = new Button("…");
@@ -96,7 +96,7 @@ public abstract class BasePanel extends BorderPane {
         HBox folderRow = new HBox(6, folderField, browseBtn);
 
         I18n.bindText(nameField::setPromptText, "output.file.prompt");
-        nameField.setText(OutputPaths.DEFAULT_FILE);
+        nameField.setText(DefaultLocations.DEFAULT_FILE);
         lastAutoName = nameField.getText();
         HBox.setHgrow(nameField, Priority.ALWAYS);
         // Name label + field only show for single-output runs.
@@ -184,7 +184,7 @@ public abstract class BasePanel extends BorderPane {
                 if (Files.isDirectory(p)) return java.util.Optional.of(p.toFile());
             }
         } catch (Exception ignored) {}
-        Path def = OutputPaths.defaultDir();
+        Path def = DefaultLocations.defaultDir();
         return Files.isDirectory(def) ? java.util.Optional.of(def.toFile()) : java.util.Optional.empty();
     }
 
@@ -206,7 +206,7 @@ public abstract class BasePanel extends BorderPane {
     /** The chosen output folder (for batch / per-file runs). */
     protected final Path outputDir() {
         String folder = folderField.getText();
-        return (folder == null || folder.isBlank()) ? OutputPaths.defaultDir() : Path.of(folder.strip());
+        return (folder == null || folder.isBlank()) ? DefaultLocations.defaultDir() : Path.of(folder.strip());
     }
 
     /**
@@ -218,7 +218,7 @@ public abstract class BasePanel extends BorderPane {
         String name = nameField.getText();
         if (name == null || name.isBlank()) {
             name = defaultPath.getFileName() != null
-                ? defaultPath.getFileName().toString() : OutputPaths.DEFAULT_FILE;
+                ? defaultPath.getFileName().toString() : DefaultLocations.DEFAULT_FILE;
         }
         name = name.strip();
         if (!name.toLowerCase().endsWith(".pdf")) name = name + ".pdf";

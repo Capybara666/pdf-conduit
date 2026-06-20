@@ -298,18 +298,16 @@ public final class PipelineExecutor {
 
     private static PageRange range(String expr, Path pdf) throws Exception {
         if (expr == null || expr.isBlank()) return PageRange.ALL;
-        int total;
-        try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
-            total = doc.getNumberOfPages();
-        }
-        return PageRangeParser.parse(expr, total);
+        return PageRangeParser.parse(expr, pageCount(pdf));
     }
 
     private static List<Integer> order(String expr, Path pdf) throws Exception {
-        int total;
+        return PageOrderParser.parse(expr, pageCount(pdf));
+    }
+
+    private static int pageCount(Path pdf) throws IOException {
         try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
-            total = doc.getNumberOfPages();
+            return doc.getNumberOfPages();
         }
-        return PageOrderParser.parse(expr, total);
     }
 }

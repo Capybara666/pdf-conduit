@@ -44,7 +44,7 @@ public class Step5Export implements WizardStep {
             };
             String stem = base.getFileName().toString().replaceAll("\\.[^.]+$", "");
             model.outputPath.set(
-                org.example.app.gui.util.OutputPaths.defaultDir().resolve(stem + "_merged.pdf").toString());
+                org.example.app.gui.util.DefaultLocations.defaultDir().resolve(stem + "_merged.pdf").toString());
         }
     }
 

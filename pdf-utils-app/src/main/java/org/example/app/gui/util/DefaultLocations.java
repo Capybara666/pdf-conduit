@@ -7,12 +7,15 @@ import java.nio.file.Path;
  * Sensible default output locations, following common OS conventions:
  * a {@code pdf-conduit} folder inside the user's Documents directory
  * (falling back to the home directory), and a default result file name.
+ *
+ * <p>Named distinctly from {@code org.example.core.util.OutputPaths} (which only
+ * ensures a path's parent directory exists) to avoid confusion between the two.
  */
-public final class OutputPaths {
+public final class DefaultLocations {
 
     public static final String DEFAULT_FILE = "pdf_conduit_result.pdf";
 
-    private OutputPaths() {}
+    private DefaultLocations() {}
 
     /** {@code ~/Documents/pdf-conduit} (or {@code ~/pdf-conduit} if Documents is absent). */
     public static Path defaultDir() {

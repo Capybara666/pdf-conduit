@@ -72,6 +72,13 @@ public class ProgressPanel extends VBox {
         getChildren().addAll(runBtn, progressBar, statusLabel, errorBanner, warnBanner, resultLinks);
     }
 
+    /** A non-null, human-readable message for a failed task's exception. */
+    static String messageOf(Throwable t) {
+        if (t == null) return "Operation failed.";
+        String m = t.getMessage();
+        return (m != null && !m.isBlank()) ? m : t.getClass().getSimpleName();
+    }
+
     /** Formats a byte count as a short human-readable string (B / KB / MB). */
     public static String humanSize(long bytes) {
         if (bytes < 1024) return bytes + " B";
@@ -122,7 +129,7 @@ public class ProgressPanel extends VBox {
             runBtn.setDisable(false);
             statusLabel.textProperty().unbind();
             statusLabel.setText("");
-            errorBanner.setText(task.getException().getMessage());
+            errorBanner.setText(messageOf(task.getException()));
             errorBanner.setVisible(true);
             Sfx.playError();
         }));
