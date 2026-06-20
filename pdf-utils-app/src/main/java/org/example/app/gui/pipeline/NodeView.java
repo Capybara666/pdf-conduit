@@ -18,6 +18,7 @@ class NodeView extends HBox {
     final PipelineNode node;
     private final Circle inPort;
     private final Circle outPort;
+    private final Label title = new Label();
     private final Label summary = new Label();
     private final VBox card;
 
@@ -37,7 +38,7 @@ class NodeView extends HBox {
 
         Region titleIcon = org.example.app.gui.icon.Icons.of(node.kind, 14);
         titleIcon.getStyleClass().add("pipeline-node-title-icon");
-        Label title = new Label(I18n.t("kind." + node.kind.name()));
+        title.setText(I18n.t("kind." + node.kind.name()));
         title.getStyleClass().add("pipeline-node-title");
         Button close = new Button("✕");
         close.getStyleClass().add("pipeline-node-close");
@@ -140,6 +141,12 @@ class NodeView extends HBox {
         } else {
             card.getStyleClass().remove(styleClass);
         }
+    }
+
+    /** Re-applies the node's title and summary in the current language. */
+    void relocalize() {
+        title.setText(I18n.t("kind." + node.kind.name()));
+        refreshSummary();
     }
 
     void refreshSummary() {

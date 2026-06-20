@@ -24,7 +24,8 @@ public class SidebarController extends VBox {
 
         getChildren().add(buildBrand());
 
-        Label sectionLabel = new Label(I18n.t("sidebar.operations"));
+        Label sectionLabel = new Label();
+        I18n.bindText(sectionLabel::setText, "sidebar.operations");
         sectionLabel.getStyleClass().add("sidebar-section-label");
         getChildren().add(sectionLabel);
 
@@ -53,7 +54,8 @@ public class SidebarController extends VBox {
     }
 
     private Button createItemButton(SidebarItem item, Consumer<SidebarItem> onSelect) {
-        Button btn = new Button(I18n.t("sidebar." + item.name()));
+        Button btn = new Button();
+        I18n.bindText(btn::setText, "sidebar." + item.name());
         btn.setGraphic(org.example.app.gui.icon.Icons.of(item, 18));
         btn.setGraphicTextGap(10);
         btn.getStyleClass().add("sidebar-item");

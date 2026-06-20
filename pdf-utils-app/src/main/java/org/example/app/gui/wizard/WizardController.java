@@ -24,8 +24,8 @@ public class WizardController extends BorderPane {
 
     private final VBox stepIndicator = new VBox();
     private final StackPane stepContent = new StackPane();
-    private final Button backBtn = new Button(I18n.t("wizard.back"));
-    private final Button nextBtn = new Button(I18n.t("wizard.next"));
+    private final Button backBtn = new Button();
+    private final Button nextBtn = new Button();
 
     public WizardController() {
         steps = List.of(
@@ -43,10 +43,17 @@ public class WizardController extends BorderPane {
         stepIndicator.getStyleClass().add("wizard-step-indicator");
         rebuildStepIndicator(0);
 
+        I18n.bindText(backBtn::setText, "wizard.back");
         backBtn.getStyleClass().add("btn-secondary");
         nextBtn.getStyleClass().add("btn-primary");
         backBtn.setOnAction(e -> navigate(-1));
         nextBtn.setOnAction(e -> navigate(+1));
+        // The Next/Generate label and the step names depend on the current step,
+        // so re-derive them on language change; each step relocalises its own body.
+        I18n.addListener(() -> {
+            updateNextButton();
+            rebuildStepIndicator(currentStep);
+        });
         Animations.installHoverScale(backBtn, 1.04);
         Animations.installHoverScale(nextBtn, 1.04);
 
@@ -69,13 +76,18 @@ public class WizardController extends BorderPane {
         stepContent.getChildren().setAll(content);
         Animations.fadeSlideIn(content);
         backBtn.setDisable(idx == 0);
-        nextBtn.setText(idx == steps.size() - 1 ? I18n.t("wizard.generate") : I18n.t("wizard.next"));
+        updateNextButton();
         if (idx == steps.size() - 1) {
             nextBtn.setOnAction(e -> steps.get(idx).onFinish());
         } else {
             nextBtn.setOnAction(e -> navigate(+1));
         }
         rebuildStepIndicator(idx);
+    }
+
+    private void updateNextButton() {
+        nextBtn.setText(currentStep == steps.size() - 1
+            ? I18n.t("wizard.generate") : I18n.t("wizard.next"));
     }
 
     private void rebuildStepIndicator(int current) {

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class MergePanel extends BasePanel {
 
-    public MergePanel() { super(I18n.t("panel.MERGE.title"), I18n.t("run.MERGE"), "_merged"); }
+    public MergePanel() { super("panel.MERGE.title", "run.MERGE", "_merged"); }
 
     @Override
     protected VBox buildOptionsArea() { return new VBox(); }

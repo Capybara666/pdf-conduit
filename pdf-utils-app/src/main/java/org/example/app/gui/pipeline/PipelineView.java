@@ -49,7 +49,7 @@ public class PipelineView extends BorderPane {
     private final Label status = new Label();
     private final Label banner = new Label();
     private final HBox resultLinks = new HBox(12);
-    private final Button runBtn = new Button(I18n.t("pipeline.run"));
+    private final Button runBtn = new Button();
 
     public PipelineView() {
         getStyleClass().add("panel-root");
@@ -62,7 +62,8 @@ public class PipelineView extends BorderPane {
 
         // Empty-state hint, centered over the canvas; vanishes once a node exists
         // so it never clutters an in-progress pipeline.
-        Label emptyHint = new Label(I18n.t("pipeline.empty.hint"));
+        Label emptyHint = new Label();
+        I18n.bindText(emptyHint::setText, "pipeline.empty.hint");
         emptyHint.getStyleClass().add("pipeline-empty-hint");
         emptyHint.setWrapText(true);
         emptyHint.setMaxWidth(440);
@@ -85,14 +86,16 @@ public class PipelineView extends BorderPane {
     // --- top: title + draggable palette -----------------------------------
 
     private VBox buildTop() {
-        Label title = new Label(I18n.t("pipeline.title"));
+        Label title = new Label();
+        I18n.bindText(title::setText, "pipeline.title");
         title.getStyleClass().add("panel-title");
 
         HBox palette = new HBox();
         palette.getStyleClass().add("pipeline-palette");
         for (NodeKind kind : PALETTE) palette.getChildren().add(chip(kind));
 
-        Button clear = new Button(I18n.t("pipeline.clear"));
+        Button clear = new Button();
+        I18n.bindText(clear::setText, "pipeline.clear");
         clear.getStyleClass().add("btn-secondary");
         clear.setMinWidth(Region.USE_PREF_SIZE);
         clear.setOnAction(e -> { canvas.clearAll(); banner.setVisible(false); status.setText(""); });
@@ -102,7 +105,9 @@ public class PipelineView extends BorderPane {
         Button help = new Button("?");
         help.getStyleClass().add("btn-secondary");
         help.setMinWidth(Region.USE_PREF_SIZE);
-        help.setTooltip(new javafx.scene.control.Tooltip(I18n.t("pipeline.help.tooltip")));
+        var helpTip = new javafx.scene.control.Tooltip();
+        I18n.bindText(helpTip::setText, "pipeline.help.tooltip");
+        help.setTooltip(helpTip);
         help.setOnAction(e -> showHelp());
 
         // Keep Clear next to the palette (left) so it doesn't track the canvas
@@ -122,7 +127,8 @@ public class PipelineView extends BorderPane {
     }
 
     private Label chip(NodeKind kind) {
-        Label chip = new Label(I18n.t("kind." + kind.name()));
+        Label chip = new Label();
+        I18n.bindText(chip::setText, "kind." + kind.name());
         chip.setGraphic(org.example.app.gui.icon.Icons.of(kind, 16));
         chip.setGraphicTextGap(8);
         chip.getStyleClass().add("pipeline-chip");
@@ -176,6 +182,7 @@ public class PipelineView extends BorderPane {
     // --- bottom: node options + status + run ------------------------------
 
     private HBox buildBottom() {
+        I18n.bindText(runBtn::setText, "pipeline.run");
         runBtn.getStyleClass().add("btn-primary");
         runBtn.setMinWidth(Region.USE_PREF_SIZE);   // never truncate the Run label
         runBtn.setOnAction(e -> run());

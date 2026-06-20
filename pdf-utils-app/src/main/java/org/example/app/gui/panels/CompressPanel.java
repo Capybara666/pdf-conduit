@@ -22,19 +22,20 @@ public class CompressPanel extends BasePanel {
     private TextField sizeField;
     private ComboBox<String> unitBox;
 
-    public CompressPanel() { super(I18n.t("panel.COMPRESS.title"), I18n.t("run.COMPRESS"), "_compressed"); }
+    public CompressPanel() { super("panel.COMPRESS.title", "run.COMPRESS", "_compressed"); }
 
     @Override
     protected boolean supportsBatch() { return true; }
 
     @Override
-    protected String inputHint() {
-        return I18n.t("hint.COMPRESS");
+    protected String inputHintKey() {
+        return "hint.COMPRESS";
     }
 
     @Override
     protected VBox buildOptionsArea() {
-        Label label = new Label(I18n.t("compress.target.label"));
+        Label label = new Label();
+        I18n.bindText(label::setText, "compress.target.label");
         label.setStyle("-fx-font-size: 11px;");
         sizeField = new TextField("5");
         unitBox = new ComboBox<>();

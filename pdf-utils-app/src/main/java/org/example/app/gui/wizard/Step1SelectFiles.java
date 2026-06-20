@@ -19,6 +19,7 @@ public class Step1SelectFiles implements WizardStep {
 
     private final WizardModel model;
     private final FileListView fileList = new FileListView();
+    private Node content;
 
     public Step1SelectFiles(WizardModel model) {
         this.model = model;
@@ -32,7 +33,13 @@ public class Step1SelectFiles implements WizardStep {
 
     @Override
     public Node getContent() {
-        Label title = new Label(I18n.t("wizard.step1.title"));
+        if (content == null) content = build();
+        return content;
+    }
+
+    private Node build() {
+        Label title = new Label();
+        I18n.bindText(title::setText, "wizard.step1.title");
         title.getStyleClass().add("panel-title");
         DropZone dropZone = new DropZone(fileList::addFiles);
 

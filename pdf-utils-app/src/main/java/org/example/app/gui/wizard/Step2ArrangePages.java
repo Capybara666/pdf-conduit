@@ -30,19 +30,29 @@ public class Step2ArrangePages implements WizardStep {
 
     private final WizardModel model;
     private final Map<Path, Integer> pageCounts = new HashMap<>();
+    private Node content;
 
     public Step2ArrangePages(WizardModel model) { this.model = model; }
 
     @Override
     public Node getContent() {
-        Label title = new Label(I18n.t("wizard.step2.title"));
+        if (content == null) content = build();
+        return content;
+    }
+
+    private Node build() {
+        Label title = new Label();
+        I18n.bindText(title::setText, "wizard.step2.title");
         title.getStyleClass().add("panel-title");
-        Label hint = new Label(I18n.t("wizard.step2.hint"));
+        Label hint = new Label();
+        I18n.bindText(hint::setText, "wizard.step2.hint");
         hint.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
 
         ListView<PageSource> listView = new ListView<>(model.pages);
         listView.getStyleClass().add("file-list-view");
         listView.setCellFactory(lv -> new DraggablePageCell());
+        // Re-render the rows (their per-page "pages" link text) in the new language.
+        I18n.addListener(listView::refresh);
 
         VBox top = new VBox(6, title, hint);
         BorderPane root = new BorderPane();
@@ -132,11 +142,13 @@ public class Step2ArrangePages implements WizardStep {
         private final Label iconLabel  = new Label();
         private final Label nameLabel  = new Label();
         private final Hyperlink pagesLink = new Hyperlink();
-        private final MenuItem moveUpItem   = new MenuItem(I18n.t("wizard.moveup"));
-        private final MenuItem moveDownItem = new MenuItem(I18n.t("wizard.movedown"));
+        private final MenuItem moveUpItem   = new MenuItem();
+        private final MenuItem moveDownItem = new MenuItem();
         private final HBox row;
 
         DraggablePageCell() {
+            I18n.bindText(moveUpItem::setText, "wizard.moveup");
+            I18n.bindText(moveDownItem::setText, "wizard.movedown");
             dragHandle.setStyle("-fx-font-size: 10px; -fx-opacity: 0.35;");
             nameLabel.setStyle("-fx-font-size: 11px;");
             pagesLink.setStyle("-fx-font-size: 11px;");

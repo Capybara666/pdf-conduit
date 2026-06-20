@@ -37,14 +37,14 @@ public class SplitPanel extends BasePanel {
     private ToggleGroup modeGroup;
     private RadioButton separateRadio;
 
-    public SplitPanel() { super(I18n.t("panel.SPLIT.title"), I18n.t("run.SPLIT"), "_extracted"); }
+    public SplitPanel() { super("panel.SPLIT.title", "run.SPLIT", "_extracted"); }
 
     @Override
     protected boolean supportsBatch() { return true; }
 
     @Override
-    protected String inputHint() {
-        return I18n.t("hint.SPLIT");
+    protected String inputHintKey() {
+        return "hint.SPLIT";
     }
 
     private SplitMode mode() {
@@ -59,25 +59,30 @@ public class SplitPanel extends BasePanel {
 
     @Override
     protected VBox buildOptionsArea() {
-        Label label = new Label(I18n.t("split.pages.label"));
+        Label label = new Label();
+        I18n.bindText(label::setText, "split.pages.label");
         label.setStyle("-fx-font-size: 11px;");
         pagesField = new TextField();
-        pagesField.setPromptText(I18n.t("split.pages.prompt"));
+        I18n.bindText(pagesField::setPromptText, "split.pages.prompt");
         HBox.setHgrow(pagesField, Priority.ALWAYS);
-        Button pick = new Button(I18n.t("select.pick"));
+        Button pick = new Button();
+        I18n.bindText(pick::setText, "select.pick");
         pick.getStyleClass().add("btn-secondary");
         pick.disableProperty().bind(Bindings.isEmpty(fileList.getFiles()));
         pick.setOnAction(e -> pickPages());
 
         // A binary output choice — radio buttons show the full labels (no
         // truncation) and make the selection unambiguous.
-        Label modeLabel = new Label(I18n.t("split.mode.label"));
+        Label modeLabel = new Label();
+        I18n.bindText(modeLabel::setText, "split.mode.label");
         modeLabel.setStyle("-fx-font-size: 11px;");
         modeGroup = new ToggleGroup();
-        RadioButton combineRadio = new RadioButton(I18n.t("split.mode.combine"));
+        RadioButton combineRadio = new RadioButton();
+        I18n.bindText(combineRadio::setText, "split.mode.combine");
         combineRadio.setToggleGroup(modeGroup);
         combineRadio.setSelected(true);
-        separateRadio = new RadioButton(I18n.t("split.mode.separate"));
+        separateRadio = new RadioButton();
+        I18n.bindText(separateRadio::setText, "split.mode.separate");
         separateRadio.setToggleGroup(modeGroup);
         // Switching mode flips the single file-name field on/off.
         modeGroup.selectedToggleProperty().addListener((o, a, b) -> {

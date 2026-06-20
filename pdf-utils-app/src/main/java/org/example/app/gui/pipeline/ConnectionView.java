@@ -105,6 +105,11 @@ class ConnectionView extends Group {
         }
     }
 
+    /** Re-applies the delete tooltip in the current language. */
+    void relocalize() {
+        deleteBtn.getTooltip().setText(I18n.t("pipeline.connection.delete"));
+    }
+
     void update() {
         Point2D f = center(fromPort);
         Point2D t = center(toPort);

@@ -22,7 +22,7 @@ public class ImagesToPdfPanel extends BasePanel {
 
     private ComboBox<PageSize> pageSizeBox;
 
-    public ImagesToPdfPanel() { super(I18n.t("panel.IMAGES.title"), I18n.t("run.IMAGES"), "_converted"); }
+    public ImagesToPdfPanel() { super("panel.IMAGES.title", "run.IMAGES", "_converted"); }
 
     /** Each input becomes its own PDF; combining is the Merge operation's job. */
     @Override
@@ -30,7 +30,8 @@ public class ImagesToPdfPanel extends BasePanel {
 
     @Override
     protected VBox buildOptionsArea() {
-        Label label = new Label(I18n.t("images.pagesize.label"));
+        Label label = new Label();
+        I18n.bindText(label::setText, "images.pagesize.label");
         label.setStyle("-fx-font-size: 11px;");
         pageSizeBox = new ComboBox<>();
         pageSizeBox.getItems().addAll(PageSize.values());

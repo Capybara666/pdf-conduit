@@ -56,6 +56,9 @@ public final class PageReorderGrid extends ScrollPane {
 
         tiles.addListener((ListChangeListener<Tile>) c -> { relayout(); onChange.run(); });
 
+        // Re-render the tiles (badges + tooltips) in the new language, keeping order.
+        I18n.addListener(this::relayout);
+
         // Dropping onto empty pane area appends to the end.
         flow.setOnDragOver(e -> {
             if (dragging != null) e.acceptTransferModes(TransferMode.MOVE);

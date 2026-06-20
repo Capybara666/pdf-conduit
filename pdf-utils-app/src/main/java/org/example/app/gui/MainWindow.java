@@ -34,6 +34,7 @@ public class MainWindow {
 
     private SidebarController sidebar;
     private StackPane contentArea;
+    private BorderPane root;
     private SidebarItem currentItem = SidebarItem.MERGE;
 
     public MainWindow(Stage stage) {
@@ -49,29 +50,27 @@ public class MainWindow {
         applyIcons();
 
         buildContent();
-        I18n.addListener(this::rebuild);
+        // Changing language must NOT tear the UI down — that would discard the
+        // user's work (loaded files, the pipeline graph, wizard progress). The
+        // sidebar, panels, pipeline and wizard each re-translate themselves in
+        // place via I18n.bindText; here we only swap the stateless menu bar,
+        // whose radio selections track the current language/theme.
+        I18n.addListener(() -> root.setTop(buildMenuBar()));
         sidebar.select(currentItem, this::showPanel);
     }
 
-    /** Builds (or rebuilds) the sidebar, menu bar and content area into the scene. */
+    /** Builds the sidebar, menu bar and content area into the scene (once). */
     private void buildContent() {
         contentArea = new StackPane();
         contentArea.getStyleClass().add("content-area");
 
         sidebar = new SidebarController(this::showPanel);
 
-        BorderPane root = new BorderPane();
+        root = new BorderPane();
         root.setLeft(sidebar);
         root.setCenter(contentArea);
         root.setTop(buildMenuBar());
         scene.setRoot(root);
-    }
-
-    /** Rebuilds the whole UI in the new language (panels are recreated lazily). */
-    private void rebuild() {
-        panels.clear();
-        buildContent();
-        sidebar.select(currentItem, this::showPanel);
     }
 
     private MenuBar buildMenuBar() {

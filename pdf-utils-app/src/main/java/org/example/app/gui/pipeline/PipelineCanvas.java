@@ -48,6 +48,15 @@ class PipelineCanvas extends Pane {
         setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.DELETE || e.getCode() == KeyCode.BACK_SPACE) deleteSelected();
         });
+        // Re-translate the live nodes, wires and inspector in place — the graph
+        // itself (positions, connections, options) is left untouched.
+        org.example.app.i18n.I18n.addListener(this::relocalize);
+    }
+
+    private void relocalize() {
+        nodeViews.values().forEach(NodeView::relocalize);
+        connViews.forEach(ConnectionView::relocalize);
+        onSelect.accept(selected);
     }
 
     void setOnSelect(Consumer<PipelineNode> onSelect) { this.onSelect = onSelect; }

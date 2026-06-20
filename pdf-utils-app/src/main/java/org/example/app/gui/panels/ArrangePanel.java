@@ -41,12 +41,12 @@ public class ArrangePanel extends BorderPane {
     private static final int THUMB_DPI = 36;
 
     private final PageReorderGrid grid = new PageReorderGrid();
-    private final ProgressPanel progressPanel = new ProgressPanel(I18n.t("run.ARRANGE"));
-    private final Label statusLabel = new Label(I18n.t("arrange.nofile"));
+    private final ProgressPanel progressPanel = new ProgressPanel("run.ARRANGE");
+    private final Label statusLabel = new Label();
     private final TextField folderField = new TextField();
     private final TextField nameField = new TextField();
-    private final Button resetBtn = new Button(I18n.t("arrange.reset"));
-    private final Button reverseBtn = new Button(I18n.t("arrange.reverse"));
+    private final Button resetBtn = new Button();
+    private final Button reverseBtn = new Button();
 
     // The PDF currently loaded into the grid (a temp copy when the input was converted).
     private Path workingPdf;
@@ -56,17 +56,24 @@ public class ArrangePanel extends BorderPane {
     public ArrangePanel() {
         getStyleClass().add("panel-root");
 
-        Label title = new Label(I18n.t("panel.ARRANGE.title"));
+        Label title = new Label();
+        I18n.bindText(title::setText, "panel.ARRANGE.title");
         title.getStyleClass().add("panel-title");
-        Label hint = new Label(I18n.t("hint.ARRANGE"));
+        Label hint = new Label();
+        I18n.bindText(hint::setText, "hint.ARRANGE");
         hint.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
         hint.setWrapText(true);
 
         DropZone dropZone = new DropZone(files -> { if (!files.isEmpty()) loadFile(files.get(0)); });
 
         statusLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.7;");
+        // The status text reflects live state; re-derive it on language change
+        // (transient loading/error messages are left as-is).
+        I18n.addListener(this::refreshControls);
+        I18n.bindText(resetBtn::setText, "arrange.reset");
         resetBtn.getStyleClass().add("btn-secondary");
         resetBtn.setOnAction(e -> grid.reset());
+        I18n.bindText(reverseBtn::setText, "arrange.reverse");
         reverseBtn.getStyleClass().add("btn-secondary");
         reverseBtn.setOnAction(e -> grid.reverse());
         Region tbSpacer = new Region();
@@ -77,17 +84,20 @@ public class ArrangePanel extends BorderPane {
         VBox top = new VBox(14, title, hint, dropZone, toolbar);
 
         // --- output: folder + name ---
-        folderField.setPromptText(I18n.t("output.folder.prompt"));
+        I18n.bindText(folderField::setPromptText, "output.folder.prompt");
         folderField.setText(OutputPaths.defaultDir().toString());
         HBox.setHgrow(folderField, Priority.ALWAYS);
         Button browse = new Button("…");
         browse.getStyleClass().add("btn-secondary");
         browse.setOnAction(e -> browseFolder());
         HBox folderRow = new HBox(6, folderField, browse);
-        nameField.setPromptText(I18n.t("output.file.prompt"));
+        I18n.bindText(nameField::setPromptText, "output.file.prompt");
         nameField.setText(OutputPaths.DEFAULT_FILE);
-        VBox outputBox = new VBox(4, new Label(I18n.t("output.folder")), folderRow,
-            new Label(I18n.t("output.name")), nameField);
+        Label folderLabel = new Label();
+        I18n.bindText(folderLabel::setText, "output.folder");
+        Label nameLabel = new Label();
+        I18n.bindText(nameLabel::setText, "output.name");
+        VBox outputBox = new VBox(4, folderLabel, folderRow, nameLabel, nameField);
 
         progressPanel.getRunButton().setOnAction(e -> onRun());
 
@@ -106,9 +116,9 @@ public class ArrangePanel extends BorderPane {
         resetBtn.setDisable(!has);
         reverseBtn.setDisable(!has);
         progressPanel.getRunButton().setDisable(!has);
-        if (has) {
-            statusLabel.setText(I18n.t("arrange.loaded", loadedName, grid.pageCount()));
-        }
+        statusLabel.setText(has
+            ? I18n.t("arrange.loaded", loadedName, grid.pageCount())
+            : I18n.t("arrange.nofile"));
     }
 
     // --- loading + thumbnails ---------------------------------------------

@@ -24,10 +24,11 @@ public class ProgressPanel extends VBox {
     private final Button openFile;
     private final Button openFolder;
 
-    public ProgressPanel(String runLabel) {
+    public ProgressPanel(String runKey) {
         setSpacing(8);
 
-        runBtn = new Button(runLabel);
+        runBtn = new Button();
+        I18n.bindText(runBtn::setText, runKey);
         runBtn.getStyleClass().add("btn-primary");
         runBtn.setMaxWidth(Double.MAX_VALUE);
         Animations.installHoverScale(runBtn, 1.02);
@@ -54,8 +55,10 @@ public class ProgressPanel extends VBox {
         warnBanner.setVisible(false);
         warnBanner.managedProperty().bind(warnBanner.visibleProperty());
 
-        openFile   = new Button(I18n.t("link.openfile"));
-        openFolder = new Button(I18n.t("link.openfolder"));
+        openFile   = new Button();
+        openFolder = new Button();
+        I18n.bindText(openFile::setText, "link.openfile");
+        I18n.bindText(openFolder::setText, "link.openfolder");
         openFile.getStyleClass().add("result-link");
         openFolder.getStyleClass().add("result-link");
         resultLinks = new HBox(10, openFile, openFolder);

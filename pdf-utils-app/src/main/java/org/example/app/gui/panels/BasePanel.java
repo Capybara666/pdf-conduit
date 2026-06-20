@@ -45,28 +45,38 @@ public abstract class BasePanel extends BorderPane {
     // Output is always a folder plus — for single-output runs — a file name.
     private final TextField folderField = new TextField();
     private final TextField nameField = new TextField();
-    private final Label folderLabel = new Label(I18n.t("output.folder"));
-    private final Label nameLabel = new Label(I18n.t("output.name"));
+    private final Label folderLabel = new Label();
+    private final Label nameLabel = new Label();
 
     private final String outputSuffix;
     private boolean batchMode = false;
     private String lastAutoFolder = "";
     private String lastAutoName = "";
 
-    protected BasePanel(String title, String runLabel, String outputSuffix) {
+    protected BasePanel(String titleKey, String runKey, String outputSuffix) {
         this.outputSuffix = outputSuffix;
         getStyleClass().add("panel-root");
 
-        Label titleLabel = new Label(title);
+        Label titleLabel = new Label();
         titleLabel.getStyleClass().add("panel-title");
+        I18n.bindText(titleLabel::setText, titleKey);
 
         fileList = new FileListView();
         dropZone = new DropZone(fileList::addFiles);
 
         // --- file list toolbar: count + clear ---
-        Label countLabel = new Label(I18n.t("files.none"));
+        Label countLabel = new Label();
         countLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
-        Button clearBtn = new Button(I18n.t("btn.clear"));
+        // The count is computed from live state, so it can't be a static bindText;
+        // recompute it on file-list changes and on every language change.
+        Runnable refreshCount = () -> {
+            int n = fileList.getFiles().size();
+            countLabel.setText(n == 0 ? I18n.t("files.none") : I18n.t("files.count", n));
+        };
+        refreshCount.run();
+        I18n.addListener(refreshCount);
+        Button clearBtn = new Button();
+        I18n.bindText(clearBtn::setText, "btn.clear");
         clearBtn.getStyleClass().add("btn-secondary");
         clearBtn.setDisable(true);
         clearBtn.setOnAction(e -> fileList.getFiles().clear());
@@ -76,7 +86,7 @@ public abstract class BasePanel extends BorderPane {
         listToolbar.setStyle("-fx-alignment: CENTER_LEFT;");
 
         // --- output: a folder, plus a file name when there is a single output ---
-        folderField.setPromptText(I18n.t("output.folder.prompt"));
+        I18n.bindText(folderField::setPromptText, "output.folder.prompt");
         folderField.setText(OutputPaths.defaultDir().toString());
         lastAutoFolder = folderField.getText();
         HBox.setHgrow(folderField, Priority.ALWAYS);
@@ -85,7 +95,7 @@ public abstract class BasePanel extends BorderPane {
         browseBtn.setOnAction(e -> browseFolder());
         HBox folderRow = new HBox(6, folderField, browseBtn);
 
-        nameField.setPromptText(I18n.t("output.file.prompt"));
+        I18n.bindText(nameField::setPromptText, "output.file.prompt");
         nameField.setText(OutputPaths.DEFAULT_FILE);
         lastAutoName = nameField.getText();
         HBox.setHgrow(nameField, Priority.ALWAYS);
@@ -93,25 +103,27 @@ public abstract class BasePanel extends BorderPane {
         nameLabel.managedProperty().bind(nameLabel.visibleProperty());
         nameField.managedProperty().bind(nameField.visibleProperty());
 
+        I18n.bindText(folderLabel::setText, "output.folder");
+        I18n.bindText(nameLabel::setText, "output.name");
         VBox outputBox = new VBox(4, folderLabel, folderRow, nameLabel, nameField);
 
-        progressPanel = new ProgressPanel(runLabel);
+        progressPanel = new ProgressPanel(runKey);
         progressPanel.getRunButton().setOnAction(e -> onRun());
 
         // React to file-list changes: count, clear button, output mode + auto path.
         fileList.getFiles().addListener((ListChangeListener<Path>) change -> {
-            int n = fileList.getFiles().size();
-            countLabel.setText(n == 0 ? I18n.t("files.none") : I18n.t("files.count", n));
-            clearBtn.setDisable(n == 0);
+            refreshCount.run();
+            clearBtn.setDisable(fileList.getFiles().isEmpty());
             refreshOutputMode();
         });
 
         // --- assemble: top pinned, list fills, bottom pinned ---
         VBox top = new VBox(14);
         top.getChildren().add(titleLabel);
-        String hint = inputHint();
-        if (hint != null) {
-            Label hintLabel = new Label(hint);
+        String hintKey = inputHintKey();
+        if (hintKey != null) {
+            Label hintLabel = new Label();
+            I18n.bindText(hintLabel::setText, hintKey);
             hintLabel.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6;");
             hintLabel.setWrapText(true);
             top.getChildren().add(hintLabel);
@@ -133,7 +145,6 @@ public abstract class BasePanel extends BorderPane {
         // Several outputs go to a folder; a single output also gets a file name.
         nameLabel.setVisible(!batchMode);
         nameField.setVisible(!batchMode);
-        folderLabel.setText(I18n.t("output.folder"));
         updateAutoOutput();
     }
 
@@ -183,8 +194,8 @@ public abstract class BasePanel extends BorderPane {
 
     protected abstract void onRun();
 
-    /** Optional hint shown under the title. */
-    protected String inputHint() { return null; }
+    /** Message key for an optional hint shown under the title; {@code null} for none. */
+    protected String inputHintKey() { return null; }
 
     /** Whether this operation processes each input independently (one output per input). */
     protected boolean supportsBatch() { return false; }

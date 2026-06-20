@@ -23,12 +23,19 @@ public class Step5Export implements WizardStep {
     private final WizardModel model;
     private TextField outputField;
     private ProgressPanel progressPanel;
+    private Node content;
 
     public Step5Export(WizardModel model) { this.model = model; }
 
     @Override
     public Node getContent() {
+        if (content == null) content = build();
         // Auto-fill output path from first page source when field is empty
+        autofillOutput();
+        return content;
+    }
+
+    private void autofillOutput() {
         if (model.outputPath.get().isBlank() && !model.pages.isEmpty()) {
             PageSource first = model.pages.get(0);
             Path base = switch (first) {
@@ -39,12 +46,15 @@ public class Step5Export implements WizardStep {
             model.outputPath.set(
                 org.example.app.gui.util.OutputPaths.defaultDir().resolve(stem + "_merged.pdf").toString());
         }
+    }
 
-        Label title = new Label(I18n.t("wizard.step5.title"));
+    private Node build() {
+        Label title = new Label();
+        I18n.bindText(title::setText, "wizard.step5.title");
         title.getStyleClass().add("panel-title");
 
         outputField = new TextField();
-        outputField.setPromptText(I18n.t("output.file.prompt"));
+        I18n.bindText(outputField::setPromptText, "output.file.prompt");
         outputField.textProperty().bindBidirectional(model.outputPath);
         HBox.setHgrow(outputField, Priority.ALWAYS);
 
@@ -60,10 +70,12 @@ public class Step5Export implements WizardStep {
         });
         HBox outputRow = new HBox(6, outputField, browseBtn);
 
-        progressPanel = new ProgressPanel(I18n.t("wizard.step5.run"));
+        progressPanel = new ProgressPanel("wizard.step5.run");
         progressPanel.getRunButton().setOnAction(e -> onFinish());
 
-        VBox box = new VBox(14, title, new Label(I18n.t("wizard.step5.outputlabel")), outputRow, progressPanel);
+        Label outputLabel = new Label();
+        I18n.bindText(outputLabel::setText, "wizard.step5.outputlabel");
+        VBox box = new VBox(14, title, outputLabel, outputRow, progressPanel);
         box.setStyle("-fx-padding: 18;");
         return box;
     }

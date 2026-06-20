@@ -24,29 +24,32 @@ public class RotatePanel extends BasePanel {
     private TextField pagesField;
     private ComboBox<Integer> angleBox;
 
-    public RotatePanel() { super(I18n.t("panel.ROTATE.title"), I18n.t("run.ROTATE"), "_rotated"); }
+    public RotatePanel() { super("panel.ROTATE.title", "run.ROTATE", "_rotated"); }
 
     @Override
     protected boolean supportsBatch() { return true; }
 
     @Override
-    protected String inputHint() {
-        return I18n.t("hint.ROTATE");
+    protected String inputHintKey() {
+        return "hint.ROTATE";
     }
 
     @Override
     protected VBox buildOptionsArea() {
-        Label pagesLabel = new Label(I18n.t("rotate.pages.label"));
+        Label pagesLabel = new Label();
+        I18n.bindText(pagesLabel::setText, "rotate.pages.label");
         pagesLabel.setStyle("-fx-font-size: 11px;");
         pagesField = new TextField();
-        pagesField.setPromptText(I18n.t("rotate.pages.prompt"));
+        I18n.bindText(pagesField::setPromptText, "rotate.pages.prompt");
         HBox.setHgrow(pagesField, Priority.ALWAYS);
-        Button pick = new Button(I18n.t("select.pick"));
+        Button pick = new Button();
+        I18n.bindText(pick::setText, "select.pick");
         pick.getStyleClass().add("btn-secondary");
         pick.disableProperty().bind(Bindings.isEmpty(fileList.getFiles()));
         pick.setOnAction(e -> pickPages());
 
-        Label angleLabel = new Label(I18n.t("rotate.angle.label"));
+        Label angleLabel = new Label();
+        I18n.bindText(angleLabel::setText, "rotate.angle.label");
         angleLabel.setStyle("-fx-font-size: 11px;");
         angleBox = new ComboBox<>();
         angleBox.getItems().addAll(90, 180, 270);
