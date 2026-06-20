@@ -3,24 +3,26 @@ package org.example.app.cli;
 import org.example.core.exception.PdfOperationException;
 import org.example.core.model.MergeOptions;
 import org.example.core.model.MergeResult;
-import org.example.core.model.PageRange;
 import org.example.core.model.PageSize;
 import org.example.core.model.PageSource;
 import org.example.core.operations.PdfMerger;
-import org.example.core.util.FileTypeDetector;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-@Command(name = "merge", description = "Merge PDFs and/or images into one PDF.")
+@Command(name = "merge",
+         description = "Merge PDFs, images and documents into one PDF. "
+             + "Office/text documents are converted via LibreOffice if installed.")
 public class MergeCommand implements Callable<Integer> {
 
     @Parameters(arity = "1..*", paramLabel = "FILE",
-                description = "Input files (PDF or image: PNG, JPG, WEBP, TIFF, BMP).")
+                description = "Input files: PDF, image (PNG, JPG, WEBP, TIFF, BMP) "
+                    + "or document (DOCX, ODT, RTF, TXT, XLSX, PPTX, …).")
     private List<Path> inputs;
 
     @Option(names = {"-o", "--output"}, paramLabel = "FILE", description = "Output PDF path.")
@@ -30,12 +32,9 @@ public class MergeCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
+        List<Path> temps = new ArrayList<>();
         try {
-            List<PageSource> sources = inputs.stream()
-                .map(p -> FileTypeDetector.isPdf(p)
-                    ? (PageSource) new PageSource.PdfPageSource(p, PageRange.ALL)
-                    : new PageSource.ImageSource(p, PageSize.FIT))
-                .toList();
+            List<PageSource> sources = CliSources.build(inputs, PageSize.FIT, temps);
             Path out = output != null ? output : deriveOutput(inputs.get(0), "_merged");
             MergeResult result = PdfMerger.execute(new MergeOptions(sources, out));
             System.out.printf("Merged %d pages → %s%n", result.pageCount(), result.output());
@@ -43,14 +42,16 @@ public class MergeCommand implements Callable<Integer> {
         } catch (PdfOperationException e) {
             System.err.println("Error: " + e.getMessage());
             return 2;
+        } finally {
+            CliSources.deleteTemps(temps);
         }
     }
 
+    /** Default output beside the first input, always a {@code .pdf} ({@code <stem><suffix>.pdf}). */
     static Path deriveOutput(Path input, String suffix) {
         String name = input.getFileName().toString();
         int dot = name.lastIndexOf('.');
         String base = dot >= 0 ? name.substring(0, dot) : name;
-        String ext  = dot >= 0 ? name.substring(dot)    : ".pdf";
-        return input.resolveSibling(base + suffix + ext);
+        return input.resolveSibling(base + suffix + ".pdf");
     }
 }

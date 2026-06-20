@@ -116,6 +116,31 @@ class CliIntegrationTest {
     }
 
     @Test
+    void deriveOutputAlwaysProducesPdf() {
+        // Default output is a PDF regardless of the first input's extension.
+        assertTrue(MergeCommand.deriveOutput(Path.of("/x/a.png"),  "_merged").toString().endsWith("a_merged.pdf"));
+        assertTrue(MergeCommand.deriveOutput(Path.of("/x/a.docx"), "_merged").toString().endsWith("a_merged.pdf"));
+        assertTrue(MergeCommand.deriveOutput(Path.of("/x/a.pdf"),  "_merged").toString().endsWith("a_merged.pdf"));
+    }
+
+    @Test
+    void toPdfCombinesImageIntoPdf() throws Exception {
+        Path png = tmp.resolve("pic.png");
+        javax.imageio.ImageIO.write(
+            new java.awt.image.BufferedImage(60, 40, java.awt.image.BufferedImage.TYPE_INT_RGB),
+            "png", png.toFile());
+        Path out = tmp.resolve("album.pdf");
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("to-pdf", png.toString(), "--page-size", "A4", "-o", out.toString());
+
+        assertEquals(0, exit);
+        try (PDDocument doc = Loader.loadPDF(out.toFile())) {
+            assertEquals(1, doc.getNumberOfPages());
+        }
+    }
+
+    @Test
     void helpExitsZero() {
         int exit = new CommandLine(new RootCommand()).execute("--help");
         assertEquals(0, exit);
