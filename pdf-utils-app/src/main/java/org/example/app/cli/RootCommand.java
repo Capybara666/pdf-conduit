@@ -19,6 +19,7 @@ import picocli.CommandLine.Command;
         UnlockCommand.class,
         MetadataCommand.class,
         WatermarkCommand.class,
+        PipelineCommand.class,
         CommandLine.HelpCommand.class
     }
 )

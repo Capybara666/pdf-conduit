@@ -6,6 +6,11 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.example.core.model.PdfMetadata;
 import org.example.core.operations.PdfMetadataEditor;
+import org.example.core.pipeline.Connection;
+import org.example.core.pipeline.NodeKind;
+import org.example.core.pipeline.PipelineModel;
+import org.example.core.pipeline.PipelineNode;
+import org.example.core.pipeline.PipelineStore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
@@ -227,6 +232,38 @@ class CliIntegrationTest {
             .execute("watermark", src.toString(), "--image", logo.toString(), "-o", out.toString());
         assertEquals(0, exit);
         assertTrue(out.toFile().exists());
+    }
+
+    @Test
+    void runsASavedPipeline() throws Exception {
+        Path src = createPdf(2);
+        Path outFile = tmp.resolve("piped.pdf");
+        PipelineModel m = new PipelineModel();
+        PipelineNode s = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        s.files.add(src);
+        PipelineNode r = new PipelineNode("r", NodeKind.ROTATE, 0, 0);
+        r.angle = 90;
+        r.outputDestination = outFile.toString();
+        m.nodes.add(s);
+        m.nodes.add(r);
+        m.connections.add(new Connection("s", "r"));
+        Path json = tmp.resolve("pipe.json");
+        PipelineStore.save(m, json);
+
+        int exit = new CommandLine(new RootCommand()).execute("pipeline", json.toString());
+
+        assertEquals(0, exit);
+        assertTrue(outFile.toFile().exists());
+        try (PDDocument d = Loader.loadPDF(outFile.toFile())) {
+            assertEquals(2, d.getNumberOfPages());
+        }
+    }
+
+    @Test
+    void pipelineWithMissingFileReturnsExitCode1() {
+        int exit = new CommandLine(new RootCommand())
+            .execute("pipeline", tmp.resolve("nope.json").toString());
+        assertEquals(1, exit);
     }
 
     @Test
