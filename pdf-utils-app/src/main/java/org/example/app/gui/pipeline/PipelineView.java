@@ -24,6 +24,7 @@ import org.example.core.pipeline.NodeKind;
 import org.example.core.pipeline.PipelineExecutor;
 import org.example.core.pipeline.PipelineModel;
 import org.example.core.pipeline.PipelineNode;
+import org.example.core.pipeline.PipelineStore;
 import org.example.core.pipeline.PipelineValidator;
 import org.example.core.pipeline.ValidationError;
 import org.example.app.gui.util.FileOpener;
@@ -31,6 +32,7 @@ import org.example.app.gui.util.Sfx;
 import org.example.app.i18n.I18n;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,6 +97,18 @@ public class PipelineView extends BorderPane {
         palette.getStyleClass().add("pipeline-palette");
         for (NodeKind kind : PALETTE) palette.getChildren().add(chip(kind));
 
+        Button save = new Button();
+        I18n.bindText(save::setText, "pipeline.save");
+        save.getStyleClass().add("btn-secondary");
+        save.setMinWidth(Region.USE_PREF_SIZE);
+        save.setOnAction(e -> savePipeline());
+
+        Button load = new Button();
+        I18n.bindText(load::setText, "pipeline.load");
+        load.getStyleClass().add("btn-secondary");
+        load.setMinWidth(Region.USE_PREF_SIZE);
+        load.setOnAction(e -> loadPipeline());
+
         Button clear = new Button();
         I18n.bindText(clear::setText, "pipeline.clear");
         clear.getStyleClass().add("btn-secondary");
@@ -113,7 +127,7 @@ public class PipelineView extends BorderPane {
 
         // The palette wraps to as many rows as needed (so it scales as blocks are
         // added); Clear/Help sit on their own row below it.
-        HBox controls = new HBox(8, clear, spacer, help);
+        HBox controls = new HBox(8, save, load, clear, spacer, help);
         controls.setAlignment(Pos.CENTER_LEFT);
         controls.getStyleClass().add("pipeline-toolbar");
 
@@ -282,6 +296,44 @@ public class PipelineView extends BorderPane {
         }
         alert.getDialogPane().setMinWidth(460);
         alert.showAndWait();
+    }
+
+    private void savePipeline() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(I18n.t("pipeline.save"));
+        chooser.setInitialFileName("pipeline.json");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pipeline (*.json)", "*.json"));
+        File f = chooser.showSaveDialog(window());
+        if (f == null) return;
+        Path p = f.toPath();
+        if (!p.toString().toLowerCase().endsWith(".json")) p = Path.of(p + ".json");
+        try {
+            PipelineStore.save(model, p);
+            banner.setVisible(false);
+            status.setText(I18n.t("pipeline.saved"));
+        } catch (IOException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void loadPipeline() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(I18n.t("pipeline.load"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pipeline (*.json)", "*.json"));
+        File f = chooser.showOpenDialog(window());
+        if (f == null) return;
+        try {
+            canvas.loadModel(PipelineStore.load(f.toPath()));
+            banner.setVisible(false);
+            status.setText(I18n.t("pipeline.loaded"));
+        } catch (IOException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void showError(String message) {
+        banner.setText("⚠  " + message);
+        banner.setVisible(true);
     }
 
     private Stage window() {

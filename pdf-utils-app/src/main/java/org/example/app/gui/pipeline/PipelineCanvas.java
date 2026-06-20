@@ -78,6 +78,38 @@ class PipelineCanvas extends Pane {
         return n;
     }
 
+    /** Replaces the whole graph with {@code loaded}, rebuilding node cards and wires. */
+    void loadModel(PipelineModel loaded) {
+        clearAll();
+        for (PipelineNode n : loaded.nodes) {
+            model.nodes.add(n);
+            NodeView v = new NodeView(n, this);
+            nodeViews.put(n.id, v);
+            getChildren().add(v);
+            bumpIdSeq(n.id);
+        }
+        for (Connection c : loaded.connections) {
+            if (nodeViews.containsKey(c.fromNodeId()) && nodeViews.containsKey(c.toNodeId())) {
+                model.connections.add(c);
+                addConnectionView(c);
+            }
+        }
+        selectNode(null);
+        refreshAll();
+        onChange.run();
+    }
+
+    /** Keeps generated ids ahead of any loaded "nN" id so new nodes never collide. */
+    private void bumpIdSeq(String id) {
+        if (id != null && id.startsWith("n")) {
+            try {
+                idSeq = Math.max(idSeq, Integer.parseInt(id.substring(1)));
+            } catch (NumberFormatException ignored) {
+                // non-numeric id (e.g. from a hand-written file) — leave the sequence alone
+            }
+        }
+    }
+
     void removeNode(PipelineNode n) {
         List<ConnectionView> touching = connViews.stream()
             .filter(cv -> cv.connection.fromNodeId().equals(n.id)
