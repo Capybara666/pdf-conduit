@@ -45,7 +45,8 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
   `execute(Options)`): `PdfMerger`, `PdfSplitter`, `PdfCompressor`, `PdfRotator`,
   `PdfArranger`, `ImageToPdfConverter`, `PdfProtector` (AES-128 password),
   `PdfUnlocker` (remove password), `PdfMetadataEditor` (read/edit/strip document
-  info). Each takes an options record and returns a typed result record.
+  info), `PdfWatermarker` (text or image watermark). Each takes an options record
+  and returns a typed result record.
 - `convert/` — `DocumentConverter`: turns any supported input into a PDF so every
   operation can accept more than PDFs. PDFs pass through, images render inline,
   and office/text documents (`.docx`, `.odt`, `.rtf`, `.xlsx`, `.pptx`, `.txt`, …)
@@ -69,7 +70,7 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
   `GuiLauncher` (JavaFX).
 - `cli/` — picocli subcommands mirroring each core operation (`merge`, `split`,
   `compress`, `rotate`, `arrange`, `to-pdf`/`images-to-pdf`, `protect`, `unlock`,
-  `metadata`); `SizeConverter`
+  `metadata`, `watermark`); `SizeConverter`
   handles `500KB`/`5MB`/`1.5MB` syntax. `CliSources` routes each input by type
   (PDF / image / office) through `DocumentConverter`, so `merge` and `to-pdf`
   accept the same inputs as the GUI (office docs need LibreOffice). Exit codes:
@@ -80,7 +81,8 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
   checks a graph before it runs; `PipelineExecutor` runs it, threading bundles of
   `Document`s between nodes via temp files. `NodeKind` classifies nodes as source,
   *map* (one output document per input — Extract/Compress/Rotate/Arrange/To PDF/
-  Protect/Unlock/Metadata) or *reduce* (collapse a whole bundle into one — Merge).
+  Protect/Unlock/Metadata/Watermark) or *reduce* (collapse a whole bundle into
+  one — Merge).
   The palette is a wrapping `FlowPane`, so new node kinds add rows rather than
   overflow.
 - `i18n/` — `I18n`: tiny localisation helper over `i18n/messages*.properties`

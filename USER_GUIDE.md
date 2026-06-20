@@ -62,6 +62,7 @@ Every operation screen accepts files the same way:
 | **Protect** | Add a password (AES-128) so the PDF can't be opened without it. |
 | **Unlock** | Remove a password from a protected PDF (you must supply the current one). |
 | **Metadata** | View, edit, or strip the title / author / subject / keywords. |
+| **Watermark** | Stamp text or an image/logo across every page (opacity, rotation). |
 
 A few details worth knowing:
 
@@ -133,6 +134,8 @@ pdf-conduit unlock locked.pdf --password s3cret -o open.pdf
 pdf-conduit metadata report.pdf --show
 pdf-conduit metadata report.pdf --title "Q3 Report" --author Me -o tagged.pdf
 pdf-conduit metadata report.pdf --strip -o clean.pdf
+pdf-conduit watermark report.pdf --text DRAFT --opacity 0.3 -o stamped.pdf
+pdf-conduit watermark report.pdf --image logo.png --rotation 0 -o branded.pdf
 ```
 
 Run `pdf-conduit --help`, or `pdf-conduit <command> --help`, for the full options
