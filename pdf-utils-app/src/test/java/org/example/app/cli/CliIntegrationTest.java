@@ -204,6 +204,32 @@ class CliIntegrationTest {
     }
 
     @Test
+    void watermarkTextViaCli() throws Exception {
+        Path src = createPdf(2);
+        Path out = tmp.resolve("wm.pdf");
+        int exit = new CommandLine(new RootCommand())
+            .execute("watermark", src.toString(), "--text", "DRAFT", "-o", out.toString());
+        assertEquals(0, exit);
+        try (PDDocument d = Loader.loadPDF(out.toFile())) {
+            assertEquals(2, d.getNumberOfPages());
+        }
+    }
+
+    @Test
+    void watermarkImageViaCli() throws Exception {
+        Path src = createPdf(1);
+        Path logo = tmp.resolve("logo.png");
+        javax.imageio.ImageIO.write(
+            new java.awt.image.BufferedImage(32, 32, java.awt.image.BufferedImage.TYPE_INT_ARGB),
+            "png", logo.toFile());
+        Path out = tmp.resolve("wmi.pdf");
+        int exit = new CommandLine(new RootCommand())
+            .execute("watermark", src.toString(), "--image", logo.toString(), "-o", out.toString());
+        assertEquals(0, exit);
+        assertTrue(out.toFile().exists());
+    }
+
+    @Test
     void helpExitsZero() {
         int exit = new CommandLine(new RootCommand()).execute("--help");
         assertEquals(0, exit);
