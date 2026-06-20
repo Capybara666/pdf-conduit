@@ -79,8 +79,8 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
   the topological order / cycle detection / output-type inference; `PipelineValidator`
   checks a graph before it runs; `PipelineExecutor` runs it, threading bundles of
   `Document`s between nodes via temp files. `NodeKind` classifies nodes as source,
-  *map* (one output document per input — Extract/Compress/Rotate/Arrange/To PDF) or
-  *reduce* (collapse a whole bundle into one — Merge).
+  *map* (one output document per input — Extract/Compress/Rotate/Arrange/To PDF/
+  Protect/Unlock) or *reduce* (collapse a whole bundle into one — Merge).
 - `i18n/` — `I18n`: tiny localisation helper over `i18n/messages*.properties`
   (UTF-8). English is the base bundle; `pl`, `es`, `zh` are translations. The
   chosen language is persisted (`java.util.prefs`) and listeners re-translate the
