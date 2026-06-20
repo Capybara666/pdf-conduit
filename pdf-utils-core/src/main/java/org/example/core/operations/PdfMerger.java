@@ -1,6 +1,6 @@
 package org.example.core.operations;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.core.exception.PdfOperationException;
 import org.example.core.model.*;
@@ -39,7 +39,7 @@ public final class PdfMerger {
     }
 
     private static int appendSource(PDDocument merged, PageSource source,
-                                    List<PDDocument> srcDocs) throws IOException {
+                                    List<PDDocument> srcDocs) throws IOException, PdfOperationException {
         return switch (source) {
             case PageSource.PdfPageSource ps -> appendPdf(merged, ps, srcDocs);
             case PageSource.ImageSource is   -> appendImage(merged, is);
@@ -47,8 +47,8 @@ public final class PdfMerger {
     }
 
     private static int appendPdf(PDDocument merged, PageSource.PdfPageSource source,
-                                  List<PDDocument> srcDocs) throws IOException {
-        PDDocument src = Loader.loadPDF(source.file().toFile());
+                                  List<PDDocument> srcDocs) throws IOException, PdfOperationException {
+        PDDocument src = PdfLoader.load(source.file());
         srcDocs.add(src);
         List<Integer> pageNums = source.range().isAll()
             ? allPageNumbers(src.getNumberOfPages())

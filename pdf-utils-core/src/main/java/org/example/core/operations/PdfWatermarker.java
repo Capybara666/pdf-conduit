@@ -1,6 +1,6 @@
 package org.example.core.operations;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -41,7 +41,7 @@ public final class PdfWatermarker {
         double radians = Math.toRadians(opts.rotationDegrees());
         float scale = (float) Math.max(0.05, Math.min(2.0, opts.scale()));
 
-        try (PDDocument doc = Loader.loadPDF(opts.input().toFile())) {
+        try (PDDocument doc = PdfLoader.load(opts.input())) {
             PDImageXObject stamp = hasImage ? loadImage(doc, opts) : null;
             PDFont font = hasText ? new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD) : null;
 

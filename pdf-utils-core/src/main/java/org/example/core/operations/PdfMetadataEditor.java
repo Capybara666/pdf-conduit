@@ -1,6 +1,6 @@
 package org.example.core.operations;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.example.core.exception.PdfOperationException;
@@ -22,7 +22,7 @@ public final class PdfMetadataEditor {
 
     /** The current title/author/subject/keywords of {@code pdf} (fields may be {@code null}). */
     public static PdfMetadata read(Path pdf) throws PdfOperationException {
-        try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
+        try (PDDocument doc = PdfLoader.load(pdf)) {
             PDDocumentInformation info = doc.getDocumentInformation();
             return new PdfMetadata(info.getTitle(), info.getAuthor(),
                 info.getSubject(), info.getKeywords());
@@ -32,7 +32,7 @@ public final class PdfMetadataEditor {
     }
 
     public static PdfResult execute(MetadataOptions opts) throws PdfOperationException {
-        try (PDDocument doc = Loader.loadPDF(opts.input().toFile())) {
+        try (PDDocument doc = PdfLoader.load(opts.input())) {
             if (opts.strip()) {
                 doc.setDocumentInformation(new PDDocumentInformation());
                 doc.getDocumentCatalog().setMetadata(null);   // drop XMP too

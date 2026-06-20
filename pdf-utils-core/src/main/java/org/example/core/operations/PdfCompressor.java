@@ -1,6 +1,6 @@
 package org.example.core.operations;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -53,7 +53,7 @@ public final class PdfCompressor {
             //    default), which also drops orphaned objects. This is the only
             //    lever for text/vector PDFs and never degrades quality.
             boolean hasImages;
-            try (PDDocument doc = Loader.loadPDF(opts.input().toFile())) {
+            try (PDDocument doc = PdfLoader.load(opts.input())) {
                 hasImages = hasImages(doc);
                 doc.save(opts.output().toFile());
             }
@@ -74,7 +74,7 @@ public final class PdfCompressor {
 
             // 3) Lossy image ladder, gentlest first; stop as soon as the target is met.
             for (Step step : STEPS) {
-                try (PDDocument compressed = Loader.loadPDF(opts.input().toFile())) {
+                try (PDDocument compressed = PdfLoader.load(opts.input())) {
                     recompressImages(compressed, step.scale(), step.quality());
                     if (SizeEstimator.estimateBytes(compressed) <= opts.targetSizeBytes()) {
                         compressed.save(opts.output().toFile());
@@ -85,7 +85,7 @@ public final class PdfCompressor {
             }
 
             // 4) Target unreachable — save the most-compressed version, but never larger than original.
-            try (PDDocument compressed = Loader.loadPDF(opts.input().toFile())) {
+            try (PDDocument compressed = PdfLoader.load(opts.input())) {
                 Step strongest = STEPS.get(STEPS.size() - 1);
                 recompressImages(compressed, strongest.scale(), strongest.quality());
                 if (SizeEstimator.estimateBytes(compressed) < originalSize) {

@@ -1,6 +1,6 @@
 package org.example.core.operations;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
@@ -28,7 +28,7 @@ public final class PdfProtector {
         String owner = (opts.ownerPassword() == null || opts.ownerPassword().isBlank())
             ? user : opts.ownerPassword();
 
-        try (PDDocument doc = Loader.loadPDF(opts.input().toFile())) {
+        try (PDDocument doc = PdfLoader.load(opts.input())) {
             AccessPermission permissions = new AccessPermission();
             StandardProtectionPolicy policy = new StandardProtectionPolicy(owner, user, permissions);
             policy.setEncryptionKeyLength(128);

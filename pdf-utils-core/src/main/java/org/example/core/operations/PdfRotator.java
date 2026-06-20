@@ -1,6 +1,6 @@
 package org.example.core.operations;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.example.core.exception.PdfOperationException;
@@ -18,7 +18,7 @@ public final class PdfRotator {
     private PdfRotator() {}
 
     public static RotateResult execute(RotateOptions opts) throws PdfOperationException {
-        try (PDDocument doc = Loader.loadPDF(opts.input().toFile())) {
+        try (PDDocument doc = PdfLoader.load(opts.input())) {
             int total = doc.getNumberOfPages();
             Set<Integer> targets = opts.pages().isAll()
                 ? IntStream.rangeClosed(1, total).boxed().collect(Collectors.toSet())

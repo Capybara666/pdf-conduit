@@ -1,9 +1,10 @@
 package org.example.core.pipeline;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.core.pipeline.Document.DocType;
 import org.example.core.convert.DocumentConverter;
+import org.example.core.exception.PdfOperationException;
 import org.example.core.model.*;
 import org.example.core.operations.PdfArranger;
 import org.example.core.operations.PdfCompressor;
@@ -328,8 +329,8 @@ public final class PipelineExecutor {
         return (s == null || s.isBlank()) ? null : s;
     }
 
-    private static int pageCount(Path pdf) throws IOException {
-        try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
+    private static int pageCount(Path pdf) throws IOException, PdfOperationException {
+        try (PDDocument doc = PdfLoader.load(pdf)) {
             return doc.getNumberOfPages();
         }
     }

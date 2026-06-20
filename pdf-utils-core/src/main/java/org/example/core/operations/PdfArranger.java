@@ -1,6 +1,6 @@
 package org.example.core.operations;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.core.exception.PdfOperationException;
 import org.example.core.model.ArrangeOptions;
@@ -21,7 +21,7 @@ public final class PdfArranger {
     private PdfArranger() {}
 
     public static ArrangeResult execute(ArrangeOptions opts) throws PdfOperationException {
-        try (PDDocument src = Loader.loadPDF(opts.input().toFile());
+        try (PDDocument src = PdfLoader.load(opts.input());
              PDDocument out = new PDDocument()) {
 
             int total = src.getNumberOfPages();

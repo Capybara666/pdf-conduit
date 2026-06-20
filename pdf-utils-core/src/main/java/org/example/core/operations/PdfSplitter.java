@@ -1,6 +1,6 @@
 package org.example.core.operations;
 
-import org.apache.pdfbox.Loader;
+import org.example.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.example.core.exception.PdfOperationException;
 import org.example.core.model.SplitMode;
@@ -20,7 +20,7 @@ public final class PdfSplitter {
     private PdfSplitter() {}
 
     public static SplitResult execute(SplitOptions opts) throws PdfOperationException {
-        try (PDDocument src = Loader.loadPDF(opts.input().toFile())) {
+        try (PDDocument src = PdfLoader.load(opts.input())) {
             int total = src.getNumberOfPages();
             List<Integer> pageNums = opts.pages().isAll() ? allPages(total) : opts.pages().pageNumbers();
 
