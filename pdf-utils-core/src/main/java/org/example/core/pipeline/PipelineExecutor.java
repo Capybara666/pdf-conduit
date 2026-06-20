@@ -129,7 +129,7 @@ public final class PipelineExecutor {
                                             boolean terminal, Set<Path> temps)
             throws PipelineException {
         String baseName = inputs.isEmpty() ? n.kind.name().toLowerCase()
-                                           : inputs.get(0).baseName() + n.kind.suffix;
+                                           : inputs.get(0).baseName() + n.kind.suffix();
         Path out = terminal ? destFile(n, baseName, false) : temp(temps);
         try {
             if (n.kind == NodeKind.MERGE) {
@@ -164,7 +164,7 @@ public final class PipelineExecutor {
         Set<String> usedNames = new HashSet<>();
         boolean multipleOutputs = inputs.size() > 1;
         for (Document in : inputs) {
-            String baseName = in.baseName() + n.kind.suffix;
+            String baseName = in.baseName() + n.kind.suffix();
 
             // Extract in "separate files" mode emits one PDF per page. The validator
             // guarantees such a node is terminal, so we write straight to its folder

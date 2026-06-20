@@ -1,41 +1,41 @@
 package org.example.core.pipeline;
 
-/** The kinds of node a pipeline can contain. */
+import org.example.core.service.Cardinality;
+import org.example.core.service.OperationType;
+
+/** The kinds of node a pipeline can contain. Operation metadata is delegated to {@link OperationType}. */
 public enum NodeKind {
-    SOURCE("Files", ""),
-    MERGE("Merge", "_merged"),
-    IMAGES_TO_PDF("To PDF", "_converted"),
-    EXTRACT("Extract", "_extracted"),
-    COMPRESS("Compress", "_compressed"),
-    ROTATE("Rotate", "_rotated"),
-    ARRANGE("Arrange", "_arranged"),
-    PROTECT("Protect", "_protected"),
-    UNLOCK("Unlock", "_unlocked"),
-    METADATA("Metadata", "_metadata"),
-    WATERMARK("Watermark", "_watermarked");
+    SOURCE("Files", null),
+    MERGE("Merge", OperationType.MERGE),
+    IMAGES_TO_PDF("To PDF", OperationType.IMAGES_TO_PDF),
+    EXTRACT("Extract", OperationType.EXTRACT),
+    COMPRESS("Compress", OperationType.COMPRESS),
+    ROTATE("Rotate", OperationType.ROTATE),
+    ARRANGE("Arrange", OperationType.ARRANGE),
+    PROTECT("Protect", OperationType.PROTECT),
+    UNLOCK("Unlock", OperationType.UNLOCK),
+    METADATA("Metadata", OperationType.METADATA),
+    WATERMARK("Watermark", OperationType.WATERMARK);
 
     public final String label;
-    public final String suffix;
+    private final OperationType type;
 
-    NodeKind(String label, String suffix) {
+    NodeKind(String label, OperationType type) {
         this.label = label;
-        this.suffix = suffix;
+        this.type = type;
     }
 
-    public boolean isSource()  { return this == SOURCE; }
+    /** The catalog entry for this node, or {@code null} for {@link #SOURCE}. */
+    public OperationType operationType() { return type; }
+
+    /** Output-name suffix; empty for {@link #SOURCE}. */
+    public String suffix() { return type == null ? "" : type.suffix(); }
+
+    public boolean isSource() { return this == SOURCE; }
 
     /** Reduce ops collapse a whole input bundle into a single output document. */
-    public boolean isReduce()  { return this == MERGE; }
+    public boolean isReduce() { return type != null && type.cardinality() == Cardinality.REDUCE; }
 
-    /**
-     * Map ops apply once per input document (bundle in → same-size bundle out).
-     * TO PDF converts each input to its own PDF — combining requires an explicit
-     * MERGE node.
-     */
-    public boolean isMap()     {
-        return this == EXTRACT || this == COMPRESS || this == ROTATE
-            || this == ARRANGE || this == IMAGES_TO_PDF
-            || this == PROTECT || this == UNLOCK || this == METADATA
-            || this == WATERMARK;
-    }
+    /** Map ops apply once per input document (bundle in → same-size bundle out). */
+    public boolean isMap() { return type != null && type.cardinality() == Cardinality.MAP; }
 }
