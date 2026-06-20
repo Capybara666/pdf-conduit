@@ -13,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
@@ -32,9 +33,6 @@ import java.util.List;
 public final class PageReorderGrid extends ScrollPane {
 
     private static final double TILE_WIDTH = 116;
-
-    /** Pointer travel (px) before a press becomes a drag — keeps a click a click. */
-    private static final double DRAG_THRESHOLD = 8;
 
     private final FlowPane flow = new FlowPane(14, 14);
     private final ObservableList<Tile> tiles = FXCollections.observableArrayList();
@@ -56,6 +54,18 @@ public final class PageReorderGrid extends ScrollPane {
         flow.setPadding(new Insets(14));
         flow.setAlignment(Pos.TOP_LEFT);
         setContent(flow);
+
+        // Drive wheel scrolling explicitly. A native drag-and-drop gesture (used to
+        // reorder tiles) leaves the ScrollPane unable to scroll with the wheel on
+        // Linux/GTK until the next click; handling ScrollEvent in the capturing
+        // phase bypasses that stale state so the wheel always works.
+        addEventFilter(ScrollEvent.SCROLL, e -> {
+            double extent = flow.getBoundsInLocal().getHeight() - getViewportBounds().getHeight();
+            if (extent <= 0 || e.getDeltaY() == 0) return;
+            double v = getVvalue() - e.getDeltaY() / extent;
+            setVvalue(Math.max(0, Math.min(1, v)));
+            e.consume();
+        });
 
         tiles.addListener((ListChangeListener<Tile>) c -> { relayout(); onChange.run(); });
 
@@ -166,27 +176,7 @@ public final class PageReorderGrid extends ScrollPane {
     // --- drag-and-drop reordering -----------------------------------------
 
     private void installDrag(VBox cell, Tile tile) {
-        // Start the drag only after a deliberate movement, not on a plain click.
-        // Relying on onDragDetected (which fires after ~1px) meant an ordinary
-        // click started — and on Linux could leave hanging — a drag-and-drop
-        // gesture, which suppresses the ScrollPane's wheel scrolling until the
-        // gesture is cleared by another click. A movement threshold makes a click
-        // stay a click, so scrolling keeps working.
-        final double[] press = new double[2];
-        final boolean[] started = {false};
-
-        cell.setOnMousePressed(e -> {
-            press[0] = e.getX();
-            press[1] = e.getY();
-            started[0] = false;
-        });
-
-        cell.setOnMouseDragged(e -> {
-            if (started[0]) return;
-            double dx = e.getX() - press[0];
-            double dy = e.getY() - press[1];
-            if (dx * dx + dy * dy < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
-            started[0] = true;
+        cell.setOnDragDetected(e -> {
             dragging = tile;
             Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
             ClipboardContent cc = new ClipboardContent();
