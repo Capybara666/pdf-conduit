@@ -33,7 +33,8 @@ documents to PDF** — with both a JavaFX GUI and a command-line interface, buil
   - **Pipelines** — a visual node editor: drag operation/source blocks onto a
     canvas, wire outputs into inputs, and run the whole graph. Edges carry
     bundles of documents (map operations — including To PDF — apply per file;
-    only Merge collapses a bundle into one).
+    only Merge collapses a bundle into one). Pipelines can be **saved and loaded**
+    as `.json` and re-run from the CLI (`pdf-conduit pipeline my.json`).
   - Outputs default to a `pdf-conduit` folder in your Documents directory.
   - Six color themes (Daylight, Graphite, Nord, Dracula, Solarized, Sunset) plus
     a System option, with subtle UI animations.
@@ -88,6 +89,7 @@ pdf-conduit metadata report.pdf --title "Q3 Report" --author Me -o tagged.pdf
 pdf-conduit metadata report.pdf --strip -o clean.pdf               # remove all metadata
 pdf-conduit watermark report.pdf --text DRAFT --opacity 0.3 --scale 0.9 -o stamped.pdf
 pdf-conduit watermark report.pdf --image logo.png --rotation 0 -o branded.pdf  # --scale 0.05-2 sizes it
+pdf-conduit pipeline my-pipeline.json   # run a pipeline saved from the GUI
 ```
 
 - **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).
@@ -115,8 +117,9 @@ scripts/          jpackage release builders
 ```
 
 - `pdf-utils-core` is dependency-light and headlessly testable.
-- The pipeline **model + executor** (`pdf-utils-app/.../pipeline`) are
-  JavaFX-free and unit-tested; the canvas is the JavaFX layer on top.
+- The pipeline **model + executor** (`pdf-utils-core/.../pipeline`) are
+  JavaFX-free and unit-tested, so the CLI runs pipelines without the GUI; the
+  canvas (`pdf-utils-app/.../gui/pipeline`) is the JavaFX layer on top.
 
 ## Testing
 

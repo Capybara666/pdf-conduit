@@ -38,9 +38,10 @@ Two-module Maven project, Java 21 (`maven.compiler.source`/`target` = 21).
 The product name is **PDF Conduit**; the Maven artifact ids are `pdf-utils-*`.
 
 **`pdf-utils-core`** — pure library, no JavaFX, no picocli. Depends on Apache
-PDFBox 3.x and the TwelveMonkeys `imageio-webp` reader (a pure-Java WebP decoder
+PDFBox 3.x, the TwelveMonkeys `imageio-webp` reader (a pure-Java WebP decoder
 auto-registered with ImageIO, so `.webp` inputs decode — stock JDK ImageIO has no
-WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
+WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles), and Gson (to persist
+pipelines).
 - `operations/` — stateless utility classes (`final`, private constructor, static
   `execute(Options)`): `PdfMerger`, `PdfSplitter`, `PdfCompressor`, `PdfRotator`,
   `PdfArranger`, `ImageToPdfConverter`, `PdfProtector` (AES-128 password),
@@ -62,36 +63,35 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
   `PageOrderParser` (arrange syntax, e.g. `3,1,2`, `5-1` to reverse, repeats to
   duplicate), `PageRangeFormatter`, `FileTypeDetector` (magic-byte sniffing),
   `SizeEstimator`, `OutputPaths`.
-- `exception/` — checked: `PdfOperationException`, `InvalidPageRangeException`,
-  `TargetSizeUnreachableException`.
+- `exception/` — checked: `PdfOperationException`, `InvalidPageRangeException`.
+- `pipeline/` — **JavaFX-free** visual-pipeline core, fully unit-tested.
+  `PipelineModel` holds `PipelineNode`s and `Connection`s; `PipelineGraph` does
+  the topological order / cycle detection / output-type inference; `PipelineValidator`
+  checks a graph before it runs; `PipelineExecutor` runs it, threading bundles of
+  `Document`s between nodes via temp files; `PipelineStore` saves/loads a model as
+  JSON. `NodeKind` classifies nodes as source, *map* (one output document per input
+  — Extract/Compress/Rotate/Arrange/To PDF/Protect/Unlock/Metadata/Watermark) or
+  *reduce* (collapse a whole bundle into one — Merge). Lives in core so the CLI (and
+  a future alternate frontend) can run pipelines without the GUI.
 
 **`pdf-utils-app`** — entry point for both GUI and CLI, depends on core.
 - `Main.java` — dispatches: args present → picocli `RootCommand`; no args →
   `GuiLauncher` (JavaFX).
 - `cli/` — picocli subcommands mirroring each core operation (`merge`, `split`,
   `compress`, `rotate`, `arrange`, `to-pdf`/`images-to-pdf`, `protect`, `unlock`,
-  `metadata`, `watermark`); `SizeConverter`
-  handles `500KB`/`5MB`/`1.5MB` syntax. `CliSources` routes each input by type
-  (PDF / image / office) through `DocumentConverter`, so `merge` and `to-pdf`
-  accept the same inputs as the GUI (office docs need LibreOffice). Exit codes:
-  0 success, 1 bad input, 2 operation failed.
-- `pipeline/` — **JavaFX-free** visual-pipeline core, fully unit-tested.
-  `PipelineModel` holds `PipelineNode`s and `Connection`s; `PipelineGraph` does
-  the topological order / cycle detection / output-type inference; `PipelineValidator`
-  checks a graph before it runs; `PipelineExecutor` runs it, threading bundles of
-  `Document`s between nodes via temp files. `NodeKind` classifies nodes as source,
-  *map* (one output document per input — Extract/Compress/Rotate/Arrange/To PDF/
-  Protect/Unlock/Metadata/Watermark) or *reduce* (collapse a whole bundle into
-  one — Merge).
-  The palette is a wrapping `FlowPane`, so new node kinds add rows rather than
-  overflow.
+  `metadata`, `watermark`, `pipeline` — the last runs a saved `.json` pipeline);
+  `SizeConverter` handles `500KB`/`5MB`/`1.5MB` syntax. `CliSources` routes each
+  input by type (PDF / image / office) through `DocumentConverter`, so `merge` and
+  `to-pdf` accept the same inputs as the GUI (office docs need LibreOffice). Exit
+  codes: 0 success, 1 bad input, 2 operation failed.
 - `i18n/` — `I18n`: tiny localisation helper over `i18n/messages*.properties`
   (UTF-8). English is the base bundle; `pl`, `es`, `zh` are translations. The
   chosen language is persisted (`java.util.prefs`) and listeners re-translate the
   UI **in place** (via `I18n.bindText`) so switching language never discards the
   user's loaded files / pipeline / wizard progress.
 - `gui/` — JavaFX. `MainWindow` owns a `SidebarController` (`SidebarItem` enum:
-  Merge, Extract, Compress, Rotate, Arrange, To PDF, Pipeline, Wizard) and a
+  Merge, Extract, Compress, Rotate, Arrange, To PDF, Protect, Unlock, Metadata,
+  Watermark, Pipeline, Wizard) and a
   `StackPane` content area that swaps between panels, the pipeline view and the
   wizard. Adding a sidebar operation means: a `SidebarItem` enum value, an icon
   in `Icons.of(SidebarItem)`, a `MainWindow.createPanel` case, a panel, and
@@ -103,12 +103,13 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
   - `wizard/` — `WizardController` owns `WizardModel` (shared state across steps)
     and drives five `WizardStep`s (select → arrange → page settings → compression
     → export). The step indicator is built programmatically (no FXML).
-  - `pipeline/` — the JavaFX layer over `app.pipeline`: `PipelineView`,
+  - `pipeline/` — the JavaFX layer over `core.pipeline`: `PipelineView`,
     `PipelineCanvas`, `NodeView`, `ConnectionView`, `NodeInspector` — the visual
-    node editor.
+    node editor, with Save/Load (`PipelineStore`). The palette is a wrapping
+    `FlowPane`, so new node kinds add rows rather than overflow.
   - `component/` — reusable controls: `DropZone`, `FileListView`, `ProgressPanel`,
     `PageReorderGrid`, `PageSelectGrid`/`PageSelectDialog`, `DragReorder`.
-  - `util/` — `OutputPaths`, `FileOpener`, `PdfThumbnails`, `Sfx` (sound effects).
+  - `util/` — `DefaultLocations`, `FileOpener`, `PdfThumbnails`, `Sfx` (sound effects).
   - `ThemeManager` — reads/writes `java.util.prefs.Preferences`; detects OS theme
     via `gsettings` (Linux) or registry (Windows); applies one of the bundled CSS
     themes to the scene.
@@ -136,10 +137,14 @@ WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles).
   larger than the input).
 - GUI panels are instantiated lazily (`computeIfAbsent`) and cached in
   `MainWindow`; re-selecting a sidebar item returns the same panel instance.
-- The pipeline **model + executor** are deliberately JavaFX-free so they can be
-  unit-tested headlessly (`PipelineExecutorTest`, `PipelineValidatorTest`); the
-  canvas is the JavaFX layer on top. Keep new pipeline logic in `app.pipeline`,
-  not `app.gui.pipeline`.
+- The pipeline **model + executor** live in `core.pipeline` and are deliberately
+  JavaFX-free so they can be unit-tested headlessly (`PipelineExecutorTest`,
+  `PipelineValidatorTest`, `PipelineStoreTest`) and run from the CLI; the canvas
+  (`app.gui.pipeline`) is the JavaFX layer on top. Keep new pipeline logic in
+  `core.pipeline`, not `app.gui.pipeline`. A new node kind touches: `NodeKind`
+  (+`isMap`), `PipelineNode` fields, the `PipelineExecutor` switch, exhaustive
+  switches in `Icons.of(NodeKind)` and `NodeView.refreshSummary`, the
+  `NodeInspector` and `PipelineView` palette, plus `kind.*` i18n keys.
 - CSS theming: `base.css` holds shared styles; each theme file
   (`light`, `dark`, `nord`, `dracula`, `solarized`, `sunset`) imports `base.css`
   and overrides variables. The scene stylesheet list is replaced wholesale on

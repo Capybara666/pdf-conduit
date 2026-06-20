@@ -117,6 +117,14 @@ a `.pdf` file for a single result, or a folder when several files are produced.
 Pipelines validate before running (no empty sources, no cycles, every output has a
 destination), and "Extract → Separate files" must be the last step in its chain.
 
+**Save / Load.** Use the **Save** and **Load** buttons to store a pipeline as a
+`.json` file and reopen it later. A saved pipeline can also be run from the command
+line without opening the app:
+
+```bash
+pdf-conduit pipeline my-pipeline.json
+```
+
 ## Command line (CLI)
 
 Running the app with arguments invokes the CLI (the launcher is `pdf-conduit`):
@@ -136,6 +144,7 @@ pdf-conduit metadata report.pdf --title "Q3 Report" --author Me -o tagged.pdf
 pdf-conduit metadata report.pdf --strip -o clean.pdf
 pdf-conduit watermark report.pdf --text DRAFT --opacity 0.3 --scale 0.9 -o stamped.pdf
 pdf-conduit watermark report.pdf --image logo.png --rotation 0 -o branded.pdf  # --scale 0.05-2 sizes it
+pdf-conduit pipeline my-pipeline.json   # run a pipeline saved from the GUI
 ```
 
 Run `pdf-conduit --help`, or `pdf-conduit <command> --help`, for the full options
