@@ -141,6 +141,40 @@ class CliIntegrationTest {
     }
 
     @Test
+    void protectAndUnlockRoundTripViaCli() throws Exception {
+        Path src = createPdf(2);
+        Path locked = tmp.resolve("locked.pdf");
+        Path unlocked = tmp.resolve("unlocked.pdf");
+
+        int e1 = new CommandLine(new RootCommand())
+            .execute("protect", src.toString(), "--password", "pw", "-o", locked.toString());
+        assertEquals(0, e1);
+        assertThrows(IOException.class, () -> {
+            try (PDDocument d = Loader.loadPDF(locked.toFile())) { d.getNumberOfPages(); }
+        });
+
+        int e2 = new CommandLine(new RootCommand())
+            .execute("unlock", locked.toString(), "--password", "pw", "-o", unlocked.toString());
+        assertEquals(0, e2);
+        try (PDDocument d = Loader.loadPDF(unlocked.toFile())) {
+            assertEquals(2, d.getNumberOfPages());
+        }
+    }
+
+    @Test
+    void unlockWithWrongPasswordReturnsExitCode2() throws Exception {
+        Path src = createPdf(1);
+        Path locked = tmp.resolve("locked.pdf");
+        new CommandLine(new RootCommand())
+            .execute("protect", src.toString(), "--password", "pw", "-o", locked.toString());
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("unlock", locked.toString(), "--password", "nope",
+                     "-o", tmp.resolve("x.pdf").toString());
+        assertEquals(2, exit);
+    }
+
+    @Test
     void helpExitsZero() {
         int exit = new CommandLine(new RootCommand()).execute("--help");
         assertEquals(0, exit);

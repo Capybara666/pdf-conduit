@@ -15,6 +15,8 @@ import picocli.CommandLine.Command;
         RotateCommand.class,
         ArrangeCommand.class,
         ImagesToPdfCommand.class,
+        ProtectCommand.class,
+        UnlockCommand.class,
         CommandLine.HelpCommand.class
     }
 )
