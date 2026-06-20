@@ -110,11 +110,15 @@ public abstract class BasePanel extends BorderPane {
 
         progressPanel = new ProgressPanel(runKey);
         progressPanel.getRunButton().setOnAction(e -> onRun());
+        // Nothing to run until at least one file is added.
+        progressPanel.getRunButton().setDisable(true);
 
-        // React to file-list changes: count, clear button, output mode + auto path.
+        // React to file-list changes: count, clear button, run button, output mode + auto path.
         fileList.getFiles().addListener((ListChangeListener<Path>) change -> {
             refreshCount.run();
-            clearBtn.setDisable(fileList.getFiles().isEmpty());
+            boolean empty = fileList.getFiles().isEmpty();
+            clearBtn.setDisable(empty);
+            progressPanel.getRunButton().setDisable(empty);
             refreshOutputMode();
         });
 
