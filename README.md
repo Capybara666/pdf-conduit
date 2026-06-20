@@ -7,6 +7,9 @@ compress to a target size, rotate, arrange (reorder) pages, and convert images &
 documents to PDF** — with both a JavaFX GUI and a command-line interface, built on
 [Apache PDFBox](https://pdfbox.apache.org/).
 
+> **New here?** The [User Guide](USER_GUIDE.md) walks through every feature of the
+> app and the CLI.
+
 ## Features
 
 - **Core operations:** merge PDFs/images into one document, extract pages — into
@@ -18,7 +21,8 @@ documents to PDF** — with both a JavaFX GUI and a command-line interface, buil
   PDFs — non-PDF files are converted to PDF automatically (images inline; office
   documents via a headless LibreOffice). Pipelines convert source files on the
   fly, so no separate "Images → PDF" step is needed.
-- **Languages:** English and Polish, switchable live from the Language menu.
+- **Languages:** English, Polish, Spanish and Chinese, switchable live from the
+  Language menu (switching never discards your loaded files or in-progress work).
 - **GUI (JavaFX):**
   - A panel per operation with drag-and-drop, a file list, and live progress.
   - **Batch mode** — per-file operations (Extract/Compress/Rotate/To PDF)
