@@ -4,6 +4,8 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.example.core.model.PdfMetadata;
+import org.example.core.operations.PdfMetadataEditor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
@@ -172,6 +174,33 @@ class CliIntegrationTest {
             .execute("unlock", locked.toString(), "--password", "nope",
                      "-o", tmp.resolve("x.pdf").toString());
         assertEquals(2, exit);
+    }
+
+    @Test
+    void metadataShowExitsZero() throws Exception {
+        int exit = new CommandLine(new RootCommand())
+            .execute("metadata", createPdf(1).toString(), "--show");
+        assertEquals(0, exit);
+    }
+
+    @Test
+    void metadataSetThenStripViaCli() throws Exception {
+        Path src = createPdf(1);
+        Path set = tmp.resolve("set.pdf");
+        int e1 = new CommandLine(new RootCommand())
+            .execute("metadata", src.toString(), "--title", "Hello", "--author", "Me",
+                     "-o", set.toString());
+        assertEquals(0, e1);
+        PdfMetadata md = PdfMetadataEditor.read(set);
+        assertEquals("Hello", md.title());
+        assertEquals("Me", md.author());
+
+        Path stripped = tmp.resolve("stripped.pdf");
+        int e2 = new CommandLine(new RootCommand())
+            .execute("metadata", set.toString(), "--strip", "-o", stripped.toString());
+        assertEquals(0, e2);
+        PdfMetadata after = PdfMetadataEditor.read(stripped);
+        assertTrue(after.title() == null || after.title().isBlank());
     }
 
     @Test

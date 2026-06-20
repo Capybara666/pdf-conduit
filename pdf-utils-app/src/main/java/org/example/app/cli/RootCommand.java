@@ -17,6 +17,7 @@ import picocli.CommandLine.Command;
         ImagesToPdfCommand.class,
         ProtectCommand.class,
         UnlockCommand.class,
+        MetadataCommand.class,
         CommandLine.HelpCommand.class
     }
 )
