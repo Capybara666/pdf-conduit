@@ -151,6 +151,7 @@ public class MainWindow {
             case PROTECT  -> new ProtectPanel();
             case UNLOCK   -> new UnlockPanel();
             case METADATA -> new MetadataPanel();
+            case WATERMARK -> new WatermarkPanel();
             case PIPELINE -> new org.example.app.gui.pipeline.PipelineView();
             case WIZARD   -> new WizardController();
         };

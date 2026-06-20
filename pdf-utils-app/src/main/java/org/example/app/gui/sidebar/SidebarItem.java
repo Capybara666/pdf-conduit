@@ -10,6 +10,7 @@ public enum SidebarItem {
     PROTECT  ("🔒", "Protect"),
     UNLOCK   ("🔓", "Unlock"),
     METADATA ("🏷", "Metadata"),
+    WATERMARK("💧", "Watermark"),
     PIPELINE ("⇄", "Pipeline"),
     WIZARD   ("⚙", "Wizard");
 

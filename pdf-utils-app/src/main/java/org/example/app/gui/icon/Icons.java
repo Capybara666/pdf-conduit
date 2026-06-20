@@ -67,6 +67,9 @@ public final class Icons {
     // a tag/label with a hole (document metadata)
     private static final String METADATA =
         "M4 13 L11 6 H18 V13 L11 20 Z M15 9.5 a1.1 1.1 0 1 0 0.02 0";
+    // a water droplet (watermark)
+    private static final String WATERMARK =
+        "M12 4 C9 8 6.5 12 6.5 15 a5.5 5.5 0 0 0 11 0 C17.5 12 15 8 12 4 Z";
 
     // --- public factories -------------------------------------------------
 
@@ -81,6 +84,7 @@ public final class Icons {
             case PROTECT  -> PROTECT;
             case UNLOCK   -> UNLOCK;
             case METADATA -> METADATA;
+            case WATERMARK -> WATERMARK;
             case PIPELINE -> PIPELINE;
             case WIZARD   -> WIZARD;
         }, size);
