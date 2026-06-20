@@ -47,7 +47,16 @@ pipelines).
   `PdfArranger`, `ImageToPdfConverter`, `PdfProtector` (AES-128 password),
   `PdfUnlocker` (remove password), `PdfMetadataEditor` (read/edit/strip document
   info), `PdfWatermarker` (text or image watermark). Each takes an options record
-  and returns a typed result record.
+  and returns a typed result record. **Every operation loads its input through
+  `util/PdfLoader`** so protected / damaged files yield clear messages, not raw PDFBox.
+- `service/` — transport-agnostic operation layer shared by every surface (CLI,
+  GUI, pipeline, and a future web frontend). `OperationType` is the **single source
+  of truth** for each operation's stable `id`, output-name `suffix`, `Cardinality`
+  (MAP/REDUCE) and multi-output flag; `NodeKind` and the GUI `SidebarItem` map onto
+  it. `OperationRunner` is the reusable plumbing — convert a raw input via
+  `DocumentConverter`, run the work, name the output from the suffix, clean up temps —
+  with `Execution` (the per-input work) and `ProgressSink` (transport-agnostic
+  progress). Add a new operation's identity/suffix here, not scattered per surface.
 - `convert/` — `DocumentConverter`: turns any supported input into a PDF so every
   operation can accept more than PDFs. PDFs pass through, images render inline,
   and office/text documents (`.docx`, `.odt`, `.rtf`, `.xlsx`, `.pptx`, `.txt`, …)
@@ -62,7 +71,8 @@ pipelines).
 - `util/` — `PageRangeParser` (syntax: `1`, `2-5`, `1,3,5-8`, `end-2`),
   `PageOrderParser` (arrange syntax, e.g. `3,1,2`, `5-1` to reverse, repeats to
   duplicate), `PageRangeFormatter`, `FileTypeDetector` (magic-byte sniffing),
-  `SizeEstimator`, `OutputPaths`.
+  `SizeEstimator`, `OutputPaths`, `PdfLoader` (loads a PDF, mapping PDFBox's
+  password-protected / wrong-password / damaged failures to clear messages).
 - `exception/` — checked: `PdfOperationException`, `InvalidPageRangeException`.
 - `pipeline/` — **JavaFX-free** visual-pipeline core, fully unit-tested.
   `PipelineModel` holds `PipelineNode`s and `Connection`s; `PipelineGraph` does
@@ -71,8 +81,10 @@ pipelines).
   `Document`s between nodes via temp files; `PipelineStore` saves/loads a model as
   JSON. `NodeKind` classifies nodes as source, *map* (one output document per input
   — Extract/Compress/Rotate/Arrange/To PDF/Protect/Unlock/Metadata/Watermark) or
-  *reduce* (collapse a whole bundle into one — Merge). Lives in core so the CLI (and
-  a future alternate frontend) can run pipelines without the GUI.
+  *reduce* (collapse a whole bundle into one — Merge); its suffix/cardinality are
+  delegated to `service/OperationType` (the JSON format still serialises by `name()`).
+  Lives in core so the CLI (and a future alternate frontend) can run pipelines
+  without the GUI.
 
 **`pdf-utils-app`** — entry point for both GUI and CLI, depends on core.
 - `Main.java` — dispatches: args present → picocli `RootCommand`; no args →
@@ -123,6 +135,13 @@ pipelines).
   inputs through `DocumentConverter` first, so panels and pipeline nodes don't
   need a separate "convert to PDF" step. Office conversion needs LibreOffice; its
   absence yields a clear "LibreOffice is not installed" message rather than a crash.
+  Prefer `service/OperationRunner` for the convert→run→name→cleanup plumbing
+  (`runSingle`/`runBatch`) instead of re-implementing it per panel/command.
+- An operation's identity lives once in `service/OperationType` (id, suffix,
+  cardinality). Read the suffix from there (`OperationType.X.suffix()`) rather than
+  hard-coding `"_compressed"` etc.; `BasePanel`, the CLI commands and `NodeKind`
+  all derive theirs from the catalog. `MessagesParityTest`, `SidebarItemCatalogTest`
+  and `NodeKindCatalogTest` guard that the surfaces stay in sync with the catalog.
 - `PdfCompressor` first does a **lossless pass** — re-saving with object-stream
   compression (PDFBox's default, which also drops orphaned objects). If that meets
   the target, or the PDF has no images to downsample, it stops there (no quality
@@ -141,10 +160,11 @@ pipelines).
   JavaFX-free so they can be unit-tested headlessly (`PipelineExecutorTest`,
   `PipelineValidatorTest`, `PipelineStoreTest`) and run from the CLI; the canvas
   (`app.gui.pipeline`) is the JavaFX layer on top. Keep new pipeline logic in
-  `core.pipeline`, not `app.gui.pipeline`. A new node kind touches: `NodeKind`
-  (+`isMap`), `PipelineNode` fields, the `PipelineExecutor` switch, exhaustive
-  switches in `Icons.of(NodeKind)` and `NodeView.refreshSummary`, the
-  `NodeInspector` and `PipelineView` palette, plus `kind.*` i18n keys.
+  `core.pipeline`, not `app.gui.pipeline`. A new node kind touches: `service/
+  OperationType` (id/suffix/cardinality), `NodeKind` (label + the catalog mapping),
+  `PipelineNode` fields, the `PipelineExecutor` switch, exhaustive switches in
+  `Icons.of(NodeKind)` and `NodeView.refreshSummary`, the `NodeInspector` and
+  `PipelineView` palette, plus `kind.*` i18n keys.
 - CSS theming: `base.css` holds shared styles; each theme file
   (`light`, `dark`, `nord`, `dracula`, `solarized`, `sunset`) imports `base.css`
   and overrides variables. The scene stylesheet list is replaced wholesale on
