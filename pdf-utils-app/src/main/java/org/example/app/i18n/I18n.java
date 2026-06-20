@@ -80,6 +80,11 @@ public final class I18n {
         listeners.add(() -> setter.accept(t(key, args)));
     }
 
+    /** Whether {@code key} exists in the current bundle (parity-guaranteed across languages). */
+    public static boolean containsKey(String key) {
+        return bundle.containsKey(key);
+    }
+
     /** Look up a key; supports {@link MessageFormat} arguments. Returns the key if missing. */
     public static String t(String key, Object... args) {
         String value;

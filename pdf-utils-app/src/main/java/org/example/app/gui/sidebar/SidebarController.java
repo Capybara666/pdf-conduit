@@ -3,10 +3,12 @@ package org.example.app.gui.sidebar;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.example.app.i18n.I18n;
 
 import java.util.EnumMap;
@@ -62,7 +64,23 @@ public class SidebarController extends VBox {
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setOnAction(e -> select(item, onSelect));
         org.example.app.gui.Animations.installHoverScale(btn, 1.03);
+
+        // A discoverability tooltip: the operation's hint where one exists, else its
+        // panel title, else its label — all already translated, so no new keys.
+        Tooltip tip = new Tooltip();
+        tip.setShowDelay(Duration.millis(400));
+        tip.setWrapText(true);
+        tip.setMaxWidth(260);
+        I18n.bindText(tip::setText, tooltipKey(item));
+        btn.setTooltip(tip);
         return btn;
+    }
+
+    /** Best existing (already-translated) key to describe an item: hint → panel title → label. */
+    private static String tooltipKey(SidebarItem item) {
+        if (I18n.containsKey("hint." + item.name())) return "hint." + item.name();
+        if (I18n.containsKey("panel." + item.name() + ".title")) return "panel." + item.name() + ".title";
+        return "sidebar." + item.name();
     }
 
     public void select(SidebarItem item, Consumer<SidebarItem> callback) {
