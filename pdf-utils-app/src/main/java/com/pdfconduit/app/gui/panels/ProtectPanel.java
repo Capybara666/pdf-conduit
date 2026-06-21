@@ -54,7 +54,8 @@ public class ProtectPanel extends BasePanel {
         }
 
         Path input = files.get(0);
-        Path output = resolveOutputFor(input);
+        Path output = confirmOutputFor(input).orElse(null);
+        if (output == null) return;
         Task<PdfResult> task = new Task<>() {
             @Override
             protected PdfResult call() throws Exception {

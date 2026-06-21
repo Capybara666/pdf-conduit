@@ -74,7 +74,8 @@ public class RotatePanel extends BasePanel {
         }
 
         Path input = files.get(0);
-        Path output = resolveOutputFor(input);
+        Path output = confirmOutputFor(input).orElse(null);
+        if (output == null) return;
         Task<RotateResult> task = new Task<>() {
             @Override
             protected RotateResult call() throws Exception {

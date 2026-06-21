@@ -149,7 +149,9 @@ public class ArrangePanel extends BorderPane {
         if (workingPdf == null || grid.isEmpty()) return;
         List<Integer> order = grid.order();
         Path source = workingPdf;
-        Path dest = output.resolveOutput(DefaultLocations.DEFAULT_FILE);
+        Path dest = com.pdfconduit.app.gui.util.OutputGuard.confirm(
+            this, output.resolveOutput(DefaultLocations.DEFAULT_FILE)).orElse(null);
+        if (dest == null) return;
         Task<ArrangeResult> task = new Task<>() {
             @Override
             protected ArrangeResult call() throws Exception {

@@ -165,6 +165,15 @@ public abstract class BasePanel extends BorderPane {
         return output.resolveOutput(name);
     }
 
+    /**
+     * Like {@link #resolveOutputFor(Path)} but guards against clobbering: if the
+     * destination already exists the user is asked to overwrite, save under a unique
+     * name, or cancel. Returns the path to write to, or empty when cancelled.
+     */
+    protected final java.util.Optional<Path> confirmOutputFor(Path input) {
+        return com.pdfconduit.app.gui.util.OutputGuard.confirm(this, resolveOutputFor(input));
+    }
+
     // --- shared option-control helpers ------------------------------------
 
     /** A standard option label (small caption styling). */

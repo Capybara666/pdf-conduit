@@ -28,7 +28,8 @@ public class MergePanel extends BasePanel {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
 
-        Path output = resolveOutputFor(files.get(0));
+        Path output = confirmOutputFor(files.get(0)).orElse(null);
+        if (output == null) return;
 
         Task<MergeResult> task = new Task<>() {
             @Override

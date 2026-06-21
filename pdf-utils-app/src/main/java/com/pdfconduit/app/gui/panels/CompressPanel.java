@@ -58,7 +58,8 @@ public class CompressPanel extends BasePanel {
         }
 
         Path input = files.get(0);
-        Path output = resolveOutputFor(input);
+        Path output = confirmOutputFor(input).orElse(null);
+        if (output == null) return;
 
         Task<CompressResult> task = new Task<>() {
             @Override
