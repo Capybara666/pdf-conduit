@@ -15,7 +15,9 @@ public enum OperationType {
     PROTECT       ("protect",    "_protected",   Cardinality.MAP,    false),
     UNLOCK        ("unlock",     "_unlocked",    Cardinality.MAP,    false),
     METADATA      ("metadata",   "_metadata",    Cardinality.MAP,    false),
-    WATERMARK     ("watermark",  "_watermarked", Cardinality.MAP,    false);
+    WATERMARK     ("watermark",  "_watermarked", Cardinality.MAP,    false),
+    // Terminal export: output is image files, not a PDF — so it has no pipeline NodeKind.
+    PDF_TO_IMAGES ("to-images",  "_images",      Cardinality.MAP,    true);
 
     private final String id;
     private final String suffix;

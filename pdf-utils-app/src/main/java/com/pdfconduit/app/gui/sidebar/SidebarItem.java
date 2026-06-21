@@ -10,6 +10,7 @@ public enum SidebarItem {
     ROTATE   ("↻", "Rotate",    OperationType.ROTATE),
     ARRANGE  ("⇅", "Arrange",   OperationType.ARRANGE),
     IMAGES   ("🖼", "To PDF",    OperationType.IMAGES_TO_PDF),
+    TO_IMAGES("🏞", "To Images", OperationType.PDF_TO_IMAGES),
     PROTECT  ("🔒", "Protect",   OperationType.PROTECT),
     UNLOCK   ("🔓", "Unlock",    OperationType.UNLOCK),
     METADATA ("🏷", "Metadata",  OperationType.METADATA),

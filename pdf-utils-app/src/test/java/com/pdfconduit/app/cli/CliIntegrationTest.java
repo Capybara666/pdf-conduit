@@ -285,6 +285,21 @@ class CliIntegrationTest {
         assertEquals(0, exit);
     }
 
+    @Test
+    void pdfToImagesExportsSelectedPages() throws Exception {
+        Path src = createPdf(3);
+        Path dir = tmp.resolve("imgs");
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("pdf-to-images", src.toString(), "--format", "png",
+                "--dpi", "72", "--pages", "1,3", "-o", dir.toString());
+
+        assertEquals(0, exit);
+        try (var files = java.nio.file.Files.list(dir)) {
+            assertEquals(2, files.filter(p -> p.toString().endsWith(".png")).count());
+        }
+    }
+
     private Path createPdf(int pages) throws IOException {
         Path path = tmp.resolve("test-" + pages + "-" + System.nanoTime() + ".pdf");
         try (PDDocument doc = new PDDocument()) {

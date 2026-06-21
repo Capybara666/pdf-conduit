@@ -21,11 +21,14 @@ class OperationTypeTest {
     }
 
     @Test
-    void mergeIsTheOnlyReduceAndExtractIsTheOnlyMultiOutput() {
+    void mergeIsTheOnlyReduceAndMultiOutputIsExtractAndToImages() {
+        // Multi-output = one input yields several outputs: Extract (separate pages)
+        // and PDF→Images (one image per page).
+        Set<OperationType> multiOutput = Set.of(OperationType.EXTRACT, OperationType.PDF_TO_IMAGES);
         for (OperationType t : OperationType.values()) {
             assertEquals(t == OperationType.MERGE ? Cardinality.REDUCE : Cardinality.MAP,
                 t.cardinality(), t + " cardinality");
-            assertEquals(t == OperationType.EXTRACT, t.multiOutput(), t + " multiOutput");
+            assertEquals(multiOutput.contains(t), t.multiOutput(), t + " multiOutput");
         }
     }
 

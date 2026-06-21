@@ -149,6 +149,7 @@ public class MainWindow {
             case ROTATE   -> new RotatePanel();
             case ARRANGE  -> new ArrangePanel();
             case IMAGES   -> new ImagesToPdfPanel();
+            case TO_IMAGES -> new PdfToImagesPanel();
             case PROTECT  -> new ProtectPanel();
             case UNLOCK   -> new UnlockPanel();
             case METADATA -> new MetadataPanel();

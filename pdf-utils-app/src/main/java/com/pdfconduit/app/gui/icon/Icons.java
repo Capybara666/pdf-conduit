@@ -41,6 +41,10 @@ public final class Icons {
     // a horizontal arrow feeding into a PDF page (convert any input "to PDF")
     private static final String TO_PDF =
         "M11 4 H17 L20 7 V20 H11 Z M17 4 V7 H20 M3 12 H9 M7 10 L9 12 L7 14";
+    // a picture frame with a mountain + sun (export a PDF's pages "to images")
+    private static final String TO_IMAGES =
+        "M4 6 H20 V18 H4 Z M4 15 L9 11 L12 13.5 L15 10 L20 15 "
+        + "M16 8.5 a1.1 1.1 0 1 0 0.02 0";
     // a wizard hat with a sparkle (the guided wizard flow)
     private static final String WIZARD =
         "M12 3.5 L6.5 16 L17.5 16 Z M4.5 16 H19.5 "
@@ -86,6 +90,7 @@ public final class Icons {
             case COMPRESS -> COMPRESS;
             case ROTATE   -> ROTATE;
             case IMAGES   -> TO_PDF;
+            case TO_IMAGES -> TO_IMAGES;
             case ARRANGE  -> ARRANGE;
             case PROTECT  -> PROTECT;
             case UNLOCK   -> UNLOCK;
