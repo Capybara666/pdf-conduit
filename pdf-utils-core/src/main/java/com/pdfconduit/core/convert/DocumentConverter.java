@@ -157,11 +157,26 @@ public final class DocumentConverter {
 
     private static void convertWithLibreOffice(Path source, Path target)
             throws PdfOperationException {
+        runLibreOffice(source, "pdf", "pdf", target);
+    }
+
+    /**
+     * Converts a PDF (or any LibreOffice-readable file) to another format via a headless
+     * LibreOffice — e.g. {@code convertPdfTo(pdf, "docx", "docx", out)} — writing the result
+     * to {@code target}. The reverse direction of {@link #ensurePdf}; same soffice plumbing.
+     */
+    public static void convertPdfTo(Path source, String targetFormat, String targetExt, Path target)
+            throws PdfOperationException {
+        runLibreOffice(source, targetFormat, targetExt, target);
+    }
+
+    private static void runLibreOffice(Path source, String targetFormat, String targetExt, Path target)
+            throws PdfOperationException {
         String soffice = findSoffice();
         if (soffice == null) {
             throw new PdfOperationException("Cannot convert " + source.getFileName()
                 + ": LibreOffice is not installed. Install LibreOffice (the 'soffice' command) "
-                + "to convert documents to PDF.");
+                + "to convert documents.");
         }
 
         Path workDir;
@@ -178,7 +193,7 @@ public final class DocumentConverter {
             Process p = new ProcessBuilder(
                 soffice, "--headless", "--norestore", "--nolockcheck",
                 "-env:UserInstallation=file://" + profile.toAbsolutePath(),
-                "--convert-to", "pdf", "--outdir", workDir.toString(), source.toString())
+                "--convert-to", targetFormat, "--outdir", workDir.toString(), source.toString())
                 .redirectErrorStream(true).start();
             String log = new String(p.getInputStream().readAllBytes());
             if (!p.waitFor(180, TimeUnit.SECONDS)) {
@@ -191,10 +206,10 @@ public final class DocumentConverter {
                     + source.getFileName() + (log.isBlank() ? "" : " — " + log.strip()));
             }
 
-            Path produced = locateProducedPdf(workDir, source);
+            Path produced = locateProduced(workDir, source, targetExt);
             if (produced == null) {
-                throw new PdfOperationException("LibreOffice produced no PDF for "
-                    + source.getFileName());
+                throw new PdfOperationException("LibreOffice produced no " + targetExt
+                    + " for " + source.getFileName());
             }
             OutputPaths.ensureParentDir(target);
             Files.move(produced, target, REPLACE_EXISTING);
@@ -208,11 +223,11 @@ public final class DocumentConverter {
         }
     }
 
-    private static Path locateProducedPdf(Path dir, Path source) throws IOException {
-        Path expected = dir.resolve(stem(source) + ".pdf");
+    private static Path locateProduced(Path dir, Path source, String ext) throws IOException {
+        Path expected = dir.resolve(stem(source) + "." + ext);
         if (Files.exists(expected)) return expected;
         try (Stream<Path> s = Files.list(dir)) {
-            return s.filter(f -> f.getFileName().toString().toLowerCase().endsWith(".pdf"))
+            return s.filter(f -> f.getFileName().toString().toLowerCase().endsWith("." + ext))
                     .findFirst().orElse(null);
         }
     }

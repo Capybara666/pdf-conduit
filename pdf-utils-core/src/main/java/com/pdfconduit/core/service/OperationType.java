@@ -16,8 +16,9 @@ public enum OperationType {
     UNLOCK        ("unlock",     "_unlocked",    Cardinality.MAP,    false),
     METADATA      ("metadata",   "_metadata",    Cardinality.MAP,    false),
     WATERMARK     ("watermark",  "_watermarked", Cardinality.MAP,    false),
-    // Terminal export: output is image files, not a PDF — so it has no pipeline NodeKind.
-    PDF_TO_IMAGES ("to-images",  "_images",      Cardinality.MAP,    true);
+    // Terminal exports: output is not a PDF. They appear as terminal-only pipeline nodes.
+    PDF_TO_IMAGES ("to-images",  "_images",      Cardinality.MAP,    true),
+    PDF_TO_TEXT   ("to-text",    "_text",        Cardinality.MAP,    false);
 
     private final String id;
     private final String suffix;
