@@ -177,21 +177,25 @@ public final class DocumentConverter {
 
     private static void convertWithLibreOffice(Path source, Path target)
             throws PdfOperationException {
-        runLibreOffice(source, "pdf", "pdf", target);
+        // Office → PDF: LibreOffice auto-detects the input filter.
+        runLibreOffice(source, null, "pdf", "pdf", target);
     }
 
     /**
-     * Converts a PDF (or any LibreOffice-readable file) to another format via a headless
-     * LibreOffice — e.g. {@code convertPdfTo(pdf, "docx", "docx", out)} — writing the result
-     * to {@code target}. The reverse direction of {@link #ensurePdf}; same soffice plumbing.
+     * Converts a PDF to another format via a headless LibreOffice — e.g.
+     * {@code convertPdfTo(pdf, "docx", "docx", out)} — writing the result to {@code target}.
+     * The reverse direction of {@link #ensurePdf}; same soffice plumbing.
+     *
+     * <p>A PDF must be opened with the Writer import filter, otherwise LibreOffice loads it
+     * into Draw (which has no Word/text export filter and fails with "no export filter").
      */
     public static void convertPdfTo(Path source, String targetFormat, String targetExt, Path target)
             throws PdfOperationException {
-        runLibreOffice(source, targetFormat, targetExt, target);
+        runLibreOffice(source, "writer_pdf_import", targetFormat, targetExt, target);
     }
 
-    private static void runLibreOffice(Path source, String targetFormat, String targetExt, Path target)
-            throws PdfOperationException {
+    private static void runLibreOffice(Path source, String inFilter, String targetFormat,
+                                       String targetExt, Path target) throws PdfOperationException {
         String soffice = findSoffice();
         if (soffice == null) {
             throw new PdfOperationException("Cannot convert " + source.getFileName()
@@ -210,11 +214,13 @@ public final class DocumentConverter {
             // A per-call user profile lets conversions run even while another
             // LibreOffice instance is open, and lets several run concurrently.
             Path profile = workDir.resolve("profile");
-            Process p = new ProcessBuilder(
+            List<String> cmd = new ArrayList<>(List.of(
                 soffice, "--headless", "--norestore", "--nolockcheck",
-                "-env:UserInstallation=file://" + profile.toAbsolutePath(),
-                "--convert-to", targetFormat, "--outdir", workDir.toString(), source.toString())
-                .redirectErrorStream(true).start();
+                "-env:UserInstallation=file://" + profile.toAbsolutePath()));
+            if (inFilter != null) cmd.add("--infilter=" + inFilter);
+            cmd.addAll(List.of("--convert-to", targetFormat,
+                "--outdir", workDir.toString(), source.toString()));
+            Process p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
             String log = new String(p.getInputStream().readAllBytes());
             if (!p.waitFor(180, TimeUnit.SECONDS)) {
                 p.destroyForcibly();

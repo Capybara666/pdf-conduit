@@ -57,6 +57,21 @@ class PdfTextExporterTest {
     }
 
     @Test
+    void exportsDocxWhenLibreOfficeIsAvailable() throws Exception {
+        // Real LibreOffice conversion — runs only where soffice is installed.
+        Assumptions.assumeTrue(DocumentConverter.officeConversionAvailable(),
+            "LibreOffice not installed — skipping the docx happy path");
+        Path src = createPdf("ALPHA", "BETA");
+        Path dir = tmp.resolve("docx");
+
+        PdfToTextResult result = PdfTextExporter.execute(
+            new PdfToTextOptions(src, TextFormat.DOCX, PageRange.ALL, dir, "doc"));
+
+        assertEquals(dir.resolve("doc.docx"), result.output());
+        assertTrue(Files.size(result.output()) > 0, "docx should not be empty");
+    }
+
+    @Test
     void docxWithoutLibreOfficeFailsClearly() throws Exception {
         // Only meaningful when LibreOffice is absent (CI / headless dev box).
         Assumptions.assumeFalse(DocumentConverter.officeConversionAvailable(),
