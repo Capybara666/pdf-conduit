@@ -61,7 +61,8 @@ public final class SettingsPanel extends VBox {
             Forms.labeledField("settings.outputfolder", outputFolderControl()),
             Forms.labeledField("settings.compresstarget", compressTargetControl()),
             Forms.labeledField("settings.pagesize",     pageSizeControl()),
-            Forms.labeledField("settings.autoopen",     autoOpenControl()));
+            Forms.labeledField("settings.autoopen",     autoOpenControl()),
+            Forms.labeledField("settings.overwrite",    overwriteControl()));
 
         getChildren().addAll(title, hint, rows);
     }
@@ -150,6 +151,20 @@ public final class SettingsPanel extends VBox {
             });
         box.valueProperty().addListener((obs, old, val) -> {
             if (val != null) Settings.setAutoOpen(val);
+        });
+        return box;
+    }
+
+    private ComboBox<Settings.OverwriteMode> overwriteControl() {
+        ComboBox<Settings.OverwriteMode> box = i18nCombo(
+            List.of(Settings.OverwriteMode.values()), Settings.overwriteMode(),
+            m -> switch (m) {
+                case ASK       -> "overwrite.mode.ask";
+                case OVERWRITE -> "overwrite.overwrite";
+                case RENAME    -> "overwrite.rename";
+            });
+        box.valueProperty().addListener((obs, old, val) -> {
+            if (val != null) Settings.setOverwriteMode(val);
         });
         return box;
     }

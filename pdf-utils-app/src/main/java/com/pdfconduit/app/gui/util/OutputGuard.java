@@ -27,6 +27,13 @@ public final class OutputGuard {
     public static Optional<Path> confirm(Node owner, Path desired) {
         if (desired == null || !Files.exists(desired)) return Optional.ofNullable(desired);
 
+        // A saved default skips the prompt entirely.
+        switch (Settings.overwriteMode()) {
+            case OVERWRITE -> { return Optional.of(desired); }
+            case RENAME    -> { return Optional.of(OutputPaths.uniquePath(desired)); }
+            case ASK       -> { /* fall through to the dialog */ }
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         Scene ownerScene = owner == null ? null : owner.getScene();
         if (ownerScene != null) {

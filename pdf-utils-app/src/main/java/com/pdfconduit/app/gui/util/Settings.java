@@ -21,6 +21,9 @@ public final class Settings {
     /** What to do with the result once an operation finishes. */
     public enum AutoOpen { NONE, FILE, FOLDER }
 
+    /** What to do when an operation's output file already exists. */
+    public enum OverwriteMode { ASK, OVERWRITE, RENAME }
+
     private static final Preferences PREFS = Preferences.userNodeForPackage(Settings.class);
 
     private Settings() {}
@@ -93,5 +96,20 @@ public final class Settings {
 
     public static void setAutoOpen(AutoOpen value) {
         PREFS.put("autoOpen", (value == null ? AutoOpen.NONE : value).name());
+    }
+
+    // --- overwrite behaviour ---------------------------------------------
+
+    /** How to handle an existing output file: ask (default), always overwrite, or always rename. */
+    public static OverwriteMode overwriteMode() {
+        try {
+            return OverwriteMode.valueOf(PREFS.get("overwriteMode", OverwriteMode.ASK.name()));
+        } catch (IllegalArgumentException e) {
+            return OverwriteMode.ASK;
+        }
+    }
+
+    public static void setOverwriteMode(OverwriteMode value) {
+        PREFS.put("overwriteMode", (value == null ? OverwriteMode.ASK : value).name());
     }
 }
