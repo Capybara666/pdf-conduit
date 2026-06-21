@@ -3,21 +3,19 @@ package org.example.app.gui.panels;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import org.example.app.gui.Ui;
 import org.example.app.i18n.I18n;
 import org.example.core.convert.DocumentConverter;
 import org.example.core.model.MetadataOptions;
-import org.example.core.model.PageSize;
 import org.example.core.model.PdfMetadata;
 import org.example.core.model.PdfResult;
 import org.example.core.operations.PdfMetadataEditor;
+import org.example.core.service.OperationRunner;
 import org.example.core.service.OperationType;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /** View and edit (or strip) a PDF's title/author/subject/keywords. */
@@ -30,6 +28,9 @@ public class MetadataPanel extends BasePanel {
     private CheckBox stripBox;
 
     public MetadataPanel() { super("panel.METADATA.title", "run.METADATA", OperationType.METADATA); }
+
+    @Override
+    protected boolean supportsBatch() { return true; }
 
     @Override
     protected String inputHintKey() { return "hint.METADATA"; }
@@ -51,20 +52,12 @@ public class MetadataPanel extends BasePanel {
         // Prefill the fields from the first PDF dropped in.
         fileList.getFiles().addListener((ListChangeListener<Path>) c -> prefill());
 
-        VBox box = new VBox(6,
-            labelFor("metadata.title.label", titleField),
-            labelFor("metadata.author.label", authorField),
-            labelFor("metadata.subject.label", subjectField),
-            labelFor("metadata.keywords.label", keywordsField),
+        return new VBox(Ui.OPTION_GAP,
+            labeledField("metadata.title.label", titleField),
+            labeledField("metadata.author.label", authorField),
+            labeledField("metadata.subject.label", subjectField),
+            labeledField("metadata.keywords.label", keywordsField),
             stripBox);
-        return box;
-    }
-
-    private VBox labelFor(String labelKey, TextField f) {
-        Label l = new Label();
-        I18n.bindText(l::setText, labelKey);
-        l.getStyleClass().add("text-sm");
-        return new VBox(2, l, f);
     }
 
     /** Loads the first input's metadata into the fields (PDF inputs only). */
@@ -88,27 +81,26 @@ public class MetadataPanel extends BasePanel {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
         boolean strip = stripBox.isSelected();
-        String title = titleField.getText();
-        String author = authorField.getText();
-        String subject = subjectField.getText();
-        String keywords = keywordsField.getText();
+        // The entered fields (or Strip) apply to every file in batch mode.
+        String title = strip ? null : titleField.getText();
+        String author = strip ? null : authorField.getText();
+        String subject = strip ? null : subjectField.getText();
+        String keywords = strip ? null : keywordsField.getText();
+
+        if (isBatchMode()) {
+            runPerFile("verb.metadata", (in, out) -> PdfMetadataEditor.execute(
+                new MetadataOptions(in, title, author, subject, keywords, strip, out)));
+            return;
+        }
 
         Path input = files.get(0);
-        Path output = resolveOutput(input.resolveSibling(
-            stripExt(input.getFileName().toString()) + "_metadata.pdf"));
+        Path output = resolveOutputFor(input);
         Task<PdfResult> task = new Task<>() {
             @Override
             protected PdfResult call() throws Exception {
-                updateMessage(I18n.t("msg.metadata"));
-                List<Path> temps = new ArrayList<>();
-                try {
-                    Path pdf = DocumentConverter.ensurePdf(input, PageSize.FIT, temps);
-                    return PdfMetadataEditor.execute(new MetadataOptions(pdf,
-                        strip ? null : title, strip ? null : author,
-                        strip ? null : subject, strip ? null : keywords, strip, output));
-                } finally {
-                    for (Path t : temps) Files.deleteIfExists(t);
-                }
+                updateMessage(I18n.t("msg.busy", I18n.t("verb.metadata")));
+                return OperationRunner.run(input, output, (pdf, out) -> PdfMetadataEditor.execute(
+                    new MetadataOptions(pdf, title, author, subject, keywords, strip, out)));
             }
         };
         progressPanel.run(task, output);

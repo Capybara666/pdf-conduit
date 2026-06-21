@@ -4,6 +4,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.example.app.gui.Ui;
 import org.example.app.gui.component.ProgressPanel;
 import org.example.core.model.CompressOptions;
 import org.example.core.model.CompressResult;
@@ -32,15 +33,12 @@ public class CompressPanel extends BasePanel {
 
     @Override
     protected VBox buildOptionsArea() {
-        Label label = new Label();
-        I18n.bindText(label::setText, "compress.target.label");
-        label.getStyleClass().add("text-sm");
         sizeField = new TextField("5");
         unitBox = new ComboBox<>();
         unitBox.getItems().addAll("MB", "KB");
         unitBox.setValue("MB");
-        HBox row = new HBox(6, sizeField, unitBox);
-        return new VBox(4, label, row);
+        HBox row = new HBox(Ui.INLINE_GAP, sizeField, unitBox);
+        return new VBox(Ui.LABEL_FIELD_GAP, fieldLabel("compress.target.label"), row);
     }
 
     @Override
@@ -51,19 +49,18 @@ public class CompressPanel extends BasePanel {
         if (targetBytes <= 0) return;
 
         if (isBatchMode()) {
-            runPerFile("Compressing", (in, out) ->
+            runPerFile("verb.compress", (in, out) ->
                 PdfCompressor.execute(new CompressOptions(in, targetBytes, out)));
             return;
         }
 
         Path input = files.get(0);
-        Path output = resolveOutput(input.resolveSibling(
-            stripExt(input.getFileName().toString()) + "_compressed.pdf"));
+        Path output = resolveOutputFor(input);
 
         Task<CompressResult> task = new Task<>() {
             @Override
             protected CompressResult call() throws Exception {
-                updateMessage(I18n.t("msg.compressing"));
+                updateMessage(I18n.t("msg.busy", I18n.t("verb.compress")));
                 return OperationRunner.run(input, output,
                     (pdf, out) -> PdfCompressor.execute(new CompressOptions(pdf, targetBytes, out)));
             }

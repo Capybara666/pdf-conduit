@@ -3,59 +3,48 @@ package org.example.app.gui.panels;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
+import org.example.app.gui.Ui;
 import org.example.app.gui.component.DropZone;
 import org.example.app.gui.component.FileListView;
+import org.example.app.gui.component.OutputPathControl;
 import org.example.app.gui.component.ProgressPanel;
-import org.example.app.gui.util.DefaultLocations;
 import org.example.app.i18n.I18n;
 import org.example.core.service.OperationRunner;
 import org.example.core.service.OperationType;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Shared layout for every operation panel: a header (title, drop zone, file
- * toolbar) pinned to the top, the controls (options, output, run) pinned to the
- * bottom, and the file list filling all the space in between.
+ * Shared layout for every operation panel: a header (title, optional hint, drop
+ * zone, file toolbar) pinned to the top, the controls (options, output, run)
+ * pinned to the bottom, and the file list filling all the space in between.
  *
  * <p>Batch-capable operations (see {@link #supportsBatch()}) switch the output
  * target from a single file to a folder when more than one file is selected,
  * producing one output per input. The output row itself never changes shape —
- * only its label, prompt and browse dialog adapt — so the view stays stable.
+ * only the file-name field shows or hides — so the view stays stable.
  */
 public abstract class BasePanel extends BorderPane {
 
     protected final FileListView fileList;
     protected final DropZone dropZone;
     protected final ProgressPanel progressPanel;
+    protected final OutputPathControl output;
 
-    // Output is always a folder plus — for single-output runs — a file name.
-    private final TextField folderField = new TextField();
-    private final TextField nameField = new TextField();
-    private final Label folderLabel = new Label();
-    private final Label nameLabel = new Label();
-
-    private final String outputSuffix;
     private final OperationType operationType;
     private boolean batchMode = false;
-    private String lastAutoFolder = "";
-    private String lastAutoName = "";
 
     protected BasePanel(String titleKey, String runKey, OperationType operationType) {
         this.operationType = operationType;
-        this.outputSuffix = operationType.suffix();
         getStyleClass().add("panel-root");
 
         Label titleLabel = new Label();
@@ -83,30 +72,10 @@ public abstract class BasePanel extends BorderPane {
         clearBtn.setOnAction(e -> fileList.getFiles().clear());
         Region toolbarSpacer = new Region();
         HBox.setHgrow(toolbarSpacer, Priority.ALWAYS);
-        HBox listToolbar = new HBox(8, countLabel, toolbarSpacer, clearBtn);
+        HBox listToolbar = new HBox(Ui.INLINE_GAP, countLabel, toolbarSpacer, clearBtn);
         listToolbar.getStyleClass().add("row-left");
 
-        // --- output: a folder, plus a file name when there is a single output ---
-        I18n.bindText(folderField::setPromptText, "output.folder.prompt");
-        folderField.setText(DefaultLocations.defaultDir().toString());
-        lastAutoFolder = folderField.getText();
-        HBox.setHgrow(folderField, Priority.ALWAYS);
-        Button browseBtn = new Button("…");
-        browseBtn.getStyleClass().add("btn-secondary");
-        browseBtn.setOnAction(e -> browseFolder());
-        HBox folderRow = new HBox(6, folderField, browseBtn);
-
-        I18n.bindText(nameField::setPromptText, "output.file.prompt");
-        nameField.setText(DefaultLocations.DEFAULT_FILE);
-        lastAutoName = nameField.getText();
-        HBox.setHgrow(nameField, Priority.ALWAYS);
-        // Name label + field only show for single-output runs.
-        nameLabel.managedProperty().bind(nameLabel.visibleProperty());
-        nameField.managedProperty().bind(nameField.visibleProperty());
-
-        I18n.bindText(folderLabel::setText, "output.folder");
-        I18n.bindText(nameLabel::setText, "output.name");
-        VBox outputBox = new VBox(4, folderLabel, folderRow, nameLabel, nameField);
+        output = new OutputPathControl();
 
         progressPanel = new ProgressPanel(runKey);
         progressPanel.getRunButton().setOnAction(e -> onRun());
@@ -135,12 +104,13 @@ public abstract class BasePanel extends BorderPane {
         }
         top.getChildren().addAll(dropZone, listToolbar);
 
-        VBox bottom = new VBox(14, buildOptionsArea(), outputBox, progressPanel);
+        VBox bottom = new VBox(14, buildOptionsArea(), output, progressPanel);
 
         setTop(top);
         setCenter(fileList);
         setBottom(bottom);
         BorderPane.setMargin(fileList, new Insets(14, 0, 14, 0));
+        refreshOutputMode();
     }
 
     // --- output mode (file vs folder) -------------------------------------
@@ -148,9 +118,12 @@ public abstract class BasePanel extends BorderPane {
     protected void refreshOutputMode() {
         batchMode = (supportsBatch() && fileList.getFiles().size() > 1) || folderOnly();
         // Several outputs go to a folder; a single output also gets a file name.
-        nameLabel.setVisible(!batchMode);
-        nameField.setVisible(!batchMode);
-        updateAutoOutput();
+        output.setSingleOutput(!batchMode);
+        if (!fileList.getFiles().isEmpty()) {
+            Path first = fileList.getFiles().get(0);
+            output.suggestName(stripExt(first.getFileName().toString())
+                + operationType.suffix() + ".pdf");
+        }
     }
 
     /**
@@ -159,39 +132,6 @@ public abstract class BasePanel extends BorderPane {
      * single input (e.g. splitting into separate files) override this.
      */
     protected boolean folderOnly() { return false; }
-
-    /** Auto-fills the file name from the first input, unless the user typed their own. */
-    private void updateAutoOutput() {
-        if (fileList.getFiles().isEmpty()) return;
-        Path first = fileList.getFiles().get(0);
-        String auto = stripExt(first.getFileName().toString()) + outputSuffix + ".pdf";
-        String current = nameField.getText();
-        if (current == null || current.isBlank() || current.equals(lastAutoName)) {
-            nameField.setText(auto);
-            lastAutoName = auto;
-        }
-    }
-
-    private void browseFolder() {
-        Stage stage = (Stage) getScene().getWindow();
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(I18n.t("chooser.selectfolder"));
-        initialDir(folderField.getText()).ifPresent(chooser::setInitialDirectory);
-        var dir = chooser.showDialog(stage);
-        if (dir != null) folderField.setText(dir.getAbsolutePath());
-    }
-
-    /** An existing directory to start a chooser in: the given path, else the default output dir. */
-    private java.util.Optional<java.io.File> initialDir(String pathText) {
-        try {
-            if (pathText != null && !pathText.isBlank()) {
-                Path p = Path.of(pathText);
-                if (Files.isDirectory(p)) return java.util.Optional.of(p.toFile());
-            }
-        } catch (Exception ignored) {}
-        Path def = DefaultLocations.defaultDir();
-        return Files.isDirectory(def) ? java.util.Optional.of(def.toFile()) : java.util.Optional.empty();
-    }
 
     // --- extension points -------------------------------------------------
 
@@ -212,44 +152,53 @@ public abstract class BasePanel extends BorderPane {
     protected final boolean isBatchMode() { return batchMode; }
 
     /** The chosen output folder (for batch / per-file runs). */
-    protected final Path outputDir() {
-        String folder = folderField.getText();
-        return (folder == null || folder.isBlank()) ? DefaultLocations.defaultDir() : Path.of(folder.strip());
-    }
+    protected final Path outputDir() { return output.outputDir(); }
 
     /**
-     * The single-output destination: the chosen folder + file name. The name
-     * defaults to {@code defaultPath}'s file name when left blank, and always
-     * ends in {@code .pdf}.
+     * The single-output destination for {@code input}: the chosen folder + name,
+     * defaulting to {@code <stem><suffix>.pdf} from the operation catalog when the
+     * name field is blank.
      */
-    protected Path resolveOutput(Path defaultPath) {
-        String name = nameField.getText();
-        if (name == null || name.isBlank()) {
-            name = defaultPath.getFileName() != null
-                ? defaultPath.getFileName().toString() : DefaultLocations.DEFAULT_FILE;
-        }
-        name = name.strip();
-        if (!name.toLowerCase().endsWith(".pdf")) name = name + ".pdf";
-        return outputDir().resolve(name);
+    protected final Path resolveOutputFor(Path input) {
+        String name = stripExt(input.getFileName().toString()) + operationType.suffix() + ".pdf";
+        return output.resolveOutput(name);
     }
+
+    // --- shared option-control helpers ------------------------------------
+
+    /** A standard option label (small caption styling). */
+    protected Label fieldLabel(String key) {
+        Label l = new Label();
+        I18n.bindText(l::setText, key);
+        l.getStyleClass().add("text-sm");
+        return l;
+    }
+
+    /** A label stacked above the field it describes, with the standard gap. */
+    protected VBox labeledField(String key, Node field) {
+        return new VBox(Ui.LABEL_FIELD_GAP, fieldLabel(key), field);
+    }
+
+    // --- batch plumbing ---------------------------------------------------
 
     /**
      * Runs {@code op} for every selected file, naming each result
      * {@code <stem><suffix>.pdf} inside the chosen output folder. Used by
-     * batch-capable panels when {@link #isBatchMode()} is true.
+     * batch-capable panels when {@link #isBatchMode()} is true. {@code verbKey} is
+     * an i18n key for the gerund shown in the progress message (e.g. {@code verb.compress}).
      */
-    protected void runPerFile(String verb, FileOp op) {
+    protected void runPerFile(String verbKey, FileOp op) {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
         Path dir = outputDir();
         Task<List<Path>> task = new Task<>() {
             @Override
             protected List<Path> call() throws Exception {
-                updateMessage(verb + " …");
+                updateMessage(I18n.t("msg.busy", I18n.t(verbKey)));
                 return OperationRunner.runBatch(operationType(), files, dir,
                     (in, out) -> { op.apply(in, out); return null; },
                     (completed, total) -> {
-                        updateMessage(verb + " " + completed + "/" + total + "…");
+                        updateMessage(I18n.t("msg.busy.count", I18n.t(verbKey), completed, total));
                         updateProgress(completed, total);
                     });
             }

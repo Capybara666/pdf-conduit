@@ -14,17 +14,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.app.gui.Ui;
 import org.example.app.i18n.I18n;
 import org.example.core.convert.DocumentConverter;
-import org.example.core.model.PageSize;
 import org.example.core.model.PdfResult;
+import org.example.core.service.OperationRunner;
 import org.example.core.service.OperationType;
 import org.example.core.model.WatermarkOptions;
 import org.example.core.operations.PdfWatermarker;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /** Stamp a text or image watermark onto every page. */
@@ -40,6 +39,9 @@ public class WatermarkPanel extends BasePanel {
     public WatermarkPanel() { super("panel.WATERMARK.title", "run.WATERMARK", OperationType.WATERMARK); }
 
     @Override
+    protected boolean supportsBatch() { return true; }
+
+    @Override
     protected String inputHintKey() { return "hint.WATERMARK"; }
 
     @Override
@@ -52,11 +54,11 @@ public class WatermarkPanel extends BasePanel {
         RadioButton imageMode = new RadioButton();
         I18n.bindText(imageMode::setText, "watermark.mode.image");
         imageMode.setToggleGroup(mode);
-        HBox modeRow = new HBox(12, textMode, imageMode);
+        HBox modeRow = new HBox(Ui.INLINE_GAP, textMode, imageMode);
 
         textField = new TextField();
         I18n.bindText(textField::setPromptText, "watermark.text.prompt");
-        VBox textRow = new VBox(2, label("watermark.text.label"), textField);
+        VBox textRow = labeledField("watermark.text.label", textField);
         textRow.visibleProperty().bind(textMode.selectedProperty());
         textRow.managedProperty().bind(textRow.visibleProperty());
 
@@ -65,7 +67,7 @@ public class WatermarkPanel extends BasePanel {
         Button browse = new Button("…");
         browse.getStyleClass().add("btn-secondary");
         browse.setOnAction(e -> browseImage());
-        VBox imageRow = new VBox(2, label("watermark.image.label"), new HBox(6, imageField, browse));
+        VBox imageRow = labeledField("watermark.image.label", new HBox(Ui.INLINE_GAP, imageField, browse));
         imageRow.visibleProperty().bind(imageMode.selectedProperty());
         imageRow.managedProperty().bind(imageRow.visibleProperty());
 
@@ -75,7 +77,7 @@ public class WatermarkPanel extends BasePanel {
         opacity.valueProperty().addListener((o, a, b) ->
             opacityValue.setText(Math.round(b.doubleValue() * 100) + "%"));
         opacityValue.setText("30%");
-        HBox opacityRow = new HBox(8, label("watermark.opacity.label"), opacity, opacityValue);
+        HBox opacityRow = new HBox(Ui.INLINE_GAP, fieldLabel("watermark.opacity.label"), opacity, opacityValue);
         opacityRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         size = new Slider(0.1, 2.0, 0.7);
@@ -84,22 +86,15 @@ public class WatermarkPanel extends BasePanel {
         size.valueProperty().addListener((o, a, b) ->
             sizeValue.setText(Math.round(b.doubleValue() * 100) + "%"));
         sizeValue.setText("70%");
-        HBox sizeRow = new HBox(8, label("watermark.size.label"), size, sizeValue);
+        HBox sizeRow = new HBox(Ui.INLINE_GAP, fieldLabel("watermark.size.label"), size, sizeValue);
         sizeRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         rotation = new ComboBox<>(FXCollections.observableArrayList(0, 45, 90));
         rotation.setValue(45);
-        HBox rotationRow = new HBox(8, label("watermark.rotation.label"), rotation);
+        HBox rotationRow = new HBox(Ui.INLINE_GAP, fieldLabel("watermark.rotation.label"), rotation);
         rotationRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-        return new VBox(8, modeRow, textRow, imageRow, sizeRow, opacityRow, rotationRow);
-    }
-
-    private Label label(String key) {
-        Label l = new Label();
-        I18n.bindText(l::setText, key);
-        l.getStyleClass().add("text-sm");
-        return l;
+        return new VBox(Ui.OPTION_GAP, modeRow, textRow, imageRow, sizeRow, opacityRow, rotationRow);
     }
 
     private void browseImage() {
@@ -123,21 +118,20 @@ public class WatermarkPanel extends BasePanel {
         double sc = size.getValue();
         double rot = rotation.getValue() == null ? 45 : rotation.getValue();
 
+        if (isBatchMode()) {
+            runPerFile("verb.watermark", (in, out) ->
+                PdfWatermarker.execute(new WatermarkOptions(in, text, image, op, rot, sc, out)));
+            return;
+        }
+
         Path input = files.get(0);
-        Path output = resolveOutput(input.resolveSibling(
-            stripExt(input.getFileName().toString()) + "_watermarked.pdf"));
+        Path output = resolveOutputFor(input);
         Task<PdfResult> task = new Task<>() {
             @Override
             protected PdfResult call() throws Exception {
-                updateMessage(I18n.t("msg.watermarking"));
-                List<Path> temps = new ArrayList<>();
-                try {
-                    Path pdf = DocumentConverter.ensurePdf(input, PageSize.FIT, temps);
-                    return PdfWatermarker.execute(
-                        new WatermarkOptions(pdf, text, image, op, rot, sc, output));
-                } finally {
-                    for (Path t : temps) Files.deleteIfExists(t);
-                }
+                updateMessage(I18n.t("msg.busy", I18n.t("verb.watermark")));
+                return OperationRunner.run(input, output,
+                    (pdf, out) -> PdfWatermarker.execute(new WatermarkOptions(pdf, text, image, op, rot, sc, out)));
             }
         };
         progressPanel.run(task, output);

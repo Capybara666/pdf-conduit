@@ -10,7 +10,9 @@ import org.example.core.model.MergeResult;
 import org.example.core.model.PageRange;
 import org.example.core.model.PageSize;
 import org.example.core.model.PageSource;
+import org.example.app.gui.Ui;
 import org.example.core.operations.PdfMerger;
+import org.example.core.service.OperationRunner;
 import org.example.core.service.OperationType;
 import org.example.app.i18n.I18n;
 
@@ -30,15 +32,15 @@ public class ImagesToPdfPanel extends BasePanel {
     protected boolean supportsBatch() { return true; }
 
     @Override
+    protected String inputHintKey() { return "hint.IMAGES"; }
+
+    @Override
     protected VBox buildOptionsArea() {
-        Label label = new Label();
-        I18n.bindText(label::setText, "images.pagesize.label");
-        label.getStyleClass().add("text-sm");
         pageSizeBox = new ComboBox<>();
         pageSizeBox.getItems().addAll(PageSize.values());
         pageSizeBox.setValue(PageSize.FIT);
-        HBox row = new HBox(8, label, pageSizeBox);
-        return new VBox(4, row);
+        HBox row = new HBox(Ui.INLINE_GAP, fieldLabel("images.pagesize.label"), pageSizeBox);
+        return new VBox(Ui.OPTION_GAP, row);
     }
 
     @Override
@@ -55,9 +57,8 @@ public class ImagesToPdfPanel extends BasePanel {
                     Files.createDirectories(dir);
                     for (int i = 0; i < files.size(); i++) {
                         Path in = files.get(i);
-                        updateMessage(I18n.t("msg.converting", 1) + " " + (i + 1) + "/" + files.size());
-                        Path out = dir.resolve(
-                            stripExt(in.getFileName().toString()) + "_converted.pdf");
+                        updateMessage(I18n.t("msg.busy.count", I18n.t("verb.convert"), i + 1, files.size()));
+                        Path out = dir.resolve(OperationRunner.outputName(operationType(), in));
                         convertOne(in, size, out);
                         updateProgress(i + 1, files.size());
                     }
@@ -70,12 +71,11 @@ public class ImagesToPdfPanel extends BasePanel {
 
         // Single input -> one PDF.
         Path input = files.get(0);
-        Path output = resolveOutput(
-            input.resolveSibling(stripExt(input.getFileName().toString()) + "_converted.pdf"));
+        Path output = resolveOutputFor(input);
         Task<MergeResult> task = new Task<>() {
             @Override
             protected MergeResult call() throws Exception {
-                updateMessage(I18n.t("msg.converting", 1));
+                updateMessage(I18n.t("msg.busy", I18n.t("verb.convert")));
                 return convertOne(input, size, output);
             }
         };

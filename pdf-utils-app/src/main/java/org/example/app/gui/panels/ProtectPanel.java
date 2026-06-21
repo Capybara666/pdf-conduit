@@ -1,20 +1,17 @@
 package org.example.app.gui.panels;
 
 import javafx.concurrent.Task;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.VBox;
+import org.example.app.gui.Ui;
 import org.example.app.i18n.I18n;
-import org.example.core.convert.DocumentConverter;
-import org.example.core.model.PageSize;
 import org.example.core.model.PdfResult;
 import org.example.core.model.ProtectOptions;
 import org.example.core.operations.PdfProtector;
+import org.example.core.service.OperationRunner;
 import org.example.core.service.OperationType;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /** Add a password (AES-128) to a PDF. */
@@ -26,23 +23,20 @@ public class ProtectPanel extends BasePanel {
     public ProtectPanel() { super("panel.PROTECT.title", "run.PROTECT", OperationType.PROTECT); }
 
     @Override
+    protected boolean supportsBatch() { return true; }
+
+    @Override
     protected String inputHintKey() { return "hint.PROTECT"; }
 
     @Override
     protected VBox buildOptionsArea() {
-        Label passwordLabel = new Label();
-        I18n.bindText(passwordLabel::setText, "password.field.label");
-        passwordLabel.getStyleClass().add("text-sm");
         passwordField = new PasswordField();
         I18n.bindText(passwordField::setPromptText, "password.field.prompt");
-
-        Label ownerLabel = new Label();
-        I18n.bindText(ownerLabel::setText, "password.owner.label");
-        ownerLabel.getStyleClass().add("text-sm");
         ownerField = new PasswordField();
         I18n.bindText(ownerField::setPromptText, "password.owner.prompt");
-
-        return new VBox(6, passwordLabel, passwordField, ownerLabel, ownerField);
+        return new VBox(Ui.OPTION_GAP,
+            labeledField("password.field.label", passwordField),
+            labeledField("password.owner.label", ownerField));
     }
 
     @Override
@@ -51,22 +45,22 @@ public class ProtectPanel extends BasePanel {
         if (files.isEmpty()) return;
         String password = passwordField.getText();
         String owner = ownerField.getText();
+        String ownerPw = owner == null ? "" : owner;
+
+        if (isBatchMode()) {
+            runPerFile("verb.protect", (in, out) ->
+                PdfProtector.execute(new ProtectOptions(in, password, ownerPw, out)));
+            return;
+        }
 
         Path input = files.get(0);
-        Path output = resolveOutput(input.resolveSibling(
-            stripExt(input.getFileName().toString()) + "_protected.pdf"));
+        Path output = resolveOutputFor(input);
         Task<PdfResult> task = new Task<>() {
             @Override
             protected PdfResult call() throws Exception {
-                updateMessage(I18n.t("msg.protecting"));
-                List<Path> temps = new ArrayList<>();
-                try {
-                    Path pdf = DocumentConverter.ensurePdf(input, PageSize.FIT, temps);
-                    return PdfProtector.execute(new ProtectOptions(
-                        pdf, password, owner == null ? "" : owner, output));
-                } finally {
-                    for (Path t : temps) Files.deleteIfExists(t);
-                }
+                updateMessage(I18n.t("msg.busy", I18n.t("verb.protect")));
+                return OperationRunner.run(input, output,
+                    (pdf, out) -> PdfProtector.execute(new ProtectOptions(pdf, password, ownerPw, out)));
             }
         };
         progressPanel.run(task, output);

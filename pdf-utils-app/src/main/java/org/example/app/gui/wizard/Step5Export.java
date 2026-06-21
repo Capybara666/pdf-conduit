@@ -114,7 +114,7 @@ public class Step5Export implements WizardStep {
                     Path merged = compress ? output.resolveSibling("_wizard_tmp.pdf") : output;
                     PdfMerger.execute(new MergeOptions(pages, merged));
                     if (compress) {
-                        updateMessage(I18n.t("msg.compressing"));
+                        updateMessage(I18n.t("msg.busy", I18n.t("verb.compress")));
                         CompressResult r = PdfCompressor.execute(
                             new CompressOptions(merged, targetBytes, output));
                         merged.toFile().delete();

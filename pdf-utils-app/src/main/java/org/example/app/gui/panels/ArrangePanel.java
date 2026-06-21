@@ -5,16 +5,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import org.example.app.gui.component.DropZone;
+import org.example.app.gui.component.OutputPathControl;
 import org.example.app.gui.component.PageReorderGrid;
 import org.example.app.gui.component.ProgressPanel;
 import org.example.app.gui.util.DefaultLocations;
@@ -25,6 +23,7 @@ import org.example.core.model.ArrangeOptions;
 import org.example.core.model.ArrangeResult;
 import org.example.core.model.PageSize;
 import org.example.core.operations.PdfArranger;
+import org.example.core.service.OperationType;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +34,10 @@ import java.util.List;
  * Friendly page-arranging panel: drop in a PDF (or any convertible document),
  * see its pages as thumbnails, then drag them into the order you want — removing
  * or duplicating pages as needed — and save the result. Visual, no syntax to learn.
+ *
+ * <p>It does not extend {@link BasePanel} (its center is a thumbnail grid, not a
+ * file list), but shares the same {@link OutputPathControl} so output handling
+ * stays identical to every other panel.
  */
 public class ArrangePanel extends BorderPane {
 
@@ -43,8 +46,7 @@ public class ArrangePanel extends BorderPane {
     private final PageReorderGrid grid = new PageReorderGrid();
     private final ProgressPanel progressPanel = new ProgressPanel("run.ARRANGE");
     private final Label statusLabel = new Label();
-    private final TextField folderField = new TextField();
-    private final TextField nameField = new TextField();
+    private final OutputPathControl output = new OutputPathControl();
     private final Button resetBtn = new Button();
     private final Button reverseBtn = new Button();
 
@@ -83,25 +85,9 @@ public class ArrangePanel extends BorderPane {
 
         VBox top = new VBox(14, title, hint, dropZone, toolbar);
 
-        // --- output: folder + name ---
-        I18n.bindText(folderField::setPromptText, "output.folder.prompt");
-        folderField.setText(DefaultLocations.defaultDir().toString());
-        HBox.setHgrow(folderField, Priority.ALWAYS);
-        Button browse = new Button("…");
-        browse.getStyleClass().add("btn-secondary");
-        browse.setOnAction(e -> browseFolder());
-        HBox folderRow = new HBox(6, folderField, browse);
-        I18n.bindText(nameField::setPromptText, "output.file.prompt");
-        nameField.setText(DefaultLocations.DEFAULT_FILE);
-        Label folderLabel = new Label();
-        I18n.bindText(folderLabel::setText, "output.folder");
-        Label nameLabel = new Label();
-        I18n.bindText(nameLabel::setText, "output.name");
-        VBox outputBox = new VBox(4, folderLabel, folderRow, nameLabel, nameField);
-
         progressPanel.getRunButton().setOnAction(e -> onRun());
 
-        VBox bottom = new VBox(14, outputBox, progressPanel);
+        VBox bottom = new VBox(14, output, progressPanel);
 
         setTop(top);
         setCenter(grid);
@@ -147,8 +133,7 @@ public class ArrangePanel extends BorderPane {
             grid.setPages(task.getValue());
             refreshControls();
             // Default the output name to "<stem>_arranged.pdf".
-            String stem = stripExt(loadedName);
-            nameField.setText(stem + "_arranged.pdf");
+            output.suggestName(stripExt(loadedName) + OperationType.ARRANGE.suffix() + ".pdf");
         });
         task.setOnFailed(e -> {
             Throwable ex = task.getException();
@@ -164,39 +149,15 @@ public class ArrangePanel extends BorderPane {
         if (workingPdf == null || grid.isEmpty()) return;
         List<Integer> order = grid.order();
         Path source = workingPdf;
-        Path output = resolveOutput();
+        Path dest = output.resolveOutput(DefaultLocations.DEFAULT_FILE);
         Task<ArrangeResult> task = new Task<>() {
             @Override
             protected ArrangeResult call() throws Exception {
                 updateMessage(I18n.t("arrange.saving"));
-                return PdfArranger.execute(new ArrangeOptions(source, order, output));
+                return PdfArranger.execute(new ArrangeOptions(source, order, dest));
             }
         };
-        progressPanel.run(task, output);
-    }
-
-    // --- output helpers ---------------------------------------------------
-
-    private Path resolveOutput() {
-        String folder = folderField.getText();
-        Path dir = (folder == null || folder.isBlank())
-            ? DefaultLocations.defaultDir() : Path.of(folder.strip());
-        String name = nameField.getText();
-        if (name == null || name.isBlank()) name = DefaultLocations.DEFAULT_FILE;
-        name = name.strip();
-        if (!name.toLowerCase().endsWith(".pdf")) name = name + ".pdf";
-        return dir.resolve(name);
-    }
-
-    private void browseFolder() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(I18n.t("chooser.selectfolder"));
-        try {
-            Path p = Path.of(folderField.getText());
-            if (Files.isDirectory(p)) chooser.setInitialDirectory(p.toFile());
-        } catch (Exception ignored) {}
-        var dir = chooser.showDialog((Stage) getScene().getWindow());
-        if (dir != null) folderField.setText(dir.getAbsolutePath());
+        progressPanel.run(task, dest);
     }
 
     private void releaseWorking() {

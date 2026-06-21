@@ -18,6 +18,9 @@ public class MergePanel extends BasePanel {
     public MergePanel() { super("panel.MERGE.title", "run.MERGE", OperationType.MERGE); }
 
     @Override
+    protected String inputHintKey() { return "hint.MERGE"; }
+
+    @Override
     protected VBox buildOptionsArea() { return new VBox(); }
 
     @Override
@@ -25,9 +28,7 @@ public class MergePanel extends BasePanel {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
 
-        Path defaultOut = files.get(0).resolveSibling(
-            stripExt(files.get(0).getFileName().toString()) + "_merged.pdf");
-        Path output = resolveOutput(defaultOut);
+        Path output = resolveOutputFor(files.get(0));
 
         Task<MergeResult> task = new Task<>() {
             @Override
