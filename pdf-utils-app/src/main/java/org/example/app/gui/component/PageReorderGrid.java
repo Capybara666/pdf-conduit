@@ -196,8 +196,8 @@ public final class PageReorderGrid extends ScrollPane {
                 double dx = e.getSceneX() - pressX, dy = e.getSceneY() - pressY;
                 if (dx * dx + dy * dy < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
                 dragActive = true;
+                startGhost(cell);        // snapshot at full opacity, before dimming
                 cell.setOpacity(0.4);
-                startGhost(cell);
             }
             moveGhost(e.getSceneX(), e.getSceneY());
             updateDropMarkers(e.getSceneX(), e.getSceneY());
