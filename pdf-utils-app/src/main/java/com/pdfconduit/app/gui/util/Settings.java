@@ -112,4 +112,21 @@ public final class Settings {
     public static void setOverwriteMode(OverwriteMode value) {
         PREFS.put("overwriteMode", (value == null ? OverwriteMode.ASK : value).name());
     }
+
+    // --- LibreOffice path override ---------------------------------------
+
+    /** A user-set LibreOffice executable path, or {@code null} when none is configured. */
+    public static String sofficePath() {
+        String stored = PREFS.get("sofficePath", "");
+        return (stored == null || stored.isBlank()) ? null : stored.strip();
+    }
+
+    /** Sets (or, when blank, clears) the LibreOffice path override. */
+    public static void setSofficePath(String path) {
+        if (path == null || path.isBlank()) {
+            PREFS.remove("sofficePath");
+        } else {
+            PREFS.put("sofficePath", path.strip());
+        }
+    }
 }

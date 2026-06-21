@@ -109,6 +109,22 @@ public final class DocumentConverter {
     /** Whether office/document conversion is possible on this machine. */
     public static boolean officeConversionAvailable() { return findSoffice() != null; }
 
+    /** The resolved LibreOffice executable (override or auto-detected), or {@code null}. */
+    public static String sofficePath() { return findSoffice(); }
+
+    /**
+     * Sets a user-supplied LibreOffice path, tried before the built-in candidates. Blank
+     * clears it. Resets the cached search so the change takes effect immediately. The app
+     * persists this (a GUI preference); core only holds the live value.
+     */
+    public static void setSofficeOverride(String path) {
+        synchronized (DocumentConverter.class) {
+            sofficeOverride = (path == null || path.isBlank()) ? null : path.strip();
+            sofficeSearched = false;
+            sofficePath = null;
+        }
+    }
+
     // --- LibreOffice ------------------------------------------------------
 
     private static final String[] SOFFICE_CANDIDATES = {
@@ -122,6 +138,7 @@ public final class DocumentConverter {
 
     private static volatile boolean sofficeSearched;
     private static volatile String sofficePath;
+    private static volatile String sofficeOverride;   // user-supplied path, tried first
 
     private static String findSoffice() {
         if (sofficeSearched) return sofficePath;
@@ -134,6 +151,9 @@ public final class DocumentConverter {
     }
 
     private static String locateSoffice() {
+        if (sofficeOverride != null && Files.isExecutable(Path.of(sofficeOverride))) {
+            return sofficeOverride;
+        }
         for (String candidate : SOFFICE_CANDIDATES) {
             boolean explicitPath = candidate.contains("/") || candidate.contains("\\");
             if (explicitPath) {

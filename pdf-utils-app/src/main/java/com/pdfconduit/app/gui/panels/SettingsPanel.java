@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import com.pdfconduit.app.gui.ThemeManager;
@@ -20,6 +21,7 @@ import com.pdfconduit.app.gui.util.DefaultLocations;
 import com.pdfconduit.app.gui.util.Settings;
 import com.pdfconduit.app.gui.util.Sfx;
 import com.pdfconduit.app.i18n.I18n;
+import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.model.PageSize;
 
 import java.io.File;
@@ -62,7 +64,8 @@ public final class SettingsPanel extends VBox {
             Forms.labeledField("settings.compresstarget", compressTargetControl()),
             Forms.labeledField("settings.pagesize",     pageSizeControl()),
             Forms.labeledField("settings.autoopen",     autoOpenControl()),
-            Forms.labeledField("settings.overwrite",    overwriteControl()));
+            Forms.labeledField("settings.overwrite",    overwriteControl()),
+            Forms.labeledField("settings.libreoffice",  libreOfficeControl()));
 
         getChildren().addAll(title, hint, rows);
     }
@@ -167,6 +170,38 @@ public final class SettingsPanel extends VBox {
             if (val != null) Settings.setOverwriteMode(val);
         });
         return box;
+    }
+
+    /** LibreOffice status (detected path or "not found") plus a manual "Locate…" button. */
+    private HBox libreOfficeControl() {
+        Label status = new Label();
+        status.getStyleClass().add("text-caption");
+        status.setWrapText(true);
+        HBox.setHgrow(status, Priority.ALWAYS);
+        Runnable refresh = () -> {
+            String path = DocumentConverter.sofficePath();
+            status.setText(path != null
+                ? I18n.t("settings.libreoffice.found", path)
+                : I18n.t("settings.libreoffice.missing"));
+        };
+        refresh.run();
+        I18n.addListener(refresh);
+
+        Button locate = new Button();
+        I18n.bindText(locate::setText, "settings.libreoffice.locate");
+        locate.getStyleClass().add("btn-secondary");
+        locate.setOnAction(e -> {
+            Stage stage = getScene() == null ? null : (Stage) getScene().getWindow();
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle(I18n.t("chooser.selectsoffice"));
+            File f = chooser.showOpenDialog(stage);
+            if (f != null) {
+                Settings.setSofficePath(f.getAbsolutePath());
+                DocumentConverter.setSofficeOverride(f.getAbsolutePath());
+                refresh.run();
+            }
+        });
+        return new HBox(Ui.INLINE_GAP, status, locate);
     }
 
     // --- combo helpers ----------------------------------------------------
