@@ -459,8 +459,7 @@
 /* The vertical insertion line shown when dropping a page between two others. */
 .page-drop-line {
     -fx-background-color: -c-accent;
-    -fx-background-radius: 2;
-    -fx-opacity: 0.8;
+    -fx-background-radius: 1;
 }
 .page-tile-thumb {
     -fx-background-color: white;

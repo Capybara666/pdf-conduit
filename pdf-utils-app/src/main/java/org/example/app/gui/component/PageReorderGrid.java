@@ -50,17 +50,10 @@ public final class PageReorderGrid extends ScrollPane {
     private javafx.scene.layout.Region dropLine;
     private double pressX, pressY;
     private boolean dragActive;
-    // Last cursor position (scene coords) during a drag, so auto-scroll can keep
-    // the ghost and insertion marker in sync while the pointer itself is still.
+    // Last cursor position (scene coords) during a drag, so a wheel-scroll mid-drag
+    // can re-track the ghost and insertion marker against the (still) pointer.
     private double lastSceneX, lastSceneY;
-    private double autoScrollSpeed;
-    private javafx.animation.AnimationTimer autoScroller;
     private Runnable onChange = () -> {};
-
-    /** How close (px) to a viewport edge a drag must get before the list auto-scrolls. */
-    private static final double EDGE_MARGIN = 56;
-    /** Peak auto-scroll speed in pixels per frame, at the very edge. */
-    private static final double MAX_SCROLL_PX = 16;
 
     /** One page in the grid: the 1-based source page number and its thumbnail. */
     private static final class Tile {
@@ -83,27 +76,18 @@ public final class PageReorderGrid extends ScrollPane {
 
         // Drive wheel scrolling explicitly so it stays consistent regardless of
         // focus/gesture state (handled in the capturing phase, before the skin).
+        // This keeps the wheel working even mid-drag; when it does, re-track the
+        // ghost + marker so they follow the content sliding under the cursor.
         addEventFilter(ScrollEvent.SCROLL, e -> {
             double extent = flow.getBoundsInLocal().getHeight() - getViewportBounds().getHeight();
             if (extent <= 0 || e.getDeltaY() == 0) return;
             double v = getVvalue() - e.getDeltaY() / extent;
             setVvalue(Math.max(0, Math.min(1, v)));
+            if (dragActive) updateDuringDrag(lastSceneX, lastSceneY);
             e.consume();
         });
 
         tiles.addListener((ListChangeListener<Tile>) c -> { relayout(); onChange.run(); });
-
-        // While a drag rests near the top/bottom edge, scroll the list towards it
-        // and re-track the ghost + marker against the (still) cursor each frame.
-        autoScroller = new javafx.animation.AnimationTimer() {
-            @Override public void handle(long now) {
-                if (!dragActive || autoScrollSpeed == 0) { stop(); return; }
-                double extent = flow.getBoundsInLocal().getHeight() - getViewportBounds().getHeight();
-                if (extent <= 0) { stop(); return; }
-                setVvalue(Math.max(0, Math.min(1, getVvalue() + autoScrollSpeed / extent)));
-                updateDuringDrag(lastSceneX, lastSceneY);
-            }
-        };
 
         // Re-render the tiles (badges + tooltips) in the new language, keeping order.
         I18n.addListener(this::relayout);
@@ -225,12 +209,10 @@ public final class PageReorderGrid extends ScrollPane {
             lastSceneX = e.getSceneX();
             lastSceneY = e.getSceneY();
             updateDuringDrag(lastSceneX, lastSceneY);
-            updateAutoScroll(lastSceneY);
         });
 
         cell.setOnMouseReleased(e -> {
             if (dragging != null && dragActive) dropAt(e.getSceneX(), e.getSceneY());
-            stopAutoScroll();
             clearAllMarkers();
             endGhost();
             if (draggingCell != null) draggingCell.setOpacity(1.0);
@@ -246,26 +228,6 @@ public final class PageReorderGrid extends ScrollPane {
     private void updateDuringDrag(double sceneX, double sceneY) {
         moveGhost(sceneX, sceneY);
         updateDropMarkers(sceneX, sceneY);
-    }
-
-    /** Sets the auto-scroll speed from the cursor's distance into a viewport edge. */
-    private void updateAutoScroll(double sceneY) {
-        var vp = localToScene(getBoundsInLocal());
-        double speed = 0;
-        if (sceneY < vp.getMinY() + EDGE_MARGIN) {
-            double f = Math.min(1, (vp.getMinY() + EDGE_MARGIN - sceneY) / EDGE_MARGIN);
-            speed = -MAX_SCROLL_PX * f;
-        } else if (sceneY > vp.getMaxY() - EDGE_MARGIN) {
-            double f = Math.min(1, (sceneY - (vp.getMaxY() - EDGE_MARGIN)) / EDGE_MARGIN);
-            speed = MAX_SCROLL_PX * f;
-        }
-        autoScrollSpeed = speed;
-        if (speed != 0) autoScroller.start(); else autoScroller.stop();
-    }
-
-    private void stopAutoScroll() {
-        autoScrollSpeed = 0;
-        autoScroller.stop();
     }
 
     // --- floating drag-view (ghost) ---------------------------------------
@@ -292,8 +254,8 @@ public final class PageReorderGrid extends ScrollPane {
         dropLine = null;
     }
 
-    /** Thickness (px) of the vertical insertion line drawn between two tiles. */
-    private static final double LINE_W = 3.5;
+    /** Thickness (px) of the vertical insertion line — matches the edge marker's border. */
+    private static final double LINE_W = 3;
 
     /** Draws the insertion line in the gap between two same-row tiles (scene bounds). */
     private void showDropLine(javafx.geometry.Bounds left, javafx.geometry.Bounds right) {
