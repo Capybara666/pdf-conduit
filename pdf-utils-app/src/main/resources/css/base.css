@@ -210,6 +210,8 @@
 }
 .result-link:hover { -fx-background-color: derive(-c-surface-2, -10%); }
 .result-link:pressed { -fx-background-color: derive(-c-surface-2, -18%); }
+/* The post-operation result summary (e.g. Compress "12 MB → 3 MB · 73% smaller"). */
+.result-summary { -fx-text-fill: -c-text-muted; -fx-font-size: 12px; -fx-font-weight: bold; }
 
 /* ---- File-list remove button ---- */
 .file-delete-btn {
@@ -498,3 +500,64 @@
     -fx-opacity: 0;
 }
 .page-tile-selectable:selected .page-tile-check { -fx-opacity: 1; }
+
+/* ---- PDF viewer (Preview) ---- */
+.viewer-toolbar {
+    -fx-padding: 6 4 10 4;
+}
+.viewer-btn {
+    -fx-background-color: -c-surface-2;
+    -fx-text-fill: -c-text;
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 7;
+    -fx-cursor: hand;
+}
+.viewer-btn:hover { -fx-background-color: -c-accent; -fx-text-fill: -c-on-accent; }
+.viewer-btn:disabled { -fx-opacity: 0.4; -fx-cursor: default; }
+.viewer-page-field {
+    -fx-background-color: -c-surface;
+    -fx-border-color: -c-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 3 6 3 6;
+}
+.viewer-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: -c-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+.viewer-scroll > .viewport { -fx-background-color: -c-surface-2; }
+.viewer-page-area { -fx-padding: 14; }
+/* The rendered page floats on the neutral viewport with a soft shadow. */
+.viewer-page-area .image-view {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 16, 0.15, 0, 4);
+}
+.viewer-placeholder { -fx-text-fill: -c-text-muted; -fx-font-size: 13px; }
+.viewer-thumb-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: -c-border;
+    -fx-border-width: 0 1 0 0;
+}
+.viewer-thumb-scroll > .viewport { -fx-background-color: transparent; }
+.viewer-thumb-rail { -fx-padding: 4 12 4 4; }
+.viewer-thumb {
+    -fx-background-color: white;
+    -fx-border-color: -c-border;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 2;
+    -fx-cursor: hand;
+}
+.viewer-thumb:hover { -fx-border-color: -c-accent; }
+.viewer-thumb:active { -fx-border-color: -c-accent; }
+.viewer-thumb-num {
+    -fx-background-color: rgba(0,0,0,0.55);
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-padding: 0 4 0 4;
+    -fx-background-radius: 4;
+}

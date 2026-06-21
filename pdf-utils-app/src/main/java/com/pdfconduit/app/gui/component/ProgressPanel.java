@@ -7,11 +7,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import com.pdfconduit.app.gui.Animations;
 import com.pdfconduit.app.gui.util.FileOpener;
+import com.pdfconduit.app.gui.util.PreviewWindow;
 import com.pdfconduit.app.gui.util.Settings;
 import com.pdfconduit.app.gui.util.Sfx;
 import com.pdfconduit.app.i18n.I18n;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.function.Function;
 
 public class ProgressPanel extends VBox {
@@ -21,7 +24,9 @@ public class ProgressPanel extends VBox {
     private final Label statusLabel;
     private final Label errorBanner;
     private final Label warnBanner;
+    private final Label summaryLabel;
     private final HBox resultLinks;
+    private final Button previewBtn;
     private final Button openFile;
     private final Button openFolder;
 
@@ -56,21 +61,48 @@ public class ProgressPanel extends VBox {
         warnBanner.setVisible(false);
         warnBanner.managedProperty().bind(warnBanner.visibleProperty());
 
+        previewBtn = new Button();
         openFile   = new Button();
         openFolder = new Button();
+        I18n.bindText(previewBtn::setText, "link.preview");
         I18n.bindText(openFile::setText, "link.openfile");
         I18n.bindText(openFolder::setText, "link.openfolder");
+        previewBtn.getStyleClass().add("result-link");
         openFile.getStyleClass().add("result-link");
         openFolder.getStyleClass().add("result-link");
-        resultLinks = new HBox(10, openFile, openFolder);
+        // Preview only makes sense for a single PDF output (not a folder of files).
+        previewBtn.managedProperty().bind(previewBtn.visibleProperty());
+        resultLinks = new HBox(10, previewBtn, openFile, openFolder);
         resultLinks.getStyleClass().add("result-links");
         resultLinks.setVisible(false);
         resultLinks.managedProperty().bind(resultLinks.visibleProperty());
 
+        summaryLabel = new Label();
+        summaryLabel.getStyleClass().add("result-summary");
+        summaryLabel.setVisible(false);
+        summaryLabel.managedProperty().bind(summaryLabel.visibleProperty());
+
         // statusLabel only reserves height while it has text.
         statusLabel.managedProperty().bind(statusLabel.textProperty().isNotEmpty());
 
-        getChildren().addAll(runBtn, progressBar, statusLabel, errorBanner, warnBanner, resultLinks);
+        getChildren().addAll(runBtn, progressBar, statusLabel, errorBanner, warnBanner,
+            summaryLabel, resultLinks);
+    }
+
+    /** A generic "output is X" line for a single-PDF result, or {@code null} otherwise. */
+    private static String genericSummary(Path output) {
+        if (!isPreviewablePdf(output)) return null;
+        try {
+            return I18n.t("summary.size", humanSize(Files.size(output)));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** True when {@code p} is a single existing PDF file — the only case in-app preview fits. */
+    private static boolean isPreviewablePdf(Path p) {
+        return p != null && Files.isRegularFile(p)
+            && p.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".pdf");
     }
 
     /** A non-null, human-readable message for a failed task's exception. */
@@ -91,19 +123,27 @@ public class ProgressPanel extends VBox {
     public Button getRunButton() { return runBtn; }
 
     public <T> void run(Task<T> task, Path expectedOutput) {
-        run(task, expectedOutput, null);
+        run(task, expectedOutput, null, null);
+    }
+
+    public <T> void run(Task<T> task, Path expectedOutput, Function<T, String> warningFn) {
+        run(task, expectedOutput, warningFn, null);
     }
 
     /**
-     * Runs {@code task}, and on success calls {@code warningFn} with the result; if it
-     * returns a non-null message, a warning banner is shown alongside the result links.
+     * Runs {@code task}. On success: shows the result links; calls {@code warningFn} for
+     * an optional warning banner; and shows a result summary — {@code summaryFn}'s text if
+     * given (e.g. Compress's "12 MB → 3 MB (−73%)"), else a generic output-size line for a
+     * single-PDF result. Both functions may be {@code null}.
      */
-    public <T> void run(Task<T> task, Path expectedOutput, Function<T, String> warningFn) {
+    public <T> void run(Task<T> task, Path expectedOutput,
+                        Function<T, String> warningFn, Function<T, String> summaryFn) {
         progressBar.setVisible(true);
         progressBar.progressProperty().bind(task.progressProperty());
         statusLabel.textProperty().bind(task.messageProperty());
         errorBanner.setVisible(false);
         warnBanner.setVisible(false);
+        summaryLabel.setVisible(false);
         resultLinks.setVisible(false);
         runBtn.setDisable(true);
 
@@ -118,8 +158,17 @@ public class ProgressPanel extends VBox {
                 warnBanner.setVisible(true);
                 Animations.fadeIn(warnBanner);
             }
+            String summary = summaryFn == null ? null : summaryFn.apply(task.getValue());
+            if (summary == null) summary = genericSummary(expectedOutput);
+            if (summary != null) {
+                summaryLabel.setText(summary);
+                summaryLabel.setVisible(true);
+            }
             resultLinks.setVisible(true);
             Animations.popIn(resultLinks);
+            boolean previewable = isPreviewablePdf(expectedOutput);
+            previewBtn.setVisible(previewable);
+            if (previewable) previewBtn.setOnAction(ev -> PreviewWindow.open(this, expectedOutput));
             openFile.setOnAction(ev -> FileOpener.open(expectedOutput));
             openFolder.setOnAction(ev -> FileOpener.open(expectedOutput.getParent()));
             switch (Settings.autoOpen()) {

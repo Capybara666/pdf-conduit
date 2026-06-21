@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SidebarItemCatalogTest {
 
     @Test
-    void onlyPipelineWizardAndSettingsLackAnOperationType() {
+    void onlyNonOperationItemsLackAnOperationType() {
         for (SidebarItem item : SidebarItem.values()) {
             boolean isOp = item != SidebarItem.PIPELINE
                 && item != SidebarItem.WIZARD

@@ -68,10 +68,20 @@ public class CompressPanel extends BasePanel {
                     (pdf, out) -> PdfCompressor.execute(new CompressOptions(pdf, targetBytes, out)));
             }
         };
-        progressPanel.run(task, output, r -> r.targetReached() ? null
-            : I18n.t("compress.warn",
-                ProgressPanel.humanSize(r.resultBytes()),
-                ProgressPanel.humanSize(r.originalBytes())));
+        progressPanel.run(task, output,
+            r -> r.targetReached() ? null
+                : I18n.t("compress.warn",
+                    ProgressPanel.humanSize(r.resultBytes()),
+                    ProgressPanel.humanSize(r.originalBytes())),
+            CompressPanel::summarize);
+    }
+
+    /** "12.0 MB → 3.2 MB (−73%)" — the actual reduction achieved. */
+    private static String summarize(CompressResult r) {
+        long orig = r.originalBytes(), res = r.resultBytes();
+        int pct = orig > 0 ? (int) Math.round((1.0 - (double) res / orig) * 100) : 0;
+        return I18n.t("compress.summary",
+            ProgressPanel.humanSize(orig), ProgressPanel.humanSize(res), pct);
     }
 
     private long parseTargetBytes() {
