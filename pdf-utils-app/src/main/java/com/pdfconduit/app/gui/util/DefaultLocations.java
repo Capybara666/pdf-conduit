@@ -17,8 +17,14 @@ public final class DefaultLocations {
 
     private DefaultLocations() {}
 
-    /** {@code ~/Documents/pdf-conduit} (or {@code ~/pdf-conduit} if Documents is absent). */
+    /**
+     * The output directory to use by default: the user's configured folder (Settings)
+     * when one is set and still a directory, else {@code ~/Documents/pdf-conduit}
+     * (or {@code ~/pdf-conduit} if Documents is absent).
+     */
     public static Path defaultDir() {
+        Path configured = Settings.outputDir();
+        if (configured != null) return configured;
         String home = System.getProperty("user.home", ".");
         Path documents = Path.of(home, "Documents");
         Path base = Files.isDirectory(documents) ? documents : Path.of(home);

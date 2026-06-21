@@ -17,7 +17,6 @@ import com.pdfconduit.app.gui.panels.*;
 import com.pdfconduit.app.gui.sidebar.SidebarController;
 import com.pdfconduit.app.gui.sidebar.SidebarItem;
 import com.pdfconduit.app.gui.wizard.WizardController;
-import com.pdfconduit.app.gui.util.Sfx;
 import com.pdfconduit.app.i18n.I18n;
 
 import java.util.EnumMap;
@@ -76,41 +75,14 @@ public class MainWindow {
     private MenuBar buildMenuBar() {
         MenuBar menuBar = new MenuBar();
 
-        Menu themeMenu = new Menu(I18n.t("menu.theme"));
-        ToggleGroup themeGroup = new ToggleGroup();
-        for (ThemeManager.Theme theme : ThemeManager.Theme.values()) {
-            RadioMenuItem item = new RadioMenuItem(theme.displayName);
-            item.setToggleGroup(themeGroup);
-            item.setSelected(theme == ThemeManager.getCurrent());
-            item.setOnAction(e -> ThemeManager.apply(scene, theme));
-            themeMenu.getItems().add(item);
-            if (theme == ThemeManager.Theme.SYSTEM) {
-                themeMenu.getItems().add(new SeparatorMenuItem());
-            }
-        }
-
-        Menu langMenu = new Menu(I18n.t("menu.language"));
-        ToggleGroup langGroup = new ToggleGroup();
-        for (I18n.Language lang : I18n.Language.values()) {
-            RadioMenuItem item = new RadioMenuItem(lang.displayName);
-            item.setToggleGroup(langGroup);
-            item.setSelected(lang == I18n.getCurrent());
-            item.setOnAction(e -> I18n.setLanguage(lang));
-            langMenu.getItems().add(item);
-        }
-
-        Menu soundMenu = new Menu(I18n.t("menu.sound"));
-        CheckMenuItem soundToggle = new CheckMenuItem(I18n.t("menu.soundeffects"));
-        soundToggle.setSelected(Sfx.isEnabled());
-        soundToggle.setOnAction(e -> Sfx.setEnabled(soundToggle.isSelected()));
-        soundMenu.getItems().add(soundToggle);
-
+        // Theme / Language / Sound now live in the Settings panel (sidebar bottom);
+        // the menu bar keeps only Help → About.
         Menu helpMenu = new Menu(I18n.t("menu.help"));
         MenuItem about = new MenuItem(I18n.t("menu.about"));
         about.setOnAction(e -> showAbout());
         helpMenu.getItems().add(about);
 
-        menuBar.getMenus().addAll(themeMenu, langMenu, soundMenu, helpMenu);
+        menuBar.getMenus().add(helpMenu);
         return menuBar;
     }
 
@@ -154,6 +126,7 @@ public class MainWindow {
             case WATERMARK -> new WatermarkPanel();
             case PIPELINE -> new com.pdfconduit.app.gui.pipeline.PipelineView();
             case WIZARD   -> new WizardController();
+            case SETTINGS -> new SettingsPanel();
         };
     }
 

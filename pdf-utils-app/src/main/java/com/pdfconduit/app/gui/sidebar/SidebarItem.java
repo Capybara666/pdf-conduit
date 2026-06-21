@@ -15,7 +15,8 @@ public enum SidebarItem {
     METADATA ("🏷", "Metadata",  OperationType.METADATA),
     WATERMARK("💧", "Watermark", OperationType.WATERMARK),
     PIPELINE ("⇄", "Pipeline",  null),
-    WIZARD   ("⚙", "Wizard",    null);
+    WIZARD   ("⚙", "Wizard",    null),
+    SETTINGS ("⚙", "Settings",  null);
 
     public final String icon;
     public final String label;
@@ -27,6 +28,6 @@ public enum SidebarItem {
         this.type  = type;
     }
 
-    /** The catalog operation this item runs, or empty for Pipeline / Wizard. */
+    /** The catalog operation this item runs, or empty for Pipeline / Wizard / Settings. */
     public Optional<OperationType> operationType() { return Optional.ofNullable(type); }
 }

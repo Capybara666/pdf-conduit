@@ -70,6 +70,12 @@ public final class Icons {
     // a water droplet (watermark)
     private static final String WATERMARK =
         "M12 4 C9 8 6.5 12 6.5 15 a5.5 5.5 0 0 0 11 0 C17.5 12 15 8 12 4 Z";
+    // sliders: three horizontal rails each with a knob (settings)
+    private static final String SETTINGS =
+        "M4 7 H20 M4 12 H20 M4 17 H20 "
+        + "M13 7 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 "
+        + "M7 12 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 "
+        + "M13 17 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0";
 
     // --- public factories -------------------------------------------------
 
@@ -87,6 +93,7 @@ public final class Icons {
             case WATERMARK -> WATERMARK;
             case PIPELINE -> PIPELINE;
             case WIZARD   -> WIZARD;
+            case SETTINGS -> SETTINGS;
         }, size);
     }
 

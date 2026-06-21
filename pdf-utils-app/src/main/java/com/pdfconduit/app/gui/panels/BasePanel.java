@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import com.pdfconduit.app.gui.Ui;
 import com.pdfconduit.app.gui.component.DropZone;
 import com.pdfconduit.app.gui.component.FileListView;
+import com.pdfconduit.app.gui.component.Forms;
 import com.pdfconduit.app.gui.component.OutputPathControl;
 import com.pdfconduit.app.gui.component.ProgressPanel;
 import com.pdfconduit.app.i18n.I18n;
@@ -168,15 +169,12 @@ public abstract class BasePanel extends BorderPane {
 
     /** A standard option label (small caption styling). */
     protected Label fieldLabel(String key) {
-        Label l = new Label();
-        I18n.bindText(l::setText, key);
-        l.getStyleClass().add("text-sm");
-        return l;
+        return Forms.label(key);
     }
 
     /** A label stacked above the field it describes, with the standard gap. */
     protected VBox labeledField(String key, Node field) {
-        return new VBox(Ui.LABEL_FIELD_GAP, fieldLabel(key), field);
+        return Forms.labeledField(key, field);
     }
 
     // --- batch plumbing ---------------------------------------------------

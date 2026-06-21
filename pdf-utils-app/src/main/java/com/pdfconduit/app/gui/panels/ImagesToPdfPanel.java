@@ -11,6 +11,7 @@ import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PageSource;
 import com.pdfconduit.app.gui.Ui;
+import com.pdfconduit.app.gui.util.Settings;
 import com.pdfconduit.core.operations.PdfMerger;
 import com.pdfconduit.core.service.OperationRunner;
 import com.pdfconduit.core.service.OperationType;
@@ -38,7 +39,7 @@ public class ImagesToPdfPanel extends BasePanel {
     protected VBox buildOptionsArea() {
         pageSizeBox = new ComboBox<>();
         pageSizeBox.getItems().addAll(PageSize.values());
-        pageSizeBox.setValue(PageSize.FIT);
+        pageSizeBox.setValue(Settings.pageSize());
         HBox row = new HBox(Ui.INLINE_GAP, fieldLabel("images.pagesize.label"), pageSizeBox);
         return new VBox(Ui.OPTION_GAP, row);
     }

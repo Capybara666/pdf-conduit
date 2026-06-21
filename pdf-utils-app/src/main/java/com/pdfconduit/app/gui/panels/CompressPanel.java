@@ -6,6 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import com.pdfconduit.app.gui.Ui;
 import com.pdfconduit.app.gui.component.ProgressPanel;
+import com.pdfconduit.app.gui.util.Settings;
 import com.pdfconduit.core.model.CompressOptions;
 import com.pdfconduit.core.model.CompressResult;
 import com.pdfconduit.core.operations.PdfCompressor;
@@ -33,10 +34,12 @@ public class CompressPanel extends BasePanel {
 
     @Override
     protected VBox buildOptionsArea() {
-        sizeField = new TextField("5");
+        double value = Settings.compressValue();
+        sizeField = new TextField(value == Math.rint(value)
+            ? Long.toString((long) value) : Double.toString(value));
         unitBox = new ComboBox<>();
         unitBox.getItems().addAll("MB", "KB");
-        unitBox.setValue("MB");
+        unitBox.setValue(Settings.compressUnit());
         HBox row = new HBox(Ui.INLINE_GAP, sizeField, unitBox);
         return new VBox(Ui.LABEL_FIELD_GAP, fieldLabel("compress.target.label"), row);
     }

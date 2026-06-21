@@ -11,9 +11,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class SidebarItemCatalogTest {
 
     @Test
-    void onlyPipelineAndWizardLackAnOperationType() {
+    void onlyPipelineWizardAndSettingsLackAnOperationType() {
         for (SidebarItem item : SidebarItem.values()) {
-            boolean isOp = item != SidebarItem.PIPELINE && item != SidebarItem.WIZARD;
+            boolean isOp = item != SidebarItem.PIPELINE
+                && item != SidebarItem.WIZARD
+                && item != SidebarItem.SETTINGS;
             assertEquals(isOp, item.operationType().isPresent(), item + " operationType presence");
         }
     }

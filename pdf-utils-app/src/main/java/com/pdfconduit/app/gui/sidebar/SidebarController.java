@@ -7,6 +7,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import com.pdfconduit.app.i18n.I18n;
@@ -32,10 +34,18 @@ public class SidebarController extends VBox {
         getChildren().add(sectionLabel);
 
         for (SidebarItem item : SidebarItem.values()) {
+            if (item == SidebarItem.SETTINGS) continue;   // pinned to the bottom below
             Button btn = createItemButton(item, onSelect);
             buttons.put(item, btn);
             getChildren().add(btn);
         }
+
+        // Settings sits at the very bottom of the sidebar, pushed there by a spacer.
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+        Button settingsBtn = createItemButton(SidebarItem.SETTINGS, onSelect);
+        buttons.put(SidebarItem.SETTINGS, settingsBtn);
+        getChildren().addAll(spacer, settingsBtn);
     }
 
     private HBox buildBrand() {

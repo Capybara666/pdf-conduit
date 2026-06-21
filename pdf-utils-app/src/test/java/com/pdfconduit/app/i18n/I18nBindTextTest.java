@@ -27,19 +27,19 @@ class I18nBindTextTest {
         I18n.setLanguage(I18n.Language.ENGLISH);
         var holder = new AtomicReference<String>();
 
-        I18n.bindText(holder::set, "menu.theme");
+        I18n.bindText(holder::set, "menu.help");
 
-        assertEquals("Theme", holder.get());
+        assertEquals("Help", holder.get());
     }
 
     @Test
     void reappliesTheTextWhenLanguageChanges() {
         I18n.setLanguage(I18n.Language.ENGLISH);
         var holder = new AtomicReference<String>();
-        I18n.bindText(holder::set, "menu.theme");
+        I18n.bindText(holder::set, "menu.help");
 
         I18n.setLanguage(I18n.Language.POLISH);
 
-        assertEquals("Motyw", holder.get());
+        assertEquals("Pomoc", holder.get());
     }
 }

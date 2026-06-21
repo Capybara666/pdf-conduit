@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import com.pdfconduit.app.gui.Animations;
 import com.pdfconduit.app.gui.util.FileOpener;
+import com.pdfconduit.app.gui.util.Settings;
 import com.pdfconduit.app.gui.util.Sfx;
 import com.pdfconduit.app.i18n.I18n;
 
@@ -121,6 +122,11 @@ public class ProgressPanel extends VBox {
             Animations.popIn(resultLinks);
             openFile.setOnAction(ev -> FileOpener.open(expectedOutput));
             openFolder.setOnAction(ev -> FileOpener.open(expectedOutput.getParent()));
+            switch (Settings.autoOpen()) {
+                case FILE   -> FileOpener.open(expectedOutput);
+                case FOLDER -> FileOpener.open(expectedOutput.getParent());
+                case NONE   -> { /* leave it to the result links */ }
+            }
             Sfx.playDone();
         }));
 
