@@ -47,6 +47,7 @@ public final class PageReorderGrid extends ScrollPane {
     private Tile dragging;
     private VBox draggingCell;
     private ImageView ghost;
+    private javafx.scene.layout.Region dropLine;
     private double pressX, pressY;
     private boolean dragActive;
     private Runnable onChange = () -> {};
@@ -235,6 +236,33 @@ public final class PageReorderGrid extends ScrollPane {
     private void endGhost() {
         overlay.getChildren().clear();
         ghost = null;
+        dropLine = null;
+    }
+
+    /** Thickness (px) of the vertical insertion line drawn between two tiles. */
+    private static final double LINE_W = 3;
+
+    /** Draws the insertion line in the gap between two same-row tiles (scene bounds). */
+    private void showDropLine(javafx.geometry.Bounds left, javafx.geometry.Bounds right) {
+        if (dropLine == null) {
+            dropLine = new javafx.scene.layout.Region();
+            dropLine.getStyleClass().add("page-drop-line");
+            dropLine.setMouseTransparent(true);
+        }
+        if (!overlay.getChildren().contains(dropLine)) overlay.getChildren().add(dropLine);
+        double centerX = (left.getMaxX() + right.getMinX()) / 2;
+        Point2D p = overlay.sceneToLocal(centerX, right.getMinY());
+        dropLine.setPrefSize(LINE_W, right.getHeight());
+        dropLine.relocate(p.getX() - LINE_W / 2, p.getY());
+        dropLine.setVisible(true);
+    }
+
+    private void hideDropLine() {
+        if (dropLine != null) dropLine.setVisible(false);
+    }
+
+    private static boolean sameRow(javafx.geometry.Bounds a, javafx.geometry.Bounds b) {
+        return a.getMinY() < b.getMaxY() && b.getMinY() < a.getMaxY();
     }
 
     /**
@@ -256,19 +284,33 @@ public final class PageReorderGrid extends ScrollPane {
         return children.size();                             // past the last tile → append
     }
 
-    /** Shows a drop-before/after marker at the cursor's insertion point. */
+    /**
+     * Marks the cursor's insertion point. The true ends of the list (before the
+     * first tile / after the last) light up that tile's edge; an insertion
+     * between two tiles draws a vertical line in the gap instead.
+     */
     private void updateDropMarkers(double sceneX, double sceneY) {
         clearAllMarkers();
-        int target = dropIndex(sceneX, sceneY);
-        int n = flow.getChildren().size();
+        hideDropLine();
+        var children = flow.getChildren();
+        int n = children.size();
         if (n == 0) return;
-        if (target < n) {
-            if (tiles.get(target) != dragging
-                && flow.getChildren().get(target) instanceof VBox c)
-                c.pseudoClassStateChanged(DROP_BEFORE, true);
-        } else if (flow.getChildren().get(n - 1) instanceof VBox c
-                   && tiles.get(n - 1) != dragging) {
-            c.pseudoClassStateChanged(DROP_AFTER, true);
+        int from = tiles.indexOf(dragging);
+        int target = dropIndex(sceneX, sceneY);
+        if (target == from || target == from + 1) return;   // drop here = no move
+
+        if (target == 0) {
+            if (children.getFirst() instanceof VBox c) c.pseudoClassStateChanged(DROP_BEFORE, true);
+        } else if (target == n) {
+            if (children.get(n - 1) instanceof VBox c) c.pseudoClassStateChanged(DROP_AFTER, true);
+        } else {
+            var left = children.get(target - 1).localToScene(children.get(target - 1).getBoundsInLocal());
+            var right = children.get(target).localToScene(children.get(target).getBoundsInLocal());
+            if (sameRow(left, right)) {
+                showDropLine(left, right);                    // between two tiles on a row
+            } else if (children.get(target) instanceof VBox c) {
+                c.pseudoClassStateChanged(DROP_BEFORE, true); // wrap: start of the next row
+            }
         }
     }
 

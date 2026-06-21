@@ -456,6 +456,12 @@
 .page-drag-ghost {
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 14, 0.2, 0, 6);
 }
+/* The vertical insertion line shown when dropping a page between two others. */
+.page-drop-line {
+    -fx-background-color: -c-accent;
+    -fx-background-radius: 2;
+    -fx-effect: dropshadow(gaussian, -c-accent, 6, 0.3, 0, 0);
+}
 .page-tile-thumb {
     -fx-background-color: white;
     -fx-background-radius: 4;
