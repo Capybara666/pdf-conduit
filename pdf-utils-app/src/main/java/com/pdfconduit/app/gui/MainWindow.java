@@ -150,6 +150,7 @@ public class MainWindow {
             case ARRANGE  -> new ArrangePanel();
             case IMAGES   -> new ImagesToPdfPanel();
             case TO_IMAGES -> new PdfToImagesPanel();
+            case TO_TEXT  -> new PdfToTextPanel();
             case PROTECT  -> new ProtectPanel();
             case UNLOCK   -> new UnlockPanel();
             case METADATA -> new MetadataPanel();

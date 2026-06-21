@@ -300,6 +300,20 @@ class CliIntegrationTest {
         }
     }
 
+    @Test
+    void pdfToTextWritesATxtFile() throws Exception {
+        Path src = createPdf(2);
+        Path dir = tmp.resolve("txt");
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("pdf-to-text", src.toString(), "--format", "txt", "-o", dir.toString());
+
+        assertEquals(0, exit);
+        try (var files = java.nio.file.Files.list(dir)) {
+            assertEquals(1, files.filter(p -> p.toString().endsWith(".txt")).count());
+        }
+    }
+
     private Path createPdf(int pages) throws IOException {
         Path path = tmp.resolve("test-" + pages + "-" + System.nanoTime() + ".pdf");
         try (PDDocument doc = new PDDocument()) {

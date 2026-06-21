@@ -20,6 +20,7 @@ import picocli.CommandLine.Command;
         MetadataCommand.class,
         WatermarkCommand.class,
         PdfToImagesCommand.class,
+        PdfToTextCommand.class,
         PipelineCommand.class,
         CommandLine.HelpCommand.class
     }
