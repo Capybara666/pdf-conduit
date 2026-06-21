@@ -4,7 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -14,8 +16,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.Node;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.example.app.i18n.I18n;
 
 import java.util.ArrayList;
@@ -36,10 +40,13 @@ public final class PageReorderGrid extends ScrollPane {
     private static final double DRAG_THRESHOLD = 8;
 
     private final FlowPane flow = new FlowPane(14, 14);
+    // Sits above the tiles to carry the floating "page I'm dragging" thumbnail.
+    private final Pane overlay = new Pane();
     private final ObservableList<Tile> tiles = FXCollections.observableArrayList();
     private List<Tile> original = List.of();
     private Tile dragging;
     private VBox draggingCell;
+    private ImageView ghost;
     private double pressX, pressY;
     private boolean dragActive;
     private Runnable onChange = () -> {};
@@ -57,7 +64,11 @@ public final class PageReorderGrid extends ScrollPane {
         flow.getStyleClass().add("page-grid");
         flow.setPadding(new Insets(14));
         flow.setAlignment(Pos.TOP_LEFT);
-        setContent(flow);
+        // The overlay must let clicks/drags fall through to the tiles beneath it.
+        overlay.setMouseTransparent(true);
+        StackPane content = new StackPane(flow, overlay);
+        content.setAlignment(Pos.TOP_LEFT);
+        setContent(content);
 
         // Drive wheel scrolling explicitly so it stays consistent regardless of
         // focus/gesture state (handled in the capturing phase, before the skin).
@@ -167,6 +178,8 @@ public final class PageReorderGrid extends ScrollPane {
     // gesture leaves the ScrollPane unable to deliver wheel-scroll events until
     // the next click. Reordering is done with press/drag/release instead, hit-
     // testing tiles by scene coordinates, so no native drag gesture is involved.
+    // A floating thumbnail (the "ghost") follows the cursor — drawn in an overlay
+    // Pane rather than by the native drag-view, which would re-introduce the bug.
 
     private void installDrag(VBox cell, Tile tile) {
         cell.setOnMousePressed(e -> {
@@ -184,18 +197,45 @@ public final class PageReorderGrid extends ScrollPane {
                 if (dx * dx + dy * dy < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
                 dragActive = true;
                 cell.setOpacity(0.4);
+                startGhost(cell);
             }
+            moveGhost(e.getSceneX(), e.getSceneY());
             updateDropMarkers(e.getSceneX(), e.getSceneY());
         });
 
         cell.setOnMouseReleased(e -> {
             if (dragging != null && dragActive) dropAt(e.getSceneX(), e.getSceneY());
             clearAllMarkers();
+            endGhost();
             if (draggingCell != null) draggingCell.setOpacity(1.0);
             dragging = null;
             draggingCell = null;
             dragActive = false;
         });
+    }
+
+    // --- floating drag-view (ghost) ---------------------------------------
+
+    private void startGhost(VBox cell) {
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        ghost = new ImageView(cell.snapshot(params, null));
+        ghost.getStyleClass().add("page-drag-ghost");
+        ghost.setMouseTransparent(true);
+        ghost.setOpacity(0.85);
+        overlay.getChildren().setAll(ghost);
+    }
+
+    private void moveGhost(double sceneX, double sceneY) {
+        if (ghost == null) return;
+        Point2D p = overlay.sceneToLocal(sceneX, sceneY);
+        ghost.relocate(p.getX() - ghost.getImage().getWidth() / 2,
+                       p.getY() - ghost.getImage().getHeight() / 2);
+    }
+
+    private void endGhost() {
+        overlay.getChildren().clear();
+        ghost = null;
     }
 
     /** The flow child index whose bounds contain the scene point, or -1. */
