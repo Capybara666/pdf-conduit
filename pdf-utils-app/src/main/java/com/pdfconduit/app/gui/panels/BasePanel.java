@@ -207,7 +207,8 @@ public abstract class BasePanel extends BorderPane {
                     (completed, total) -> {
                         updateMessage(I18n.t("msg.busy.count", I18n.t(verbKey), completed, total));
                         updateProgress(completed, total);
-                    });
+                    },
+                    this::isCancelled);
             }
         };
         progressPanel.run(task, dir);

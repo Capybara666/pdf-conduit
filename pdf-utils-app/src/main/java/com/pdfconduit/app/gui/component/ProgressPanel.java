@@ -20,6 +20,7 @@ import java.util.function.Function;
 public class ProgressPanel extends VBox {
 
     private final Button runBtn;
+    private final Button cancelBtn;
     private final ProgressBar progressBar;
     private final Label statusLabel;
     private final Label errorBanner;
@@ -38,6 +39,13 @@ public class ProgressPanel extends VBox {
         runBtn.getStyleClass().add("btn-primary");
         runBtn.setMaxWidth(Double.MAX_VALUE);
         Animations.installHoverScale(runBtn, 1.02);
+
+        cancelBtn = new Button();
+        I18n.bindText(cancelBtn::setText, "btn.cancel");
+        cancelBtn.getStyleClass().add("btn-secondary");
+        cancelBtn.setMaxWidth(Double.MAX_VALUE);
+        cancelBtn.setVisible(false);
+        cancelBtn.managedProperty().bind(cancelBtn.visibleProperty());
 
         progressBar = new ProgressBar(0);
         progressBar.setMaxWidth(Double.MAX_VALUE);
@@ -86,7 +94,7 @@ public class ProgressPanel extends VBox {
         // statusLabel only reserves height while it has text.
         statusLabel.managedProperty().bind(statusLabel.textProperty().isNotEmpty());
 
-        getChildren().addAll(runBtn, progressBar, statusLabel, errorBanner, warnBanner,
+        getChildren().addAll(runBtn, cancelBtn, progressBar, statusLabel, errorBanner, warnBanner,
             summaryLabel, resultLinks);
     }
 
@@ -147,9 +155,15 @@ public class ProgressPanel extends VBox {
         summaryLabel.setVisible(false);
         resultLinks.setVisible(false);
         runBtn.setDisable(true);
+        // Cooperative cancel: cancel(false) flips the task's isCancelled() flag (which
+        // batch loops poll between files) without interrupting a write mid-file.
+        cancelBtn.setVisible(true);
+        cancelBtn.setOnAction(ev -> { cancelBtn.setDisable(true); task.cancel(false); });
+        cancelBtn.setDisable(false);
 
         task.setOnSucceeded(e -> Platform.runLater(() -> {
             progressBar.setVisible(false);
+            cancelBtn.setVisible(false);
             runBtn.setDisable(false);
             statusLabel.textProperty().unbind();
             statusLabel.setText(I18n.t("progress.done"));
@@ -188,12 +202,21 @@ public class ProgressPanel extends VBox {
 
         task.setOnFailed(e -> Platform.runLater(() -> {
             progressBar.setVisible(false);
+            cancelBtn.setVisible(false);
             runBtn.setDisable(false);
             statusLabel.textProperty().unbind();
             statusLabel.setText("");
             errorBanner.setText(messageOf(task.getException()));
             errorBanner.setVisible(true);
             Sfx.playError();
+        }));
+
+        task.setOnCancelled(e -> Platform.runLater(() -> {
+            progressBar.setVisible(false);
+            cancelBtn.setVisible(false);
+            runBtn.setDisable(false);
+            statusLabel.textProperty().unbind();
+            statusLabel.setText(I18n.t("progress.cancelled"));
         }));
 
         Thread t = new Thread(task);

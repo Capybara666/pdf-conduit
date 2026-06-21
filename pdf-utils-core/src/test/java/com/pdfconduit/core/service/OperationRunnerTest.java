@@ -85,6 +85,21 @@ class OperationRunnerTest {
     }
 
     @Test
+    void runBatchStopsBetweenFilesWhenCancelled() throws Exception {
+        List<Path> inputs = List.of(pdf("a.pdf"), pdf("b.pdf"), pdf("c.pdf"));
+        Path outDir = tmp.resolve("cancel");
+        List<Path> processed = new ArrayList<>();
+        // Cancel as soon as the first file is done — the loop should stop before the rest.
+        List<Path> outs = OperationRunner.runBatch(OperationType.ROTATE, inputs, outDir,
+            (in, o) -> { Files.copy(in, o); processed.add(in); return null; },
+            ProgressSink.NONE,
+            () -> !processed.isEmpty());
+        assertEquals(1, outs.size(), "only the first file should be produced");
+        assertTrue(Files.exists(outDir.resolve("a_rotated.pdf")));
+        assertTrue(Files.notExists(outDir.resolve("b_rotated.pdf")));
+    }
+
+    @Test
     void runBatchPrefixesPerFileErrorsWithTheFilename() throws Exception {
         List<Path> inputs = List.of(pdf("good.pdf"), pdf("bad.pdf"));
         Path outDir = tmp.resolve("out3");

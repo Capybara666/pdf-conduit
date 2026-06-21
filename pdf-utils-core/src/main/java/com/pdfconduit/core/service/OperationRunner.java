@@ -52,6 +52,19 @@ public final class OperationRunner {
     public static List<Path> runBatch(OperationType type, List<Path> rawInputs, Path outputDir,
                                       Execution<?> exec, ProgressSink progress)
             throws PdfOperationException {
+        return runBatch(type, rawInputs, outputDir, exec, progress, () -> false);
+    }
+
+    /**
+     * As {@link #runBatch(OperationType, List, Path, Execution, ProgressSink)} but
+     * stops cleanly once {@code cancelled} reports true. Cancellation is checked
+     * between files, so the in-progress file is always finished whole (no partial
+     * output) and already-written files remain. Returns whatever was produced so far.
+     */
+    public static List<Path> runBatch(OperationType type, List<Path> rawInputs, Path outputDir,
+                                      Execution<?> exec, ProgressSink progress,
+                                      java.util.function.BooleanSupplier cancelled)
+            throws PdfOperationException {
         try {
             Files.createDirectories(outputDir);
         } catch (IOException e) {
@@ -60,6 +73,7 @@ public final class OperationRunner {
         ProgressSink sink = progress == null ? ProgressSink.NONE : progress;
         List<Path> outputs = new ArrayList<>();
         for (int i = 0; i < rawInputs.size(); i++) {
+            if (cancelled.getAsBoolean()) break;
             Path in = rawInputs.get(i);
             Path out = outputDir.resolve(outputName(type, in));
             try {

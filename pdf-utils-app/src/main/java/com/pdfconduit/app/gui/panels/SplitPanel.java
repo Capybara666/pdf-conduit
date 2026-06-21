@@ -140,6 +140,7 @@ public class SplitPanel extends BasePanel {
             protected Path call() throws Exception {
                 Files.createDirectories(dir);
                 for (int i = 0; i < files.size(); i++) {
+                    if (isCancelled()) break;
                     Path in = files.get(i);
                     updateMessage(I18n.t("msg.busy.count", I18n.t("verb.extract"), i + 1, files.size()));
                     List<Path> temps = new ArrayList<>();
