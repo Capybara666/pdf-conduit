@@ -237,44 +237,46 @@ public final class PageReorderGrid extends ScrollPane {
         ghost = null;
     }
 
-    /** The flow child index whose bounds contain the scene point, or -1. */
-    private int indexAt(double sceneX, double sceneY) {
-        for (int i = 0; i < flow.getChildren().size(); i++) {
-            Node n = flow.getChildren().get(i);
-            if (n.localToScene(n.getBoundsInLocal()).contains(sceneX, sceneY)) return i;
+    /**
+     * The insertion index (0..size) for the cursor, in row-major reading order.
+     * Unlike a plain bounds hit-test this also resolves the gaps *between* tiles:
+     * a cursor in the gap inserts between its neighbours instead of falling
+     * through to "append at the end". Returns size only when the cursor is truly
+     * past the last tile (e.g. the empty area below the grid).
+     */
+    private int dropIndex(double sceneX, double sceneY) {
+        var children = flow.getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            var b = children.get(i).localToScene(children.get(i).getBoundsInLocal());
+            if (sceneY < b.getMinY()) return i;            // cursor is in a row above tile i
+            if (sceneY <= b.getMaxY()                       // cursor shares tile i's row…
+                && sceneX < b.getMinX() + b.getWidth() / 2) // …and is left of its centre
+                return i;
         }
-        return -1;
+        return children.size();                             // past the last tile → append
     }
 
-    /** Shows a drop-before/after marker on the tile under the cursor (not the dragged one). */
+    /** Shows a drop-before/after marker at the cursor's insertion point. */
     private void updateDropMarkers(double sceneX, double sceneY) {
-        int idx = indexAt(sceneX, sceneY);
-        for (int i = 0; i < flow.getChildren().size(); i++) {
-            if (!(flow.getChildren().get(i) instanceof VBox c)) continue;
-            if (i == idx && tiles.get(i) != dragging) {
-                var b = c.localToScene(c.getBoundsInLocal());
-                boolean after = sceneX >= b.getMinX() + b.getWidth() / 2;
-                c.pseudoClassStateChanged(DROP_AFTER, after);
-                c.pseudoClassStateChanged(DROP_BEFORE, !after);
-            } else {
-                clearMarkers(c);
-            }
+        clearAllMarkers();
+        int target = dropIndex(sceneX, sceneY);
+        int n = flow.getChildren().size();
+        if (n == 0) return;
+        if (target < n) {
+            if (tiles.get(target) != dragging
+                && flow.getChildren().get(target) instanceof VBox c)
+                c.pseudoClassStateChanged(DROP_BEFORE, true);
+        } else if (flow.getChildren().get(n - 1) instanceof VBox c
+                   && tiles.get(n - 1) != dragging) {
+            c.pseudoClassStateChanged(DROP_AFTER, true);
         }
     }
 
-    /** Moves the dragged tile to where the cursor is (appends if over empty area). */
+    /** Moves the dragged tile to the cursor's insertion point. */
     private void dropAt(double sceneX, double sceneY) {
         int from = tiles.indexOf(dragging);
         if (from < 0) return;
-        int idx = indexAt(sceneX, sceneY);
-        int target;
-        if (idx < 0) {
-            target = tiles.size();                 // released over empty area → append
-        } else {
-            Node n = flow.getChildren().get(idx);
-            var b = n.localToScene(n.getBoundsInLocal());
-            target = idx + (sceneX >= b.getMinX() + b.getWidth() / 2 ? 1 : 0);
-        }
+        int target = dropIndex(sceneX, sceneY);
         tiles.remove(from);
         if (from < target) target--;               // removal shifted later items left
         target = Math.min(target, tiles.size());
