@@ -41,6 +41,40 @@ runtime dependencies and the bundled Java runtime). Build- and test-only tools
   native bundles, the bundled JDK is itself a GPLv2+CE OpenJDK build; its own
   `legal/` directory ships inside the produced app image.
 
+## Source code for GPL-licensed components (written offer)
+
+The Classpath Exception lets us keep PDF Conduit's own code proprietary, but the
+GPLv2-licensed components we **redistribute** — OpenJFX and the bundled OpenJDK
+runtime — still carry GPLv2's source-availability obligation. We satisfy it as
+follows.
+
+The OpenJFX libraries and the bundled OpenJDK runtime shipped with PDF Conduit are
+**unmodified** official builds. Their complete corresponding source code, matching
+the exact versions distributed, is publicly available at:
+
+- **OpenJFX 21.0.6** — <https://github.com/openjdk/jfx>, tag `21.0.6` (the
+  `org.openjfx` binaries are produced by Gluon from this source:
+  <https://github.com/gluonhq/jfx>).
+- **Bundled OpenJDK runtime** — the runtime is the OpenJDK build used to run
+  `jpackage` at release time. Record its exact vendor and version here at release
+  and link its matching source, e.g.:
+  - Eclipse Temurin / Adoptium → <https://github.com/adoptium/jdk21u>
+  - Oracle OpenJDK → <https://github.com/openjdk/jdk21u>
+  - **[RELEASE: bundled JDK vendor + exact version, e.g. "Temurin 21.0.x+y"]**
+
+**Written offer.** For at least three (3) years from the date you receive a copy of
+PDF Conduit, [LICENSOR LEGAL NAME] will, on request, provide the complete
+corresponding source code for the GPLv2-licensed components it distributes
+(OpenJFX and the bundled OpenJDK runtime), on a physical medium, for a charge no
+more than our cost of physically performing the distribution. Send requests to
+**[SOURCE-REQUEST EMAIL]**. This offer is valid to anyone in receipt of this
+information. Where the upstream links above already provide the matching source,
+that satisfies the same obligation.
+
+> Note: this written offer must name the **exact** bundled JDK version per release
+> (it changes with the build machine's JDK). Update the bracketed placeholder and
+> the contact email above as part of each release checklist.
+
 > This file documents the licenses of bundled dependencies. It is **not** legal
 > advice. Before a commercial release, have counsel confirm the redistribution
 > terms — especially anything you add later that is GPL/LGPL **without** a linking

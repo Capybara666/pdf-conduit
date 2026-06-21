@@ -17,7 +17,7 @@ each used under its own license. Full license texts follow.
 
 
 ==================================================================
-ATTRIBUTION NOTICES
+ATTRIBUTION NOTICES & GPL SOURCE AVAILABILITY
 ==================================================================
 
 PDF Conduit — third-party attribution notices
@@ -73,6 +73,26 @@ Copyright 2001-2024 The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (https://www.apache.org/).
 
+
+========================================================================
+SOURCE CODE FOR GPL-LICENSED COMPONENTS (OpenJFX, bundled OpenJDK)
+========================================================================
+
+PDF Conduit redistributes OpenJFX and a bundled OpenJDK runtime, which are
+licensed under GPLv2 with the Classpath Exception. They are unmodified official
+builds; their complete corresponding source, matching the distributed versions,
+is available at:
+
+  OpenJFX 21.0.6        https://github.com/openjdk/jfx  (tag 21.0.6)
+  Bundled OpenJDK       see the JDK vendor's source repository for the exact
+                        bundled version, e.g.
+                        https://github.com/adoptium/jdk21u (Eclipse Temurin) or
+                        https://github.com/openjdk/jdk21u (Oracle OpenJDK)
+
+Written offer: for at least three (3) years from the date you received this copy,
+[LICENSOR LEGAL NAME] will provide the complete corresponding source code for the
+GPLv2-licensed components it distributes, on a physical medium, for no more than
+the cost of distribution. Requests: [SOURCE-REQUEST EMAIL].
 
 
 ==================================================================
