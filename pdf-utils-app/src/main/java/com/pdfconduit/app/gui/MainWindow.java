@@ -102,7 +102,36 @@ public class MainWindow {
         alert.setTitle(I18n.t("about.title"));
         alert.setHeaderText("PDF Conduit 1.0.0");
         alert.setContentText(I18n.t("about.content"));
-        alert.showAndWait();
+        ButtonType licenses = new ButtonType(I18n.t("about.licenses"), ButtonBar.ButtonData.HELP_2);
+        alert.getButtonTypes().add(licenses);
+        alert.showAndWait().filter(b -> b == licenses).ifPresent(b -> showLicenses());
+    }
+
+    /** A scrollable, read-only view of the bundled third-party license notices. */
+    private void showLicenses() {
+        TextArea area = new TextArea(loadResource("/legal/third-party-licenses.txt"));
+        area.setEditable(false);
+        area.setWrapText(false);
+        area.setStyle("-fx-font-family: monospace;");
+
+        Stage dialog = new Stage();
+        dialog.initOwner(stage);
+        dialog.setTitle(I18n.t("about.licenses"));
+        Scene dlgScene = new Scene(new StackPane(area), 760, 620);
+        dlgScene.getStylesheets().setAll(scene.getStylesheets());
+        dialog.setScene(dlgScene);
+        for (Image icon : stage.getIcons()) dialog.getIcons().add(icon);
+        dialog.show();
+    }
+
+    /** Reads a UTF-8 text resource from the classpath, or a short fallback on failure. */
+    private String loadResource(String path) {
+        try (var in = getClass().getResourceAsStream(path)) {
+            if (in == null) return path + " not found.";
+            return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (java.io.IOException e) {
+            return "Could not load " + path + ": " + e.getMessage();
+        }
     }
 
     private void showPanel(SidebarItem item) {

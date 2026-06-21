@@ -42,6 +42,10 @@ jpackage \
   --main-class "${MAIN_CLASS}" \
   --dest "${OUT}"
 
+# Ship the license + third-party notices alongside the portable binary.
+cp LICENSE NOTICE THIRD-PARTY-LICENSES.md "${OUT}/${APP_NAME}/" 2>/dev/null || true
+cp -r licenses "${OUT}/${APP_NAME}/" 2>/dev/null || true
+
 ( cd "${OUT}" && zip -qr "${APP_NAME}-${APP_VERSION}-linux.zip" "${APP_NAME}" )
 echo "    portable app-image: ${OUT}/${APP_NAME}/  (zipped: ${OUT}/${APP_NAME}-${APP_VERSION}-linux.zip)"
 
@@ -55,6 +59,7 @@ if jpackage \
   --input "${LIB}" \
   --main-jar "${APP_JAR}" \
   --main-class "${MAIN_CLASS}" \
+  --license-file LICENSE \
   --linux-shortcut \
   --dest "${OUT}"; then
     echo "    .deb created in ${OUT}/"

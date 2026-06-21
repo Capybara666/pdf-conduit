@@ -1,0 +1,83 @@
+PDF Conduit — End User License Agreement (EULA)
+
+Copyright © 2026 [LICENSOR LEGAL NAME]. All rights reserved.
+
+------------------------------------------------------------------------------
+TEMPLATE NOTICE — READ FIRST
+This document is a starting template for a proprietary, paid desktop product.
+It is NOT legal advice and is NOT ready for release as-is. Before you sell or
+distribute PDF Conduit, have a qualified lawyer review and complete it —
+in particular the bracketed [PLACEHOLDERS], the warranty/liability limits, the
+refund terms, and the governing-law/jurisdiction clauses, which must match the
+country where you sell and your consumer-protection obligations.
+------------------------------------------------------------------------------
+
+This End User License Agreement ("Agreement") is a legal agreement between you
+(either an individual or a single entity, "You") and [LICENSOR LEGAL NAME]
+("Licensor") for the PDF Conduit software, including the executables, bundled
+runtime, and accompanying documentation ("Software"). By installing, copying,
+or otherwise using the Software, You agree to be bound by this Agreement. If You
+do not agree, do not install or use the Software.
+
+1. LICENSE GRANT
+   Subject to Your compliance with this Agreement and, where applicable, payment
+   of the applicable fees, Licensor grants You a non-exclusive, non-transferable,
+   revocable license to install and use the Software for Your internal personal
+   or business purposes, on the number of devices permitted by the edition or
+   plan You purchased.
+
+2. OWNERSHIP
+   The Software is licensed, not sold. Licensor and its suppliers retain all
+   right, title, and interest in and to the Software, including all intellectual
+   property rights. No rights are granted except as expressly set out here.
+
+3. RESTRICTIONS
+   Except to the extent this restriction is prohibited by applicable law, You
+   shall not: (a) sell, rent, lease, sublicense, distribute, or otherwise make
+   the Software available to third parties as a standalone product; (b) reverse
+   engineer, decompile, or disassemble the Software, except where and only to the
+   extent that applicable law expressly permits it despite this limitation;
+   (c) remove or alter any proprietary notices; or (d) use the Software to
+   develop a competing product.
+
+4. THIRD-PARTY COMPONENTS
+   The Software includes third-party open-source components that are licensed
+   separately under their own terms. Those terms are set out in the accompanying
+   "THIRD-PARTY-LICENSES.md", the "NOTICE" file, and the "licenses/" directory,
+   and they govern Your use of those components. Nothing in this Agreement limits
+   any rights You have, or obligations You owe, under those third-party licenses.
+
+5. NO WARRANTY
+   To the maximum extent permitted by applicable law, the Software is provided
+   "AS IS" and "AS AVAILABLE", without warranty of any kind, whether express,
+   implied, or statutory, including any implied warranties of merchantability,
+   fitness for a particular purpose, and non-infringement. Some jurisdictions do
+   not allow the exclusion of certain warranties, so some of the above may not
+   apply to You, and You may have additional statutory rights.
+
+6. LIMITATION OF LIABILITY
+   To the maximum extent permitted by applicable law, Licensor shall not be
+   liable for any indirect, incidental, special, consequential, or punitive
+   damages, or any loss of profits, data, or goodwill, arising out of or related
+   to the Software. Licensor's total aggregate liability under this Agreement
+   shall not exceed the amount You paid for the Software in the [12] months
+   preceding the event giving rise to the claim. Nothing in this Agreement
+   excludes or limits liability that cannot be excluded or limited by law.
+
+7. TERMINATION
+   This Agreement is effective until terminated. It terminates automatically if
+   You breach it. Upon termination You must stop using the Software and destroy
+   all copies. Sections 2, 4, 5, 6, and 8 survive termination.
+
+8. GOVERNING LAW
+   This Agreement is governed by the laws of [JURISDICTION], without regard to
+   its conflict-of-laws rules, and the courts of [VENUE] shall have jurisdiction,
+   without prejudice to any mandatory consumer-protection rights You have in Your
+   country of residence.
+
+9. ENTIRE AGREEMENT
+   This Agreement, together with the third-party license documents it references,
+   is the entire agreement between You and Licensor regarding the Software and
+   supersedes any prior or contemporaneous understandings.
+
+Contact: [SUPPORT/LEGAL EMAIL]

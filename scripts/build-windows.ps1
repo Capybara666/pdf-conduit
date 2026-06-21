@@ -45,6 +45,10 @@ jpackage `
   --dest $Out
 if ($LASTEXITCODE -ne 0) { throw "jpackage app-image failed." }
 
+# Ship the license + third-party notices alongside the portable binary.
+Copy-Item LICENSE,NOTICE,THIRD-PARTY-LICENSES.md "$Out\$AppName" -Force -ErrorAction SilentlyContinue
+Copy-Item licenses "$Out\$AppName" -Recurse -Force -ErrorAction SilentlyContinue
+
 Compress-Archive -Path "$Out\$AppName" -DestinationPath "$Out\$AppName-$AppVersion-windows.zip" -Force
 Write-Host "    portable app-image: $Out\$AppName\  (zipped: $Out\$AppName-$AppVersion-windows.zip)"
 
@@ -58,6 +62,7 @@ jpackage `
   --input $Lib `
   --main-jar $AppJar `
   --main-class $MainClass `
+  --license-file LICENSE `
   --win-dir-chooser `
   --win-menu `
   --win-shortcut `
