@@ -222,15 +222,14 @@ public final class PageReorderGrid extends ScrollPane {
         ghost = new ImageView(cell.snapshot(params, null));
         ghost.getStyleClass().add("page-drag-ghost");
         ghost.setMouseTransparent(true);
-        ghost.setOpacity(0.85);
         overlay.getChildren().setAll(ghost);
     }
 
     private void moveGhost(double sceneX, double sceneY) {
         if (ghost == null) return;
+        // Anchor the preview's top-left at the cursor, like the native drag-view.
         Point2D p = overlay.sceneToLocal(sceneX, sceneY);
-        ghost.relocate(p.getX() - ghost.getImage().getWidth() / 2,
-                       p.getY() - ghost.getImage().getHeight() / 2);
+        ghost.relocate(p.getX(), p.getY());
     }
 
     private void endGhost() {
