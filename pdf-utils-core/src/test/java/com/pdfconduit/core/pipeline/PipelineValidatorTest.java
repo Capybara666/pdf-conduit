@@ -42,6 +42,23 @@ class PipelineValidatorTest {
     }
 
     @Test
+    void rejectsExportNodeThatIsNotTerminal() {
+        PipelineModel m = new PipelineModel();
+        m.nodes.add(source("s", "/tmp/a.pdf"));
+        PipelineNode toImg = new PipelineNode("i", NodeKind.TO_IMAGES, 0, 0);
+        toImg.outputDestination = "/tmp/out";
+        PipelineNode rotate = new PipelineNode("r", NodeKind.ROTATE, 0, 0);
+        rotate.outputDestination = "/tmp/out.pdf";
+        m.nodes.add(toImg);
+        m.nodes.add(rotate);
+        m.connections.add(new Connection("s", "i"));
+        m.connections.add(new Connection("i", "r"));   // export feeding downstream — illegal
+
+        assertTrue(PipelineValidator.validate(m).stream()
+            .anyMatch(e -> "i".equals(e.nodeId()) && e.message().toLowerCase().contains("last step")));
+    }
+
+    @Test
     void rejectsUnsupportedFileType() {
         PipelineModel m = new PipelineModel();
         m.nodes.add(source("s", "/tmp/archive.zip"));

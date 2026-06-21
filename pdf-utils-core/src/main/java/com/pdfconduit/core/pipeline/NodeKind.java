@@ -15,7 +15,10 @@ public enum NodeKind {
     PROTECT("Protect", OperationType.PROTECT),
     UNLOCK("Unlock", OperationType.UNLOCK),
     METADATA("Metadata", OperationType.METADATA),
-    WATERMARK("Watermark", OperationType.WATERMARK);
+    WATERMARK("Watermark", OperationType.WATERMARK),
+    // Terminal exports — output is not a PDF, so they cannot feed downstream nodes.
+    TO_IMAGES("To Images", OperationType.PDF_TO_IMAGES),
+    TO_TEXT("To Text", OperationType.PDF_TO_TEXT);
 
     public final String label;
     private final OperationType type;
@@ -32,6 +35,9 @@ public enum NodeKind {
     public String suffix() { return type == null ? "" : type.suffix(); }
 
     public boolean isSource() { return this == SOURCE; }
+
+    /** Export sinks (PDF→images, PDF→text): their output is not a PDF, so they must be terminal. */
+    public boolean isExport() { return this == TO_IMAGES || this == TO_TEXT; }
 
     /** Reduce ops collapse a whole input bundle into a single output document. */
     public boolean isReduce() { return type != null && type.cardinality() == Cardinality.REDUCE; }

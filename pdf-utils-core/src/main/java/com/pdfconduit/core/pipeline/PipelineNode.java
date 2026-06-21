@@ -59,6 +59,14 @@ public class PipelineNode {
     public double wmRotation = 45;
     public double wmScale = 0.7;
 
+    // TO_IMAGES export
+    public com.pdfconduit.core.model.ImageFormat imageFormat = com.pdfconduit.core.model.ImageFormat.PNG;
+    public int imageDpi = 150;
+    public float jpegQuality = 0.85f;
+
+    // TO_TEXT export
+    public com.pdfconduit.core.model.TextFormat textFormat = com.pdfconduit.core.model.TextFormat.TXT;
+
     // terminal nodes only — a file path (single output) or folder (multiple)
     public String outputDestination = "";
 

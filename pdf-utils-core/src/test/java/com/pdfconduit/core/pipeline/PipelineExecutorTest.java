@@ -33,6 +33,45 @@ class PipelineExecutorTest {
     }
 
     @Test
+    void sourceToImagesSavesOneImagePerPage() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("doc.pdf", 3));
+        PipelineNode toImg = new PipelineNode("i", NodeKind.TO_IMAGES, 0, 0);
+        toImg.imageDpi = 36;
+        Path outDir = tmp.resolve("images-out");
+        toImg.outputDestination = outDir.toString();
+        m.nodes.add(src);
+        m.nodes.add(toImg);
+        m.connections.add(new Connection("s", "i"));
+
+        PipelineExecutor.Result result = PipelineExecutor.run(m, null);
+
+        assertEquals(3, result.savedByNode().get("i").size());
+        try (var files = Files.list(outDir)) {
+            assertEquals(3, files.filter(p -> p.toString().endsWith(".png")).count());
+        }
+    }
+
+    @Test
+    void sourceToTextSavesATxtFile() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(pdf("doc.pdf", 2));
+        PipelineNode toText = new PipelineNode("t", NodeKind.TO_TEXT, 0, 0);
+        Path outDir = tmp.resolve("text-out");
+        toText.outputDestination = outDir.toString();
+        m.nodes.add(src);
+        m.nodes.add(toText);
+        m.connections.add(new Connection("s", "t"));
+
+        PipelineExecutor.Result result = PipelineExecutor.run(m, null);
+
+        assertEquals(1, result.savedByNode().get("t").size());
+        assertTrue(result.savedByNode().get("t").get(0).toString().endsWith(".txt"));
+    }
+
+    @Test
     void sourceMergeToSingleFile() throws Exception {
         PipelineModel m = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);

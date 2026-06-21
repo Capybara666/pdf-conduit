@@ -12,7 +12,7 @@ import java.nio.file.Path;
  */
 public record Document(Path file, DocType type, String baseName) {
 
-    public enum DocType { PDF, IMAGE }
+    public enum DocType { PDF, IMAGE, OTHER }
 
     public static DocType typeOf(Path file) {
         String name = file.getFileName().toString().toLowerCase();

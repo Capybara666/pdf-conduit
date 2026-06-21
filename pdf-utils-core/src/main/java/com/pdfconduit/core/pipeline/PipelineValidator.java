@@ -69,6 +69,13 @@ public final class PipelineValidator {
                     "Split into separate files must be the last step in its chain."));
             }
 
+            // Export nodes produce images / text, not a PDF, so nothing can consume
+            // their output — they must end their chain.
+            if (n.kind.isExport() && !model.isTerminal(n)) {
+                errors.add(new ValidationError(n.id,
+                    n.kind.label + " must be the last step in its chain."));
+            }
+
             // Protect and Unlock both need a password to work.
             if ((n.kind == NodeKind.PROTECT || n.kind == NodeKind.UNLOCK)
                     && (n.password == null || n.password.isBlank())) {

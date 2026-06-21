@@ -21,11 +21,14 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import com.pdfconduit.app.gui.util.DefaultLocations;
+import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.pipeline.NodeKind;
 import com.pdfconduit.core.pipeline.PipelineGraph;
 import com.pdfconduit.core.pipeline.PipelineNode;
 import com.pdfconduit.app.i18n.I18n;
+import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageSize;
+import com.pdfconduit.core.model.TextFormat;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -75,6 +78,8 @@ class NodeInspector extends FlowPane {
             case UNLOCK -> buildUnlock(node);
             case METADATA -> buildMetadata(node);
             case WATERMARK -> buildWatermark(node);
+            case TO_IMAGES -> buildToImages(node);
+            case TO_TEXT -> buildToText(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
         }
 
@@ -193,6 +198,40 @@ class NodeInspector extends FlowPane {
         box.setValue(node.pageSize);
         box.valueProperty().addListener((o, a, b) -> { if (b != null) { node.pageSize = b; canvas.refreshNode(node); } });
         getChildren().add(group("pipeline.node.pagesize", box));
+    }
+
+    private void buildToImages(PipelineNode node) {
+        ComboBox<ImageFormat> fmt = new ComboBox<>(FXCollections.observableArrayList(ImageFormat.values()));
+        fmt.setValue(node.imageFormat);
+        fmt.valueProperty().addListener((o, a, b) -> { if (b != null) { node.imageFormat = b; canvas.refreshNode(node); } });
+
+        ComboBox<Integer> dpi = new ComboBox<>(FXCollections.observableArrayList(72, 150, 300, 600));
+        dpi.setValue(node.imageDpi);
+        dpi.valueProperty().addListener((o, a, b) -> { if (b != null) { node.imageDpi = b; canvas.refreshNode(node); } });
+
+        getChildren().addAll(group("pipeline.node.format", fmt), group("pipeline.node.dpi", dpi));
+    }
+
+    private void buildToText(PipelineNode node) {
+        boolean lo = DocumentConverter.officeConversionAvailable();
+        // Without LibreOffice only TXT is offered.
+        ComboBox<TextFormat> fmt = new ComboBox<>(lo
+            ? FXCollections.observableArrayList(TextFormat.values())
+            : FXCollections.observableArrayList(TextFormat.TXT));
+        if (node.textFormat == TextFormat.DOCX && !lo) node.textFormat = TextFormat.TXT;
+        fmt.setValue(node.textFormat);
+        fmt.setConverter(new javafx.util.StringConverter<>() {
+            @Override public String toString(TextFormat t) {
+                return t == null ? "" : I18n.t(t == TextFormat.DOCX ? "totext.format.docx" : "totext.format.txt");
+            }
+            @Override public TextFormat fromString(String s) { return null; }
+        });
+        fmt.setPrefWidth(130);
+        fmt.setMinWidth(Region.USE_PREF_SIZE);
+        fmt.valueProperty().addListener((o, a, b) -> { if (b != null) { node.textFormat = b; canvas.refreshNode(node); } });
+
+        getChildren().add(group("pipeline.node.format", fmt));
+        if (!lo) getChildren().add(hint(I18n.t("totext.word.needslo")));
     }
 
     private void buildProtect(PipelineNode node) {

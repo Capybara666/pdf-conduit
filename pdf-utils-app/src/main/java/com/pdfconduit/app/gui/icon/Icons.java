@@ -120,6 +120,8 @@ public final class Icons {
             case UNLOCK        -> UNLOCK;
             case METADATA      -> METADATA;
             case WATERMARK     -> WATERMARK;
+            case TO_IMAGES     -> TO_IMAGES;
+            case TO_TEXT       -> TO_TEXT;
         }, size);
     }
 

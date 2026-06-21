@@ -13,6 +13,8 @@ import com.pdfconduit.core.operations.PdfMetadataEditor;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRotator;
 import com.pdfconduit.core.operations.PdfSplitter;
+import com.pdfconduit.core.operations.PdfTextExporter;
+import com.pdfconduit.core.operations.PdfToImageConverter;
 import com.pdfconduit.core.operations.PdfUnlocker;
 import com.pdfconduit.core.operations.PdfWatermarker;
 import com.pdfconduit.core.util.PageOrderParser;
@@ -176,6 +178,32 @@ public final class PipelineExecutor {
                     SplitResult r = PdfSplitter.execute(
                         new SplitOptions(src, range(n.pages, src), SplitMode.SEPARATE, destDir(n)));
                     for (Path f : r.outputs()) results.add(new Document(f, DocType.PDF, baseName));
+                } catch (PipelineException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new PipelineException(
+                        n.kind.label + " (" + in.file().getFileName() + "): " + e.getMessage(), e);
+                }
+                continue;
+            }
+
+            // Export sinks write non-PDF files (images / text) into the node's folder.
+            // The validator guarantees they are terminal.
+            if (n.kind.isExport()) {
+                try {
+                    Path src = ensurePdf(in, temps);
+                    if (n.kind == NodeKind.TO_IMAGES) {
+                        PdfToImageResult r = PdfToImageConverter.execute(new PdfToImageOptions(
+                            src, n.imageFormat, n.imageDpi, PageRange.ALL, n.jpegQuality,
+                            destDir(n), in.baseName()));
+                        for (Path f : r.images()) results.add(new Document(f, DocType.OTHER, baseName));
+                    } else {   // TO_TEXT
+                        PageRange pages = n.textFormat == TextFormat.TXT
+                            ? range(n.pages, src) : PageRange.ALL;
+                        PdfToTextResult r = PdfTextExporter.execute(new PdfToTextOptions(
+                            src, n.textFormat, pages, destDir(n), in.baseName()));
+                        results.add(new Document(r.output(), DocType.OTHER, baseName));
+                    }
                 } catch (PipelineException e) {
                     throw e;
                 } catch (Exception e) {

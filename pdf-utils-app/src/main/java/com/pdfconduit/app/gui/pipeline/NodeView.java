@@ -173,6 +173,8 @@ class NodeView extends HBox {
                 yield img ? I18n.t("pipeline.summary.watermarkimg")
                     : (node.wmText == null || node.wmText.isBlank() ? "—" : node.wmText);
             }
+            case TO_IMAGES -> node.imageFormat + "  ·  " + node.imageDpi + " DPI";
+            case TO_TEXT -> "." + node.textFormat.extension();
         });
     }
 
