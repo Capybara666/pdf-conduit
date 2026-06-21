@@ -50,10 +50,17 @@ public final class PageReorderGrid extends ScrollPane {
     private javafx.scene.layout.Region dropLine;
     private double pressX, pressY;
     private boolean dragActive;
-    // Last cursor position (scene coords) during a drag, so a wheel-scroll mid-drag
-    // can re-track the ghost and insertion marker against the (still) pointer.
+    // Last cursor position (scene coords) during a drag, so auto-scroll can re-track
+    // the ghost and insertion marker against the (still) pointer each frame.
     private double lastSceneX, lastSceneY;
+    private double autoScrollSpeed;
+    private javafx.animation.AnimationTimer autoScroller;
     private Runnable onChange = () -> {};
+
+    /** How deep (px) into the top/bottom of the viewport a drag must reach to auto-scroll. */
+    private static final double EDGE_MARGIN = 60;
+    /** Peak auto-scroll speed in pixels per frame, at the very edge of the viewport. */
+    private static final double MAX_SCROLL_PX = 16;
 
     /** One page in the grid: the 1-based source page number and its thumbnail. */
     private static final class Tile {
@@ -76,18 +83,28 @@ public final class PageReorderGrid extends ScrollPane {
 
         // Drive wheel scrolling explicitly so it stays consistent regardless of
         // focus/gesture state (handled in the capturing phase, before the skin).
-        // This keeps the wheel working even mid-drag; when it does, re-track the
-        // ghost + marker so they follow the content sliding under the cursor.
         addEventFilter(ScrollEvent.SCROLL, e -> {
             double extent = flow.getBoundsInLocal().getHeight() - getViewportBounds().getHeight();
             if (extent <= 0 || e.getDeltaY() == 0) return;
             double v = getVvalue() - e.getDeltaY() / extent;
             setVvalue(Math.max(0, Math.min(1, v)));
-            if (dragActive) updateDuringDrag(lastSceneX, lastSceneY);
             e.consume();
         });
 
         tiles.addListener((ListChangeListener<Tile>) c -> { relayout(); onChange.run(); });
+
+        // While a drag rests near the top/bottom edge, scroll the list towards it
+        // (the wheel can't be delivered while a button is held), re-tracking the
+        // ghost + marker against the still cursor each frame.
+        autoScroller = new javafx.animation.AnimationTimer() {
+            @Override public void handle(long now) {
+                if (!dragActive || autoScrollSpeed == 0) { stop(); return; }
+                double extent = flow.getBoundsInLocal().getHeight() - getViewportBounds().getHeight();
+                if (extent <= 0) { stop(); return; }
+                setVvalue(Math.max(0, Math.min(1, getVvalue() + autoScrollSpeed / extent)));
+                updateDuringDrag(lastSceneX, lastSceneY);
+            }
+        };
 
         // Re-render the tiles (badges + tooltips) in the new language, keeping order.
         I18n.addListener(this::relayout);
@@ -209,10 +226,12 @@ public final class PageReorderGrid extends ScrollPane {
             lastSceneX = e.getSceneX();
             lastSceneY = e.getSceneY();
             updateDuringDrag(lastSceneX, lastSceneY);
+            updateAutoScroll(lastSceneY);
         });
 
         cell.setOnMouseReleased(e -> {
             if (dragging != null && dragActive) dropAt(e.getSceneX(), e.getSceneY());
+            stopAutoScroll();
             clearAllMarkers();
             endGhost();
             if (draggingCell != null) draggingCell.setOpacity(1.0);
@@ -228,6 +247,35 @@ public final class PageReorderGrid extends ScrollPane {
     private void updateDuringDrag(double sceneX, double sceneY) {
         moveGhost(sceneX, sceneY);
         updateDropMarkers(sceneX, sceneY);
+    }
+
+    /** The actual visible viewport rectangle in scene coordinates. */
+    private javafx.geometry.Bounds viewportSceneBounds() {
+        Node vp = lookup(".viewport");
+        Node ref = vp != null ? vp : this;
+        return ref.localToScene(ref.getLayoutBounds());
+    }
+
+    /**
+     * Sets the auto-scroll speed from how deep the cursor sits in the viewport's
+     * top/bottom band. Symmetric for up and down, and only while the cursor is
+     * actually inside the viewport — so a pointer in the middle never scrolls.
+     */
+    private void updateAutoScroll(double sceneY) {
+        var vp = viewportSceneBounds();
+        double speed = 0;
+        if (sceneY >= vp.getMinY() && sceneY < vp.getMinY() + EDGE_MARGIN) {
+            speed = -MAX_SCROLL_PX * (vp.getMinY() + EDGE_MARGIN - sceneY) / EDGE_MARGIN;
+        } else if (sceneY <= vp.getMaxY() && sceneY > vp.getMaxY() - EDGE_MARGIN) {
+            speed = MAX_SCROLL_PX * (sceneY - (vp.getMaxY() - EDGE_MARGIN)) / EDGE_MARGIN;
+        }
+        autoScrollSpeed = speed;
+        if (speed != 0) autoScroller.start(); else autoScroller.stop();
+    }
+
+    private void stopAutoScroll() {
+        autoScrollSpeed = 0;
+        autoScroller.stop();
     }
 
     // --- floating drag-view (ghost) ---------------------------------------
