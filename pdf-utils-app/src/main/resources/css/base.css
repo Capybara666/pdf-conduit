@@ -460,7 +460,7 @@
 .page-drop-line {
     -fx-background-color: -c-accent;
     -fx-background-radius: 2;
-    -fx-effect: dropshadow(gaussian, -c-accent, 6, 0.3, 0, 0);
+    -fx-opacity: 0.8;
 }
 .page-tile-thumb {
     -fx-background-color: white;

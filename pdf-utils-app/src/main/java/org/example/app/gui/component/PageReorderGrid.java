@@ -240,7 +240,7 @@ public final class PageReorderGrid extends ScrollPane {
     }
 
     /** Thickness (px) of the vertical insertion line drawn between two tiles. */
-    private static final double LINE_W = 3;
+    private static final double LINE_W = 2.5;
 
     /** Draws the insertion line in the gap between two same-row tiles (scene bounds). */
     private void showDropLine(javafx.geometry.Bounds left, javafx.geometry.Bounds right) {
@@ -308,8 +308,11 @@ public final class PageReorderGrid extends ScrollPane {
             var right = children.get(target).localToScene(children.get(target).getBoundsInLocal());
             if (sameRow(left, right)) {
                 showDropLine(left, right);                    // between two tiles on a row
+            } else if (sceneY <= left.getMaxY()) {            // wrap: cursor still in the left row…
+                if (children.get(target - 1) instanceof VBox c)
+                    c.pseudoClassStateChanged(DROP_AFTER, true);   // …so it's that row's right end
             } else if (children.get(target) instanceof VBox c) {
-                c.pseudoClassStateChanged(DROP_BEFORE, true); // wrap: start of the next row
+                c.pseudoClassStateChanged(DROP_BEFORE, true); // otherwise the next row's left start
             }
         }
     }
