@@ -70,8 +70,9 @@ public class ProgressPanel extends VBox {
         previewBtn.getStyleClass().add("result-link");
         openFile.getStyleClass().add("result-link");
         openFolder.getStyleClass().add("result-link");
-        // Preview only makes sense for a single PDF output (not a folder of files).
+        // Preview and "Open file" only make sense for a single-file output (not a folder).
         previewBtn.managedProperty().bind(previewBtn.visibleProperty());
+        openFile.managedProperty().bind(openFile.visibleProperty());
         resultLinks = new HBox(10, previewBtn, openFile, openFolder);
         resultLinks.getStyleClass().add("result-links");
         resultLinks.setVisible(false);
@@ -166,14 +167,20 @@ public class ProgressPanel extends VBox {
             }
             resultLinks.setVisible(true);
             Animations.popIn(resultLinks);
+            // A folder output (Extract-separate, batch, PDF→images) IS the folder; a
+            // single-file output lives inside its parent. "Open file" only applies to
+            // the latter; "Open folder" must open the containing folder either way.
+            boolean isDir = Files.isDirectory(expectedOutput);
+            Path folder = isDir ? expectedOutput : expectedOutput.getParent();
             boolean previewable = isPreviewablePdf(expectedOutput);
             previewBtn.setVisible(previewable);
             if (previewable) previewBtn.setOnAction(ev -> PreviewWindow.open(this, expectedOutput));
-            openFile.setOnAction(ev -> FileOpener.open(expectedOutput));
-            openFolder.setOnAction(ev -> FileOpener.open(expectedOutput.getParent()));
+            openFile.setVisible(!isDir);
+            if (!isDir) openFile.setOnAction(ev -> FileOpener.open(expectedOutput));
+            openFolder.setOnAction(ev -> FileOpener.open(folder));
             switch (Settings.autoOpen()) {
-                case FILE   -> FileOpener.open(expectedOutput);
-                case FOLDER -> FileOpener.open(expectedOutput.getParent());
+                case FILE   -> FileOpener.open(isDir ? folder : expectedOutput);
+                case FOLDER -> FileOpener.open(folder);
                 case NONE   -> { /* leave it to the result links */ }
             }
             Sfx.playDone();
