@@ -37,7 +37,7 @@ Each script then *attempts* a native installer (non-fatal if tooling is missing)
    native jars resolved for the host OS — into `pdf-utils-app/target/dist-lib/`.
 2. The app jar is staged alongside those dependencies.
 3. `jpackage` bundles a trimmed Java runtime + all jars and generates the
-   launcher. The entry point is `org.example.app.Main` (a plain class, not a
+   launcher. The entry point is `com.pdfconduit.app.Main` (a plain class, not a
    JavaFX `Application`), so the app launches correctly from the classpath.
 
 ## Versioning

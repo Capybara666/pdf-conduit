@@ -32,7 +32,7 @@ existed**. I built a real packaging pipeline instead.
   attempts an `.exe` (WiX).
 - **`scripts/README.md`** — prerequisites and usage.
 
-The entry point bundled is `org.example.app.Main` (a plain class, not a JavaFX
+The entry point bundled is `com.pdfconduit.app.Main` (a plain class, not a JavaFX
 `Application`), so the app launches correctly from the classpath bundle.
 
 > Not run here, as requested — jpackage must run on each target OS. I did
@@ -192,7 +192,7 @@ destination (1 result → file, many → folder — same pattern as the batch pa
 ## Architecture
 
 JavaFX-free, headlessly-tested **model + executor** under
-`org.example.app.pipeline`:
+`com.pdfconduit.app.pipeline`:
 - `PipelineModel` / `PipelineNode` / `Connection`, `Document`, `NodeKind`.
 - `PipelineGraph` — topological order + count/type propagation.
 - `PipelineValidator` — acyclicity, arity, type, terminal-destination rules.
@@ -200,7 +200,7 @@ JavaFX-free, headlessly-tested **model + executor** under
   results, cleans up; reports progress via a callback. Reuses the existing core
   operations unchanged.
 
-JavaFX view layer under `org.example.app.gui.pipeline`:
+JavaFX view layer under `com.pdfconduit.app.gui.pipeline`:
 - `PipelineView` (toolbar + canvas + inspector + Run/validation),
   `PipelineCanvas` (drag nodes, draw wires, select/delete),
   `NodeView`, `ConnectionView`, `NodeInspector`.

@@ -14,7 +14,7 @@ cd "$(dirname "$0")/.."
 
 APP_NAME="pdf-conduit"
 APP_VERSION="1.0.0"            # keep in sync with pom.xml <version>
-MAIN_CLASS="org.example.app.Main"
+MAIN_CLASS="com.pdfconduit.app.Main"
 VENDOR="PDF Conduit"
 ICON="assets/icon-512.png"
 LIB="pdf-utils-app/target/dist-lib"

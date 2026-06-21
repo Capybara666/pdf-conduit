@@ -15,7 +15,7 @@ Set-Location (Join-Path $PSScriptRoot "..")
 
 $AppName    = "pdf-conduit"
 $AppVersion = "1.0.0"          # keep in sync with pom.xml <version>
-$MainClass  = "org.example.app.Main"
+$MainClass  = "com.pdfconduit.app.Main"
 $Vendor     = "PDF Conduit"
 $Icon       = "assets\icon.ico"
 $Lib        = "pdf-utils-app\target\dist-lib"

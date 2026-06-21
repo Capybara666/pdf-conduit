@@ -1,0 +1,16 @@
+package com.pdfconduit.core.util;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+public final class SizeEstimator {
+
+    private SizeEstimator() {}
+
+    public static long estimateBytes(PDDocument doc) throws IOException {
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        doc.save(buf);
+        return buf.size();
+    }
+}
