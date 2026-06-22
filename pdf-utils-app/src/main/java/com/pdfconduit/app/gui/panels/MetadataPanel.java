@@ -44,6 +44,7 @@ public class MetadataPanel extends BasePanel {
 
         stripBox = new CheckBox();
         I18n.bindText(stripBox::setText, "metadata.strip");
+        com.pdfconduit.app.gui.component.Forms.tip(stripBox, "tooltip.metadata.strip");
         // When stripping, the field values are irrelevant — grey them out.
         for (TextField f : List.of(titleField, authorField, subjectField, keywordsField)) {
             f.disableProperty().bind(stripBox.selectedProperty());

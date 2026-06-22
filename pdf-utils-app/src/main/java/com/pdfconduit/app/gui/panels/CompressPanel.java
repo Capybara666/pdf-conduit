@@ -40,6 +40,7 @@ public class CompressPanel extends BasePanel {
         unitBox = new ComboBox<>();
         unitBox.getItems().addAll("MB", "KB");
         unitBox.setValue(Settings.compressUnit());
+        com.pdfconduit.app.gui.component.Forms.tip(sizeField, "tooltip.compress.target");
         HBox row = new HBox(Ui.INLINE_GAP, sizeField, unitBox);
         return new VBox(Ui.LABEL_FIELD_GAP, fieldLabel("compress.target.label"), row);
     }

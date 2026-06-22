@@ -27,4 +27,14 @@ public final class Forms {
     public static VBox labeledField(String i18nKey, Node field) {
         return new VBox(Ui.LABEL_FIELD_GAP, label(i18nKey), field);
     }
+
+    /** Attaches a live-translated tooltip to a control, explaining what an option does. */
+    public static <C extends javafx.scene.control.Control> C tip(C control, String i18nKey) {
+        javafx.scene.control.Tooltip t = new javafx.scene.control.Tooltip();
+        t.setWrapText(true);
+        t.setMaxWidth(280);
+        I18n.bindText(t::setText, i18nKey);
+        control.setTooltip(t);
+        return control;
+    }
 }

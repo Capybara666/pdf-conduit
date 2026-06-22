@@ -61,9 +61,11 @@ public class PdfToImagesPanel extends BasePanel {
         dpiBox = new ComboBox<>();
         dpiBox.getItems().addAll(72, 150, 300, 600);
         dpiBox.setValue(150);
+        com.pdfconduit.app.gui.component.Forms.tip(dpiBox, "tooltip.dpi");
         HBox dpiRow = new HBox(Ui.INLINE_GAP, fieldLabel("toimages.dpi.label"), dpiBox);
 
         qualitySlider = new Slider(0.1, 1.0, 0.85);
+        com.pdfconduit.app.gui.component.Forms.tip(qualitySlider, "tooltip.quality");
         qualitySlider.setPrefWidth(160);
         Label qualityValue = new Label();
         qualityValue.getStyleClass().add("text-caption");

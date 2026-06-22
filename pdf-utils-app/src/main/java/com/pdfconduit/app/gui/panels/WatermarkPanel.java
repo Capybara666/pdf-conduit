@@ -72,6 +72,7 @@ public class WatermarkPanel extends BasePanel {
         imageRow.managedProperty().bind(imageRow.visibleProperty());
 
         opacity = new Slider(0.05, 1.0, 0.3);
+        com.pdfconduit.app.gui.component.Forms.tip(opacity, "tooltip.opacity");
         opacity.setPrefWidth(160);
         Label opacityValue = new Label();
         opacity.valueProperty().addListener((o, a, b) ->

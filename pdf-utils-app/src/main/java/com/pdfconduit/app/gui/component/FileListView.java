@@ -6,6 +6,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import com.pdfconduit.app.i18n.I18n;
 import com.pdfconduit.core.util.FileTypeDetector;
 
 import java.nio.file.Path;
@@ -18,6 +20,21 @@ public class FileListView extends ListView<Path> {
         setPrefHeight(160);
         getStyleClass().add("file-list-view");
         setCellFactory(lv -> new FileCell(getItems()));
+        setPlaceholder(emptyPlaceholder());
+    }
+
+    /** Friendly empty state shown when no files have been added yet (onboarding). */
+    private static VBox emptyPlaceholder() {
+        Label icon = new Label("📂");
+        icon.getStyleClass().add("empty-icon");
+        Label msg = new Label();
+        I18n.bindText(msg::setText, "empty.files");
+        msg.getStyleClass().add("text-caption");
+        msg.setWrapText(true);
+        VBox box = new VBox(8, icon, msg);
+        box.getStyleClass().add("empty-state");
+        box.setAlignment(javafx.geometry.Pos.CENTER);
+        return box;
     }
 
     public void addFiles(List<Path> files) {
