@@ -68,7 +68,17 @@ class PdfTextExporterTest {
             new PdfToTextOptions(src, TextFormat.DOCX, PageRange.ALL, dir, "doc"));
 
         assertEquals(dir.resolve("doc.docx"), result.output());
-        assertTrue(Files.size(result.output()) > 0, "docx should not be empty");
+        // A .docx is a zip; a valid, text-based one carries our text in document.xml.
+        try (var zip = new java.util.zip.ZipFile(result.output().toFile())) {
+            var entry = zip.getEntry("word/document.xml");
+            assertNotNull(entry, "docx must contain word/document.xml");
+            String xml = new String(zip.getInputStream(entry).readAllBytes(),
+                java.nio.charset.StandardCharsets.UTF_8);
+            assertTrue(xml.contains("ALPHA"), "docx should contain the extracted text");
+            // The fragile writer_pdf_import path filled the doc with text frames; the
+            // text-based path must not.
+            assertFalse(xml.contains("<wps:"), "docx should be clean text, not frame-heavy");
+        }
     }
 
     @Test

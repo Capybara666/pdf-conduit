@@ -15,11 +15,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Exports a PDF's text content as TXT (PDFBox {@link PDFTextStripper}, no dependency)
- * or DOCX (LibreOffice). The reverse direction of office→PDF conversion.
+ * Exports a PDF's text content as TXT or DOCX. The text is always extracted with
+ * PDFBox ({@link PDFTextStripper}, honouring the page range); for DOCX that text is
+ * then wrapped into a Word document by LibreOffice (txt→docx).
  *
- * <p>For TXT the page range is honoured (arbitrary page lists are extracted page by
- * page); DOCX always exports the whole document — a LibreOffice limitation.
+ * <p>Word output is therefore plain, editable text — not a visual reproduction of the
+ * PDF's layout. That is deliberate: importing a PDF's layout into Word
+ * (LibreOffice's {@code writer_pdf_import}) yields a frame-heavy document that even
+ * LibreOffice can hang on when reopening.
  */
 public final class PdfTextExporter {
 
@@ -33,32 +36,47 @@ public final class PdfTextExporter {
             throw new PdfOperationException("Cannot create output folder: " + e.getMessage(), e);
         }
 
-        if (opts.format() == TextFormat.DOCX) {
-            DocumentConverter.convertPdfTo(opts.input(),
-                opts.format().sofficeFormat(), opts.format().extension(), out);
+        String text = extractText(opts);
+
+        if (opts.format() == TextFormat.TXT) {
+            try {
+                Files.writeString(out, text, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
+            }
             return new PdfToTextResult(out);
         }
 
-        writeText(opts, out);
+        // DOCX: wrap the extracted text into a Word document via LibreOffice (txt→docx).
+        Path tempTxt;
+        try {
+            tempTxt = Files.createTempFile("pdfconduit-text-", ".txt");
+            Files.writeString(tempTxt, text, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
+        }
+        try {
+            DocumentConverter.convertTo(tempTxt, opts.format().sofficeFormat(),
+                opts.format().extension(), out);
+        } finally {
+            try { Files.deleteIfExists(tempTxt); } catch (IOException ignored) {}
+        }
         return new PdfToTextResult(out);
     }
 
-    private static void writeText(PdfToTextOptions opts, Path out) throws PdfOperationException {
+    private static String extractText(PdfToTextOptions opts) throws PdfOperationException {
         try (PDDocument doc = PdfLoader.load(opts.input())) {
             PDFTextStripper stripper = new PDFTextStripper();
-            String text;
             if (opts.pages().isAll()) {
-                text = stripper.getText(doc);
-            } else {
-                StringBuilder sb = new StringBuilder();
-                for (int pageNum : opts.pages().pageNumbers()) {
-                    stripper.setStartPage(pageNum);
-                    stripper.setEndPage(pageNum);
-                    sb.append(stripper.getText(doc));
-                }
-                text = sb.toString();
+                return stripper.getText(doc);
             }
-            Files.writeString(out, text, StandardCharsets.UTF_8);
+            StringBuilder sb = new StringBuilder();
+            for (int pageNum : opts.pages().pageNumbers()) {
+                stripper.setStartPage(pageNum);
+                stripper.setEndPage(pageNum);
+                sb.append(stripper.getText(doc));
+            }
+            return sb.toString();
         } catch (IOException e) {
             throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
         }

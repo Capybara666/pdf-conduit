@@ -177,24 +177,25 @@ public final class DocumentConverter {
 
     private static void convertWithLibreOffice(Path source, Path target)
             throws PdfOperationException {
-        // Office → PDF: LibreOffice auto-detects the input filter.
-        runLibreOffice(source, null, "pdf", "pdf", target);
+        runLibreOffice(source, "pdf", "pdf", target);
     }
 
     /**
-     * Converts a PDF to another format via a headless LibreOffice — e.g.
-     * {@code convertPdfTo(pdf, "docx", "docx", out)} — writing the result to {@code target}.
-     * The reverse direction of {@link #ensurePdf}; same soffice plumbing.
+     * Converts a LibreOffice-readable {@code source} to another format — e.g.
+     * {@code convertTo(txt, "docx", "docx", out)} — writing the result to {@code target}.
      *
-     * <p>A PDF must be opened with the Writer import filter, otherwise LibreOffice loads it
-     * into Draw (which has no Word/text export filter and fails with "no export filter").
+     * <p>Note: this is <em>not</em> for PDF inputs. A headless LibreOffice opens a PDF in
+     * Draw, whose only export is back to PDF; forcing the Writer import filter instead
+     * produces a frame-heavy document that even LibreOffice struggles to reopen. To make a
+     * Word file from a PDF, extract its text first (see {@code PdfTextExporter}) and convert
+     * that text here.
      */
-    public static void convertPdfTo(Path source, String targetFormat, String targetExt, Path target)
+    public static void convertTo(Path source, String targetFormat, String targetExt, Path target)
             throws PdfOperationException {
-        runLibreOffice(source, "writer_pdf_import", targetFormat, targetExt, target);
+        runLibreOffice(source, targetFormat, targetExt, target);
     }
 
-    private static void runLibreOffice(Path source, String inFilter, String targetFormat,
+    private static void runLibreOffice(Path source, String targetFormat,
                                        String targetExt, Path target) throws PdfOperationException {
         String soffice = findSoffice();
         if (soffice == null) {
@@ -214,13 +215,11 @@ public final class DocumentConverter {
             // A per-call user profile lets conversions run even while another
             // LibreOffice instance is open, and lets several run concurrently.
             Path profile = workDir.resolve("profile");
-            List<String> cmd = new ArrayList<>(List.of(
+            Process p = new ProcessBuilder(
                 soffice, "--headless", "--norestore", "--nolockcheck",
-                "-env:UserInstallation=file://" + profile.toAbsolutePath()));
-            if (inFilter != null) cmd.add("--infilter=" + inFilter);
-            cmd.addAll(List.of("--convert-to", targetFormat,
-                "--outdir", workDir.toString(), source.toString()));
-            Process p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+                "-env:UserInstallation=file://" + profile.toAbsolutePath(),
+                "--convert-to", targetFormat, "--outdir", workDir.toString(), source.toString())
+                .redirectErrorStream(true).start();
             String log = new String(p.getInputStream().readAllBytes());
             if (!p.waitFor(180, TimeUnit.SECONDS)) {
                 p.destroyForcibly();

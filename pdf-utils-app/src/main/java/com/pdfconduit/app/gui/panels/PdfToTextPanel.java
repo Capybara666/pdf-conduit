@@ -13,7 +13,6 @@ import javafx.scene.layout.VBox;
 import com.pdfconduit.app.gui.Ui;
 import com.pdfconduit.app.gui.component.PageSelectDialog;
 import com.pdfconduit.core.convert.DocumentConverter;
-import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PdfToTextOptions;
 import com.pdfconduit.core.model.TextFormat;
@@ -87,8 +86,6 @@ public class PdfToTextPanel extends BasePanel {
         pick.disableProperty().bind(Bindings.isEmpty(fileList.getFiles()));
         pick.setOnAction(e -> pickPages());
         VBox pagesGroup = labeledField("split.pages.label", new HBox(Ui.INLINE_GAP, pagesField, pick));
-        // The page range applies to text only; Word exports the whole document.
-        pagesGroup.disableProperty().bind(wordRadio.selectedProperty());
 
         return new VBox(Ui.OPTION_GAP, formatGroupBox, pagesGroup);
     }
@@ -118,10 +115,9 @@ public class PdfToTextPanel extends BasePanel {
                     List<Path> temps = new ArrayList<>();
                     try {
                         Path pdf = DocumentConverter.ensurePdf(in, PageSize.FIT, temps);
-                        PageRange range = format == TextFormat.TXT
-                            ? SplitPanel.resolveRange(pagesExpr, pdf) : PageRange.ALL;
-                        PdfTextExporter.execute(new PdfToTextOptions(
-                            pdf, format, range, dir, stripExt(in.getFileName().toString())));
+                        PdfTextExporter.execute(new PdfToTextOptions(pdf, format,
+                            SplitPanel.resolveRange(pagesExpr, pdf), dir,
+                            stripExt(in.getFileName().toString())));
                     } catch (Exception ex) {
                         throw new Exception(in.getFileName() + ": " + ex.getMessage(), ex);
                     } finally {

@@ -198,10 +198,8 @@ public final class PipelineExecutor {
                             destDir(n), in.baseName()));
                         for (Path f : r.images()) results.add(new Document(f, DocType.OTHER, baseName));
                     } else {   // TO_TEXT
-                        PageRange pages = n.textFormat == TextFormat.TXT
-                            ? range(n.pages, src) : PageRange.ALL;
                         PdfToTextResult r = PdfTextExporter.execute(new PdfToTextOptions(
-                            src, n.textFormat, pages, destDir(n), in.baseName()));
+                            src, n.textFormat, range(n.pages, src), destDir(n), in.baseName()));
                         results.add(new Document(r.output(), DocType.OTHER, baseName));
                     }
                 } catch (PipelineException e) {
