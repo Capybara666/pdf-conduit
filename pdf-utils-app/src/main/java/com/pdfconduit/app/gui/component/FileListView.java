@@ -51,9 +51,9 @@ public class FileListView extends ListView<Path> {
         private final Label iconLabel  = new Label();
         private final Label nameLabel  = new Label();
         private final Button deleteBtn = new Button("✕");
-        private final MenuItem moveUpItem   = new MenuItem("Move up");
-        private final MenuItem moveDownItem = new MenuItem("Move down");
-        private final MenuItem removeItem   = new MenuItem("Remove");
+        private final MenuItem moveUpItem   = new MenuItem();
+        private final MenuItem moveDownItem = new MenuItem();
+        private final MenuItem removeItem   = new MenuItem();
         private final HBox row;
 
         FileCell(ObservableList<Path> items) {
@@ -62,6 +62,11 @@ public class FileListView extends ListView<Path> {
             dragHandle.getStyleClass().add("text-handle");
             nameLabel.getStyleClass().add("text-sm");
             deleteBtn.getStyleClass().add("file-delete-btn");
+
+            // Localised, live-retranslated (reuse existing keys).
+            I18n.bindText(moveUpItem::setText, "wizard.moveup");
+            I18n.bindText(moveDownItem::setText, "wizard.movedown");
+            I18n.bindText(removeItem::setText, "btn.remove");
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
