@@ -16,6 +16,7 @@ public enum SidebarItem {
     UNLOCK   ("🔓", "Unlock",    OperationType.UNLOCK),
     METADATA ("🏷", "Metadata",  OperationType.METADATA),
     WATERMARK("💧", "Watermark", OperationType.WATERMARK),
+    REDACT   ("▰", "Redact",    OperationType.REDACT),
     PIPELINE ("⇄", "Pipeline",  null),
     WIZARD   ("⚙", "Wizard",    null),
     SETTINGS ("⚙", "Settings",  null);

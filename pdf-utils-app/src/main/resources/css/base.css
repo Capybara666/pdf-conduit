@@ -561,3 +561,17 @@
     -fx-padding: 0 4 0 4;
     -fx-background-radius: 4;
 }
+
+/* Redaction overlay: drag rectangles over the page; each is painted solid black on
+   export. Shown semi-opaque so the user can still see what they are covering. */
+.redact-layer:active { -fx-cursor: crosshair; }
+.redact-rect {
+    -fx-fill: rgba(18,18,18,0.82);
+    -fx-stroke: -c-accent;
+    -fx-stroke-width: 1.5;
+}
+
+/* Empty-state placeholder (onboarding): a friendly nudge in an empty file list. */
+.empty-state { -fx-padding: 24; -fx-alignment: center; }
+.empty-state .empty-icon { -fx-font-size: 34px; -fx-opacity: 0.5; }
+.empty-state .text-caption { -fx-text-alignment: center; -fx-max-width: 320; }

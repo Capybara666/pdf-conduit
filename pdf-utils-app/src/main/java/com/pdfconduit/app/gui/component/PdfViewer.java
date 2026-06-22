@@ -15,17 +15,23 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import com.pdfconduit.app.gui.Ui;
 import com.pdfconduit.app.gui.util.PdfPageSource;
 import com.pdfconduit.app.i18n.I18n;
+import com.pdfconduit.core.model.RedactRegion;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -113,6 +119,20 @@ public final class PdfViewer extends BorderPane {
     private final PauseTransition resizeDebounce = new PauseTransition(Duration.millis(180));
     private final PauseTransition thumbScrollDebounce = new PauseTransition(Duration.millis(50));
 
+    // --- redaction overlay (optional; off by default) --------------------
+    /** Transparent layer over the page on which the user drags redaction rectangles. */
+    private final Pane redactLayer = new Pane();
+    private boolean redactMode;
+    /** Committed rectangles per page, each {@code {x, y, w, h}} in displayed-page points (top-left origin). */
+    private final Map<Integer, List<double[]>> regionsByPage = new HashMap<>();
+    private Runnable onRegionsChanged;
+    // In-progress drag.
+    private Rectangle dragRect;
+    private double dragStartX, dragStartY;
+    private boolean dragging;
+    private int pressHitRegion = -1;   // index of a region under the press point, for click-to-remove
+    private static final double DRAG_MIN_PX = 4;
+
     public PdfViewer() {
         getStyleClass().add("pdf-viewer");
 
@@ -146,6 +166,7 @@ public final class PdfViewer extends BorderPane {
         long token = ++loadToken;
         renderToken++;                  // abandon any in-flight page render
         cache.clear();
+        clearRegions();                 // a new document starts with no redactions
         statusLabel.setText(I18n.t("preview.loading", pdf.getFileName()));
         showEmpty(false);
         clearThumbs();
@@ -188,6 +209,7 @@ public final class PdfViewer extends BorderPane {
         sizesPt = new float[0][];
         pageView.setImage(null);
         clearThumbs();
+        clearRegions();
         statusLabel.setText("");
         showEmpty(true);
         updateControls();
@@ -245,7 +267,14 @@ public final class PdfViewer extends BorderPane {
         pageView.setSmooth(true);
         I18n.bindText(placeholder::setText, "preview.empty");
         placeholder.getStyleClass().add("viewer-placeholder");
-        pageArea.getChildren().addAll(pageView, placeholder);
+
+        redactLayer.getStyleClass().add("redact-layer");
+        redactLayer.setMouseTransparent(true);   // inert until redaction mode is enabled
+        redactLayer.setOnMousePressed(this::onRedactPressed);
+        redactLayer.setOnMouseDragged(this::onRedactDragged);
+        redactLayer.setOnMouseReleased(this::onRedactReleased);
+
+        pageArea.getChildren().addAll(pageView, redactLayer, placeholder);
         pageArea.setAlignment(Pos.CENTER);
         pageArea.getStyleClass().add("viewer-page-area");
 
@@ -370,6 +399,12 @@ public final class PdfViewer extends BorderPane {
         pageView.setFitHeight(img.getHeight());
         pageArea.setMinWidth(img.getWidth() + PAGE_PAD);
         pageArea.setMinHeight(img.getHeight() + PAGE_PAD);
+        // Keep the redaction overlay exactly over the rendered page, and redraw the
+        // current page's rectangles at the new scale.
+        redactLayer.setMinSize(img.getWidth(), img.getHeight());
+        redactLayer.setPrefSize(img.getWidth(), img.getHeight());
+        redactLayer.setMaxSize(img.getWidth(), img.getHeight());
+        redrawRegions();
     }
 
     // --- thumbnails -------------------------------------------------------
@@ -509,5 +544,128 @@ public final class PdfViewer extends BorderPane {
         Tooltip t = new Tooltip();
         I18n.bindText(t::setText, key);
         b.setTooltip(t);
+    }
+
+    // --- redaction --------------------------------------------------------
+
+    /**
+     * Turns redaction selection on or off. While on, dragging on the page draws a
+     * rectangle to redact and clicking an existing rectangle removes it; panning is
+     * disabled so a drag always means "select". The rectangles are reported in
+     * displayed-page points via {@link #regions()}.
+     */
+    public void setRedactionMode(boolean on) {
+        redactMode = on;
+        redactLayer.setMouseTransparent(!on);
+        redactLayer.pseudoClassStateChanged(ACTIVE, on);
+        pageScroll.setPannable(!on);
+    }
+
+    /** Registers a callback fired whenever the set of redaction rectangles changes. */
+    public void setOnRegionsChanged(Runnable r) { this.onRegionsChanged = r; }
+
+    /** Total number of redaction rectangles across all pages. */
+    public int regionCount() {
+        return regionsByPage.values().stream().mapToInt(List::size).sum();
+    }
+
+    /** The redaction rectangles as core model regions, in displayed-page points. */
+    public List<RedactRegion> regions() {
+        List<RedactRegion> out = new ArrayList<>();
+        regionsByPage.forEach((page, list) -> {
+            for (double[] r : list) out.add(new RedactRegion(page, r[0], r[1], r[2], r[3]));
+        });
+        return out;
+    }
+
+    /** Discards every redaction rectangle on every page. */
+    public void clearRegions() {
+        if (regionsByPage.isEmpty() && dragRect == null) return;
+        regionsByPage.clear();
+        dragRect = null;
+        dragging = false;
+        redrawRegions();
+        fireRegionsChanged();
+    }
+
+    /** Repaints the current page's committed rectangles at the current scale. */
+    private void redrawRegions() {
+        redactLayer.getChildren().clear();
+        List<double[]> list = regionsByPage.get(pageIndex);
+        if (list == null) return;
+        for (double[] r : list) {
+            Rectangle rect = new Rectangle(r[0] * lastScale, r[1] * lastScale,
+                                           r[2] * lastScale, r[3] * lastScale);
+            rect.getStyleClass().add("redact-rect");
+            rect.setMouseTransparent(true);   // the layer handles all hit-testing
+            redactLayer.getChildren().add(rect);
+        }
+    }
+
+    private void onRedactPressed(javafx.scene.input.MouseEvent e) {
+        if (!redactMode || pageCount == 0) return;
+        dragStartX = clamp(e.getX(), redactLayer.getWidth());
+        dragStartY = clamp(e.getY(), redactLayer.getHeight());
+        dragging = false;
+        pressHitRegion = regionAt(dragStartX, dragStartY);
+        dragRect = new Rectangle(dragStartX, dragStartY, 0, 0);
+        dragRect.getStyleClass().add("redact-rect");
+        dragRect.setMouseTransparent(true);
+        e.consume();
+    }
+
+    private void onRedactDragged(javafx.scene.input.MouseEvent e) {
+        if (!redactMode || dragRect == null) return;
+        double x = clamp(e.getX(), redactLayer.getWidth());
+        double y = clamp(e.getY(), redactLayer.getHeight());
+        if (!dragging && (Math.abs(x - dragStartX) > DRAG_MIN_PX || Math.abs(y - dragStartY) > DRAG_MIN_PX)) {
+            dragging = true;
+            redactLayer.getChildren().add(dragRect);
+        }
+        if (dragging) {
+            dragRect.setX(Math.min(x, dragStartX));
+            dragRect.setY(Math.min(y, dragStartY));
+            dragRect.setWidth(Math.abs(x - dragStartX));
+            dragRect.setHeight(Math.abs(y - dragStartY));
+        }
+        e.consume();
+    }
+
+    private void onRedactReleased(javafx.scene.input.MouseEvent e) {
+        if (!redactMode || dragRect == null) return;
+        double scale = lastScale <= 0 ? 1 : lastScale;
+        if (dragging && dragRect.getWidth() >= DRAG_MIN_PX && dragRect.getHeight() >= DRAG_MIN_PX) {
+            regionsByPage.computeIfAbsent(pageIndex, k -> new ArrayList<>()).add(new double[]{
+                dragRect.getX() / scale, dragRect.getY() / scale,
+                dragRect.getWidth() / scale, dragRect.getHeight() / scale });
+        } else if (!dragging && pressHitRegion >= 0) {
+            // A click (no drag) on an existing rectangle removes it.
+            List<double[]> list = regionsByPage.get(pageIndex);
+            if (list != null && pressHitRegion < list.size()) list.remove(pressHitRegion);
+            if (list != null && list.isEmpty()) regionsByPage.remove(pageIndex);
+        }
+        dragRect = null;
+        dragging = false;
+        redrawRegions();
+        fireRegionsChanged();
+        e.consume();
+    }
+
+    /** Index (topmost) of the committed region on the current page containing point {@code (x,y)} px, or -1. */
+    private int regionAt(double x, double y) {
+        List<double[]> list = regionsByPage.get(pageIndex);
+        if (list == null) return -1;
+        for (int i = list.size() - 1; i >= 0; i--) {
+            double[] r = list.get(i);
+            double rx = r[0] * lastScale, ry = r[1] * lastScale;
+            if (x >= rx && x <= rx + r[2] * lastScale && y >= ry && y <= ry + r[3] * lastScale) return i;
+        }
+        return -1;
+    }
+
+    private static double clamp(double v, double max) { return Math.max(0, Math.min(max, v)); }
+
+    private void fireRegionsChanged() {
+        if (onRegionsChanged != null) onRegionsChanged.run();
     }
 }

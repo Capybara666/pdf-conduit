@@ -78,6 +78,10 @@ public final class Icons {
     // a water droplet (watermark)
     private static final String WATERMARK =
         "M12 4 C9 8 6.5 12 6.5 15 a5.5 5.5 0 0 0 11 0 C17.5 12 15 8 12 4 Z";
+    // a document with a redaction bar struck over one of its text lines
+    private static final String REDACT =
+        "M7 3 H15 L19 7 V21 H7 Z M15 3 V7 H19 "
+        + "M9.5 11 H16 M9 13.2 H16.5 V15.6 H9 Z M9.5 17.8 H13.5";
     // sliders: three horizontal rails each with a knob (settings)
     private static final String SETTINGS =
         "M4 7 H20 M4 12 H20 M4 17 H20 "
@@ -101,6 +105,7 @@ public final class Icons {
             case UNLOCK   -> UNLOCK;
             case METADATA -> METADATA;
             case WATERMARK -> WATERMARK;
+            case REDACT   -> REDACT;
             case PIPELINE -> PIPELINE;
             case WIZARD   -> WIZARD;
             case SETTINGS -> SETTINGS;

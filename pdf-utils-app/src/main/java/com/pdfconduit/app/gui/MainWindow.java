@@ -155,6 +155,7 @@ public class MainWindow {
             case UNLOCK   -> new UnlockPanel();
             case METADATA -> new MetadataPanel();
             case WATERMARK -> new WatermarkPanel();
+            case REDACT   -> new RedactPanel();
             case PIPELINE -> new com.pdfconduit.app.gui.pipeline.PipelineView();
             case WIZARD   -> new WizardController();
             case SETTINGS -> new SettingsPanel();
