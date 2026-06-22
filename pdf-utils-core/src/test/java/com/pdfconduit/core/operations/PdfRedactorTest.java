@@ -94,6 +94,73 @@ class PdfRedactorTest {
         }
     }
 
+    // --- coordinate correctness on rotated / offset-cropbox pages (audit finding L1) ---
+    // Regions are in displayed-page points (top-left origin). These verify the painted box
+    // lands on the side the user drew, regardless of page rotation or a non-zero cropbox
+    // origin — a misplacement on a permanent redaction would be a silent leak.
+
+    @Test
+    void redactsTheCorrectHalfOnA90DegRotatedPage() throws Exception {
+        Path src = blankPage(PDRectangle.A4, 90, 0, 0);     // displayed = landscape 842 x 595
+        assertHalfRedaction(src, 842, 595);
+    }
+
+    @Test
+    void redactsTheCorrectHalfOnA270DegRotatedPage() throws Exception {
+        Path src = blankPage(PDRectangle.A4, 270, 0, 0);
+        assertHalfRedaction(src, 842, 595);
+    }
+
+    @Test
+    void redactsTheCorrectHalfWhenCropBoxOriginIsOffset() throws Exception {
+        // mediaBox 700x900, cropBox origin (50,50) size 595x795 — displayed = 595 x 795.
+        Path src = blankPage(new PDRectangle(0, 0, 700, 900), 0, 50, 50);
+        assertHalfRedaction(src, 595, 795);
+    }
+
+    /** Redacts the left half (in displayed points) and asserts the output's left half is black, right white. */
+    private void assertHalfRedaction(Path src, float dispW, float dispH) throws Exception {
+        Path out = tmp.resolve("half-" + System.nanoTime() + ".pdf");
+        PdfRedactor.execute(new RedactOptions(
+            src, List.of(new RedactRegion(0, 0, 0, dispW / 2f, dispH)), 150, out));
+
+        try (PDDocument doc = Loader.loadPDF(out.toFile())) {
+            BufferedImage img = new PDFRenderer(doc).renderImageWithDPI(0, 150);
+            int w = img.getWidth(), h = img.getHeight();
+            // Sample interior points well inside each half, at three heights.
+            for (double fy : new double[]{0.25, 0.5, 0.75}) {
+                int y = (int) (h * fy);
+                assertTrue(isDark(img.getRGB((int) (w * 0.25), y)),
+                    "left half should be redacted black at y=" + y);
+                assertTrue(isLight(img.getRGB((int) (w * 0.75), y)),
+                    "right half should be untouched (white) at y=" + y);
+            }
+        }
+    }
+
+    private static boolean isDark(int rgb)  { return luma(rgb) < 40; }
+    private static boolean isLight(int rgb) { return luma(rgb) > 215; }
+    private static int luma(int rgb) {
+        int r = (rgb >> 16) & 0xFF, g = (rgb >> 8) & 0xFF, b = rgb & 0xFF;
+        return (r * 299 + g * 587 + b * 114) / 1000;
+    }
+
+    /** A blank page with the given mediaBox, rotation and cropBox lower-left offset. */
+    private Path blankPage(PDRectangle media, int rotation, float cropX, float cropY) throws IOException {
+        Path path = tmp.resolve("blank-" + rotation + "-" + System.nanoTime() + ".pdf");
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(media);
+            page.setRotation(rotation);
+            if (cropX != 0 || cropY != 0) {
+                page.setCropBox(new PDRectangle(cropX, cropY,
+                    media.getWidth() - 2 * cropX, media.getHeight() - 2 * cropY));
+            }
+            doc.addPage(page);
+            doc.save(path.toFile());
+        }
+        return path;
+    }
+
     private static String textOfPage(PDDocument doc, int oneBasedPage) throws IOException {
         PDFTextStripper s = new PDFTextStripper();
         s.setStartPage(oneBasedPage);
