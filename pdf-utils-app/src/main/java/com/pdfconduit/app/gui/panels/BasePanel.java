@@ -17,12 +17,17 @@ import com.pdfconduit.app.gui.component.FileListView;
 import com.pdfconduit.app.gui.component.Forms;
 import com.pdfconduit.app.gui.component.OutputPathControl;
 import com.pdfconduit.app.gui.component.ProgressPanel;
+import com.pdfconduit.app.gui.util.Settings;
 import com.pdfconduit.app.i18n.I18n;
 import com.pdfconduit.core.service.OperationRunner;
+import com.pdfconduit.core.service.OperationRunner.BatchOutcome;
+import com.pdfconduit.core.service.OperationRunner.OverwritePolicy;
 import com.pdfconduit.core.service.OperationType;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Shared layout for every operation panel: a header (title, optional hint, drop
@@ -171,7 +176,18 @@ public abstract class BasePanel extends BorderPane {
      * name, or cancel. Returns the path to write to, or empty when cancelled.
      */
     protected final java.util.Optional<Path> confirmOutputFor(Path input) {
-        return com.pdfconduit.app.gui.util.OutputGuard.confirm(this, resolveOutputFor(input));
+        Path desired = resolveOutputFor(input);
+        // Never write a result onto its own source; rename before even asking. (A2)
+        if (isSameFile(desired, input)) desired = com.pdfconduit.core.util.OutputPaths.uniquePath(desired);
+        return com.pdfconduit.app.gui.util.OutputGuard.confirm(this, desired);
+    }
+
+    private static boolean isSameFile(Path a, Path b) {
+        try {
+            if (java.nio.file.Files.exists(a) && java.nio.file.Files.exists(b))
+                return java.nio.file.Files.isSameFile(a, b);
+        } catch (java.io.IOException ignored) { /* fall through */ }
+        return a.toAbsolutePath().normalize().equals(b.toAbsolutePath().normalize());
     }
 
     // --- shared option-control helpers ------------------------------------
@@ -198,9 +214,10 @@ public abstract class BasePanel extends BorderPane {
         List<Path> files = List.copyOf(fileList.getFiles());
         if (files.isEmpty()) return;
         Path dir = outputDir();
-        Task<List<Path>> task = new Task<>() {
+        OverwritePolicy policy = overwritePolicy();
+        Task<BatchOutcome> task = new Task<>() {
             @Override
-            protected List<Path> call() throws Exception {
+            protected BatchOutcome call() throws Exception {
                 updateMessage(I18n.t("msg.busy", I18n.t(verbKey)));
                 return OperationRunner.runBatch(operationType(), files, dir,
                     (in, out) -> { op.apply(in, out); return null; },
@@ -208,10 +225,39 @@ public abstract class BasePanel extends BorderPane {
                         updateMessage(I18n.t("msg.busy.count", I18n.t(verbKey), completed, total));
                         updateProgress(completed, total);
                     },
-                    this::isCancelled);
+                    policy, this::isCancelled);
             }
         };
-        progressPanel.run(task, dir);
+        progressPanel.run(task, dir, BasePanel::batchWarning);
+    }
+
+    // --- shared batch data-safety helpers ---------------------------------
+
+    /**
+     * The overwrite policy for a batch run. A batch can't stop to ask per file, so the
+     * "ask" preference falls back to the safe, non-clobbering RENAME; only an explicit
+     * "overwrite" default overwrites.
+     */
+    protected static OverwritePolicy overwritePolicy() {
+        return Settings.overwriteMode() == Settings.OverwriteMode.OVERWRITE
+            ? OverwritePolicy.OVERWRITE : OverwritePolicy.RENAME;
+    }
+
+    /**
+     * A warning banner for a batch {@code outcome} — how many were skipped (and why) and
+     * how many were renamed to avoid clobbering — or {@code null} when everything was clean.
+     */
+    protected static String batchWarning(BatchOutcome outcome) {
+        if (outcome == null || outcome.clean()) return null;
+        List<String> parts = new ArrayList<>();
+        if (outcome.hasFailures()) {
+            String names = outcome.failures().stream()
+                .map(BatchOutcome.Failure::input).collect(Collectors.joining(", "));
+            parts.add(I18n.t("batch.skipped", outcome.done(), outcome.attempted(),
+                outcome.failures().size(), names));
+        }
+        if (outcome.renamed() > 0) parts.add(I18n.t("batch.renamed", outcome.renamed()));
+        return String.join("   ·   ", parts);
     }
 
     @FunctionalInterface

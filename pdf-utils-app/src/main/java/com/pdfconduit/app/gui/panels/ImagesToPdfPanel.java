@@ -14,6 +14,8 @@ import com.pdfconduit.app.gui.Ui;
 import com.pdfconduit.app.gui.util.Settings;
 import com.pdfconduit.core.operations.PdfMerger;
 import com.pdfconduit.core.service.OperationRunner;
+import com.pdfconduit.core.service.OperationRunner.BatchOutcome;
+import com.pdfconduit.core.service.OperationRunner.OverwritePolicy;
 import com.pdfconduit.core.service.OperationType;
 import com.pdfconduit.app.i18n.I18n;
 
@@ -52,21 +54,36 @@ public class ImagesToPdfPanel extends BasePanel {
 
         if (isBatchMode()) {
             Path dir = outputDir();
-            Task<Path> task = new Task<>() {
+            OverwritePolicy policy = overwritePolicy();
+            Task<BatchOutcome> task = new Task<>() {
                 @Override
-                protected Path call() throws Exception {
+                protected BatchOutcome call() throws Exception {
                     Files.createDirectories(dir);
+                    List<Path> outputs = new ArrayList<>();
+                    List<BatchOutcome.Failure> failures = new ArrayList<>();
+                    int renamed = 0, attempted = 0;
                     for (int i = 0; i < files.size(); i++) {
+                        if (isCancelled()) break;
                         Path in = files.get(i);
+                        attempted++;
                         updateMessage(I18n.t("msg.busy.count", I18n.t("verb.convert"), i + 1, files.size()));
-                        Path out = dir.resolve(OperationRunner.outputName(operationType(), in));
-                        convertOne(in, size, out);
+                        // Never clobber a source or an existing file the user didn't OK. (A1/A2)
+                        Path desired = dir.resolve(OperationRunner.outputName(operationType(), in));
+                        Path out = OperationRunner.safeOutput(desired, files, policy);
+                        if (!out.equals(desired)) renamed++;
+                        try {
+                            convertOne(in, size, out);
+                            outputs.add(out);
+                        } catch (Exception ex) {  // one bad file must not abort the batch (A3)
+                            String m = ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage();
+                            failures.add(new BatchOutcome.Failure(in.getFileName().toString(), m));
+                        }
                         updateProgress(i + 1, files.size());
                     }
-                    return dir;
+                    return new BatchOutcome(outputs, failures, renamed, attempted);
                 }
             };
-            progressPanel.run(task, dir);
+            progressPanel.run(task, dir, BasePanel::batchWarning);
             return;
         }
 

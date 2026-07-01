@@ -11,22 +11,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import com.pdfconduit.app.gui.component.PageSelectDialog;
-import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.model.PageRange;
-import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.SplitMode;
 import com.pdfconduit.core.model.SplitOptions;
 import com.pdfconduit.core.model.SplitResult;
 import com.pdfconduit.core.operations.PdfSplitter;
 import com.pdfconduit.core.service.OperationRunner;
+import com.pdfconduit.core.service.OperationRunner.BatchOutcome;
 import com.pdfconduit.core.service.OperationType;
 import com.pdfconduit.core.util.PageRangeParser;
 import com.pdfconduit.app.gui.Ui;
 import com.pdfconduit.app.i18n.I18n;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -135,30 +132,21 @@ public class SplitPanel extends BasePanel {
     /** Writes one PDF per selected page into the output folder, for each input file. */
     private void runSeparate(List<Path> files, String pagesExpr) {
         Path dir = outputDir();
-        Task<Path> task = new Task<>() {
+        Task<BatchOutcome> task = new Task<>() {
             @Override
-            protected Path call() throws Exception {
-                Files.createDirectories(dir);
-                for (int i = 0; i < files.size(); i++) {
-                    if (isCancelled()) break;
-                    Path in = files.get(i);
-                    updateMessage(I18n.t("msg.busy.count", I18n.t("verb.extract"), i + 1, files.size()));
-                    List<Path> temps = new ArrayList<>();
-                    try {
-                        Path pdf = DocumentConverter.ensurePdf(in, PageSize.FIT, temps);
-                        PdfSplitter.execute(new SplitOptions(
-                            pdf, resolveRange(pagesExpr, pdf), SplitMode.SEPARATE, dir));
-                    } catch (Exception ex) {
-                        throw new Exception(in.getFileName() + ": " + ex.getMessage(), ex);
-                    } finally {
-                        for (Path t : temps) Files.deleteIfExists(t);
-                    }
-                    updateProgress(i + 1, files.size());
-                }
-                return dir;
+            protected BatchOutcome call() throws Exception {
+                updateMessage(I18n.t("msg.busy", I18n.t("verb.extract")));
+                return OperationRunner.runBatchMulti(files, dir,
+                    (pdf, in) -> PdfSplitter.execute(new SplitOptions(
+                        pdf, resolveRange(pagesExpr, pdf), SplitMode.SEPARATE, dir)),
+                    (completed, total) -> {
+                        updateMessage(I18n.t("msg.busy.count", I18n.t("verb.extract"), completed, total));
+                        updateProgress(completed, total);
+                    },
+                    this::isCancelled);
             }
         };
-        progressPanel.run(task, dir);
+        progressPanel.run(task, dir, BasePanel::batchWarning);
     }
 
     /** Parses a page expression against a PDF's actual page count (blank = all). */

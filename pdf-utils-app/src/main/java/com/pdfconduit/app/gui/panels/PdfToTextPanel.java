@@ -13,16 +13,15 @@ import javafx.scene.layout.VBox;
 import com.pdfconduit.app.gui.Ui;
 import com.pdfconduit.app.gui.component.PageSelectDialog;
 import com.pdfconduit.core.convert.DocumentConverter;
-import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PdfToTextOptions;
 import com.pdfconduit.core.model.TextFormat;
 import com.pdfconduit.core.operations.PdfTextExporter;
+import com.pdfconduit.core.service.OperationRunner;
+import com.pdfconduit.core.service.OperationRunner.BatchOutcome;
 import com.pdfconduit.core.service.OperationType;
 import com.pdfconduit.app.i18n.I18n;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -104,30 +103,21 @@ public class PdfToTextPanel extends BasePanel {
         String pagesExpr = pagesField.getText();
         Path dir = outputDir();
 
-        Task<Path> task = new Task<>() {
+        Task<BatchOutcome> task = new Task<>() {
             @Override
-            protected Path call() throws Exception {
-                Files.createDirectories(dir);
-                for (int i = 0; i < files.size(); i++) {
-                    if (isCancelled()) break;
-                    Path in = files.get(i);
-                    updateMessage(I18n.t("msg.busy.count", I18n.t("verb.totext"), i + 1, files.size()));
-                    List<Path> temps = new ArrayList<>();
-                    try {
-                        Path pdf = DocumentConverter.ensurePdf(in, PageSize.FIT, temps);
-                        PdfTextExporter.execute(new PdfToTextOptions(pdf, format,
-                            SplitPanel.resolveRange(pagesExpr, pdf), dir,
-                            stripExt(in.getFileName().toString())));
-                    } catch (Exception ex) {
-                        throw new Exception(in.getFileName() + ": " + ex.getMessage(), ex);
-                    } finally {
-                        for (Path t : temps) Files.deleteIfExists(t);
-                    }
-                    updateProgress(i + 1, files.size());
-                }
-                return dir;
+            protected BatchOutcome call() throws Exception {
+                updateMessage(I18n.t("msg.busy", I18n.t("verb.totext")));
+                return OperationRunner.runBatchMulti(files, dir,
+                    (pdf, in) -> PdfTextExporter.execute(new PdfToTextOptions(pdf, format,
+                        SplitPanel.resolveRange(pagesExpr, pdf), dir,
+                        stripExt(in.getFileName().toString()))),
+                    (completed, total) -> {
+                        updateMessage(I18n.t("msg.busy.count", I18n.t("verb.totext"), completed, total));
+                        updateProgress(completed, total);
+                    },
+                    this::isCancelled);
             }
         };
-        progressPanel.run(task, dir);
+        progressPanel.run(task, dir, BasePanel::batchWarning);
     }
 }
