@@ -1,20 +1,17 @@
 package com.pdfconduit.app.cli;
 
-import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.exception.PdfOperationException;
-import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PageSource;
+import com.pdfconduit.core.service.InputSources;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builds merge sources from CLI input paths, routing each file by type so the CLI
- * accepts the same inputs as the GUI:
+ * Builds merge sources from CLI input paths. The routing logic now lives in the
+ * shared core {@link InputSources} (so desktop and web share one implementation);
+ * this class remains as the CLI's thin, stable entry point and delegates.
  *
  * <ul>
  *   <li>PDFs become page sources,</li>
@@ -31,26 +28,11 @@ public final class CliSources {
 
     public static List<PageSource> build(List<Path> inputs, PageSize imageSize, List<Path> temps)
             throws PdfOperationException {
-        List<PageSource> sources = new ArrayList<>();
-        for (Path p : inputs) {
-            switch (DocumentConverter.classify(p)) {
-                case PDF -> sources.add(new PageSource.PdfPageSource(p, PageRange.ALL));
-                case IMAGE -> sources.add(new PageSource.ImageSource(p, imageSize));
-                case OFFICE -> {
-                    Path pdf = DocumentConverter.ensurePdf(p, PageSize.FIT, temps);
-                    sources.add(new PageSource.PdfPageSource(pdf, PageRange.ALL));
-                }
-                case UNSUPPORTED -> throw new PdfOperationException(
-                    "Unsupported file type: " + p.getFileName());
-            }
-        }
-        return sources;
+        return InputSources.build(inputs, imageSize, temps);
     }
 
     /** Best-effort deletion of the temp PDFs produced by {@link #build}. */
     public static void deleteTemps(List<Path> temps) {
-        for (Path t : temps) {
-            try { Files.deleteIfExists(t); } catch (IOException ignored) {}
-        }
+        InputSources.deleteTemps(temps);
     }
 }
