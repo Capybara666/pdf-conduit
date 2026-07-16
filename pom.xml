@@ -12,6 +12,7 @@
     <modules>
         <module>pdf-utils-core</module>
         <module>pdf-utils-app</module>
+        <module>pdf-utils-web</module>
     </modules>
 
     <properties>

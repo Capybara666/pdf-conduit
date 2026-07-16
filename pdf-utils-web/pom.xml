@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pdfconduit</groupId>
+        <artifactId>pdf-utils</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>pdf-utils-web</artifactId>
+    <name>PDF Conduit Web</name>
+    <description>Spring Boot web backend + static UI for PDF Conduit. Reuses pdf-utils-core.</description>
+
+    <!--
+      Web-only configuration is kept entirely inside this module so the desktop
+      build (pdf-utils-app) and the shared library (pdf-utils-core) never pull in
+      Spring. The Spring Boot BOM is imported locally (this project's parent is the
+      pdf-utils reactor, not spring-boot-starter-parent).
+    -->
+    <properties>
+        <spring-boot.version>3.3.5</spring-boot.version>
+        <!-- Retain method parameter names so Spring can bind @RequestParam without
+             explicit names (starter-parent enables this; our custom parent does not). -->
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- The single shared file-handling library (desktop + web). -->
+        <dependency>
+            <groupId>com.pdfconduit</groupId>
+            <artifactId>pdf-utils-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>pdf-utils-web-${project.version}</finalName>
+        <plugins>
+            <!--
+              The reactor parent pins maven-compiler-plugin 3.1, which predates the
+              `maven.compiler.parameters` property; override it here so method
+              parameter names survive compilation (Spring needs them to bind
+              @RequestParam without spelling out every name).
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>21</release>
+                    <parameters>true</parameters>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <configuration>
+                    <mainClass>com.pdfconduit.web.WebApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

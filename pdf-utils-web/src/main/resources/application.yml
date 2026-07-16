@@ -1,0 +1,32 @@
+# PDF Conduit — web backend configuration.
+# Every value is overridable via environment variables (Spring relaxed binding),
+# e.g. SERVER_PORT, SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE, PDFCONDUIT_WEB_WORK_DIR.
+
+server:
+  port: ${SERVER_PORT:8080}
+  # Stream large files without buffering the whole response in memory.
+  tomcat:
+    max-swallow-size: -1
+
+spring:
+  application:
+    name: pdf-conduit-web
+  servlet:
+    multipart:
+      # Per-file and per-request upload limits. Raise for larger PDFs.
+      max-file-size: ${PDFCONDUIT_WEB_MAX_FILE_SIZE:100MB}
+      max-request-size: ${PDFCONDUIT_WEB_MAX_REQUEST_SIZE:200MB}
+
+pdfconduit:
+  web:
+    # Base directory for per-request temp workspaces (created + cleaned per request).
+    work-dir: ${PDFCONDUIT_WEB_WORK_DIR:}
+    # Optional explicit path to a LibreOffice `soffice` binary (office-doc conversion).
+    # Leave blank to auto-detect. Absence only affects office inputs (.docx/.xlsx/...).
+    soffice-path: ${PDFCONDUIT_WEB_SOFFICE_PATH:}
+    # Guardrail: reject requests with more than this many uploaded files.
+    max-files-per-request: ${PDFCONDUIT_WEB_MAX_FILES:50}
+
+logging:
+  level:
+    com.pdfconduit: INFO
