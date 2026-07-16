@@ -1,0 +1,50 @@
+# Docker Compose for the PDF Conduit web app (pdf-utils-web).
+#
+# This builds the image from source — images are NOT pre-built/published. The
+# build context is the repository root (context: .) so the multi-stage
+# Dockerfile can build the whole Maven reactor (root pom + pdf-utils-core +
+# pdf-utils-web). The runtime stage bundles a headless LibreOffice, so office
+# document conversion works out of the box.
+#
+#   Bring it up:   docker compose up --build
+#   Then open:     http://localhost:8080
+#
+# Configuration comes from environment variables (see .env.example). Copy that
+# to `.env` to override defaults; Compose loads `.env` automatically.
+
+services:
+  pdf-conduit-web:
+    build:
+      context: .
+      dockerfile: pdf-utils-web/Dockerfile
+    image: pdf-conduit-web:1.0.0
+    ports:
+      # host:container — change the host side (or SERVER_PORT) to relocate.
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      # HTTP port inside the container (keep aligned with EXPOSE 8080).
+      SERVER_PORT: "8080"
+      # Base directory for temp uploads/results — matches the volume below.
+      PDFCONDUIT_WEB_WORK_DIR: "/work"
+      # Optional explicit path to the `soffice` binary; the bundled LibreOffice
+      # is auto-detected, so this is normally left empty.
+      PDFCONDUIT_WEB_SOFFICE_PATH: "${PDFCONDUIT_WEB_SOFFICE_PATH:-}"
+      # Upload guardrails.
+      PDFCONDUIT_WEB_MAX_FILE_SIZE: "${PDFCONDUIT_WEB_MAX_FILE_SIZE:-100MB}"
+      PDFCONDUIT_WEB_MAX_REQUEST_SIZE: "${PDFCONDUIT_WEB_MAX_REQUEST_SIZE:-200MB}"
+      PDFCONDUIT_WEB_MAX_FILES: "${PDFCONDUIT_WEB_MAX_FILES:-50}"
+    volumes:
+      # Named volume for scratch work (uploads/results). Ephemeral per-request
+      # data; safe to wipe. Swap for a tmpfs mount if you prefer RAM-backed temp.
+      - pdfconduit_work:/work
+    restart: unless-stopped
+    healthcheck:
+      # Mirrors the Dockerfile HEALTHCHECK; GET /api/health returns {status:"UP"}.
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  pdfconduit_work:

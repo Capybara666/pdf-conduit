@@ -1,0 +1,43 @@
+# Keep the Docker build context (the repo root — see docker-compose.yml) lean.
+#
+# NOTE ON LOCATION: the build context is the repository ROOT, so Docker/BuildKit
+# reads the ignore file relative to that root. To take effect, this file's rules
+# should live at the context root as `.dockerignore` (or as
+# `pdf-utils-web/Dockerfile.dockerignore` next to the Dockerfile under BuildKit).
+# It is kept here alongside the Dockerfile for discoverability; copy/symlink to
+# the repo root if your Docker version does not pick it up automatically.
+#
+# The reactor build still needs: the root pom.xml and the src/ + pom.xml of all
+# three modules (pdf-utils-core, pdf-utils-app, pdf-utils-web). Everything below
+# is safe to drop.
+
+# Build output (jars are rebuilt inside the image)
+**/target/
+dist/
+
+# Version control & CI
+.git/
+.gitignore
+.github/
+
+# Docs and notes (not needed to compile)
+docs/
+
+# IDE / editor cruft
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Node (not used by the Maven-only build, but excluded defensively)
+**/node_modules/
+
+# Local env overrides — never bake secrets into an image
+.env
+
+# The Dockerfile/compose themselves don't need to be in the context
+docker-compose.yml

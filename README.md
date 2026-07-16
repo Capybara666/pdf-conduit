@@ -95,6 +95,51 @@ pdf-conduit pipeline my-pipeline.json   # run a pipeline saved from the GUI
 - **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).
 - **Sizes:** `500KB`, `5MB`, `1.5MB`.
 
+## Web version
+
+A **Spring Boot** module, `pdf-utils-web`, exposes the same core operations over
+HTTP with a browser UI — upload files, run an operation, download the result. It
+reuses `pdf-utils-core`, so behaviour matches the desktop app. No Node/npm build
+step is required; it builds with Maven alone.
+
+**Run in dev** (host JDK 21 + Maven; serves on http://localhost:8080):
+
+```bash
+scripts/run-web.sh
+# or, equivalently:
+mvn -pl pdf-utils-web -am spring-boot:run
+```
+
+**Build and run the jar:**
+
+```bash
+mvn -pl pdf-utils-web -am package
+java -jar pdf-utils-web/target/pdf-utils-web-1.0.0.jar
+```
+
+**Run with Docker** (bundles a headless LibreOffice, so office-doc conversion
+works out of the box — images are built from source, not pre-published):
+
+```bash
+docker compose up --build      # then open http://localhost:8080
+```
+
+**Configuration** (environment variables; see `.env.example`, copy to `.env`):
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `SERVER_PORT` | `8080` | HTTP port |
+| `PDFCONDUIT_WEB_WORK_DIR` | temp dir | Base dir for uploads/results |
+| `PDFCONDUIT_WEB_SOFFICE_PATH` | auto-detect | Explicit path to `soffice` |
+| `PDFCONDUIT_WEB_MAX_FILE_SIZE` | `100MB` | Max size per uploaded file |
+| `PDFCONDUIT_WEB_MAX_REQUEST_SIZE` | `200MB` | Max total request size |
+| `PDFCONDUIT_WEB_MAX_FILES` | `50` | Max files per request |
+
+As with the desktop app, converting **office/text documents** to PDF needs
+LibreOffice (the `soffice` command) on the host — it is bundled in the Docker
+image, so `docker compose up` needs no extra setup. Pure PDF and image flows
+work without it.
+
 ## Releases (native packages)
 
 `jpackage`-based scripts produce a self-contained app (bundled Java runtime, no

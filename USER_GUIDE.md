@@ -14,6 +14,7 @@ app and the command line. For a project overview and build instructions see the
 - [Batch mode](#batch-mode)
 - [The Wizard](#the-wizard)
 - [Pipelines](#pipelines)
+- [Using the web app](#using-the-web-app)
 - [Command line (CLI)](#command-line-cli)
 - [Syntax reference](#syntax-reference)
 - [Languages, themes & sound](#languages-themes--sound)
@@ -124,6 +125,27 @@ line without opening the app:
 ```bash
 pdf-conduit pipeline my-pipeline.json
 ```
+
+## Using the web app
+
+PDF Conduit also runs as a **web app** you use entirely in the browser — handy
+when you'd rather not install the desktop build. Once it's running (see the
+README for how to start it, in dev or via Docker), open:
+
+```
+http://localhost:8080
+```
+
+It offers the same operations as the desktop app — **Merge, Extract, Compress,
+Rotate, Arrange, To PDF, Protect, Unlock, Metadata, Watermark**. Pick an
+operation, **upload** your files (PDFs, images, or Office documents), set any
+options, run it, and **download** the result in your browser. When an operation
+produces several files, they come back as a single `.zip`.
+
+As on the desktop, feeding **Office/text documents** into an operation needs
+LibreOffice available to the server — the Docker image bundles it, so nothing
+extra is required there. The visual pipeline editor and the Wizard remain
+desktop features.
 
 ## Command line (CLI)
 
