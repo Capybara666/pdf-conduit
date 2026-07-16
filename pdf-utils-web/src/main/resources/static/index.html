@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>PDF Conduit</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext y='20' font-size='20'%3E%F0%9F%97%8E%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <a class="skip-link" href="#main-panel">Skip to content</a>
+
+  <header class="app-header">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true" width="26" height="26">
+        <path d="M6 2h8l4 4v16H6z" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linejoin="round"/>
+        <path d="M14 2v4h4" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linejoin="round"/>
+        <path d="M9 12h6M9 15h6M9 18h4" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">PDF&nbsp;Conduit</span>
+    </div>
+    <div class="header-actions">
+      <span id="health-dot" class="health-dot" title="Checking server…" aria-live="polite"></span>
+      <button id="theme-toggle" class="icon-btn" type="button"
+              aria-label="Toggle colour theme" title="Toggle theme">
+        <span class="theme-icon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <nav class="sidebar" aria-label="Operations">
+      <ul id="op-list" class="op-list" role="tablist"></ul>
+    </nav>
+
+    <main id="main-panel" class="main-panel" tabindex="-1">
+      <section class="op-view" aria-labelledby="op-title">
+        <div class="op-head">
+          <h1 id="op-title" class="op-title">Merge</h1>
+          <p id="op-desc" class="op-desc"></p>
+        </div>
+
+        <!-- File selection -->
+        <div id="dropzone" class="dropzone" tabindex="0" role="button"
+             aria-label="Drop files here or click to browse">
+          <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true" class="dz-icon">
+            <path d="M12 16V4m0 0l-4 4m4-4l4 4" fill="none" stroke="currentColor"
+                  stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" fill="none" stroke="currentColor"
+                  stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <p class="dz-text">Drop files here, or <span class="dz-link">browse</span></p>
+          <p id="dz-hint" class="dz-hint"></p>
+          <input id="file-input" type="file" multiple hidden />
+        </div>
+
+        <ul id="file-list" class="file-list" aria-label="Selected files"></ul>
+
+        <!-- Operation-specific options -->
+        <form id="op-form" class="op-form" autocomplete="off"></form>
+
+        <!-- Redact regions (advanced) -->
+        <div id="regions-block" class="regions-block" hidden></div>
+
+        <div class="actions">
+          <button id="run-btn" class="btn btn-primary" type="button">Run</button>
+          <button id="read-meta-btn" class="btn btn-ghost" type="button" hidden>
+            Read current metadata
+          </button>
+          <span id="spinner" class="spinner" hidden aria-hidden="true"></span>
+        </div>
+
+        <!-- Result / error -->
+        <div id="result" class="result" hidden aria-live="polite"></div>
+        <div id="error" class="error-box" hidden role="alert"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
