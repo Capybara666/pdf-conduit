@@ -28,4 +28,14 @@ public final class PdfUnlocker {
             throw new PdfOperationException("Unlock failed: " + e.getMessage(), e);
         }
     }
+
+    /** In-memory variant: remove protection from {@code pdf} using {@code password}; returns decrypted bytes. */
+    public static byte[] executeBytes(byte[] pdf, String password) throws PdfOperationException {
+        try (PDDocument doc = PdfLoader.load(pdf, password == null ? "" : password)) {
+            doc.setAllSecurityToBeRemoved(true);
+            return PdfLoader.toBytes(doc);
+        } catch (IOException e) {
+            throw new PdfOperationException("Unlock failed: " + e.getMessage(), e);
+        }
+    }
 }

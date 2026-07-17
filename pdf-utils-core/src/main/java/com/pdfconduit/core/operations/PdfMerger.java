@@ -46,6 +46,33 @@ public final class PdfMerger {
         };
     }
 
+    /**
+     * In-memory variant: merge every page of each PDF in {@code pdfs} (in order) into
+     * one PDF and return its bytes. Non-PDF inputs must be converted to PDF bytes by the
+     * caller first (see {@code MemoryOperations}); this method only accepts PDF bytes.
+     */
+    public static byte[] executeBytes(List<byte[]> pdfs) throws PdfOperationException {
+        List<PDDocument> srcDocs = new ArrayList<>();
+        try {
+            PDDocument merged = new PDDocument();
+            for (byte[] pdf : pdfs) {
+                PDDocument src = PdfLoader.load(pdf);
+                srcDocs.add(src);
+                importPages(merged, src, allPageNumbers(src.getNumberOfPages()));
+            }
+            // Sources must stay open until save() completes (importPage keeps live refs).
+            byte[] out = PdfLoader.toBytes(merged);
+            merged.close();
+            return out;
+        } catch (IOException e) {
+            throw new PdfOperationException("Merge failed: " + e.getMessage(), e);
+        } finally {
+            for (PDDocument src : srcDocs) {
+                try { src.close(); } catch (IOException ignored) {}
+            }
+        }
+    }
+
     private static int appendPdf(PDDocument merged, PageSource.PdfPageSource source,
                                   List<PDDocument> srcDocs) throws IOException, PdfOperationException {
         PDDocument src = PdfLoader.load(source.file());
@@ -53,10 +80,16 @@ public final class PdfMerger {
         List<Integer> pageNums = source.range().isAll()
             ? allPageNumbers(src.getNumberOfPages())
             : source.range().pageNumbers();
+        importPages(merged, src, pageNums);
+        return pageNums.size();
+    }
+
+    /** Imports the given 1-based pages of {@code src} into {@code merged}. */
+    private static void importPages(PDDocument merged, PDDocument src, List<Integer> pageNums)
+            throws IOException {
         for (int pageNum : pageNums) {
             merged.importPage(src.getPage(pageNum - 1));
         }
-        return pageNums.size();
     }
 
     private static int appendImage(PDDocument merged, PageSource.ImageSource source)

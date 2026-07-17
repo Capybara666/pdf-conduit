@@ -17,6 +17,7 @@ import com.pdfconduit.core.operations.PdfTextExporter;
 import com.pdfconduit.core.operations.PdfToImageConverter;
 import com.pdfconduit.core.operations.PdfUnlocker;
 import com.pdfconduit.core.operations.PdfWatermarker;
+import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.util.PageOrderParser;
 import com.pdfconduit.core.util.PageRangeParser;
 
@@ -359,5 +360,225 @@ public final class PipelineExecutor {
         try (PDDocument doc = PdfLoader.load(pdf)) {
             return doc.getNumberOfPages();
         }
+    }
+
+    // =====================================================================
+    // In-memory execution — no temp files, no host paths. Documents are
+    // carried between nodes as byte[]. Reuses PipelineValidator / PipelineGraph
+    // and the parsing helpers above; the per-node dispatch mirrors the disk
+    // path's map/reduce structure but calls the operations' byte[] variants.
+    // =====================================================================
+
+    /** A document flowing through an in-memory run: its bytes, type, a name stem and an extension. */
+    private record MemDoc(byte[] data, DocType type, String baseName, String ext) {}
+
+    /**
+     * Runs {@code model} entirely in memory. Source nodes' {@code files} are ignored; instead
+     * {@code sourceResolver} supplies the uploaded bytes for each source node (PDF or image bytes;
+     * office uploads must be pre-converted to PDF bytes by the caller). Returns, per terminal node
+     * id, the produced outputs as {@link NamedBytes} (bytes + suggested file name). No disk is
+     * touched except the office/DOCX exceptions documented on the operations themselves.
+     */
+    public static Map<String, List<NamedBytes>> runInMemory(
+            PipelineModel model,
+            java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
+            Progress progress) throws PipelineException {
+
+        List<ValidationError> errors = PipelineValidator.validateInMemory(model);
+        if (!errors.isEmpty()) {
+            throw new PipelineException("Cannot run: " + errors.get(0).message());
+        }
+
+        List<PipelineNode> order;
+        try {
+            order = PipelineGraph.topologicalOrder(model);
+        } catch (PipelineGraph.CycleException e) {
+            throw new PipelineException("The pipeline contains a cycle.");
+        }
+
+        Map<String, List<MemDoc>> outputs = new HashMap<>();
+        Map<String, List<NamedBytes>> terminalOutputs = new LinkedHashMap<>();
+
+        int total = (int) order.stream().filter(n -> !n.kind.isSource()).count();
+        int done = 0;
+
+        for (PipelineNode n : order) {
+            if (n.kind.isSource()) {
+                outputs.put(n.id, sourceDocs(n, sourceResolver));
+                continue;
+            }
+
+            if (progress != null) progress.update(done, total, "Running " + n.kind.label + "…");
+
+            List<MemDoc> inputs = new ArrayList<>();
+            for (Connection c : model.incoming(n.id)) {
+                inputs.addAll(outputs.getOrDefault(c.fromNodeId(), List.of()));
+            }
+
+            List<MemDoc> produced;
+            try {
+                produced = n.kind.isReduce() ? runReduceMem(n, inputs) : runMapMem(n, inputs);
+            } catch (PipelineException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new PipelineException(n.kind.label + ": " + e.getMessage(), e);
+            }
+
+            outputs.put(n.id, produced);
+            if (model.isTerminal(n)) {
+                terminalOutputs.put(n.id, name(produced));
+            }
+            done++;
+            if (progress != null) progress.update(done, total, "Finished " + n.kind.label);
+        }
+        return terminalOutputs;
+    }
+
+    /** Reads a source node's uploaded bytes into MemDocs, detecting PDF vs image by magic bytes. */
+    private static List<MemDoc> sourceDocs(PipelineNode n,
+                                           java.util.function.Function<PipelineNode, List<byte[]>> resolver)
+            throws PipelineException {
+        List<byte[]> raw = resolver.apply(n);
+        if (raw == null) raw = List.of();
+        List<MemDoc> docs = new ArrayList<>(raw.size());
+        int i = 1;
+        for (byte[] b : raw) {
+            String baseName = "file" + i++;
+            if (com.pdfconduit.core.util.FileTypeDetector.isPdf(b)) {
+                docs.add(new MemDoc(b, DocType.PDF, baseName, "pdf"));
+            } else if (com.pdfconduit.core.util.FileTypeDetector.isSupportedImage(b)) {
+                docs.add(new MemDoc(b, DocType.IMAGE, baseName, "img"));
+            } else {
+                throw new PipelineException(
+                    "Source " + baseName + ": unsupported data (expected a PDF or image; "
+                    + "convert office documents to PDF before uploading).");
+            }
+        }
+        return docs;
+    }
+
+    /** Names a node's produced outputs, disambiguating duplicate stems. */
+    private static List<NamedBytes> name(List<MemDoc> docs) {
+        List<NamedBytes> named = new ArrayList<>(docs.size());
+        Set<String> used = new HashSet<>();
+        for (MemDoc d : docs) {
+            named.add(new NamedBytes(uniqueName(d.baseName(), used) + "." + d.ext(), d.data()));
+        }
+        return named;
+    }
+
+    // --- in-memory reduce -------------------------------------------------
+
+    private static List<MemDoc> runReduceMem(PipelineNode n, List<MemDoc> inputs) throws Exception {
+        if (n.kind != NodeKind.MERGE) throw new PipelineException("Not a reduce node: " + n.kind);
+        List<byte[]> pdfs = new ArrayList<>(inputs.size());
+        for (MemDoc in : inputs) pdfs.add(ensurePdfBytes(in, PageSize.FIT));
+        byte[] merged = PdfMerger.executeBytes(pdfs);
+        String baseName = inputs.isEmpty()
+            ? n.kind.name().toLowerCase() : inputs.get(0).baseName() + n.kind.suffix();
+        return List.of(new MemDoc(merged, DocType.PDF, baseName, "pdf"));
+    }
+
+    // --- in-memory map ----------------------------------------------------
+
+    private static List<MemDoc> runMapMem(PipelineNode n, List<MemDoc> inputs) throws Exception {
+        List<MemDoc> results = new ArrayList<>();
+        for (MemDoc in : inputs) {
+            String baseName = in.baseName() + n.kind.suffix();
+
+            // Extract in "separate" mode: one PDF per page (validator guarantees terminal).
+            if (n.kind == NodeKind.EXTRACT && n.splitMode == SplitMode.SEPARATE) {
+                byte[] pdf = ensurePdfBytes(in, PageSize.FIT);
+                List<byte[]> pages = PdfSplitter.separateBytes(pdf, rangeBytes(n.pages, pdf));
+                int width = Integer.toString(Math.max(1, pages.size())).length();
+                for (int i = 0; i < pages.size(); i++) {
+                    results.add(new MemDoc(pages.get(i), DocType.PDF,
+                        baseName + "_p" + pad(i + 1, width), "pdf"));
+                }
+                continue;
+            }
+
+            // Export sinks: non-PDF outputs (validator guarantees terminal).
+            if (n.kind.isExport()) {
+                byte[] pdf = ensurePdfBytes(in, PageSize.FIT);
+                if (n.kind == NodeKind.TO_IMAGES) {
+                    List<byte[]> images = PdfToImageConverter.executeBytes(
+                        pdf, n.imageFormat, n.imageDpi, PageRange.ALL, n.jpegQuality);
+                    int width = Integer.toString(Math.max(1, images.size())).length();
+                    for (int i = 0; i < images.size(); i++) {
+                        results.add(new MemDoc(images.get(i), DocType.OTHER,
+                            baseName + "_p" + pad(i + 1, width), n.imageFormat.extension()));
+                    }
+                } else {   // TO_TEXT
+                    byte[] text = PdfTextExporter.toTextBytes(pdf, n.textFormat, rangeBytes(n.pages, pdf));
+                    results.add(new MemDoc(text, DocType.OTHER, baseName, n.textFormat.extension()));
+                }
+                continue;
+            }
+
+            // TO PDF: each input becomes its own PDF (image placed at the chosen page size).
+            if (n.kind == NodeKind.IMAGES_TO_PDF) {
+                byte[] pdf = in.type() == DocType.PDF
+                    ? in.data()
+                    : com.pdfconduit.core.operations.ImageToPdfConverter.executeBytes(
+                        List.of(in.data()), n.pageSize);
+                results.add(new MemDoc(pdf, DocType.PDF, baseName, "pdf"));
+                continue;
+            }
+
+            // Page operations need a PDF; convert images first.
+            byte[] pdf = ensurePdfBytes(in, PageSize.FIT);
+            byte[] out = switch (n.kind) {
+                case EXTRACT   -> PdfSplitter.combineBytes(pdf, rangeBytes(n.pages, pdf));
+                case COMPRESS  -> PdfCompressor.compressBytes(pdf, n.targetBytes).bytes();
+                case ROTATE    -> PdfRotator.executeBytes(pdf, rangeBytes(n.pages, pdf), n.angle);
+                case ARRANGE   -> PdfArranger.executeBytes(pdf, orderBytes(n.order, pdf));
+                case PROTECT   -> PdfProtector.executeBytes(pdf, n.password, n.ownerPassword);
+                case UNLOCK    -> PdfUnlocker.executeBytes(pdf, n.password);
+                case METADATA  -> PdfMetadataEditor.executeBytes(pdf,
+                    blankToNull(n.metaTitle), blankToNull(n.metaAuthor),
+                    blankToNull(n.metaSubject), blankToNull(n.metaKeywords), n.metaStrip);
+                case WATERMARK -> watermarkBytes(n, pdf);
+                default -> throw new PipelineException("Not a map node: " + n.kind);
+            };
+            results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));
+        }
+        return results;
+    }
+
+    /** Watermark in memory. Image watermarks reference a host path and are unsupported statelessly. */
+    private static byte[] watermarkBytes(PipelineNode n, byte[] pdf) throws Exception {
+        boolean useImage = n.wmImage != null && !n.wmImage.isBlank();
+        if (useImage) {
+            throw new PipelineException(
+                "Image watermarks are not supported in the in-memory pipeline; use a text watermark.");
+        }
+        return PdfWatermarker.executeBytes(pdf, blankToNull(n.wmText), null,
+            n.wmOpacity, n.wmRotation, n.wmScale);
+    }
+
+    /** PDF bytes for a MemDoc: passthrough for PDFs, in-memory Image-to-PDF for images. */
+    private static byte[] ensurePdfBytes(MemDoc in, PageSize size) throws PdfOperationException {
+        if (in.type() == DocType.PDF) return in.data();
+        return com.pdfconduit.core.operations.ImageToPdfConverter.executeBytes(List.of(in.data()), size);
+    }
+
+    private static PageRange rangeBytes(String expr, byte[] pdf) throws Exception {
+        if (expr == null || expr.isBlank()) return PageRange.ALL;
+        return PageRangeParser.parse(expr, pageCountBytes(pdf));
+    }
+
+    private static List<Integer> orderBytes(String expr, byte[] pdf) throws Exception {
+        return PageOrderParser.parse(expr, pageCountBytes(pdf));
+    }
+
+    private static int pageCountBytes(byte[] pdf) throws IOException, PdfOperationException {
+        try (PDDocument doc = PdfLoader.load(pdf)) {
+            return doc.getNumberOfPages();
+        }
+    }
+
+    private static String pad(int n, int width) {
+        return String.format("%0" + Math.max(1, width) + "d", n);
     }
 }

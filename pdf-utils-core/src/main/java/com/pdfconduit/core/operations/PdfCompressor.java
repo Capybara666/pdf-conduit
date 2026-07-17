@@ -9,9 +9,11 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.model.CompressBytesResult;
 import com.pdfconduit.core.model.CompressOptions;
 import com.pdfconduit.core.model.CompressResult;
 import com.pdfconduit.core.util.OutputPaths;
+import com.pdfconduit.core.util.PdfLoader;
 import com.pdfconduit.core.util.SizeEstimator;
 
 import java.awt.*;
@@ -97,6 +99,56 @@ public final class PdfCompressor {
             return new CompressResult(opts.output(), originalSize,
                 opts.output().toFile().length(), false);
 
+        } catch (IOException e) {
+            throw new PdfOperationException("Compression failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * In-memory variant: compress {@code input} toward {@code targetSizeBytes} using the same
+     * lossless-then-image-ladder strategy as {@link #execute}, but reading and writing bytes.
+     * The result is never larger than the input.
+     */
+    public static CompressBytesResult compressBytes(byte[] input, long targetSizeBytes)
+            throws PdfOperationException {
+        long originalSize = input.length;
+        try {
+            // 1) Lossless pass: re-save with object-stream compression.
+            byte[] lossless;
+            boolean hasImages;
+            try (PDDocument doc = PdfLoader.load(input)) {
+                hasImages = hasImages(doc);
+                lossless = PdfLoader.toBytes(doc);
+            }
+            if (lossless.length <= targetSizeBytes) {
+                return new CompressBytesResult(lossless, originalSize, lossless.length, true);
+            }
+
+            // 2) Nothing to downsample: the lossless copy is the best we can do.
+            if (!hasImages) {
+                byte[] best = lossless.length > originalSize ? input : lossless;
+                return new CompressBytesResult(best, originalSize, best.length, false);
+            }
+
+            // 3) Lossy image ladder, gentlest first; stop as soon as the target is met.
+            for (Step step : STEPS) {
+                try (PDDocument compressed = PdfLoader.load(input)) {
+                    recompressImages(compressed, step.scale(), step.quality());
+                    if (SizeEstimator.estimateBytes(compressed) <= targetSizeBytes) {
+                        byte[] out = PdfLoader.toBytes(compressed);
+                        return new CompressBytesResult(out, originalSize, out.length, true);
+                    }
+                }
+            }
+
+            // 4) Target unreachable — most-compressed version, but never larger than original.
+            try (PDDocument compressed = PdfLoader.load(input)) {
+                Step strongest = STEPS.get(STEPS.size() - 1);
+                recompressImages(compressed, strongest.scale(), strongest.quality());
+                byte[] out = SizeEstimator.estimateBytes(compressed) < originalSize
+                    ? PdfLoader.toBytes(compressed) : input;
+                return new CompressBytesResult(out, originalSize, out.length, false);
+            }
         } catch (IOException e) {
             throw new PdfOperationException("Compression failed: " + e.getMessage(), e);
         }

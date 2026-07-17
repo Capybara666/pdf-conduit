@@ -44,39 +44,64 @@ public final class PdfRedactor {
     public static final int DEFAULT_DPI = 150;
 
     public static RedactResult execute(RedactOptions opts) throws PdfOperationException {
-        int dpi = opts.dpi() > 0 ? opts.dpi() : DEFAULT_DPI;
+        try (PDDocument src = PdfLoader.load(opts.input());
+             PDDocument out = new PDDocument()) {
+            Counts counts = redact(src, out, opts.regions(), opts.dpi());
+            OutputPaths.ensureParentDir(opts.output());
+            out.save(opts.output().toFile());
+            return new RedactResult(opts.output(), counts.pages(), counts.regions());
+        } catch (IOException e) {
+            throw new PdfOperationException("Redaction failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * In-memory variant: permanently redact {@code regions} from {@code pdf} (rasterising
+     * only the affected pages) and return the new PDF bytes.
+     */
+    public static byte[] executeBytes(byte[] pdf, List<RedactRegion> regions, int dpi)
+            throws PdfOperationException {
+        try (PDDocument src = PdfLoader.load(pdf);
+             PDDocument out = new PDDocument()) {
+            redact(src, out, regions, dpi);
+            return PdfLoader.toBytes(out);
+        } catch (IOException e) {
+            throw new PdfOperationException("Redaction failed: " + e.getMessage(), e);
+        }
+    }
+
+    /** Pages rasterised and regions painted, in one redaction pass. */
+    private record Counts(int pages, int regions) {}
+
+    /**
+     * The shared algorithm: copy every page of {@code src} into {@code out}, rasterising
+     * (and blacking out) only the pages that carry a region.
+     */
+    private static Counts redact(PDDocument src, PDDocument out, List<RedactRegion> regions, int dpiIn)
+            throws IOException {
+        int dpi = dpiIn > 0 ? dpiIn : DEFAULT_DPI;
 
         // Group non-empty regions by page; a zero-area rectangle is a no-op.
         Map<Integer, List<RedactRegion>> byPage = new LinkedHashMap<>();
-        for (RedactRegion r : opts.regions()) {
+        for (RedactRegion r : regions) {
             if (r.width() <= 0 || r.height() <= 0) continue;
             byPage.computeIfAbsent(r.pageIndex(), k -> new ArrayList<>()).add(r);
         }
 
-        try (PDDocument src = PdfLoader.load(opts.input());
-             PDDocument out = new PDDocument()) {
+        PDFRenderer renderer = new PDFRenderer(src);
+        int total = src.getNumberOfPages();
+        int redactedPages = 0, redactedRegions = 0;
 
-            PDFRenderer renderer = new PDFRenderer(src);
-            int total = src.getNumberOfPages();
-            int redactedPages = 0, redactedRegions = 0;
-
-            for (int i = 0; i < total; i++) {
-                List<RedactRegion> regions = byPage.get(i);
-                if (regions == null || regions.isEmpty()) {
-                    out.importPage(src.getPage(i));   // unchanged: keep text searchable
-                    continue;
-                }
-                redactedRegions += rasterisePage(src, out, renderer, i, dpi, regions);
-                redactedPages++;
+        for (int i = 0; i < total; i++) {
+            List<RedactRegion> pageRegions = byPage.get(i);
+            if (pageRegions == null || pageRegions.isEmpty()) {
+                out.importPage(src.getPage(i));   // unchanged: keep text searchable
+                continue;
             }
-
-            OutputPaths.ensureParentDir(opts.output());
-            out.save(opts.output().toFile());
-            return new RedactResult(opts.output(), redactedPages, redactedRegions);
-
-        } catch (IOException e) {
-            throw new PdfOperationException("Redaction failed: " + e.getMessage(), e);
+            redactedRegions += rasterisePage(src, out, renderer, i, dpi, pageRegions);
+            redactedPages++;
         }
+        return new Counts(redactedPages, redactedRegions);
     }
 
     /** Renders page {@code i}, blacks out {@code regions}, and appends it to {@code out} as an image page. */

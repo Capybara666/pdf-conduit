@@ -106,6 +106,59 @@ public final class DocumentConverter {
         }
     }
 
+    /**
+     * In-memory analog of {@link #ensurePdf}: returns PDF bytes for {@code data}, whose type is
+     * inferred from {@code filename}'s extension.
+     *
+     * <ul>
+     *   <li><b>PDF</b> — the bytes are returned unchanged (no disk).</li>
+     *   <li><b>Image</b> — rendered to a PDF entirely in memory.</li>
+     *   <li><b>Office/text</b> — the one documented disk exception: LibreOffice is an external
+     *       process that must read/write real files, so the bytes are written to an isolated
+     *       {@link Files#createTempDirectory temp dir}, converted, read back, and the dir is
+     *       deleted in {@code finally}. Nothing else touches disk.</li>
+     * </ul>
+     */
+    public static byte[] ensurePdfBytes(byte[] data, String filename, PageSize imageSize)
+            throws PdfOperationException {
+        Kind kind = classify(Path.of(filename == null ? "" : filename));
+        return switch (kind) {
+            case PDF -> data;
+            case IMAGE -> ImageToPdfConverter.executeBytes(
+                List.of(data), imageSize == null ? PageSize.FIT : imageSize);
+            case OFFICE -> officeToPdfBytes(data, filename);
+            case UNSUPPORTED -> throw new PdfOperationException("Unsupported file type: " + filename);
+        };
+    }
+
+    /** Office → PDF bytes via an isolated temp dir and a headless LibreOffice; the sole disk touch. */
+    private static byte[] officeToPdfBytes(byte[] data, String filename) throws PdfOperationException {
+        Path dir;
+        try {
+            dir = Files.createTempDirectory("pdfconduit-mem-");
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot create temp dir: " + e.getMessage(), e);
+        }
+        try {
+            Path in = dir.resolve(sanitize(filename));
+            Path out = dir.resolve("output.pdf");
+            Files.write(in, data);
+            convertWithLibreOffice(in, out);
+            return Files.readAllBytes(out);
+        } catch (IOException e) {
+            throw new PdfOperationException("Document conversion failed: " + e.getMessage(), e);
+        } finally {
+            deleteRecursively(dir);
+        }
+    }
+
+    /** A safe, extension-preserving file name for the temp input (no path separators). */
+    private static String sanitize(String filename) {
+        String name = (filename == null || filename.isBlank()) ? "input" : filename;
+        name = Path.of(name).getFileName().toString();
+        return name.isBlank() ? "input" : name;
+    }
+
     /** Whether office/document conversion is possible on this machine. */
     public static boolean officeConversionAvailable() { return findSoffice() != null; }
 

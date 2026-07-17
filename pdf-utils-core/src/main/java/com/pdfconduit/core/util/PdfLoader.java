@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import com.pdfconduit.core.exception.PdfOperationException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -40,6 +41,44 @@ public final class PdfLoader {
             throw new PdfOperationException(notReadable(pdf), e);
         }
     }
+
+    // --- in-memory (byte[]) variants ---------------------------------------
+    // Mirror the Path loaders for the stateless web backend: input from a
+    // byte[] via PDFBox's in-memory Loader, output to a byte[] via save(stream).
+    // There is no file name to name in the message, so the wording is generic.
+
+    /** Loads an unprotected PDF from raw bytes. A protected file is reported as such. */
+    public static PDDocument load(byte[] pdf) throws PdfOperationException {
+        try {
+            return Loader.loadPDF(pdf);
+        } catch (InvalidPasswordException e) {
+            throw new PdfOperationException(
+                "The PDF is password-protected. Remove its password with Unlock first.", e);
+        } catch (IOException e) {
+            throw new PdfOperationException(NOT_READABLE_BYTES, e);
+        }
+    }
+
+    /** Loads a protected PDF from raw bytes with {@code password} ({@code null} = empty). */
+    public static PDDocument load(byte[] pdf, String password) throws PdfOperationException {
+        try {
+            return Loader.loadPDF(pdf, password == null ? "" : password);
+        } catch (InvalidPasswordException e) {
+            throw new PdfOperationException("Wrong password for the PDF.", e);
+        } catch (IOException e) {
+            throw new PdfOperationException(NOT_READABLE_BYTES, e);
+        }
+    }
+
+    /** Serialises {@code doc} to a byte array (the in-memory analog of {@code save(File)}). */
+    public static byte[] toBytes(PDDocument doc) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        doc.save(out);
+        return out.toByteArray();
+    }
+
+    private static final String NOT_READABLE_BYTES =
+        "Could not read the PDF: the data is not a valid PDF or is damaged.";
 
     private static String notReadable(Path pdf) {
         return "Could not read " + pdf.getFileName()

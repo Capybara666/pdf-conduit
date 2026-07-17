@@ -32,46 +32,69 @@ public final class PdfWatermarker {
     private PdfWatermarker() {}
 
     public static PdfResult execute(WatermarkOptions opts) throws PdfOperationException {
-        boolean hasText = opts.text() != null && !opts.text().isBlank();
-        boolean hasImage = opts.image() != null;
-        if (hasText == hasImage) {
-            throw new PdfOperationException("Provide either watermark text or an image, not both.");
-        }
-        float opacity = (float) Math.max(0, Math.min(1, opts.opacity()));
-        double radians = Math.toRadians(opts.rotationDegrees());
-        float scale = (float) Math.max(0.05, Math.min(2.0, opts.scale()));
-
         try (PDDocument doc = PdfLoader.load(opts.input())) {
-            PDImageXObject stamp = hasImage ? loadImage(doc, opts) : null;
-            PDFont font = hasText ? new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD) : null;
-
-            for (PDPage page : doc.getPages()) {
-                PDRectangle box = page.getMediaBox();
-                float cx = box.getLowerLeftX() + box.getWidth() / 2f;
-                float cy = box.getLowerLeftY() + box.getHeight() / 2f;
-
-                try (PDPageContentStream cs =
-                         new PDPageContentStream(doc, page, AppendMode.APPEND, true, true)) {
-                    cs.saveGraphicsState();
-                    PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
-                    gs.setNonStrokingAlphaConstant(opacity);
-                    gs.setStrokingAlphaConstant(opacity);
-                    cs.setGraphicsStateParameters(gs);
-                    cs.transform(Matrix.getTranslateInstance(cx, cy));
-                    cs.transform(Matrix.getRotateInstance(radians, 0, 0));
-
-                    if (hasText) drawText(cs, font, opts.text(), box, scale);
-                    else drawImage(cs, stamp, box, scale);
-
-                    cs.restoreGraphicsState();
-                }
-            }
-
+            BufferedImage image = opts.image() != null ? readImage(opts.image()) : null;
+            applyWatermark(doc, opts.text(), image, opts.opacity(),
+                opts.rotationDegrees(), opts.scale());
             OutputPaths.ensureParentDir(opts.output());
             doc.save(opts.output().toFile());
             return new PdfResult(opts.output(), doc.getNumberOfPages());
         } catch (IOException e) {
             throw new PdfOperationException("Watermark failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * In-memory variant: stamp a text or image watermark onto every page of {@code pdf}
+     * and return the new PDF bytes. Provide exactly one of {@code text} / {@code imageBytes}.
+     */
+    public static byte[] executeBytes(byte[] pdf, String text, byte[] imageBytes, double opacity,
+                                      double rotationDegrees, double scale) throws PdfOperationException {
+        try (PDDocument doc = PdfLoader.load(pdf)) {
+            BufferedImage image = imageBytes != null ? readImage(imageBytes) : null;
+            applyWatermark(doc, text, image, opacity, rotationDegrees, scale);
+            return PdfLoader.toBytes(doc);
+        } catch (IOException e) {
+            throw new PdfOperationException("Watermark failed: " + e.getMessage(), e);
+        }
+    }
+
+    /** The shared algorithm: stamp {@code text} or {@code image} onto every page of {@code doc}. */
+    static void applyWatermark(PDDocument doc, String text, BufferedImage image, double opacityIn,
+                               double rotationDegrees, double scaleIn)
+            throws PdfOperationException, IOException {
+        boolean hasText = text != null && !text.isBlank();
+        boolean hasImage = image != null;
+        if (hasText == hasImage) {
+            throw new PdfOperationException("Provide either watermark text or an image, not both.");
+        }
+        float opacity = (float) Math.max(0, Math.min(1, opacityIn));
+        double radians = Math.toRadians(rotationDegrees);
+        float scale = (float) Math.max(0.05, Math.min(2.0, scaleIn));
+
+        PDImageXObject stamp = hasImage ? LosslessFactory.createFromImage(doc, image) : null;
+        PDFont font = hasText ? new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD) : null;
+
+        for (PDPage page : doc.getPages()) {
+            PDRectangle box = page.getMediaBox();
+            float cx = box.getLowerLeftX() + box.getWidth() / 2f;
+            float cy = box.getLowerLeftY() + box.getHeight() / 2f;
+
+            try (PDPageContentStream cs =
+                     new PDPageContentStream(doc, page, AppendMode.APPEND, true, true)) {
+                cs.saveGraphicsState();
+                PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+                gs.setNonStrokingAlphaConstant(opacity);
+                gs.setStrokingAlphaConstant(opacity);
+                cs.setGraphicsStateParameters(gs);
+                cs.transform(Matrix.getTranslateInstance(cx, cy));
+                cs.transform(Matrix.getRotateInstance(radians, 0, 0));
+
+                if (hasText) drawText(cs, font, text, box, scale);
+                else drawImage(cs, stamp, box, scale);
+
+                cs.restoreGraphicsState();
+            }
         }
     }
 
@@ -118,9 +141,15 @@ public final class PdfWatermarker {
         return new float[]{drawW, drawH};
     }
 
-    private static PDImageXObject loadImage(PDDocument doc, WatermarkOptions opts) throws IOException {
-        BufferedImage bi = ImageIO.read(opts.image().toFile());
-        if (bi == null) throw new IOException("Cannot read watermark image: " + opts.image().getFileName());
-        return LosslessFactory.createFromImage(doc, bi);
+    private static BufferedImage readImage(java.nio.file.Path image) throws IOException {
+        BufferedImage bi = ImageIO.read(image.toFile());
+        if (bi == null) throw new IOException("Cannot read watermark image: " + image.getFileName());
+        return bi;
+    }
+
+    private static BufferedImage readImage(byte[] image) throws IOException {
+        BufferedImage bi = ImageIO.read(new java.io.ByteArrayInputStream(image));
+        if (bi == null) throw new IOException("Cannot read watermark image: unsupported or corrupt image data.");
+        return bi;
     }
 }

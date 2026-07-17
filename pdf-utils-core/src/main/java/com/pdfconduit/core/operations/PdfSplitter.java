@@ -33,11 +33,46 @@ public final class PdfSplitter {
         }
     }
 
+    /**
+     * In-memory COMBINE variant: selected pages of {@code pdf} → one PDF's bytes.
+     * {@code pages} may be {@link com.pdfconduit.core.model.PageRange#ALL}.
+     */
+    public static byte[] combineBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages)
+            throws PdfOperationException {
+        try (PDDocument src = PdfLoader.load(pdf)) {
+            List<Integer> pageNums = pages.isAll() ? allPages(src.getNumberOfPages()) : pages.pageNumbers();
+            try (PDDocument out = combineDoc(src, pageNums)) {
+                return PdfLoader.toBytes(out);
+            }
+        } catch (IOException e) {
+            throw new PdfOperationException("Split failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * In-memory SEPARATE variant: each selected page of {@code pdf} → its own PDF's bytes,
+     * in page order.
+     */
+    public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages)
+            throws PdfOperationException {
+        try (PDDocument src = PdfLoader.load(pdf)) {
+            List<Integer> pageNums = pages.isAll() ? allPages(src.getNumberOfPages()) : pages.pageNumbers();
+            List<byte[]> outputs = new ArrayList<>(pageNums.size());
+            for (int pageNum : pageNums) {
+                try (PDDocument one = singlePageDoc(src, pageNum)) {
+                    outputs.add(PdfLoader.toBytes(one));
+                }
+            }
+            return outputs;
+        } catch (IOException e) {
+            throw new PdfOperationException("Split failed: " + e.getMessage(), e);
+        }
+    }
+
     /** Selected pages → one PDF at {@code outputFile}. */
     private static SplitResult combine(PDDocument src, List<Integer> pageNums, Path outputFile)
             throws IOException {
-        try (PDDocument out = new PDDocument()) {
-            for (int pageNum : pageNums) out.importPage(src.getPage(pageNum - 1));
+        try (PDDocument out = combineDoc(src, pageNums)) {
             OutputPaths.ensureParentDir(outputFile);
             out.save(outputFile.toFile());
             return new SplitResult(List.of(outputFile), out.getNumberOfPages());
@@ -52,13 +87,26 @@ public final class PdfSplitter {
         List<Path> outputs = new ArrayList<>(pageNums.size());
         for (int pageNum : pageNums) {
             Path out = outputDir.resolve(stem + "_p" + pad(pageNum, width) + ".pdf");
-            try (PDDocument one = new PDDocument()) {
-                one.importPage(src.getPage(pageNum - 1));
+            try (PDDocument one = singlePageDoc(src, pageNum)) {
                 one.save(out.toFile());
             }
             outputs.add(out);
         }
         return new SplitResult(outputs, outputs.size());
+    }
+
+    /** A new document holding the given 1-based pages of {@code src}, in order. */
+    private static PDDocument combineDoc(PDDocument src, List<Integer> pageNums) throws IOException {
+        PDDocument out = new PDDocument();
+        for (int pageNum : pageNums) out.importPage(src.getPage(pageNum - 1));
+        return out;
+    }
+
+    /** A new one-page document holding page {@code pageNum} (1-based) of {@code src}. */
+    private static PDDocument singlePageDoc(PDDocument src, int pageNum) throws IOException {
+        PDDocument one = new PDDocument();
+        one.importPage(src.getPage(pageNum - 1));
+        return one;
     }
 
     private static List<Integer> allPages(int count) {

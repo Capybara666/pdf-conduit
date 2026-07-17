@@ -11,11 +11,14 @@ import com.pdfconduit.core.model.ImageToPdfOptions;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PdfResult;
 import com.pdfconduit.core.util.OutputPaths;
+import com.pdfconduit.core.util.PdfLoader;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public final class ImageToPdfConverter {
 
@@ -34,12 +37,38 @@ public final class ImageToPdfConverter {
         }
     }
 
+    /**
+     * In-memory variant: place each image in {@code images} on its own page (at
+     * {@code pageSize}) and return the assembled PDF's bytes.
+     */
+    public static byte[] executeBytes(List<byte[]> images, PageSize pageSize)
+            throws PdfOperationException {
+        try (PDDocument doc = new PDDocument()) {
+            for (byte[] image : images) {
+                BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(image));
+                if (bufferedImage == null) {
+                    throw new IOException("Cannot read image: unsupported or corrupt image data.");
+                }
+                appendImagePage(doc, bufferedImage, pageSize);
+            }
+            return PdfLoader.toBytes(doc);
+        } catch (IOException e) {
+            throw new PdfOperationException("Image-to-PDF conversion failed: " + e.getMessage(), e);
+        }
+    }
+
     static void appendImagePage(PDDocument doc, Path imagePath, PageSize targetSize)
             throws IOException {
         BufferedImage bufferedImage = ImageIO.read(imagePath.toFile());
         if (bufferedImage == null) {
             throw new IOException("Cannot read image: " + imagePath);
         }
+        appendImagePage(doc, bufferedImage, targetSize);
+    }
+
+    /** The shared layout algorithm: place {@code bufferedImage} on a new page sized per {@code targetSize}. */
+    static void appendImagePage(PDDocument doc, BufferedImage bufferedImage, PageSize targetSize)
+            throws IOException {
         PDImageXObject img = LosslessFactory.createFromImage(doc, bufferedImage);
 
         PDRectangle mediaBox = resolveMediaBox(targetSize, bufferedImage.getWidth(), bufferedImage.getHeight());

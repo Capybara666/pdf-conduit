@@ -14,6 +14,34 @@ public final class PipelineValidator {
 
     private PipelineValidator() {}
 
+    /**
+     * Memory-aware validation for {@link PipelineExecutor#runInMemory}. Uploaded bytes arrive via a
+     * resolver rather than {@code node.files}, and outputs are returned as bytes rather than written
+     * to a destination, so the disk-only checks (source has files, terminal has an output
+     * destination) are skipped. All structural rules (cycles, export/split must be terminal,
+     * password/watermark requirements) still apply.
+     */
+    public static List<ValidationError> validateInMemory(PipelineModel model) {
+        List<ValidationError> errors = new ArrayList<>();
+
+        if (model.nodes.isEmpty()) {
+            errors.add(new ValidationError(null, "The pipeline is empty."));
+            return errors;
+        }
+        try {
+            PipelineGraph.outputTypes(model);   // cycle check
+        } catch (PipelineGraph.CycleException e) {
+            errors.add(new ValidationError(null, "The pipeline contains a cycle."));
+            return errors;
+        }
+
+        for (PipelineNode n : model.nodes) {
+            if (n.kind.isSource()) continue;
+            structuralChecks(model, n, errors);
+        }
+        return errors;
+    }
+
     public static List<ValidationError> validate(PipelineModel model) {
         List<ValidationError> errors = new ArrayList<>();
 
@@ -62,34 +90,39 @@ public final class PipelineValidator {
                 errors.add(new ValidationError(n.id, n.kind.label + " has no output destination."));
             }
 
-            // Separate-files output produces many files per input, which only makes
-            // sense at the end of a chain — a later step can't consume a split bundle.
-            if (n.kind == NodeKind.EXTRACT && n.splitMode == SplitMode.SEPARATE && !model.isTerminal(n)) {
-                errors.add(new ValidationError(n.id,
-                    "Split into separate files must be the last step in its chain."));
-            }
-
-            // Export nodes produce images / text, not a PDF, so nothing can consume
-            // their output — they must end their chain.
-            if (n.kind.isExport() && !model.isTerminal(n)) {
-                errors.add(new ValidationError(n.id,
-                    n.kind.label + " must be the last step in its chain."));
-            }
-
-            // Protect and Unlock both need a password to work.
-            if ((n.kind == NodeKind.PROTECT || n.kind == NodeKind.UNLOCK)
-                    && (n.password == null || n.password.isBlank())) {
-                errors.add(new ValidationError(n.id, n.kind.label + " needs a password."));
-            }
-
-            // A watermark needs either text or an image.
-            if (n.kind == NodeKind.WATERMARK
-                    && (n.wmText == null || n.wmText.isBlank())
-                    && (n.wmImage == null || n.wmImage.isBlank())) {
-                errors.add(new ValidationError(n.id, n.kind.label + " needs text or an image."));
-            }
+            structuralChecks(model, n, errors);
         }
 
         return errors;
+    }
+
+    /** Checks that apply on every surface (disk or in-memory): terminal constraints, passwords, etc. */
+    private static void structuralChecks(PipelineModel model, PipelineNode n, List<ValidationError> errors) {
+        // Separate-files output produces many files per input, which only makes
+        // sense at the end of a chain — a later step can't consume a split bundle.
+        if (n.kind == NodeKind.EXTRACT && n.splitMode == SplitMode.SEPARATE && !model.isTerminal(n)) {
+            errors.add(new ValidationError(n.id,
+                "Split into separate files must be the last step in its chain."));
+        }
+
+        // Export nodes produce images / text, not a PDF, so nothing can consume
+        // their output — they must end their chain.
+        if (n.kind.isExport() && !model.isTerminal(n)) {
+            errors.add(new ValidationError(n.id,
+                n.kind.label + " must be the last step in its chain."));
+        }
+
+        // Protect and Unlock both need a password to work.
+        if ((n.kind == NodeKind.PROTECT || n.kind == NodeKind.UNLOCK)
+                && (n.password == null || n.password.isBlank())) {
+            errors.add(new ValidationError(n.id, n.kind.label + " needs a password."));
+        }
+
+        // A watermark needs either text or an image.
+        if (n.kind == NodeKind.WATERMARK
+                && (n.wmText == null || n.wmText.isBlank())
+                && (n.wmImage == null || n.wmImage.isBlank())) {
+            errors.add(new ValidationError(n.id, n.kind.label + " needs text or an image."));
+        }
     }
 }
