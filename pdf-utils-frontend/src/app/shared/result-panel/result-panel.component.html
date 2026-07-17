@@ -1,0 +1,57 @@
+@if (loading) {
+  <div class="panel loading">
+    <app-spinner [label]="loadingLabel"></app-spinner>
+  </div>
+}
+
+@if (!loading && error) {
+  <div class="panel error" role="alert">
+    <div class="head">
+      <span class="icon" aria-hidden="true">!</span>
+      <strong>Operation failed</strong>
+    </div>
+    <p class="message">{{ error.message }}</p>
+    <p class="meta">
+      <code>{{ error.code }}</code>
+      @if (error.status) {
+        <span>· HTTP {{ error.status }}</span>
+      }
+    </p>
+  </div>
+}
+
+@if (!loading && !error && result) {
+  <div class="panel success" role="status">
+    <div class="head">
+      <span class="icon ok" aria-hidden="true">✓</span>
+      <strong>Done</strong>
+    </div>
+    <p class="filename">{{ result.filename }}</p>
+
+    @if (result.compression) {
+      <ul class="stats">
+        @if (result.compression.originalBytes != null) {
+          <li><span>Original</span><b>{{ formatBytes(result.compression.originalBytes) }}</b></li>
+        }
+        @if (result.compression.resultBytes != null) {
+          <li><span>Result</span><b>{{ formatBytes(result.compression.resultBytes) }}</b></li>
+        }
+        @if (savedPercent != null) {
+          <li><span>Saved</span><b>{{ savedPercent }}%</b></li>
+        }
+        @if (result.compression.targetReached != null) {
+          <li>
+            <span>Target</span>
+            <b>{{ result.compression.targetReached ? 'reached' : 'not reached' }}</b>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (result.batchFailures) {
+      <p class="warn">Some inputs failed: {{ result.batchFailures }}</p>
+    }
+
+    <button type="button" class="download" (click)="download()">Download</button>
+  </div>
+}

@@ -1,0 +1,30 @@
+<nav class="sidebar" aria-label="Operations">
+  @for (group of groups; track group.key) {
+    <div class="group">
+      <span class="group-label">{{ group.label }}</span>
+      <ul>
+        @for (item of itemsFor(group.key); track item.id) {
+          <li>
+            <a
+              [routerLink]="['/', item.id]"
+              routerLinkActive="active"
+              [title]="item.description"
+            >
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  [attr.d]="item.icon"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span class="text">{{ item.label }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</nav>

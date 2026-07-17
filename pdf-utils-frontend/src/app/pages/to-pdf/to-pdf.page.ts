@@ -1,0 +1,73 @@
+import { Component, signal } from '@angular/core';
+
+import { ApiService } from '../../core/api.service';
+import { OperationState } from '../../core/operation-state';
+import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
+
+type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
+
+/** Convert images / office docs to PDF — one PDF per input (several → ZIP). */
+@Component({
+  selector: 'app-to-pdf-page',
+  standalone: true,
+  imports: [FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  template: `
+    <section class="op-page">
+      <app-page-header title="To PDF" description="Convert images and office documents to PDF." />
+
+      <app-file-drop-zone
+        [multiple]="true"
+        accept="image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx,.pdf"
+        hint="Images and office docs. Each input becomes its own PDF (several → ZIP)."
+        (filesChange)="files.set($event)"
+      />
+
+      <div class="card form-grid">
+        <div class="field">
+          <label for="tp-size">Page size</label>
+          <select id="tp-size" [value]="pageSize()" (change)="onSize($event)">
+            <option value="FIT">Fit to content</option>
+            <option value="A4">A4</option>
+            <option value="A3">A3</option>
+            <option value="LETTER">Letter</option>
+          </select>
+          <span class="help">Image inputs are placed on this page size (office docs keep their own).</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
+          Convert {{ files().length }} file{{ files().length === 1 ? '' : 's' }}
+        </button>
+      </div>
+
+      <app-result-panel
+        [loading]="state.loading()"
+        loadingLabel="Converting…"
+        [error]="state.error()"
+        [result]="state.result()"
+      />
+    </section>
+  `,
+})
+export class ToPdfPage {
+  protected readonly files = signal<File[]>([]);
+  protected readonly pageSize = signal<PageSize>('FIT');
+  protected readonly state = new OperationState();
+
+  constructor(private readonly api: ApiService) {}
+
+  onSize(ev: Event): void {
+    this.pageSize.set((ev.target as HTMLSelectElement).value as PageSize);
+  }
+
+  submit(): void {
+    if (!this.files().length) return;
+    const fd = new FormData();
+    for (const f of this.files()) fd.append('files', f, f.name);
+    fd.append('pageSize', this.pageSize());
+    this.state.run(this.api.toPdf(fd));
+  }
+}
