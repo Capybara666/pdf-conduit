@@ -1,14 +1,11 @@
 package com.pdfconduit.web.web;
 
-import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.PdfMetadata;
-import com.pdfconduit.core.service.OperationType;
-import com.pdfconduit.web.config.StartupConfig;
 import com.pdfconduit.web.dto.MetadataDto;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Responses;
-import com.pdfconduit.web.support.TempWorkspace;
+import com.pdfconduit.web.support.Uploads;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,33 +15,25 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
-/** Metadata read + edit endpoints (split out for clarity from the operation endpoints). */
+/** Metadata read + edit endpoints (in-memory; split out for clarity from the operation endpoints). */
 @RestController
 @RequestMapping("/api")
 public class MetadataController {
 
     private final WebOperations ops;
-    private final StartupConfig startup;
+    private final Uploads uploads;
 
-    public MetadataController(WebOperations ops, StartupConfig startup) {
+    public MetadataController(WebOperations ops, Uploads uploads) {
         this.ops = ops;
-        this.startup = startup;
-    }
-
-    private TempWorkspace workspace() throws IOException {
-        return TempWorkspace.create(startup.baseWorkDir());
+        this.uploads = uploads;
     }
 
     @PostMapping(value = "/metadata/read", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public MetadataDto read(@RequestParam("file") MultipartFile file)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
-        try (TempWorkspace ws = workspace()) {
-            Path in = ws.save(file);
-            PdfMetadata meta = ops.readMetadata(in, ws.newOutput("metadata-scratch.pdf"));
-            return MetadataDto.of(meta);
-        }
+            throws IOException, PdfOperationException {
+        PdfMetadata meta = ops.readMetadata(uploads.read(file));
+        return MetadataDto.of(meta);
     }
 
     @PostMapping(value = "/metadata", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -54,13 +43,9 @@ public class MetadataController {
                                        @RequestParam(required = false) String subject,
                                        @RequestParam(required = false) String keywords,
                                        @RequestParam(defaultValue = "false") boolean strip)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
-        try (TempWorkspace ws = workspace()) {
-            Path in = ws.save(file);
-            Path out = ws.newOutput(ops.outputName(OperationType.METADATA, in));
-            ops.editMetadata(in, title, author, subject, keywords, strip, out);
-            return Responses.file(TempWorkspace.readAll(out), out.getFileName().toString(),
-                MediaType.APPLICATION_PDF);
-        }
+            throws IOException, PdfOperationException {
+        return Responses.file(
+            ops.editMetadata(uploads.read(file), title, author, subject, keywords, strip),
+            MediaType.APPLICATION_PDF);
     }
 }

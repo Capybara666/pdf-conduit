@@ -24,7 +24,7 @@ WORKDIR /build
 COPY . .
 
 # Build only the web module and what it depends on (-am also builds
-# pdf-utils-core). pdf-utils-app is left out of this reactor slice, so no
+# pdf-utils-core). pdf-utils-desktop is left out of this reactor slice, so no
 # JavaFX is required at build time. spring-boot:repackage (bound in the module
 # pom) produces the runnable fat jar.
 RUN mvn -q -pl pdf-utils-web -am -DskipTests package
@@ -57,10 +57,11 @@ WORKDIR /app
 # The Spring Boot fat jar (finalName pdf-utils-web-1.0.0, from the module pom).
 COPY --from=build /build/pdf-utils-web/target/pdf-utils-web-1.0.0.jar /app/app.jar
 
-# Writable base work dir for temp uploads/results, owned by the app user.
-# Matches PDFCONDUIT_WEB_WORK_DIR below.
-RUN mkdir -p /work && chown -R appuser:appuser /work /app
-ENV PDFCONDUIT_WEB_WORK_DIR=/work
+# The backend is stateless and processes uploads in memory — there is no work
+# directory. The only disk touch is office-document conversion, which writes an
+# isolated, immediately-deleted per-request temp dir under ${java.io.tmpdir}
+# (/tmp, world-writable). appuser owns /app.
+RUN chown -R appuser:appuser /app
 
 USER appuser
 

@@ -1,41 +1,79 @@
 package com.pdfconduit.web.support;
 
+import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.exception.PdfOperationException;
-import com.pdfconduit.core.model.PageSize;
-import com.pdfconduit.core.model.PageSource;
-import com.pdfconduit.core.service.InputSources;
-import com.pdfconduit.core.util.PdfLoader;
-import org.apache.pdfbox.pdmodel.PDDocument;
+import com.pdfconduit.core.service.MemoryOperations;
+import com.pdfconduit.core.service.NamedBytes;
+import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.error.OfficeDisabledException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Input routing for the web layer. The actual type-routing logic is the shared core
- * {@link InputSources} (the same code the CLI uses) — this class is a thin,
- * web-named entry point plus a page-count helper for range parsing.
+ * In-memory input routing for the web layer: reads uploaded parts into {@link NamedBytes}
+ * (filename + bytes) and routes them to PDF bytes via the shared core
+ * {@link MemoryOperations#toPdfBytes} (PDF passthrough, image → in-memory Image-to-PDF,
+ * office → the documented temp-dir exception). Never writes to disk itself.
+ *
+ * <p>When {@code pdfconduit.web.office.enabled=false} an office/document upload is rejected up
+ * front (415) before any conversion is attempted, keeping the request fully in-memory.
  */
-public final class Uploads {
+@Component
+public class Uploads {
 
-    private Uploads() {}
+    private final boolean officeEnabled;
 
-    /** Builds merge {@link PageSource}s, converting office/image inputs (temps collected). */
-    public static List<PageSource> toPageSources(List<Path> inputs, PageSize imageSize, List<Path> temps)
-            throws PdfOperationException {
-        return InputSources.build(inputs, imageSize, temps);
+    public Uploads(WebProperties props) {
+        this.officeEnabled = props.officeEnabled();
     }
 
-    /** Best-effort deletion of temp PDFs produced by {@link #toPageSources}. */
-    public static void deleteTemps(List<Path> temps) {
-        InputSources.deleteTemps(temps);
+    /** Reads a part into {@link NamedBytes}, rejecting office uploads when office is disabled. */
+    public NamedBytes read(MultipartFile file) throws IOException {
+        String name = filename(file);
+        guardOffice(name);
+        return new NamedBytes(name, file.getBytes());
     }
 
-    /** Page count of a PDF, for parsing page-range / page-order expressions. */
-    public static int countPages(Path pdf) throws PdfOperationException {
-        try (PDDocument doc = PdfLoader.load(pdf)) {
-            return doc.getNumberOfPages();
-        } catch (java.io.IOException e) {
-            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+    /** Reads every part, preserving order. */
+    public List<NamedBytes> readAll(List<MultipartFile> files) throws IOException {
+        List<NamedBytes> out = new ArrayList<>(files.size());
+        for (MultipartFile f : files) out.add(read(f));
+        return out;
+    }
+
+    /** Reads a part and routes it to PDF bytes (image/office converted). */
+    public byte[] toPdf(MultipartFile file) throws IOException, PdfOperationException {
+        NamedBytes raw = read(file);
+        return MemoryOperations.toPdfBytes(raw.data(), raw.filename());
+    }
+
+    /** Routes an already-read upload to PDF bytes (image/office converted). */
+    public byte[] toPdf(NamedBytes raw) throws PdfOperationException {
+        guardOffice(raw.filename());
+        return MemoryOperations.toPdfBytes(raw.data(), raw.filename());
+    }
+
+    /** Rejects an office/document upload when office conversion is disabled. */
+    public void guardOffice(String filename) {
+        if (!officeEnabled
+                && DocumentConverter.classify(Path.of(filename)) == DocumentConverter.Kind.OFFICE) {
+            throw new OfficeDisabledException(filename);
         }
+    }
+
+    /** The upload's original basename (path stripped), falling back to {@code upload}. */
+    public static String filename(MultipartFile file) {
+        String raw = file.getOriginalFilename();
+        if (raw == null || raw.isBlank()) return "upload";
+        String name = raw.replace('\\', '/');
+        int slash = name.lastIndexOf('/');
+        if (slash >= 0) name = name.substring(slash + 1);
+        name = name.strip();
+        return name.isBlank() ? "upload" : name;
     }
 }

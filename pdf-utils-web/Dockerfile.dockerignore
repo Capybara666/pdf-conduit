@@ -8,7 +8,7 @@
 # the repo root if your Docker version does not pick it up automatically.
 #
 # The reactor build still needs: the root pom.xml and the src/ + pom.xml of all
-# three modules (pdf-utils-core, pdf-utils-app, pdf-utils-web). Everything below
+# three modules (pdf-utils-core, pdf-utils-desktop, pdf-utils-web). Everything below
 # is safe to drop.
 
 # Build output (jars are rebuilt inside the image)

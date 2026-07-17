@@ -4,20 +4,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
-import com.pdfconduit.core.model.CompressResult;
+import com.pdfconduit.core.model.CompressBytesResult;
 import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.RedactRegion;
 import com.pdfconduit.core.model.TextFormat;
-import com.pdfconduit.core.service.OperationRunner.BatchOutcome;
+import com.pdfconduit.core.service.MemoryOperations;
+import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OperationType;
-import com.pdfconduit.web.config.StartupConfig;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.RedactRegionDto;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Params;
 import com.pdfconduit.web.support.Responses;
-import com.pdfconduit.web.support.TempWorkspace;
+import com.pdfconduit.web.support.Uploads;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,19 +29,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.pdfconduit.web.web.ControllerSupport.ensurePdf;
 import static com.pdfconduit.web.web.ControllerSupport.guardCount;
-import static com.pdfconduit.web.web.ControllerSupport.saveAll;
-import static com.pdfconduit.web.web.ControllerSupport.stem;
 
 /**
- * The PDF operation endpoints. Every request follows the same shape: open a
- * per-request {@link TempWorkspace}, save the uploaded parts, delegate the actual
- * work to {@link WebOperations} (which reuses the shared core machinery), read the
- * result bytes <em>before</em> the workspace is closed, and stream them back.
+ * The PDF operation endpoints — stateless and fully in-memory. Every request reads the
+ * uploaded parts' bytes ({@link Uploads}), delegates the work to {@link WebOperations} (which
+ * flows through the core {@code byte[]} API), and streams the resulting bytes back via
+ * {@link ResponseEntity}. Multi-output / multi-file MAP results are zipped in memory. The one
+ * disk touch is the documented office conversion, gated by {@code pdfconduit.web.office.enabled}.
  */
 @RestController
 @RequestMapping("/api")
@@ -49,20 +51,15 @@ public class OperationsController {
         MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
     private final WebOperations ops;
-    private final StartupConfig startup;
+    private final Uploads uploads;
     private final int maxFiles;
     private final ObjectMapper json;
 
-    public OperationsController(WebOperations ops, StartupConfig startup,
-                                WebProperties props, ObjectMapper json) {
+    public OperationsController(WebOperations ops, Uploads uploads, WebProperties props, ObjectMapper json) {
         this.ops = ops;
-        this.startup = startup;
+        this.uploads = uploads;
         this.maxFiles = props.maxFilesPerRequest();
         this.json = json;
-    }
-
-    private TempWorkspace workspace() throws IOException {
-        return TempWorkspace.create(startup.baseWorkDir());
     }
 
     // -------------------------------------------------------------------- MERGE
@@ -72,15 +69,9 @@ public class OperationsController {
                                         @RequestParam(required = false) String outputName)
             throws IOException, PdfOperationException {
         guardCount(files, maxFiles);
-        try (TempWorkspace ws = workspace()) {
-            List<Path> inputs = saveAll(ws, files);
-            String name = (outputName == null || outputName.isBlank())
-                ? stem(inputs.get(0)) + OperationType.MERGE.suffix() + ".pdf"
-                : ensurePdf(outputName);
-            Path out = ws.newOutput(name);
-            ops.merge(inputs, PageSize.FIT, out);
-            return Responses.file(TempWorkspace.readAll(out), name, MediaType.APPLICATION_PDF);
-        }
+        NamedBytes merged = ops.merge(uploads.readAll(files));
+        String name = (outputName == null || outputName.isBlank()) ? merged.filename() : ensurePdf(outputName);
+        return Responses.file(merged.data(), name, MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------ EXTRACT
@@ -90,19 +81,11 @@ public class OperationsController {
                                           @RequestParam(required = false) String pages,
                                           @RequestParam(defaultValue = "false") boolean separate)
             throws IOException, PdfOperationException, InvalidPageRangeException {
-        try (TempWorkspace ws = workspace()) {
-            Path in = ws.save(file);
-            if (separate) {
-                Path dir = ws.outputDir().resolve(stem(in) + "_pages");
-                List<Path> outs = ops.extract(in, pages, true, null, dir);
-                return Responses.zipFiles(outs, "extract_results.zip");
-            }
-            Path out = ws.newOutput(ops.outputName(OperationType.EXTRACT, in));
-            List<Path> outs = ops.extract(in, pages, false, out, null);
-            Path only = outs.get(0);
-            return Responses.file(TempWorkspace.readAll(only), only.getFileName().toString(),
-                MediaType.APPLICATION_PDF);
+        NamedBytes in = uploads.read(file);
+        if (separate) {
+            return Responses.zip(ops.extractSeparate(in, pages), "extract_results.zip");
         }
+        return Responses.file(ops.extractCombine(in, pages), MediaType.APPLICATION_PDF);
     }
 
     // ----------------------------------------------------------------- COMPRESS
@@ -110,30 +93,25 @@ public class OperationsController {
     @PostMapping(value = "/compress", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> compress(@RequestParam("files") List<MultipartFile> files,
                                            @RequestParam String targetSize)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
+            throws IOException, PdfOperationException {
         guardCount(files, maxFiles);
         long target = Params.parseSize(targetSize);
-        try (TempWorkspace ws = workspace()) {
-            List<Path> inputs = saveAll(ws, files);
-            if (inputs.size() == 1) {
-                Path in = inputs.get(0);
-                Path out = ws.newOutput(ops.outputName(OperationType.COMPRESS, in));
-                CompressResult r = ops.compress(in, target, out);
-                byte[] bytes = TempWorkspace.readAll(out);
-                return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
-                        org.springframework.http.ContentDisposition.attachment()
-                            .filename(out.getFileName().toString()).build().toString())
-                    .header("X-Target-Reached", String.valueOf(r.targetReached()))
-                    .header("X-Original-Bytes", String.valueOf(r.originalBytes()))
-                    .header("X-Result-Bytes", String.valueOf(r.resultBytes()))
-                    .contentLength(bytes.length)
-                    .body(bytes);
-            }
-            BatchOutcome outcome = ops.compressBatch(inputs, target, ws.outputDir());
-            return Responses.batch("compress", outcome, MediaType.APPLICATION_PDF);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        if (inputs.size() == 1) {
+            NamedBytes in = inputs.get(0);
+            CompressBytesResult r = ops.compress(in, target);
+            String name = MemoryOperations.outputName(OperationType.COMPRESS, in.filename());
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                    ContentDisposition.attachment().filename(name).build().toString())
+                .header("X-Target-Reached", String.valueOf(r.targetReached()))
+                .header("X-Original-Bytes", String.valueOf(r.originalBytes()))
+                .header("X-Result-Bytes", String.valueOf(r.resultBytes()))
+                .contentLength(r.bytes().length)
+                .body(r.bytes());
         }
+        return Responses.zip(ops.compressBatch(inputs, target), "compress_results.zip");
     }
 
     // ------------------------------------------------------------------- ROTATE
@@ -142,13 +120,10 @@ public class OperationsController {
     public ResponseEntity<byte[]> rotate(@RequestParam("files") List<MultipartFile> files,
                                          @RequestParam int angle,
                                          @RequestParam(required = false) String pages)
-            throws IOException, PdfOperationException {
+            throws IOException, PdfOperationException, InvalidPageRangeException {
         guardCount(files, maxFiles);
-        try (TempWorkspace ws = workspace()) {
-            List<Path> inputs = saveAll(ws, files);
-            BatchOutcome outcome = ops.rotate(inputs, pages, angle, ws.outputDir());
-            return Responses.batch("rotate", outcome, MediaType.APPLICATION_PDF);
-        }
+        return Responses.batch("rotate", ops.rotate(uploads.readAll(files), pages, angle),
+            MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------ ARRANGE
@@ -158,13 +133,7 @@ public class OperationsController {
                                           @RequestParam String order)
             throws IOException, PdfOperationException, InvalidPageRangeException {
         Params.require(order, "order");
-        try (TempWorkspace ws = workspace()) {
-            Path in = ws.save(file);
-            Path out = ws.newOutput(ops.outputName(OperationType.ARRANGE, in));
-            ops.arrange(in, order, out);
-            return Responses.file(TempWorkspace.readAll(out), out.getFileName().toString(),
-                MediaType.APPLICATION_PDF);
-        }
+        return Responses.file(ops.arrange(uploads.read(file), order), MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------- TO-PDF
@@ -175,11 +144,8 @@ public class OperationsController {
             throws IOException, PdfOperationException {
         guardCount(files, maxFiles);
         PageSize size = Params.pageSize(pageSize, PageSize.FIT);
-        try (TempWorkspace ws = workspace()) {
-            List<Path> inputs = saveAll(ws, files);
-            BatchOutcome outcome = ops.toPdf(inputs, size, ws.outputDir());
-            return Responses.batch("to-pdf", outcome, MediaType.APPLICATION_PDF);
-        }
+        return Responses.batch("to-pdf", ops.toPdf(uploads.readAll(files), size),
+            MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------ PROTECT
@@ -191,11 +157,8 @@ public class OperationsController {
             throws IOException, PdfOperationException {
         guardCount(files, maxFiles);
         Params.require(userPassword, "userPassword");
-        try (TempWorkspace ws = workspace()) {
-            List<Path> inputs = saveAll(ws, files);
-            BatchOutcome outcome = ops.protect(inputs, userPassword, ownerPassword, ws.outputDir());
-            return Responses.batch("protect", outcome, MediaType.APPLICATION_PDF);
-        }
+        return Responses.batch("protect", ops.protect(uploads.readAll(files), userPassword, ownerPassword),
+            MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------- UNLOCK
@@ -206,11 +169,8 @@ public class OperationsController {
             throws IOException, PdfOperationException {
         guardCount(files, maxFiles);
         Params.require(password, "password");
-        try (TempWorkspace ws = workspace()) {
-            List<Path> inputs = saveAll(ws, files);
-            BatchOutcome outcome = ops.unlock(inputs, password, ws.outputDir());
-            return Responses.batch("unlock", outcome, MediaType.APPLICATION_PDF);
-        }
+        return Responses.batch("unlock", ops.unlock(uploads.readAll(files), password),
+            MediaType.APPLICATION_PDF);
     }
 
     // ---------------------------------------------------------------- WATERMARK
@@ -229,16 +189,13 @@ public class OperationsController {
         if (hasText == hasImage) {
             throw new IllegalArgumentException("Provide either watermark text or an image, not both.");
         }
-        try (TempWorkspace ws = workspace()) {
-            List<Path> inputs = saveAll(ws, files);
-            Path imagePath = hasImage ? ws.save(image) : null;
-            BatchOutcome outcome = ops.watermark(inputs, hasText ? text : null, imagePath,
+        byte[] imageBytes = hasImage ? image.getBytes() : null;
+        return Responses.batch("watermark",
+            ops.watermark(uploads.readAll(files), hasText ? text : null, imageBytes,
                 opacity != null ? opacity : 0.3,
                 rotation != null ? rotation : 45,
-                scale != null ? scale : 0.5,
-                ws.outputDir());
-            return Responses.batch("watermark", outcome, MediaType.APPLICATION_PDF);
-        }
+                scale != null ? scale : 0.5),
+            MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------- REDACT
@@ -247,22 +204,17 @@ public class OperationsController {
     public ResponseEntity<byte[]> redact(@RequestParam("file") MultipartFile file,
                                          @RequestParam String regions,
                                          @RequestParam(required = false) Integer dpi)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
+            throws IOException, PdfOperationException {
         List<RedactRegion> parsed = parseRegions(regions);
-        try (TempWorkspace ws = workspace()) {
-            Path in = ws.save(file);
-            Path out = ws.newOutput(ops.outputName(OperationType.REDACT, in));
-            ops.redact(in, parsed, dpi != null ? dpi : 0, out);
-            return Responses.file(TempWorkspace.readAll(out), out.getFileName().toString(),
-                MediaType.APPLICATION_PDF);
-        }
+        return Responses.file(ops.redact(uploads.read(file), parsed, dpi != null ? dpi : 0),
+            MediaType.APPLICATION_PDF);
     }
 
     private List<RedactRegion> parseRegions(String regions) {
         Params.require(regions, "regions");
         try {
             RedactRegionDto[] dtos = json.readValue(regions, RedactRegionDto[].class);
-            return java.util.Arrays.stream(dtos).map(RedactRegionDto::toRegion).toList();
+            return Arrays.stream(dtos).map(RedactRegionDto::toRegion).toList();
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Invalid regions JSON: " + e.getOriginalMessage());
         }
@@ -277,17 +229,13 @@ public class OperationsController {
                                            @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException {
         ImageFormat fmt = Params.imageFormat(format, ImageFormat.PNG);
-        try (TempWorkspace ws = workspace()) {
-            Path in = ws.save(file);
-            List<Path> images = ops.toImages(in, fmt, dpi != null ? dpi : 150, pages,
-                0.8f, ws.outputDir(), stem(in));
-            if (images.size() == 1) {
-                Path only = images.get(0);
-                MediaType type = fmt == ImageFormat.PNG ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
-                return Responses.file(TempWorkspace.readAll(only), only.getFileName().toString(), type);
-            }
-            return Responses.zipFiles(images, "to-images_results.zip");
+        List<NamedBytes> images = ops.toImages(uploads.read(file), fmt,
+            dpi != null ? dpi : 150, pages, 0.8f);
+        if (images.size() == 1) {
+            MediaType type = fmt == ImageFormat.PNG ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+            return Responses.file(images.get(0), type);
         }
+        return Responses.zip(images, "to-images_results.zip");
     }
 
     // ------------------------------------------------------------------- TO-TEXT
@@ -298,13 +246,10 @@ public class OperationsController {
                                          @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException {
         TextFormat fmt = Params.textFormat(format, TextFormat.TXT);
-        try (TempWorkspace ws = workspace()) {
-            Path in = ws.save(file);
-            Path out = ops.toText(in, fmt, pages, ws.outputDir(), stem(in));
-            MediaType type = fmt == TextFormat.TXT
-                ? new MediaType(MediaType.TEXT_PLAIN, java.nio.charset.StandardCharsets.UTF_8)
-                : DOCX;
-            return Responses.file(TempWorkspace.readAll(out), out.getFileName().toString(), type);
-        }
+        NamedBytes out = ops.toText(uploads.read(file), fmt, pages);
+        MediaType type = fmt == TextFormat.TXT
+            ? new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8)
+            : DOCX;
+        return Responses.file(out, type);
     }
 }

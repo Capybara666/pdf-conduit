@@ -1,39 +1,29 @@
 package com.pdfconduit.web.support;
 
+import com.pdfconduit.core.service.NamedBytes;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/** Builds an in-memory ZIP of result files, with an optional {@code _failures.txt} entry. */
+/** Builds an in-memory ZIP of {@link NamedBytes} results — no temp files, entries de-duplicated. */
 public final class Zips {
 
     private Zips() {}
 
-    /**
-     * Zips {@code files} (each entry named by its filename, de-duplicated) plus, when
-     * {@code failuresText} is non-blank, a {@code _failures.txt} entry. Returns the ZIP bytes.
-     */
-    public static byte[] zip(List<Path> files, String failuresText) {
+    /** Zips {@code entries} (each named by its {@link NamedBytes#filename()}, de-duplicated). */
+    public static byte[] zip(List<NamedBytes> entries) {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         Set<String> used = new HashSet<>();
         try (ZipOutputStream zip = new ZipOutputStream(buffer)) {
-            for (Path file : files) {
-                String entry = uniqueEntry(used, file.getFileName().toString());
-                zip.putNextEntry(new ZipEntry(entry));
-                Files.copy(file, zip);
-                zip.closeEntry();
-            }
-            if (failuresText != null && !failuresText.isBlank()) {
-                zip.putNextEntry(new ZipEntry("_failures.txt"));
-                zip.write(failuresText.getBytes(StandardCharsets.UTF_8));
+            for (NamedBytes e : entries) {
+                zip.putNextEntry(new ZipEntry(uniqueEntry(used, e.filename())));
+                zip.write(e.data());
                 zip.closeEntry();
             }
         } catch (IOException e) {

@@ -1,17 +1,14 @@
 package com.pdfconduit.web.support;
 
-import com.pdfconduit.core.exception.PdfOperationException;
-import com.pdfconduit.core.service.OperationRunner.BatchOutcome;
+import com.pdfconduit.core.service.NamedBytes;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/** Builds attachment download responses and turns a batch outcome into a file-or-ZIP response. */
+/** Builds in-memory attachment download responses (a single file, or many zipped). */
 public final class Responses {
 
     public static final MediaType ZIP = MediaType.parseMediaType("application/zip");
@@ -28,47 +25,24 @@ public final class Responses {
             .body(bytes);
     }
 
+    /** An {@code attachment} response streaming a single {@link NamedBytes}. */
+    public static ResponseEntity<byte[]> file(NamedBytes result, MediaType type) {
+        return file(result.data(), result.filename(), type);
+    }
+
+    /** Zips {@code results} into an attachment named {@code zipName}. */
+    public static ResponseEntity<byte[]> zip(List<NamedBytes> results, String zipName) {
+        return file(Zips.zip(results), zipName, ZIP);
+    }
+
     /**
-     * Finalises a single-input MAP batch: one clean output streams as {@code singleType};
-     * many outputs (or any failures) become {@code <op>_results.zip}. Zero outputs means the
-     * whole batch failed → a 422 carrying the first failure message. Reads all bytes into
-     * memory, so it is safe to call before the workspace is closed.
+     * A MAP batch: a single result streams as {@code singleType}; several results become
+     * {@code <op>_results.zip}. Both are fully in-memory.
      */
-    public static ResponseEntity<byte[]> batch(String op, BatchOutcome outcome, MediaType singleType)
-            throws PdfOperationException {
-        List<Path> outputs = outcome.outputs();
-        if (outputs.isEmpty()) {
-            String reason = outcome.failures().isEmpty()
-                ? "No output was produced."
-                : outcome.failures().get(0).message();
-            throw new PdfOperationException(reason);
+    public static ResponseEntity<byte[]> batch(String op, List<NamedBytes> results, MediaType singleType) {
+        if (results.size() == 1) {
+            return file(results.get(0), singleType);
         }
-        if (outputs.size() == 1 && !outcome.hasFailures()) {
-            Path only = outputs.get(0);
-            return file(TempWorkspace.readAll(only), only.getFileName().toString(), singleType);
-        }
-        byte[] zip = Zips.zip(outputs, failuresText(outcome));
-        ResponseEntity.BodyBuilder builder = ResponseEntity.ok()
-            .contentType(ZIP)
-            .header(HttpHeaders.CONTENT_DISPOSITION,
-                ContentDisposition.attachment().filename(op + "_results.zip").build().toString())
-            .contentLength(zip.length);
-        if (outcome.hasFailures()) {
-            builder.header("X-Batch-Failures", String.valueOf(outcome.failures().size()));
-        }
-        return builder.body(zip);
-    }
-
-    /** Zips a fixed list of result files (used by extract-separate / to-images). */
-    public static ResponseEntity<byte[]> zipFiles(List<Path> files, String zipName) {
-        byte[] zip = Zips.zip(files, null);
-        return file(zip, zipName, ZIP);
-    }
-
-    private static String failuresText(BatchOutcome outcome) {
-        if (!outcome.hasFailures()) return null;
-        return outcome.failures().stream()
-            .map(f -> f.input() + ": " + f.message())
-            .collect(Collectors.joining(System.lineSeparator()));
+        return zip(results, op + "_results.zip");
     }
 }

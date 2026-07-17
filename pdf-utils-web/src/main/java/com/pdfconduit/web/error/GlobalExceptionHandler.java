@@ -2,6 +2,7 @@ package com.pdfconduit.web.error;
 
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.pipeline.PipelineException;
 import com.pdfconduit.web.dto.ApiError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +41,14 @@ public class GlobalExceptionHandler {
         return body(HttpStatus.BAD_REQUEST, "bad_request", e.getMessage());
     }
 
-    @ExceptionHandler(PdfOperationException.class)
-    public ResponseEntity<ApiError> onOperationFailed(PdfOperationException e) {
+    @ExceptionHandler({PdfOperationException.class, PipelineException.class})
+    public ResponseEntity<ApiError> onOperationFailed(Exception e) {
         return body(HttpStatus.UNPROCESSABLE_ENTITY, "operation_failed", e.getMessage());
+    }
+
+    @ExceptionHandler(OfficeDisabledException.class)
+    public ResponseEntity<ApiError> onOfficeDisabled(OfficeDisabledException e) {
+        return body(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "office_disabled", e.getMessage());
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)

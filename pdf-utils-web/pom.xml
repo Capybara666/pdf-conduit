@@ -12,11 +12,11 @@
 
     <artifactId>pdf-utils-web</artifactId>
     <name>PDF Conduit Web</name>
-    <description>Spring Boot web backend + static UI for PDF Conduit. Reuses pdf-utils-core.</description>
+    <description>Stateless, in-memory, API-only Spring Boot backend for PDF Conduit. Reuses pdf-utils-core.</description>
 
     <!--
       Web-only configuration is kept entirely inside this module so the desktop
-      build (pdf-utils-app) and the shared library (pdf-utils-core) never pull in
+      build (pdf-utils-desktop) and the shared library (pdf-utils-core) never pull in
       Spring. The Spring Boot BOM is imported locally (this project's parent is the
       pdf-utils reactor, not spring-boot-starter-parent).
     -->
