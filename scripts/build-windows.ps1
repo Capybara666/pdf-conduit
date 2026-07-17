@@ -18,8 +18,8 @@ $AppVersion = "1.0.0"          # keep in sync with pom.xml <version>
 $MainClass  = "com.pdfconduit.app.Main"
 $Vendor     = "PDF Conduit"
 $Icon       = "assets\icon.ico"
-$Lib        = "pdf-utils-app\target\dist-lib"
-$AppJar     = "pdf-utils-app-$AppVersion.jar"
+$Lib        = "pdf-utils-desktop\target\dist-lib"
+$AppJar     = "pdf-utils-desktop-$AppVersion.jar"
 $Out        = "dist\windows"
 
 Write-Host "==> [1/4] Building modules and collecting runtime dependencies"
@@ -27,7 +27,7 @@ mvn -q -Pdist clean package "-DskipTests"
 if ($LASTEXITCODE -ne 0) { throw "Maven build failed." }
 
 Write-Host "==> [2/4] Staging jpackage input"
-Copy-Item "pdf-utils-app\target\$AppJar" $Lib -Force
+Copy-Item "pdf-utils-desktop\target\$AppJar" $Lib -Force
 if (Test-Path $Out) { Remove-Item -Recurse -Force $Out }
 New-Item -ItemType Directory -Force -Path $Out | Out-Null
 

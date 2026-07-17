@@ -17,15 +17,15 @@ APP_VERSION="1.0.0"            # keep in sync with pom.xml <version>
 MAIN_CLASS="com.pdfconduit.app.Main"
 VENDOR="PDF Conduit"
 ICON="assets/icon-512.png"
-LIB="pdf-utils-app/target/dist-lib"
-APP_JAR="pdf-utils-app-${APP_VERSION}.jar"
+LIB="pdf-utils-desktop/target/dist-lib"
+APP_JAR="pdf-utils-desktop-${APP_VERSION}.jar"
 OUT="dist/linux"
 
 echo "==> [1/4] Building modules and collecting runtime dependencies"
 mvn -q -Pdist clean package -DskipTests
 
 echo "==> [2/4] Staging jpackage input"
-cp "pdf-utils-app/target/${APP_JAR}" "${LIB}/"
+cp "pdf-utils-desktop/target/${APP_JAR}" "${LIB}/"
 rm -rf "${OUT}"
 mkdir -p "${OUT}"
 

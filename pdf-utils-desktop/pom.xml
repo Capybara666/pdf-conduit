@@ -10,7 +10,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>pdf-utils-app</artifactId>
+    <artifactId>pdf-utils-desktop</artifactId>
 
     <dependencies>
         <dependency>

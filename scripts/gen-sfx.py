@@ -2,7 +2,7 @@
 """Generate the app's short success/error sound effects (no third-party assets).
 
 Produces 16-bit mono 44.1 kHz WAV files under
-pdf-utils-app/src/main/resources/sfx/. Re-run after editing to regenerate.
+pdf-utils-desktop/src/main/resources/sfx/. Re-run after editing to regenerate.
 
     python3 scripts/gen-sfx.py
 """
@@ -13,7 +13,7 @@ from pathlib import Path
 
 RATE = 44100
 OUT = Path(__file__).resolve().parent.parent / \
-    "pdf-utils-app/src/main/resources/sfx"
+    "pdf-utils-desktop/src/main/resources/sfx"
 
 
 def tone(freq, t, decay):
