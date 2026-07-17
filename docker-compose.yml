@@ -1,42 +1,56 @@
-# Docker Compose for the PDF Conduit web app (pdf-utils-web).
+# Docker Compose for the PDF Conduit web app (v2 — two containers).
 #
-# This builds the image from source — images are NOT pre-built/published. The
-# build context is the repository root (context: .) so the multi-stage
-# Dockerfile can build the whole Maven reactor (root pom + pdf-utils-core +
-# pdf-utils-web). The runtime stage bundles a headless LibreOffice, so office
-# document conversion works out of the box.
+# Architecture: an Angular single-page app served by nginx (the `frontend`
+# service) which reverse-proxies /api to the stateless Spring Boot REST backend
+# (the `backend` service). The backend processes uploads entirely in memory —
+# there is NO work-dir volume anymore. The sole disk touch is office-document
+# conversion, which the bundled headless LibreOffice performs in an isolated,
+# immediately-deleted per-request temp dir (gated by PDFCONDUIT_WEB_OFFICE_ENABLED).
+#
+# Both images are BUILT FROM SOURCE here (not pre-published):
+#   - backend  → pdf-utils-web/Dockerfile, context = repo root (needs the root
+#                pom + pdf-utils-core alongside the module for the reactor build).
+#   - frontend → pdf-utils-frontend/Dockerfile, context = pdf-utils-frontend
+#                (its own npm build; not part of the Maven reactor).
 #
 #   Bring it up:   docker compose up --build
-#   Then open:     http://localhost:8080
+#   Then open:     http://localhost:${FRONTEND_PORT:-4200}
+#
+# Only the frontend publishes a host port; the browser talks to nginx, which
+# proxies /api to the backend over the internal compose network. Because the
+# SPA and the API share an origin (nginx), no CORS is needed in this topology —
+# the backend's CORS allow-list matters only for the dev split-origin setup
+# (ng serve on :4200 → backend on :8080). See .env.example.
 #
 # Configuration comes from environment variables (see .env.example). Copy that
 # to `.env` to override defaults; Compose loads `.env` automatically.
 
 services:
-  pdf-conduit-web:
+  backend:
     build:
+      # Repo root as context so the reactor build sees the root pom + core.
       context: .
       dockerfile: pdf-utils-web/Dockerfile
-    image: pdf-conduit-web:1.0.0
-    ports:
-      # host:container — change the host side (or SERVER_PORT) to relocate.
-      - "${SERVER_PORT:-8080}:8080"
+    image: pdf-conduit-backend:1.0.0
+    # No published port — reached only by the frontend over the compose network.
+    expose:
+      - "8080"
     environment:
       # HTTP port inside the container (keep aligned with EXPOSE 8080).
       SERVER_PORT: "8080"
-      # Base directory for temp uploads/results — matches the volume below.
-      PDFCONDUIT_WEB_WORK_DIR: "/work"
       # Optional explicit path to the `soffice` binary; the bundled LibreOffice
       # is auto-detected, so this is normally left empty.
       PDFCONDUIT_WEB_SOFFICE_PATH: "${PDFCONDUIT_WEB_SOFFICE_PATH:-}"
+      # Office/document conversion (the sole disk exception). Set to false to
+      # reject .docx/.xlsx/... uploads with a clear 415 instead.
+      PDFCONDUIT_WEB_OFFICE_ENABLED: "${PDFCONDUIT_WEB_OFFICE_ENABLED:-true}"
+      # CORS allow-list for /api (comma-separated). Not needed for the nginx
+      # same-origin proxy above, but harmless; matters for the dev split-origin.
+      PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS: "${PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS:-http://localhost:4200}"
       # Upload guardrails.
       PDFCONDUIT_WEB_MAX_FILE_SIZE: "${PDFCONDUIT_WEB_MAX_FILE_SIZE:-100MB}"
       PDFCONDUIT_WEB_MAX_REQUEST_SIZE: "${PDFCONDUIT_WEB_MAX_REQUEST_SIZE:-200MB}"
       PDFCONDUIT_WEB_MAX_FILES: "${PDFCONDUIT_WEB_MAX_FILES:-50}"
-    volumes:
-      # Named volume for scratch work (uploads/results). Ephemeral per-request
-      # data; safe to wipe. Swap for a tmpfs mount if you prefer RAM-backed temp.
-      - pdfconduit_work:/work
     restart: unless-stopped
     healthcheck:
       # Mirrors the Dockerfile HEALTHCHECK; GET /api/health returns {status:"UP"}.
@@ -46,5 +60,22 @@ services:
       retries: 3
       start_period: 40s
 
-volumes:
-  pdfconduit_work:
+  frontend:
+    build:
+      # The Angular app builds itself (npm) and serves via nginx.
+      context: pdf-utils-frontend
+      dockerfile: Dockerfile
+    image: pdf-conduit-frontend:1.0.0
+    ports:
+      # host:container — nginx listens on 80; publish it on the host. Change the
+      # host side (FRONTEND_PORT) to relocate; keep it consistent with the docs.
+      - "${FRONTEND_PORT:-4200}:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

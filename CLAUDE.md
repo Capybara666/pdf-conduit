@@ -13,14 +13,14 @@ mvn test
 
 # Run tests for a single module
 mvn test -pl pdf-utils-core
-mvn test -pl pdf-utils-app
+mvn test -pl pdf-utils-desktop
 
 # Run a single test class
 mvn test -pl pdf-utils-core -Dtest=PdfMergerTest
-mvn test -pl pdf-utils-app -Dtest=CliIntegrationTest
+mvn test -pl pdf-utils-desktop -Dtest=CliIntegrationTest
 
 # Launch the GUI (JavaFX)
-cd pdf-utils-app && mvn javafx:run
+cd pdf-utils-desktop && mvn javafx:run
 
 # Build a native, self-contained package (bundled JRE, via jpackage).
 # Run each on its target OS — jpackage does not cross-compile. Output → dist/.
@@ -28,13 +28,23 @@ scripts/build-linux.sh        # Linux   → portable app-image + .deb
 scripts/build-windows.ps1     # Windows → portable app-image + .exe
 ```
 
-The release scripts activate the Maven `dist` profile (in `pdf-utils-app/pom.xml`),
+The release scripts activate the Maven `dist` profile (in `pdf-utils-desktop/pom.xml`),
 which copies the runtime dependencies — including the platform-specific JavaFX
 native jars — into `target/dist-lib` for jpackage to bundle.
 
 ## Architecture
 
-Two-module Maven project, Java 21 (`maven.compiler.source`/`target` = 21).
+**Three** Maven modules, Java 21 (`maven.compiler.source`/`target` = 21), plus a
+standalone Angular front end that is **not** in the Maven reactor:
+- **`pdf-utils-core`** — shared PDFBox library (below). Exposes two parallel
+  APIs: the original **`Path`-in/`Path`-out** API (used by desktop) and a **new
+  in-memory `byte[]` API** (used by the web backend so it never touches disk).
+- **`pdf-utils-desktop`** — JavaFX GUI + picocli CLI (formerly `pdf-utils-app`).
+- **`pdf-utils-web`** — a **stateless, in-memory, API-only** Spring Boot REST
+  backend (no bundled UI; see "Web stack" below).
+- **`pdf-utils-frontend`** — an **Angular 18** SPA with its own npm build (own
+  `package.json`/`nginx` Dockerfile); the Java reactor never needs Node.
+
 The product name is **PDF Conduit**; the Maven artifact ids are `pdf-utils-*`.
 
 **`pdf-utils-core`** — pure library, no JavaFX, no picocli. Depends on Apache
@@ -42,6 +52,13 @@ PDFBox 3.x, the TwelveMonkeys `imageio-webp` reader (a pure-Java WebP decoder
 auto-registered with ImageIO, so `.webp` inputs decode — stock JDK ImageIO has no
 WebP reader; TIFF/BMP/GIF/PNG/JPEG it already handles), and Gson (to persist
 pipelines).
+- **In-memory `byte[]` API** (parallel to the `Path` API; used by the web
+  backend): `service/MemoryOperations` (bytes analog of `OperationRunner` —
+  single/batch/multi-output over `List<byte[]>`), the operations' `executeBytes`
+  variants, `convert/DocumentConverter.ensurePdfBytes` (in-memory input routing),
+  and `pipeline/PipelineExecutor.runInMemory` (Documents carried as `byte[]`
+  between nodes, no temp files). The `Path` API stays 100% behaviour-compatible —
+  both share the same `PDDocument`-level algorithms.
 - `operations/` — stateless utility classes (`final`, private constructor, static
   `execute(Options)`): `PdfMerger`, `PdfSplitter`, `PdfCompressor`, `PdfRotator`,
   `PdfArranger`, `ImageToPdfConverter`, `PdfProtector` (AES-128 password),
@@ -86,7 +103,7 @@ pipelines).
   Lives in core so the CLI (and a future alternate frontend) can run pipelines
   without the GUI.
 
-**`pdf-utils-app`** — entry point for both GUI and CLI, depends on core.
+**`pdf-utils-desktop`** — entry point for both GUI and CLI, depends on core.
 - `Main.java` — dispatches: args present → picocli `RootCommand`; no args →
   `GuiLauncher` (JavaFX).
 - `cli/` — picocli subcommands mirroring each core operation (`merge`, `split`,
@@ -125,6 +142,32 @@ pipelines).
   - `ThemeManager` — reads/writes `java.util.prefs.Preferences`; detects OS theme
     via `gsettings` (Linux) or registry (Windows); applies one of the bundled CSS
     themes to the scene.
+
+### Web stack (`pdf-utils-web` + `pdf-utils-frontend`)
+
+The web version is two deployables, wired by `docker-compose.yml` (`backend` +
+`frontend` services; `.env.example` for config):
+- **`pdf-utils-web`** — an **API-only, stateless, in-memory** Spring Boot backend
+  built on core's `byte[ary]` API (`MemoryOperations` / `runInMemory`). Every
+  endpoint is under **`/api`** (`web/` controllers): the operations (`merge`,
+  `extract`, `compress`, `rotate`, `arrange`, `to-pdf`, `protect`, `unlock`,
+  `metadata`(+`/read`), `watermark`, `redact`, `to-images`, `to-text`), plus
+  `pipeline/run` (multipart `pipeline` JSON + `files` → ZIP), `pipeline/validate`,
+  `pipeline/kinds`, `render` (page → PNG), `health`, and `operations` (catalog).
+  Batch MAP ops return a ZIP; single output streams the file; compress emits
+  `X-Original-Bytes`/`X-Result-Bytes`/`X-Target-Reached`. Errors are
+  `{code,error}` JSON via `GlobalExceptionHandler` (400 bad request / 413 too
+  large / 415 office-disabled / 422 operation-failed / 500). CORS
+  (`config/CorsConfig`) is configurable via `pdfconduit.web.cors.allowed-origins`.
+  Config keys: `pdfconduit.web.{soffice-path,max-files-per-request,office.enabled,
+  cors.allowed-origins}` — **no work-dir** (nothing hits disk).
+- **`pdf-utils-frontend`** — the **Angular 18** SPA (all operations + Wizard +
+  Pipeline builder + in-browser pdf.js Redaction). Standalone npm build, its own
+  nginx Dockerfile serving the SPA and proxying `/api` → the `backend` service.
+- **The one disk exception:** office/text conversion (`.docx`/`.xlsx`/…) needs
+  LibreOffice, which reads/writes an isolated, immediately-deleted per-request
+  temp dir; gated by `pdfconduit.web.office.enabled` (default true, else 415).
+  Everything else — PDFs and images, including the pipeline — stays in memory.
 
 ## Key Conventions
 

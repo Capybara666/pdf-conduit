@@ -12,7 +12,7 @@ review with usability improvements.
 monitor's visual bounds, computed after `stage.show()` so the real (decorated)
 window size is known.
 
-- File: `pdf-utils-app/.../gui/MainWindow.java`
+- File: `pdf-utils-desktop/.../gui/MainWindow.java`
 
 ---
 
@@ -22,7 +22,7 @@ There was a mismatch: `CLAUDE.md` claimed `mvn package -P linux/-P windows`
 produced an AppImage/.exe, but **no such Maven profiles or jpackage config
 existed**. I built a real packaging pipeline instead.
 
-- **New Maven profile `dist`** (`pdf-utils-app/pom.xml`) collects every runtime
+- **New Maven profile `dist`** (`pdf-utils-desktop/pom.xml`) collects every runtime
   dependency — including the platform-specific JavaFX native jars resolved for
   the build OS — into `target/dist-lib/`. Verified it bundles the JavaFX
   `-linux` natives + the core jar.
@@ -53,14 +53,14 @@ sources were created in Step 1 with a hard-coded `FIT` and exported unchanged.
 Step 5 now maps the chosen page size onto every image source at export, so the
 setting actually takes effect.
 
-- File: `pdf-utils-app/.../gui/wizard/Step5Export.java`
+- File: `pdf-utils-desktop/.../gui/wizard/Step5Export.java`
 
 ### Bug fixed: wizard compression target ignored unit changes
 
 In Step 4, the target size in bytes was only recomputed when the number field
 changed, not when the MB/KB unit changed. Both now recompute.
 
-- File: `pdf-utils-app/.../gui/wizard/Step4Compression.java`
+- File: `pdf-utils-desktop/.../gui/wizard/Step4Compression.java`
 
 ### Usability: file list toolbar (count + Clear)
 
@@ -68,7 +68,7 @@ Every operation panel now shows a live file count ("3 files") and a **Clear**
 button to empty the list in one click (previously files had to be removed one by
 one).
 
-- File: `pdf-utils-app/.../gui/panels/BasePanel.java`
+- File: `pdf-utils-desktop/.../gui/panels/BasePanel.java`
 
 ### Consistency: single-input panels now say so
 
@@ -110,7 +110,7 @@ These are observations from the review worth considering later:
 - `mvn -Pdist clean package` — succeeds; `target/dist-lib/` contains all runtime
   jars including the JavaFX native classifier jars.
 - GUI behaviors (centering, animations, dialogs) are not covered by automated
-  tests — to eyeball them run `cd pdf-utils-app && mvn javafx:run`.
+  tests — to eyeball them run `cd pdf-utils-desktop && mvn javafx:run`.
 
 ---
 

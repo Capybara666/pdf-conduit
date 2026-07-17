@@ -129,23 +129,35 @@ pdf-conduit pipeline my-pipeline.json
 ## Using the web app
 
 PDF Conduit also runs as a **web app** you use entirely in the browser — handy
-when you'd rather not install the desktop build. Once it's running (see the
-README for how to start it, in dev or via Docker), open:
+when you'd rather not install the desktop build. It is an **Angular** front end
+talking to a stateless REST back end. Once it's running (see the README for how
+to start it, in dev or via Docker), open:
 
 ```
-http://localhost:8080
+http://localhost:4200
 ```
 
-It offers the same operations as the desktop app — **Merge, Extract, Compress,
-Rotate, Arrange, To PDF, Protect, Unlock, Metadata, Watermark**. Pick an
-operation, **upload** your files (PDFs, images, or Office documents), set any
-options, run it, and **download** the result in your browser. When an operation
-produces several files, they come back as a single `.zip`.
+(That's the dev address and the default Docker port; if you changed
+`FRONTEND_PORT`, use that instead.)
 
-As on the desktop, feeding **Office/text documents** into an operation needs
-LibreOffice available to the server — the Docker image bundles it, so nothing
-extra is required there. The visual pipeline editor and the Wizard remain
-desktop features.
+It offers the **full set** of desktop operations — **Merge, Extract, Compress,
+Rotate, Arrange, To PDF, Protect, Unlock, Metadata, Watermark, Redact, To
+Images, To Text** — plus the **Wizard** (a guided select → arrange → page
+settings → compression → export flow) and the visual **Pipeline** builder
+(chain operations as connected nodes). Pick an operation, **upload** your files
+(PDFs, images, or Office documents), set any options, run it, and **download**
+the result in your browser. When an operation produces several files, they come
+back as a single `.zip`.
+
+**Redaction** runs right in the browser: the PDF is rendered on screen and you
+**draw boxes** over what to hide; the marked areas are permanently burned out of
+the result.
+
+Your uploads are processed **in memory** and never stored on the server — the
+result is streamed straight back for download. The one exception is converting
+**Office/text documents** (`.docx`, `.xlsx`, …), which needs LibreOffice
+available to the server (the Docker image bundles it, so nothing extra is
+required there); pure PDF and image flows need nothing beyond the browser.
 
 ## Command line (CLI)
 

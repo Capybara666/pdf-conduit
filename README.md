@@ -59,7 +59,7 @@ mvn test           # run all tests
 ## Run the GUI
 
 ```bash
-cd pdf-utils-app && mvn javafx:run
+cd pdf-utils-desktop && mvn javafx:run
 ```
 
 Launching with no arguments opens the GUI; launching with arguments runs the
@@ -97,39 +97,49 @@ pdf-conduit pipeline my-pipeline.json   # run a pipeline saved from the GUI
 
 ## Web version
 
-A **Spring Boot** module, `pdf-utils-web`, exposes the same core operations over
-HTTP with a browser UI — upload files, run an operation, download the result. It
-reuses `pdf-utils-core`, so behaviour matches the desktop app. No Node/npm build
-step is required; it builds with Maven alone.
+The web version is a **two-tier app** covering every desktop operation:
 
-**Run in dev** (host JDK 21 + Maven; serves on http://localhost:8080):
+- **`pdf-utils-frontend`** — an **Angular 18** single-page app (its own npm
+  build, *not* part of the Maven reactor). All operations plus the Wizard, the
+  visual Pipeline builder, and in-browser Redaction (pdf.js box-drawing).
+- **`pdf-utils-web`** — a **stateless, in-memory Spring Boot REST API** (no
+  browser UI of its own). It reuses `pdf-utils-core`, so behaviour matches the
+  desktop app, and processes uploads entirely in memory — nothing is written to
+  disk. The one exception is **office/text-document conversion** (`.docx`,
+  `.xlsx`, …), which LibreOffice performs in an isolated, immediately-deleted
+  per-request temp dir.
 
-```bash
-scripts/run-web.sh
-# or, equivalently:
-mvn -pl pdf-utils-web -am spring-boot:run
-```
-
-**Build and run the jar:**
-
-```bash
-mvn -pl pdf-utils-web -am package
-java -jar pdf-utils-web/target/pdf-utils-web-1.0.0.jar
-```
-
-**Run with Docker** (bundles a headless LibreOffice, so office-doc conversion
-works out of the box — images are built from source, not pre-published):
+**Run in dev** (two terminals):
 
 ```bash
-docker compose up --build      # then open http://localhost:8080
+scripts/run-web.sh        # backend REST API  → http://localhost:8080/api
+scripts/run-frontend.sh   # Angular dev server → http://localhost:4200
 ```
+
+The frontend dev server proxies `/api` to the backend on `:8080`, so open
+**http://localhost:4200**. (Equivalents: `mvn -pl pdf-utils-web -am
+spring-boot:run` and `cd pdf-utils-frontend && npm start`.)
+
+**Run with Docker** (production; two containers — nginx-served SPA + backend,
+with a headless LibreOffice bundled so office-doc conversion works out of the
+box; images are built from source, not pre-published):
+
+```bash
+docker compose up --build      # then open http://localhost:4200
+```
+
+nginx serves the SPA and reverse-proxies `/api` to the `backend` service, so the
+browser talks to a single origin (no CORS needed in this topology). Only the
+frontend publishes a host port; the backend is internal.
 
 **Configuration** (environment variables; see `.env.example`, copy to `.env`):
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `SERVER_PORT` | `8080` | HTTP port |
-| `PDFCONDUIT_WEB_WORK_DIR` | temp dir | Base dir for uploads/results |
+| `FRONTEND_PORT` | `4200` | Host port the frontend (nginx) is published on |
+| `SERVER_PORT` | `8080` | Backend HTTP port (internal in compose) |
+| `PDFCONDUIT_WEB_OFFICE_ENABLED` | `true` | Enable office-doc conversion (the sole disk touch); `false` rejects office uploads with a 415 |
+| `PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS` | `http://localhost:4200` | Origins allowed to call `/api` (only relevant for the dev split-origin setup) |
 | `PDFCONDUIT_WEB_SOFFICE_PATH` | auto-detect | Explicit path to `soffice` |
 | `PDFCONDUIT_WEB_MAX_FILE_SIZE` | `100MB` | Max size per uploaded file |
 | `PDFCONDUIT_WEB_MAX_REQUEST_SIZE` | `200MB` | Max total request size |
@@ -138,7 +148,7 @@ docker compose up --build      # then open http://localhost:8080
 As with the desktop app, converting **office/text documents** to PDF needs
 LibreOffice (the `soffice` command) on the host — it is bundled in the Docker
 image, so `docker compose up` needs no extra setup. Pure PDF and image flows
-work without it.
+are fully in-memory and work without it.
 
 ## Releases (native packages)
 
@@ -156,21 +166,24 @@ Output lands in `dist/`. See `scripts/README.md` for prerequisites.
 ## Project layout
 
 ```
-pdf-utils-core/   pure library — PDFBox operations, models, utils (no JavaFX/CLI)
-pdf-utils-app/    entry point: CLI (picocli) + GUI (JavaFX), depends on core
-scripts/          jpackage release builders
+pdf-utils-core/     pure library — PDFBox operations, models, utils (no JavaFX/CLI).
+                    Path API (desktop) + in-memory byte[] API (web).
+pdf-utils-desktop/  entry point: CLI (picocli) + GUI (JavaFX), depends on core
+pdf-utils-web/      stateless, in-memory Spring Boot REST API (no UI of its own)
+pdf-utils-frontend/ Angular 18 SPA (standalone npm build, not a Maven module)
+scripts/            jpackage release builders + web/frontend dev launchers
 ```
 
 - `pdf-utils-core` is dependency-light and headlessly testable.
 - The pipeline **model + executor** (`pdf-utils-core/.../pipeline`) are
   JavaFX-free and unit-tested, so the CLI runs pipelines without the GUI; the
-  canvas (`pdf-utils-app/.../gui/pipeline`) is the JavaFX layer on top.
+  canvas (`pdf-utils-desktop/.../gui/pipeline`) is the JavaFX layer on top.
 
 ## Testing
 
 ```bash
 mvn test -pl pdf-utils-core                       # core operations
-mvn test -pl pdf-utils-app                         # CLI + pipeline + stylesheet tests
+mvn test -pl pdf-utils-desktop                     # CLI + pipeline + stylesheet tests
 mvn test -pl pdf-utils-core -Dtest=PdfMergerTest   # a single class
 ```
 
