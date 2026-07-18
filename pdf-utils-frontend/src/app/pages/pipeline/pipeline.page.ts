@@ -109,6 +109,7 @@ const KIND_TO_OP: Record<string, string> = {
               [node]="cv.selectedNode()"
               [pool]="fileNames()"
               (patch)="cv.patchSelected($event)"
+              (asset)="cv.setSelectedAsset($event)"
             />
           </div>
 
@@ -290,6 +291,7 @@ export class PipelinePage implements OnInit, AfterViewInit {
     const fd = new FormData();
     fd.append('pipeline', JSON.stringify(cv.toModel()));
     for (const f of this.files()) fd.append('files', f, f.name);
+    for (const a of cv.assetFiles()) fd.append('nodeAssets', a, a.name);
     this.api.runPipeline(fd).subscribe({
       next: (r) => {
         this.result.set(r);

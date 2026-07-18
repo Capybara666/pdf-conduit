@@ -121,6 +121,8 @@ export interface CanvasNode {
   metaKeywords: string;
   metaStrip: boolean;
   wmText: string;
+  /** Basename of an uploaded watermark image (a name reference; maps to wire `wmImage`). */
+  wmImageName: string;
   wmOpacity: number;
   wmRotation: number;
   wmScale: number;
@@ -151,6 +153,7 @@ export function newCanvasNode(id: string, kind: NodeKindName, x: number, y: numb
     metaKeywords: '',
     metaStrip: false,
     wmText: '',
+    wmImageName: '',
     wmOpacity: 0.3,
     wmRotation: 45,
     wmScale: 0.5,
@@ -190,7 +193,16 @@ export function toWireNode(n: CanvasNode): PipelineNodeJson {
         metaStrip: n.metaStrip,
       };
     case 'WATERMARK':
-      return { ...base, wmText: n.wmText, wmOpacity: n.wmOpacity, wmRotation: n.wmRotation, wmScale: n.wmScale };
+      return {
+        ...base,
+        // An uploaded image wins over text (matches the desktop pipeline); its bytes ride along as
+        // a separate `nodeAssets` part matched to this name.
+        wmText: n.wmImageName ? '' : n.wmText,
+        wmImage: n.wmImageName,
+        wmOpacity: n.wmOpacity,
+        wmRotation: n.wmRotation,
+        wmScale: n.wmScale,
+      };
     case 'TO_IMAGES':
       return { ...base, imageFormat: n.imageFormat, imageDpi: n.imageDpi };
     case 'TO_TEXT':
@@ -218,6 +230,7 @@ export function fromWireNode(w: PipelineNodeJson): CanvasNode {
   if (w.metaKeywords != null) n.metaKeywords = w.metaKeywords;
   if (w.metaStrip != null) n.metaStrip = w.metaStrip;
   if (w.wmText != null) n.wmText = w.wmText;
+  if (w.wmImage != null) n.wmImageName = w.wmImage;
   if (w.wmOpacity != null) n.wmOpacity = w.wmOpacity;
   if (w.wmRotation != null) n.wmRotation = w.wmRotation;
   if (w.wmScale != null) n.wmScale = w.wmScale;

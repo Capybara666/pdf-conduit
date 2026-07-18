@@ -290,6 +290,47 @@ class OperationsControllerTest {
     }
 
     @Test
+    void pipelineRun_imageWatermark_returnsZip() throws Exception {
+        PipelineModel model = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(Path.of("doc.pdf"));
+        PipelineNode wm = new PipelineNode("w", NodeKind.WATERMARK, 0, 0);
+        wm.wmText = "";
+        wm.wmImage = "logo.png";   // name reference; bytes ride along as a nodeAssets part
+        model.nodes.add(src);
+        model.nodes.add(wm);
+        model.connections.add(new Connection("s", "w"));
+
+        MockMultipartFile image = new MockMultipartFile("nodeAssets", "logo.png", "image/png", pngLogo());
+        mvc().perform(multipart("/api/pipeline/run")
+                .file(pdf("files", "doc.pdf", TestPdfs.blank(2)))
+                .file(image)
+                .param("pipeline", toJson(model)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andExpect(header().string("Content-Disposition",
+                org.hamcrest.Matchers.containsString("pipeline_results.zip")));
+    }
+
+    @Test
+    void pipelineRun_imageWatermarkMissingAsset_returns400() throws Exception {
+        PipelineModel model = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        src.files.add(Path.of("doc.pdf"));
+        PipelineNode wm = new PipelineNode("w", NodeKind.WATERMARK, 0, 0);
+        wm.wmText = "";
+        wm.wmImage = "logo.png";
+        model.nodes.add(src);
+        model.nodes.add(wm);
+        model.connections.add(new Connection("s", "w"));
+
+        mvc().perform(multipart("/api/pipeline/run")
+                .file(pdf("files", "doc.pdf", TestPdfs.blank(1)))
+                .param("pipeline", toJson(model)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void pipelineValidate_missingWatermarkText_returnsErrors() throws Exception {
         PipelineModel model = new PipelineModel();
         PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
@@ -341,6 +382,19 @@ class OperationsControllerTest {
     }
 
     // --------------------------------------------------------------- helpers
+
+    /** A small PNG for image-watermark assets. */
+    private static byte[] pngLogo() throws java.io.IOException {
+        java.awt.image.BufferedImage img =
+            new java.awt.image.BufferedImage(48, 48, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+        java.awt.Graphics2D g = img.createGraphics();
+        g.setColor(java.awt.Color.BLUE);
+        g.fillOval(2, 2, 44, 44);
+        g.dispose();
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(img, "png", out);
+        return out.toByteArray();
+    }
 
     /** Serialises a model the same way core's PipelineStore does (Path fields → strings). */
     private static String toJson(PipelineModel model) {

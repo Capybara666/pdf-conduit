@@ -58,10 +58,16 @@ public class PipelineController {
      * <p><b>Source→upload mapping:</b> each source node lists file names in its {@code files}
      * field; the executor is fed, per source node, the uploaded {@code files} parts whose original
      * filename (basename) equals those names, in the node's declared order.
+     *
+     * <p><b>Watermark image assets:</b> a WATERMARK node doing an <em>image</em> watermark carries
+     * only a name reference in its {@code wmImage} field (no host path). The image bytes ride along
+     * as separate {@code nodeAssets} parts, matched by basename to that {@code wmImage} name, and are
+     * passed into the executor keyed by node id.
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/run")
     public ResponseEntity<byte[]> run(@RequestParam("pipeline") String pipeline,
-                                      @RequestParam(value = "files", required = false) List<MultipartFile> files)
+                                      @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                                      @RequestParam(value = "nodeAssets", required = false) List<MultipartFile> nodeAssets)
             throws IOException, PdfOperationException, PipelineException, InvalidPageRangeException {
         PipelineModel model = PipelineJson.parse(pipeline);
 
@@ -76,9 +82,29 @@ public class PipelineController {
             }
         }
 
+        // Index watermark-image assets by basename (raw bytes; never routed through office conversion).
+        Map<String, byte[]> assetsByName = new HashMap<>();
+        if (nodeAssets != null) {
+            for (MultipartFile f : nodeAssets) {
+                byte[] data = f.getBytes();
+                assetsByName.put(Uploads.filename(f), data);
+                uploadBytes += data.length;
+            }
+        }
+
         // Resolve each source node's bytes eagerly (so checked conversion errors surface cleanly).
         Map<String, List<byte[]>> resolved = new HashMap<>();
+        Map<String, byte[]> nodeImages = new HashMap<>();
         for (PipelineNode n : model.nodes) {
+            if (n.kind == NodeKind.WATERMARK && n.wmImage != null && !n.wmImage.isBlank()) {
+                String key = Path.of(n.wmImage).getFileName().toString();
+                byte[] image = assetsByName.get(key);
+                if (image == null) {
+                    throw new IllegalArgumentException(
+                        "No uploaded image matches watermark node '" + n.id + "' (" + key + ").");
+                }
+                nodeImages.put(n.id, image);
+            }
             if (!n.kind.isSource()) continue;
             List<byte[]> bytes = new ArrayList<>(n.files.size());
             for (Path f : n.files) {
@@ -96,7 +122,7 @@ public class PipelineController {
         // Heavy work: bound concurrency / in-flight bytes / runtime via the load guard.
         Map<String, List<NamedBytes>> terminals = loadGuard.execute(uploadBytes,
             () -> PipelineExecutor.runInMemory(
-                model, node -> resolved.getOrDefault(node.id, List.of()), null));
+                model, node -> resolved.getOrDefault(node.id, List.of()), nodeImages, null));
 
         List<NamedBytes> all = new ArrayList<>();
         for (List<NamedBytes> nodeOutputs : terminals.values()) all.addAll(nodeOutputs);

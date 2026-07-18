@@ -119,7 +119,21 @@ import { CanvasNode } from '../../../core/pipeline.models';
           <label class="check"><input type="checkbox" [checked]="node.metaStrip" (change)="emit('metaStrip', $any($event.target).checked)" /> {{ 'pages.pipeline.stripMetadata' | transloco }}</label>
         }
         @case ('WATERMARK') {
-          <div class="field"><label>{{ 'pages.pipeline.fieldText' | transloco }}</label><input type="text" [value]="node.wmText" (input)="emit('wmText', $any($event.target).value)" placeholder="CONFIDENTIAL" /></div>
+          <div class="field">
+            <label>{{ 'pages.pipeline.fieldText' | transloco }}</label>
+            <input type="text" [value]="node.wmText" [disabled]="!!node.wmImageName" (input)="emit('wmText', $any($event.target).value)" placeholder="CONFIDENTIAL" />
+          </div>
+          <div class="field">
+            <span class="field-label">{{ 'pipeline.canvas.wmImageLabel' | transloco }}</span>
+            @if (node.wmImageName) {
+              <div class="wm-asset">
+                <span class="wm-name">{{ node.wmImageName }}</span>
+                <button type="button" class="btn btn-ghost btn-xs" (click)="clearWmImage(fileInput)">{{ 'pipeline.canvas.wmImageClear' | transloco }}</button>
+              </div>
+            }
+            <input #fileInput type="file" accept="image/*" (change)="onWmImage(fileInput)" />
+            <p class="hint-note">{{ 'pipeline.canvas.wmImageHint' | transloco }}</p>
+          </div>
           <div class="field"><label>{{ 'pages.pipeline.fieldOpacity' | transloco }}</label><input type="number" min="0.05" max="1" step="0.05" [value]="node.wmOpacity" (input)="emit('wmOpacity', +$any($event.target).value)" /></div>
           <div class="field"><label>{{ 'pages.pipeline.fieldRotation' | transloco }}</label><input type="number" min="0" max="360" step="5" [value]="node.wmRotation" (input)="emit('wmRotation', +$any($event.target).value)" /></div>
           <div class="field"><label>{{ 'pages.pipeline.fieldScale' | transloco }}</label><input type="number" min="0.1" max="1" step="0.05" [value]="node.wmScale" (input)="emit('wmScale', +$any($event.target).value)" /></div>
@@ -180,6 +194,20 @@ import { CanvasNode } from '../../../core/pipeline.models';
         max-height: 220px;
         overflow: auto;
       }
+      .wm-asset {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .wm-name {
+        font-size: 0.82rem;
+        word-break: break-all;
+        color: var(--text-muted);
+      }
+      .btn-xs {
+        padding: 0.15rem 0.45rem;
+        font-size: 0.72rem;
+      }
     `,
   ],
 })
@@ -189,6 +217,8 @@ export class PipelineInspectorComponent {
   @Input() pool: string[] = [];
 
   @Output() patch = new EventEmitter<Partial<CanvasNode>>();
+  /** Chosen watermark image (or null to clear) for the selected WATERMARK node. */
+  @Output() asset = new EventEmitter<File | null>();
 
   emit<K extends keyof CanvasNode>(key: K, value: CanvasNode[K]): void {
     this.patch.emit({ [key]: value } as Partial<CanvasNode>);
@@ -200,5 +230,15 @@ export class PipelineInspectorComponent {
       ? [...this.node.files, name]
       : this.node.files.filter((f) => f !== name);
     this.patch.emit({ files });
+  }
+
+  onWmImage(input: HTMLInputElement): void {
+    const file = input.files?.[0] ?? null;
+    if (file) this.asset.emit(file);
+  }
+
+  clearWmImage(input: HTMLInputElement): void {
+    input.value = '';
+    this.asset.emit(null);
   }
 }

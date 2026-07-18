@@ -154,6 +154,12 @@ export class PipelineCanvasComponent {
   readonly connections = signal<ConnectionJson[]>([]);
   readonly selectedId = signal<string | null>(null);
 
+  /**
+   * Uploaded watermark-image files, keyed by WATERMARK node id (client-only — the bytes never live
+   * on the wire node, only the basename does via `wmImageName`). Sent on Run as `nodeAssets` parts.
+   */
+  private readonly nodeAssets = new Map<string, File>();
+
   readonly selectedNode = computed(() => this.nodes().find((n) => n.id === this.selectedId()) ?? null);
 
   /** Runnable when at least one SOURCE has files and at least one operation node exists. */
@@ -223,9 +229,32 @@ export class PipelineCanvasComponent {
     this.nodes.set(this.nodes().map((n) => (n.id === id ? { ...n, ...partial } : n)));
   }
 
+  /**
+   * Set (or clear, when {@code file} is null) the selected WATERMARK node's uploaded image. Stores
+   * the File keyed by node id and records its basename in {@code wmImageName} for the wire node.
+   */
+  setSelectedAsset(file: File | null): void {
+    const id = this.selectedId();
+    if (!id) return;
+    if (file) {
+      this.nodeAssets.set(id, file);
+      this.patchSelected({ wmImageName: file.name });
+    } else {
+      this.nodeAssets.delete(id);
+      this.patchSelected({ wmImageName: '' });
+    }
+  }
+
+  /** Uploaded watermark-image files for nodes still present in the graph (sent as `nodeAssets`). */
+  assetFiles(): File[] {
+    const ids = new Set(this.nodes().map((n) => n.id));
+    return [...this.nodeAssets.entries()].filter(([id]) => ids.has(id)).map(([, file]) => file);
+  }
+
   removeNode(id: string): void {
     this.nodes.set(this.nodes().filter((n) => n.id !== id));
     this.connections.set(this.connections().filter((c) => c.fromNodeId !== id && c.toNodeId !== id));
+    this.nodeAssets.delete(id);
     if (this.selectedId() === id) this.selectedId.set(null);
   }
 
@@ -237,6 +266,7 @@ export class PipelineCanvasComponent {
   clear(): void {
     this.nodes.set([]);
     this.connections.set([]);
+    this.nodeAssets.clear();
     this.selectedId.set(null);
     this.seq = 0;
   }

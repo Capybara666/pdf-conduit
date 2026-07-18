@@ -383,7 +383,24 @@ public final class PipelineExecutor {
             PipelineModel model,
             java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
             Progress progress) throws PipelineException {
+        return runInMemory(model, sourceResolver, Map.of(), progress);
+    }
 
+    /**
+     * As {@link #runInMemory(PipelineModel, java.util.function.Function, Progress)}, but with a
+     * {@code nodeImages} map supplying per-node uploaded asset bytes (keyed by node id). This is how
+     * a WATERMARK node performs an <em>image</em> watermark in memory: the node's {@code wmImage}
+     * carries only a name reference (no host path), and the caller passes the actual image bytes
+     * here keyed by that node's id. The Path-based {@link #run} is unaffected — it still resolves
+     * {@code wmImage} as a host file path.
+     */
+    public static Map<String, List<NamedBytes>> runInMemory(
+            PipelineModel model,
+            java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
+            Map<String, byte[]> nodeImages,
+            Progress progress) throws PipelineException {
+
+        Map<String, byte[]> images = nodeImages == null ? Map.of() : nodeImages;
         List<ValidationError> errors = PipelineValidator.validateInMemory(model);
         if (!errors.isEmpty()) {
             throw new PipelineException("Cannot run: " + errors.get(0).message());
@@ -417,7 +434,7 @@ public final class PipelineExecutor {
 
             List<MemDoc> produced;
             try {
-                produced = n.kind.isReduce() ? runReduceMem(n, inputs) : runMapMem(n, inputs);
+                produced = n.kind.isReduce() ? runReduceMem(n, inputs) : runMapMem(n, inputs, images);
             } catch (PipelineException e) {
                 throw e;
             } catch (Exception e) {
@@ -481,7 +498,8 @@ public final class PipelineExecutor {
 
     // --- in-memory map ----------------------------------------------------
 
-    private static List<MemDoc> runMapMem(PipelineNode n, List<MemDoc> inputs) throws Exception {
+    private static List<MemDoc> runMapMem(PipelineNode n, List<MemDoc> inputs,
+                                          Map<String, byte[]> nodeImages) throws Exception {
         List<MemDoc> results = new ArrayList<>();
         for (MemDoc in : inputs) {
             String baseName = in.baseName() + n.kind.suffix();
@@ -538,7 +556,7 @@ public final class PipelineExecutor {
                 case METADATA  -> PdfMetadataEditor.executeBytes(pdf,
                     blankToNull(n.metaTitle), blankToNull(n.metaAuthor),
                     blankToNull(n.metaSubject), blankToNull(n.metaKeywords), n.metaStrip);
-                case WATERMARK -> watermarkBytes(n, pdf);
+                case WATERMARK -> watermarkBytes(n, pdf, nodeImages);
                 default -> throw new PipelineException("Not a map node: " + n.kind);
             };
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));
@@ -546,12 +564,22 @@ public final class PipelineExecutor {
         return results;
     }
 
-    /** Watermark in memory. Image watermarks reference a host path and are unsupported statelessly. */
-    private static byte[] watermarkBytes(PipelineNode n, byte[] pdf) throws Exception {
+    /**
+     * Watermark in memory. An image watermark carries only a name reference in {@code wmImage};
+     * its bytes are supplied out-of-band via {@code nodeImages} keyed by the node id (uploaded
+     * alongside the pipeline). Falls back to a text watermark when no image is referenced.
+     */
+    private static byte[] watermarkBytes(PipelineNode n, byte[] pdf, Map<String, byte[]> nodeImages)
+            throws Exception {
         boolean useImage = n.wmImage != null && !n.wmImage.isBlank();
         if (useImage) {
-            throw new PipelineException(
-                "Image watermarks are not supported in the in-memory pipeline; use a text watermark.");
+            byte[] image = nodeImages == null ? null : nodeImages.get(n.id);
+            if (image == null) {
+                throw new PipelineException(
+                    "Watermark image for node '" + n.id + "' (" + n.wmImage + ") was not uploaded.");
+            }
+            return PdfWatermarker.executeBytes(pdf, null, image,
+                n.wmOpacity, n.wmRotation, n.wmScale);
         }
         return PdfWatermarker.executeBytes(pdf, blankToNull(n.wmText), null,
             n.wmOpacity, n.wmRotation, n.wmScale);

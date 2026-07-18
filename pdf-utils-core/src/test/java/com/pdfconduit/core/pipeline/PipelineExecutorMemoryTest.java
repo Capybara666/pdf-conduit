@@ -4,11 +4,19 @@ import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.SplitMode;
 import com.pdfconduit.core.service.NamedBytes;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.junit.jupiter.api.Test;
 
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -80,6 +88,72 @@ class PipelineExecutorMemoryTest {
         List<NamedBytes> parts = out.get("e");
         assertEquals(3, parts.size());
         for (NamedBytes nb : parts) assertEquals(1, pageCount(nb.data()));
+    }
+
+    /** source(PDF) → watermark(image, bytes supplied via nodeImages) → terminal. Image is embedded. */
+    @Test
+    void sourceImageWatermarkInMemory() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        PipelineNode wm = new PipelineNode("w", NodeKind.WATERMARK, 0, 0);
+        wm.wmText = "";
+        wm.wmImage = "logo.png";   // name reference only; bytes come via nodeImages
+        m.nodes.add(src);
+        m.nodes.add(wm);
+        m.connections.add(new Connection("s", "w"));
+
+        byte[] pdf = pdfBytes(2);
+        byte[] logo = pngLogo();
+        Map<String, List<NamedBytes>> out = PipelineExecutor.runInMemory(
+            m, node -> node.id.equals("s") ? List.of(pdf) : List.of(),
+            Map.of("w", logo), null);
+
+        List<NamedBytes> results = out.get("w");
+        assertEquals(1, results.size());
+        byte[] result = results.get(0).data();
+        assertEquals(2, pageCount(result));
+        try (PDDocument doc = Loader.loadPDF(result)) {
+            for (PDPage page : doc.getPages()) {
+                assertTrue(hasImage(page.getResources()), "each page should carry the watermark image");
+            }
+        }
+    }
+
+    /** An image watermark node with no bytes supplied for it fails clearly (not silently text). */
+    @Test
+    void imageWatermarkWithoutBytesFails() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        PipelineNode wm = new PipelineNode("w", NodeKind.WATERMARK, 0, 0);
+        wm.wmText = "";
+        wm.wmImage = "logo.png";
+        m.nodes.add(src);
+        m.nodes.add(wm);
+        m.connections.add(new Connection("s", "w"));
+
+        byte[] pdf = pdfBytes(1);
+        assertThrows(PipelineException.class, () -> PipelineExecutor.runInMemory(
+            m, node -> node.id.equals("s") ? List.of(pdf) : List.of(), Map.of(), null));
+    }
+
+    private static boolean hasImage(PDResources res) throws IOException {
+        if (res == null) return false;
+        for (COSName name : res.getXObjectNames()) {
+            PDXObject xobj = res.getXObject(name);
+            if (xobj instanceof PDImageXObject) return true;
+        }
+        return false;
+    }
+
+    private static byte[] pngLogo() throws IOException {
+        BufferedImage img = new BufferedImage(48, 48, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = img.createGraphics();
+        g.setColor(Color.BLUE);
+        g.fillOval(2, 2, 44, 44);
+        g.dispose();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(img, "png", out);
+        return out.toByteArray();
     }
 
     @Test
