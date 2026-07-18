@@ -94,6 +94,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
         [loadingLabel]="'pages.metadata.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
+        (retry)="submit()"
       />
     </section>
   `,

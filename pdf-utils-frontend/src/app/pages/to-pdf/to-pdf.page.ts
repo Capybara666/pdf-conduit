@@ -52,6 +52,7 @@ type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
         [loadingLabel]="'pages.toPdf.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
+        (retry)="submit()"
       />
     </section>
   `,

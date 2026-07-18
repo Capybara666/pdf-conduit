@@ -78,6 +78,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         [loadingLabel]="'pages.extract.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
+        (retry)="submit()"
       />
     </section>
   `,

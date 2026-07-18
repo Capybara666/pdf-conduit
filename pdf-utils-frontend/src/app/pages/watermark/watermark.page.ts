@@ -106,6 +106,7 @@ type Mode = 'text' | 'image';
         [loadingLabel]="'pages.watermark.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
+        (retry)="submit()"
       />
     </section>
   `,
