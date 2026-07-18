@@ -1,0 +1,518 @@
+import { Component, ElementRef, ViewChild, signal } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+
+import { ApiService } from '../../core/api.service';
+import { OperationState } from '../../core/operation-state';
+import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { PdfViewerComponent, RegionRect } from '../../shared/pdf-viewer/pdf-viewer.component';
+import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
+
+type SigMode = 'draw' | 'type' | 'upload';
+
+/**
+ * Fill & Sign (Phase 1, visual): the user builds a signature — draw it on a canvas,
+ * type a name in a script style, or upload a PNG — then drops boxes on the PDF pages to
+ * place it, and optionally flattens. The viewer emits each box as a `RegionRect` in PDF
+ * points (top-left, 0-based page), matching the backend `SignPlacementDto` exactly, so
+ * every drawn box becomes a placement of the single signature image (imageIndex 0).
+ */
+@Component({
+  selector: 'app-sign-page',
+  standalone: true,
+  imports: [
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    PdfViewerComponent,
+    ResultPanelComponent,
+  ],
+  template: `
+    <section class="op-page wide">
+      <app-page-header
+        [title]="'pages.sign.title' | transloco"
+        [description]="'pages.sign.description' | transloco"
+      />
+
+      @if (!file()) {
+        <app-file-drop-zone
+          [multiple]="false"
+          accept=".pdf"
+          [hint]="'pages.sign.hint' | transloco"
+          (filesChange)="onFile($event.length ? $event[0] : null)"
+        />
+      }
+
+      @if (file()) {
+        <div class="sign-layout">
+          <div class="viewer-col card">
+            <div class="btn-row" style="margin-bottom:0.75rem">
+              <strong class="fname">{{ file()!.name }}</strong>
+              <span class="hint-note">{{ 'pages.sign.dragHint' | transloco }}</span>
+              <button type="button" class="btn btn-ghost" (click)="reset()">
+                {{ 'pages.sign.chooseAnother' | transloco }}
+              </button>
+            </div>
+            @if (!signature()) {
+              <p class="hint-note">{{ 'pages.sign.needSignature' | transloco }}</p>
+            }
+            <app-pdf-viewer
+              #viewer
+              [file]="file()"
+              [drawable]="!!signature()"
+              [scale]="1.3"
+              (regionsChange)="regions.set($event)"
+            />
+          </div>
+
+          <aside class="side">
+            <!-- Signature builder -->
+            <div class="card">
+              <h2 class="side-title">{{ 'pages.sign.signature' | transloco }}</h2>
+              <div class="tabs" role="tablist">
+                <button
+                  type="button"
+                  class="tab"
+                  [class.active]="mode() === 'draw'"
+                  (click)="setMode('draw')"
+                >
+                  {{ 'pages.sign.tabDraw' | transloco }}
+                </button>
+                <button
+                  type="button"
+                  class="tab"
+                  [class.active]="mode() === 'type'"
+                  (click)="setMode('type')"
+                >
+                  {{ 'pages.sign.tabType' | transloco }}
+                </button>
+                <button
+                  type="button"
+                  class="tab"
+                  [class.active]="mode() === 'upload'"
+                  (click)="setMode('upload')"
+                >
+                  {{ 'pages.sign.tabUpload' | transloco }}
+                </button>
+              </div>
+
+              @if (mode() === 'draw') {
+                <canvas
+                  #pad
+                  class="pad"
+                  width="460"
+                  height="150"
+                  (pointerdown)="padDown($event)"
+                  (pointermove)="padMove($event)"
+                  (pointerup)="padUp($event)"
+                  (pointerleave)="padUp($event)"
+                ></canvas>
+                <div class="btn-row">
+                  <button type="button" class="btn btn-ghost" (click)="clearPad()">
+                    {{ 'pages.sign.clearPad' | transloco }}
+                  </button>
+                  <button type="button" class="btn btn-primary" (click)="applyDraw()">
+                    {{ 'pages.sign.useSignature' | transloco }}
+                  </button>
+                </div>
+              }
+
+              @if (mode() === 'type') {
+                <input
+                  class="input"
+                  type="text"
+                  [value]="typed()"
+                  (input)="typed.set($any($event.target).value)"
+                  [placeholder]="'pages.sign.typePlaceholder' | transloco"
+                />
+                @if (typed().trim()) {
+                  <div class="type-preview">{{ typed() }}</div>
+                }
+                <div class="btn-row">
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    [disabled]="!typed().trim()"
+                    (click)="applyTyped()"
+                  >
+                    {{ 'pages.sign.useSignature' | transloco }}
+                  </button>
+                </div>
+              }
+
+              @if (mode() === 'upload') {
+                <input type="file" accept="image/png,image/jpeg" (change)="onUpload($event)" />
+              }
+
+              @if (signature()) {
+                <div class="sig-current">
+                  <span class="hint-note">{{ 'pages.sign.currentSignature' | transloco }}</span>
+                  <img class="sig-preview" [src]="signature()!.url" alt="" />
+                </div>
+              }
+            </div>
+
+            <!-- Placement + options -->
+            <div class="card">
+              <h2 class="side-title">
+                {{ 'pages.sign.placements' | transloco: { count: regions().length } }}
+              </h2>
+              @if (!signature()) {
+                <p class="hint-note">{{ 'pages.sign.placementsNoSig' | transloco }}</p>
+              } @else if (!regions().length) {
+                <p class="hint-note">{{ 'pages.sign.placementsEmpty' | transloco }}</p>
+              } @else {
+                <ul class="region-list">
+                  @for (r of regions(); track $index; let i = $index) {
+                    <li>
+                      <span class="rmeta">{{ 'viewer.pageCaption' | transloco: { n: r.pageIndex + 1 } }}</span>
+                      <button
+                        type="button"
+                        class="icon-btn"
+                        (click)="removeRegion(i)"
+                        [attr.aria-label]="'pages.sign.removePlacement' | transloco"
+                      >
+                        ✕
+                      </button>
+                    </li>
+                  }
+                </ul>
+                <button type="button" class="btn btn-ghost" (click)="clear()">
+                  {{ 'common.clearAll' | transloco }}
+                </button>
+              }
+
+              <label class="check">
+                <input type="checkbox" [checked]="flatten()" (change)="flatten.set($any($event.target).checked)" />
+                <span>{{ 'pages.sign.flatten' | transloco }}</span>
+              </label>
+              <p class="hint-note">{{ 'pages.sign.flattenHint' | transloco }}</p>
+            </div>
+
+            <div class="btn-row">
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="!signature() || !regions().length || state.loading()"
+                (click)="submit()"
+              >
+                {{ 'pages.sign.submit' | transloco }}
+              </button>
+            </div>
+
+            <app-result-panel
+              [loading]="state.loading()"
+              [loadingLabel]="'pages.sign.loading' | transloco"
+              [error]="state.error()"
+              [result]="state.result()"
+              (retry)="submit()"
+            />
+          </aside>
+        </div>
+      }
+    </section>
+  `,
+  styles: [
+    `
+      .sign-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 1.25rem;
+        align-items: start;
+      }
+      .viewer-col {
+        max-height: 80vh;
+        overflow: auto;
+      }
+      .side {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        position: sticky;
+        top: 1rem;
+      }
+      .side-title {
+        margin: 0 0 0.75rem;
+        font-size: 1rem;
+      }
+      .fname {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 40%;
+      }
+      .tabs {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 0.75rem;
+      }
+      .tab {
+        flex: 1;
+        padding: 0.4rem 0.5rem;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        border-radius: 6px;
+        cursor: pointer;
+        color: var(--text);
+        font-size: 0.85rem;
+      }
+      .tab.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .pad {
+        width: 100%;
+        height: 150px;
+        border: 1px dashed var(--border);
+        border-radius: 6px;
+        background: var(--surface);
+        touch-action: none;
+        cursor: crosshair;
+      }
+      .input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--surface);
+        color: var(--text);
+      }
+      .type-preview {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        font-family: 'Segoe Script', 'Brush Script MT', cursive;
+        font-size: 2rem;
+        color: var(--text);
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .sig-current {
+        margin-top: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .sig-preview {
+        max-width: 100%;
+        max-height: 90px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: repeating-conic-gradient(#0000 0 25%, #8883 0 50%) 0 0 / 16px 16px;
+      }
+      .region-list {
+        list-style: none;
+        margin: 0 0 0.75rem;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .region-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.3rem 0.5rem;
+        background: var(--surface-2);
+        border-radius: 6px;
+      }
+      .rmeta {
+        font-size: 0.8rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        cursor: pointer;
+      }
+      @media (max-width: 820px) {
+        .sign-layout {
+          grid-template-columns: 1fr;
+        }
+        .side {
+          position: static;
+        }
+      }
+      @media (max-width: 640px) {
+        .viewer-col {
+          max-height: 60vh;
+        }
+        .fname {
+          max-width: 100%;
+        }
+      }
+    `,
+  ],
+})
+export class SignPage {
+  @ViewChild('viewer') private viewer?: PdfViewerComponent;
+  @ViewChild('pad') private pad?: ElementRef<HTMLCanvasElement>;
+
+  protected readonly file = signal<File | null>(null);
+  protected readonly regions = signal<RegionRect[]>([]);
+  protected readonly mode = signal<SigMode>('draw');
+  protected readonly typed = signal('');
+  protected readonly flatten = signal(false);
+  protected readonly signature = signal<{ file: File; url: string } | null>(null);
+  protected readonly state = new OperationState();
+
+  private drawing = false;
+  private last: { x: number; y: number } | null = null;
+  private padDirty = false;
+
+  constructor(private readonly api: ApiService) {}
+
+  onFile(f: File | null): void {
+    this.file.set(f);
+    this.regions.set([]);
+    this.signature.set(null);
+    this.typed.set('');
+    this.flatten.set(false);
+    this.state.reset();
+  }
+
+  reset(): void {
+    this.onFile(null);
+  }
+
+  setMode(m: SigMode): void {
+    this.mode.set(m);
+  }
+
+  removeRegion(i: number): void {
+    this.viewer?.removeRegion(i);
+  }
+
+  clear(): void {
+    this.viewer?.clearRegions();
+  }
+
+  // ---- Draw pad ---------------------------------------------------------
+
+  private padCtx(): CanvasRenderingContext2D | null {
+    const c = this.pad?.nativeElement;
+    return c ? c.getContext('2d') : null;
+  }
+
+  private padPoint(ev: PointerEvent): { x: number; y: number } {
+    const c = this.pad!.nativeElement;
+    const rect = c.getBoundingClientRect();
+    return {
+      x: ((ev.clientX - rect.left) / rect.width) * c.width,
+      y: ((ev.clientY - rect.top) / rect.height) * c.height,
+    };
+  }
+
+  padDown(ev: PointerEvent): void {
+    (ev.target as HTMLElement).setPointerCapture?.(ev.pointerId);
+    this.drawing = true;
+    this.last = this.padPoint(ev);
+  }
+
+  padMove(ev: PointerEvent): void {
+    if (!this.drawing || !this.last) return;
+    const ctx = this.padCtx();
+    if (!ctx) return;
+    const p = this.padPoint(ev);
+    ctx.strokeStyle = '#12294d';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(this.last.x, this.last.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    this.last = p;
+    this.padDirty = true;
+  }
+
+  padUp(_ev: PointerEvent): void {
+    this.drawing = false;
+    this.last = null;
+  }
+
+  clearPad(): void {
+    const ctx = this.padCtx();
+    const c = this.pad?.nativeElement;
+    if (ctx && c) ctx.clearRect(0, 0, c.width, c.height);
+    this.padDirty = false;
+  }
+
+  applyDraw(): void {
+    const c = this.pad?.nativeElement;
+    if (!c || !this.padDirty) return;
+    this.setSignatureFromCanvas(c);
+  }
+
+  // ---- Type -------------------------------------------------------------
+
+  applyTyped(): void {
+    const text = this.typed().trim();
+    if (!text) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 600;
+    canvas.height = 180;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#12294d';
+    ctx.textBaseline = 'middle';
+    // Shrink the font until the name fits the canvas width.
+    let size = 96;
+    do {
+      ctx.font = `${size}px 'Segoe Script', 'Brush Script MT', cursive`;
+      size -= 4;
+    } while (size > 24 && ctx.measureText(text).width > canvas.width - 40);
+    ctx.fillText(text, 20, canvas.height / 2);
+    this.setSignatureFromCanvas(canvas);
+  }
+
+  // ---- Upload -----------------------------------------------------------
+
+  onUpload(ev: Event): void {
+    const input = ev.target as HTMLInputElement;
+    const f = input.files && input.files[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    this.setSignature(f, url);
+  }
+
+  // ---- Signature helpers ------------------------------------------------
+
+  private setSignatureFromCanvas(canvas: HTMLCanvasElement): void {
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const file = new File([blob], 'signature.png', { type: 'image/png' });
+      this.setSignature(file, canvas.toDataURL('image/png'));
+    }, 'image/png');
+  }
+
+  private setSignature(file: File, url: string): void {
+    const prev = this.signature();
+    if (prev && prev.url.startsWith('blob:')) URL.revokeObjectURL(prev.url);
+    this.signature.set({ file, url });
+  }
+
+  submit(): void {
+    const f = this.file();
+    const sig = this.signature();
+    if (!f || !sig || !this.regions().length) return;
+    // Every drawn box is a placement of the single uploaded signature (imageIndex 0).
+    const placements = this.regions().map((r) => ({
+      imageIndex: 0,
+      pageIndex: r.pageIndex,
+      x: r.x,
+      y: r.y,
+      width: r.width,
+      height: r.height,
+    }));
+    const fd = new FormData();
+    fd.append('file', f, f.name);
+    fd.append('signatures', sig.file, sig.file.name);
+    fd.append('placements', JSON.stringify(placements));
+    fd.append('flatten', String(this.flatten()));
+    this.state.run(this.api.sign(fd));
+  }
+}

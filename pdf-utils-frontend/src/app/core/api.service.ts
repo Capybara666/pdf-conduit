@@ -142,6 +142,8 @@ export class ApiService {
   }
   nup(formData: FormData): Observable<RunResult> {
     return this.runOperation('nup', formData);
+  sign(formData: FormData): Observable<RunResult> {
+    return this.runOperation('sign', formData);
   }
   toImages(formData: FormData): Observable<RunResult> {
     return this.runOperation('to-images', formData);

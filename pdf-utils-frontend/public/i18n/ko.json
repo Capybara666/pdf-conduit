@@ -103,6 +103,10 @@
       "label": "블랙아웃",
       "description": "페이지의 특정 영역을 영구적으로 가립니다."
     },
+    "sign": {
+      "label": "Fill & Sign",
+      "description": "Place a signature and fill form fields, then flatten."
+    },
     "metadata": {
       "label": "메타데이터",
       "description": "문서 정보를 보거나, 편집하거나, 삭제합니다."
@@ -515,6 +519,30 @@
       "removeRegion": "영역 제거",
       "submit": "가리고 다운로드",
       "loading": "가리는 중…"
+    },
+    "sign": {
+      "title": "Fill & Sign",
+      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
+      "hint": "One PDF. Then create a signature and drop it onto the page.",
+      "dragHint": "Drag on a page to place your signature.",
+      "chooseAnother": "Choose another PDF",
+      "needSignature": "Create a signature first, then drag a box on the page to place it.",
+      "signature": "Your signature",
+      "tabDraw": "Draw",
+      "tabType": "Type",
+      "tabUpload": "Upload",
+      "clearPad": "Clear",
+      "useSignature": "Use this signature",
+      "typePlaceholder": "Type your name",
+      "currentSignature": "Current signature",
+      "placements": "Placements ({{count}})",
+      "placementsNoSig": "Create a signature to start placing it.",
+      "placementsEmpty": "No placements yet. Drag a box where the signature should go.",
+      "removePlacement": "Remove placement",
+      "flatten": "Flatten the document",
+      "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
+      "submit": "Sign & download",
+      "loading": "Signing…"
     },
     "metadata": {
       "title": "메타데이터",

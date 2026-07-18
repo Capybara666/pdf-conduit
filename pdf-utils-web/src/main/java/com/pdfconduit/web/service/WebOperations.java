@@ -12,6 +12,7 @@ import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PdfMetadata;
 import com.pdfconduit.core.model.RedactRegion;
+import com.pdfconduit.core.model.SignPlacement;
 import com.pdfconduit.core.model.TextFormat;
 import com.pdfconduit.core.operations.PdfArranger;
 import com.pdfconduit.core.operations.PdfCompressor;
@@ -22,6 +23,7 @@ import com.pdfconduit.core.operations.PdfPageMarker;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.core.operations.PdfRotator;
+import com.pdfconduit.core.operations.PdfSigner;
 import com.pdfconduit.core.operations.PdfSplitter;
 import com.pdfconduit.core.operations.PdfTextExporter;
 import com.pdfconduit.core.operations.PdfToImageConverter;
@@ -335,6 +337,24 @@ public class WebOperations {
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
         }
+    }
+
+    // -------------------------------------------------------------------- SIGN
+
+    /**
+     * Fill &amp; Sign (Phase 1, visual): stamp {@code signatureImages} at {@code placements}, fill any
+     * AcroForm {@code fieldValues}, and optionally flatten the form. Input is routed to PDF first and
+     * the page-count guard applied; drawing does not rasterise pages, so there is no render guard.
+     */
+    public NamedBytes sign(NamedBytes in, List<byte[]> signatureImages, List<SignPlacement> placements,
+                           java.util.Map<String, String> fieldValues, boolean flatten)
+            throws PdfOperationException {
+        byte[] out = MemoryOperations.runSingle(in.data(), in.filename(),
+            pdf -> {
+                guardPageCount(pdf);
+                return PdfSigner.executeBytes(pdf, signatureImages, placements, fieldValues, flatten);
+            });
+        return new NamedBytes(MemoryOperations.outputName(OperationType.SIGN, in.filename()), out);
     }
 
     // --------------------------------------------------------------- TO-IMAGES

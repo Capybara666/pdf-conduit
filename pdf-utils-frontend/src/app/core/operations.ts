@@ -133,6 +133,12 @@ export const OP_ICONS: Record<string, string> = {
       '<path d="M7.5 12.4 H14.5 V14.8 H7.5 Z" fill="currentColor"/>' +
       '<path d="M8 17.4 H11.5"/>',
   ),
+  sign: g(
+    '<path d="M15 4.2 L19.8 9 L10.6 18.2 L5.8 18.4 L6 13.6 Z" fill="currentColor" stroke="none" opacity=".18"/>' +
+      '<path d="M15 4.2 L19.8 9 L10.6 18.2 L5.8 18.4 L6 13.6 Z"/>' +
+      '<path d="M12.8 6.4 L17.6 11.2"/>' +
+      '<path d="M4 21 C6.5 21 6.5 19.2 8.5 19.2 C10 19.2 10 20.4 11.5 20.4 C13.2 20.4 14 19 16 19"/>',
+  ),
   'gdpr-scan': g(
     '<path d="M12 3 L19 6 V11 C19 15.5 16 18.6 12 20.2 C8 18.6 5 15.5 5 11 V6 Z"/>' +
       '<path d="M8.8 11.6 L11 13.8 L15.2 9.2"/>',
@@ -262,6 +268,13 @@ export const NAV_ITEMS: NavItem[] = [
     description: 'Permanently black out regions of a page.',
     group: 'secure',
     icon: OP_ICONS['redact'],
+  },
+  {
+    id: 'sign',
+    label: 'Fill & Sign',
+    description: 'Place a signature and fill form fields, then flatten.',
+    group: 'secure',
+    icon: OP_ICONS['sign'],
   },
   {
     id: 'gdpr-scan',

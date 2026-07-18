@@ -91,6 +91,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/crop/crop.page').then((m) => m.CropPage),
   },
   {
+    path: 'sign',
+    data: { titleKey: 'op.sign.label' },
+    loadComponent: () => import('./pages/sign/sign.page').then((m) => m.SignPage),
+  },
+  {
     path: 'to-images',
     data: { titleKey: 'op.to-images.label' },
     loadComponent: () => import('./pages/to-images/to-images.page').then((m) => m.ToImagesPage),

@@ -10,6 +10,7 @@ import com.pdfconduit.core.model.CompressOptions;
 import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.RedactRegion;
+import com.pdfconduit.core.model.SignPlacement;
 import com.pdfconduit.core.model.TextFormat;
 import com.pdfconduit.core.model.WatermarkOptions;
 import com.pdfconduit.core.service.MemoryOperations;
@@ -17,6 +18,7 @@ import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OperationType;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.RedactRegionDto;
+import com.pdfconduit.web.dto.SignPlacementDto;
 import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Params;
@@ -33,8 +35,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.pdfconduit.web.web.ControllerSupport.ensurePdf;
 import static com.pdfconduit.web.web.ControllerSupport.guardCount;
@@ -333,6 +337,65 @@ public class OperationsController {
             return Arrays.stream(dtos).map(RedactRegionDto::toRegion).toList();
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Invalid regions JSON: " + e.getOriginalMessage());
+        }
+    }
+
+    // --------------------------------------------------------------------- SIGN
+
+    @PostMapping(value = "/sign", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> sign(@RequestParam("file") MultipartFile file,
+                                       @RequestParam(name = "signatures", required = false)
+                                           List<MultipartFile> signatures,
+                                       @RequestParam(required = false) String placements,
+                                       @RequestParam(required = false) String fields,
+                                       @RequestParam(defaultValue = "false") boolean flatten)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        List<byte[]> images = readImages(signatures);
+        List<SignPlacement> parsedPlacements = parsePlacements(placements);
+        Map<String, String> parsedFields = parseFields(fields);
+        if (images.isEmpty() && parsedFields.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Nothing to do: provide at least one signature placement or a field value.");
+        }
+        NamedBytes in = uploads.read(file);
+        long bytes = in.data().length + images.stream().mapToLong(b -> b.length).sum();
+        NamedBytes result = loadGuard.execute(bytes,
+            () -> ops.sign(in, images, parsedPlacements, parsedFields, flatten));
+        return Responses.file(result, MediaType.APPLICATION_PDF);
+    }
+
+    /** Reads the signature image parts (may be absent) to raw bytes, order preserved. */
+    private static List<byte[]> readImages(List<MultipartFile> signatures) throws IOException {
+        List<byte[]> images = new ArrayList<>();
+        if (signatures == null) return images;
+        for (MultipartFile mf : signatures) {
+            if (mf != null && !mf.isEmpty()) images.add(mf.getBytes());
+        }
+        return images;
+    }
+
+    private List<SignPlacement> parsePlacements(String placements) {
+        if (placements == null || placements.isBlank()) return List.of();
+        try {
+            SignPlacementDto[] dtos = json.readValue(placements, SignPlacementDto[].class);
+            return Arrays.stream(dtos).map(SignPlacementDto::toPlacement).toList();
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Invalid placements JSON: " + e.getOriginalMessage());
+        }
+    }
+
+    private Map<String, String> parseFields(String fields) {
+        if (fields == null || fields.isBlank()) return Map.of();
+        try {
+            Map<String, Object> raw = json.readValue(fields,
+                new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
+            Map<String, String> out = new java.util.LinkedHashMap<>();
+            // Coerce any JSON scalar (string/number/boolean) to its string form; the core signer
+            // interprets checkbox truthiness and sets text verbatim.
+            raw.forEach((k, v) -> out.put(k, v == null ? "" : String.valueOf(v)));
+            return out;
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Invalid fields JSON: " + e.getOriginalMessage());
         }
     }
 

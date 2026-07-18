@@ -103,6 +103,10 @@
       "label": "Ocultar",
       "description": "Escureça permanentemente regiões de uma página."
     },
+    "sign": {
+      "label": "Fill & Sign",
+      "description": "Place a signature and fill form fields, then flatten."
+    },
     "metadata": {
       "label": "Metadados",
       "description": "Veja, edite ou remova as informações do documento."
@@ -515,6 +519,30 @@
       "removeRegion": "Remover região",
       "submit": "Ocultar e descarregar",
       "loading": "A ocultar…"
+    },
+    "sign": {
+      "title": "Fill & Sign",
+      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
+      "hint": "One PDF. Then create a signature and drop it onto the page.",
+      "dragHint": "Drag on a page to place your signature.",
+      "chooseAnother": "Choose another PDF",
+      "needSignature": "Create a signature first, then drag a box on the page to place it.",
+      "signature": "Your signature",
+      "tabDraw": "Draw",
+      "tabType": "Type",
+      "tabUpload": "Upload",
+      "clearPad": "Clear",
+      "useSignature": "Use this signature",
+      "typePlaceholder": "Type your name",
+      "currentSignature": "Current signature",
+      "placements": "Placements ({{count}})",
+      "placementsNoSig": "Create a signature to start placing it.",
+      "placementsEmpty": "No placements yet. Drag a box where the signature should go.",
+      "removePlacement": "Remove placement",
+      "flatten": "Flatten the document",
+      "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
+      "submit": "Sign & download",
+      "loading": "Signing…"
     },
     "metadata": {
       "title": "Metadados",
