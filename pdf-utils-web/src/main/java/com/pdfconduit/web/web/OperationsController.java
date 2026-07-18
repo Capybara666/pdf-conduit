@@ -274,16 +274,21 @@ public class OperationsController {
                                            @RequestParam(required = false) String format,
                                            @RequestParam(required = false) Integer dpi,
                                            @RequestParam(required = false) String pages,
-                                           @RequestParam(required = false) Float quality)
+                                           @RequestParam(required = false) Float quality,
+                                           @RequestParam(required = false) Boolean transparent,
+                                           @RequestParam(required = false) Boolean grayscale)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         ImageFormat fmt = Params.imageFormat(format, ImageFormat.PNG);
         int resolvedDpi = dpi != null ? dpi : 150;
         // JPEG quality clamped to [0.05, 1.0]; ignored for PNG (lossless). Default 0.8.
         float q = quality != null ? Math.max(0.05f, Math.min(1.0f, quality)) : 0.8f;
+        // Transparent background applies to PNG only (JPEG has no alpha); both default false.
+        boolean transparentBg = transparent != null && transparent;
+        boolean gray = grayscale != null && grayscale;
         List<NamedBytes> inputs = uploads.readAll(files);
         List<NamedBytes> images = loadGuard.execute(totalBytes(inputs),
-            () -> ops.toImages(inputs, fmt, resolvedDpi, pages, q));
+            () -> ops.toImages(inputs, fmt, resolvedDpi, pages, q, transparentBg, gray));
         MediaType type = fmt == ImageFormat.PNG ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
         return Responses.batch("to-images", images, type);
     }

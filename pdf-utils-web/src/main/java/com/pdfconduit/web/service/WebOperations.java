@@ -296,14 +296,15 @@ public class WebOperations {
 
     /** Render selected pages of a single input to images. */
     public List<NamedBytes> toImages(NamedBytes in, ImageFormat format, int dpi, String pagesExpr,
-                                     float jpegQuality)
+                                     float jpegQuality, boolean transparentBackground,
+                                     boolean grayscale)
             throws PdfOperationException, InvalidPageRangeException {
         byte[] pdf = routeToPdf(in);
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
             guardRender(lp, dpi);
             List<byte[]> images = PdfToImageConverter.executeBytes(pdf, format, dpi,
-                range(pagesExpr, lp), jpegQuality);
+                range(pagesExpr, lp), jpegQuality, transparentBackground, grayscale);
             return nameMulti(OperationType.PDF_TO_IMAGES, in.filename(), images, format.extension());
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
@@ -316,10 +317,14 @@ public class WebOperations {
      * stay distinct; any residual name collision is de-duplicated when zipped.
      */
     public List<NamedBytes> toImages(List<NamedBytes> inputs, ImageFormat format, int dpi,
-                                     String pagesExpr, float jpegQuality)
+                                     String pagesExpr, float jpegQuality,
+                                     boolean transparentBackground, boolean grayscale)
             throws PdfOperationException, InvalidPageRangeException {
         List<NamedBytes> out = new ArrayList<>();
-        for (NamedBytes in : inputs) out.addAll(toImages(in, format, dpi, pagesExpr, jpegQuality));
+        for (NamedBytes in : inputs) {
+            out.addAll(toImages(in, format, dpi, pagesExpr, jpegQuality,
+                transparentBackground, grayscale));
+        }
         return out;
     }
 

@@ -29,6 +29,19 @@ import java.util.stream.IntStream;
  * {@link ImageToPdfConverter}. Each selected page becomes
  * {@code <baseName>_pNNN.<ext>} inside the output folder, where {@code NNN} is the
  * source page number zero-padded to the document's page count.
+ *
+ * <p>Colour handling is configurable via the options / arguments:
+ * <ul>
+ *   <li><b>transparentBackground</b> (PNG only) — render onto {@link ImageType#ARGB} so the page
+ *       background stays transparent instead of white. Silently ignored for JPEG, which has no
+ *       alpha channel.</li>
+ *   <li><b>grayscale</b> — render in grayscale instead of colour.</li>
+ * </ul>
+ * <b>Precedence:</b> when a PNG requests both transparency and grayscale, transparency wins the
+ * render type ({@code ARGB}, since there is no single "gray + alpha" {@link ImageType}) and
+ * grayscale is then applied as a pixel post-process that preserves the alpha channel — yielding a
+ * transparent, desaturated PNG. Grayscale-only (or any JPEG) renders directly as
+ * {@link ImageType#GRAY}; the default (neither flag) is opaque colour {@link ImageType#RGB}.
  */
 public final class PdfToImageConverter {
 
@@ -56,8 +69,8 @@ public final class PdfToImageConverter {
 
             List<Path> outputs = new ArrayList<>(pageNums.size());
             for (int pageNum : pageNums) {
-                // JPEG has no alpha; render onto RGB so the page background stays white.
-                BufferedImage img = renderer.renderImageWithDPI(pageNum - 1, dpi, ImageType.RGB);
+                BufferedImage img = render(renderer, pageNum - 1, dpi, opts.format(),
+                    opts.transparentBackground(), opts.grayscale());
                 Path file = opts.outputDir().resolve(
                     opts.baseName() + "_p" + pad(pageNum, width) + "." + opts.format().extension());
                 write(img, opts.format(), opts.jpegQuality(), file);
@@ -72,10 +85,22 @@ public final class PdfToImageConverter {
 
     /**
      * In-memory variant: render the selected pages of {@code pdf} to encoded image bytes
-     * (PNG or JPEG), in page order.
+     * (PNG or JPEG), in page order. Backward-compatible overload — opaque colour output.
      */
     public static List<byte[]> executeBytes(byte[] pdf, ImageFormat format, int dpi,
                                             PageRange pages, float jpegQuality)
+            throws PdfOperationException {
+        return executeBytes(pdf, format, dpi, pages, jpegQuality, false, false);
+    }
+
+    /**
+     * In-memory variant with colour options: render the selected pages of {@code pdf} to encoded
+     * image bytes (PNG or JPEG), in page order. See the class doc for the
+     * transparency/grayscale precedence rules.
+     */
+    public static List<byte[]> executeBytes(byte[] pdf, ImageFormat format, int dpi,
+                                            PageRange pages, float jpegQuality,
+                                            boolean transparentBackground, boolean grayscale)
             throws PdfOperationException {
         try (PDDocument doc = PdfLoader.load(pdf)) {
             int total = doc.getNumberOfPages();
@@ -87,12 +112,56 @@ public final class PdfToImageConverter {
             int renderDpi = Math.min(MAX_RENDER_DPI, Math.max(1, dpi));
             List<byte[]> outputs = new ArrayList<>(pageNums.size());
             for (int pageNum : pageNums) {
-                BufferedImage img = renderer.renderImageWithDPI(pageNum - 1, renderDpi, ImageType.RGB);
+                BufferedImage img = render(renderer, pageNum - 1, renderDpi, format,
+                    transparentBackground, grayscale);
                 outputs.add(encode(img, format, jpegQuality));
             }
             return outputs;
         } catch (IOException e) {
             throw new PdfOperationException("Image export failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Renders one page, honouring transparency (PNG only) and grayscale. When both apply, renders
+     * ARGB then desaturates in place so the alpha channel survives (see class doc).
+     */
+    private static BufferedImage render(PDFRenderer renderer, int pageIndex, int dpi,
+                                        ImageFormat format, boolean transparentBackground,
+                                        boolean grayscale) throws IOException {
+        // Transparency only makes sense for a format with an alpha channel (PNG).
+        boolean transparent = transparentBackground && format == ImageFormat.PNG;
+        ImageType type;
+        if (transparent) {
+            type = ImageType.ARGB;                        // transparent background; keep colour data
+        } else if (grayscale) {
+            type = ImageType.GRAY;                         // direct grayscale render
+        } else {
+            type = ImageType.RGB;                          // default: opaque colour, white background
+        }
+        BufferedImage img = renderer.renderImageWithDPI(pageIndex, dpi, type);
+        if (transparent && grayscale) {
+            desaturateKeepingAlpha(img);                   // gray + alpha (no single ImageType exists)
+        }
+        return img;
+    }
+
+    /** Desaturates an ARGB image to grayscale in place, preserving each pixel's alpha. */
+    private static void desaturateKeepingAlpha(BufferedImage img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int argb = img.getRGB(x, y);
+                int a = (argb >>> 24) & 0xFF;
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >> 8) & 0xFF;
+                int b = argb & 0xFF;
+                // Rec. 601 luma.
+                int lum = (int) Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+                int gray = (a << 24) | (lum << 16) | (lum << 8) | lum;
+                img.setRGB(x, y, gray);
+            }
         }
     }
 

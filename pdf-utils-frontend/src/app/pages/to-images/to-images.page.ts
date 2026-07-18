@@ -86,6 +86,22 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             [placeholder]="'pages.toImages.pagesPlaceholder' | transloco"
           />
         </div>
+        <div class="field">
+          <span class="field-label">{{ 'pages.toImages.color' | transloco }}</span>
+          @if (format() === 'PNG') {
+            <label class="check">
+              <input type="checkbox" [checked]="transparentBg()"
+                     (change)="transparentBg.set($any($event.target).checked)" />
+              {{ 'pages.toImages.transparent' | transloco }}
+            </label>
+            <span class="help">{{ 'pages.toImages.transparentHelp' | transloco }}</span>
+          }
+          <label class="check">
+            <input type="checkbox" [checked]="grayscale()"
+                   (change)="grayscale.set($any($event.target).checked)" />
+            {{ 'pages.toImages.grayscale' | transloco }}
+          </label>
+        </div>
       </div>
 
       <div class="btn-row">
@@ -115,6 +131,9 @@ export class ToImagesPage {
   protected readonly singleFile = computed(() => (this.files().length === 1 ? this.files()[0] : null));
   protected readonly format = signal<'PNG' | 'JPG'>('PNG');
   protected readonly quality = signal(0.8);
+  /** Transparent (alpha) background — PNG only; JPEG has no alpha so it is not sent. */
+  protected readonly transparentBg = signal(false);
+  protected readonly grayscale = signal(false);
   protected readonly dpi = new FormControl(150, {
     nonNullable: true,
     validators: [Validators.required, Validators.min(36), Validators.max(600)],
@@ -134,6 +153,9 @@ export class ToImagesPage {
     fd.append('format', this.format());
     fd.append('dpi', String(this.dpi.value));
     if (this.format() === 'JPG') fd.append('quality', String(this.quality()));
+    // Transparent background is PNG-only (JPEG has no alpha); grayscale applies to both.
+    if (this.format() === 'PNG' && this.transparentBg()) fd.append('transparent', 'true');
+    if (this.grayscale()) fd.append('grayscale', 'true');
     const p = this.pages.value.trim();
     if (p) fd.append('pages', p);
     this.state.run(this.api.toImages(fd));

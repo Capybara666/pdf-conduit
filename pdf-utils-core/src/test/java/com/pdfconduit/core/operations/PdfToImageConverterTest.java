@@ -70,6 +70,59 @@ class PdfToImageConverterTest {
         assertTrue(highW > lowW, "higher DPI should render more pixels");
     }
 
+    @Test
+    void pngTransparentBackgroundYieldsAlphaChannel() throws Exception {
+        Path src = createPdf(1);
+        byte[] pdf = Files.readAllBytes(src);
+
+        List<byte[]> opaque = PdfToImageConverter.executeBytes(
+            pdf, ImageFormat.PNG, 72, PageRange.ALL, 1f, false, false);
+        List<byte[]> transparent = PdfToImageConverter.executeBytes(
+            pdf, ImageFormat.PNG, 72, PageRange.ALL, 1f, true, false);
+
+        BufferedImage opaqueImg = ImageIO.read(new java.io.ByteArrayInputStream(opaque.get(0)));
+        BufferedImage transImg = ImageIO.read(new java.io.ByteArrayInputStream(transparent.get(0)));
+
+        assertFalse(opaqueImg.getColorModel().hasAlpha(), "default render has no alpha");
+        assertTrue(transImg.getColorModel().hasAlpha(), "transparent PNG must have an alpha channel");
+        // A blank page renders with a fully transparent background.
+        int corner = transImg.getRGB(0, 0);
+        assertEquals(0, (corner >>> 24) & 0xFF, "background pixel should be fully transparent");
+    }
+
+    @Test
+    void transparentBackgroundIgnoredForJpeg() throws Exception {
+        // JPEG has no alpha; the flag must be silently ignored (no exception, no alpha).
+        byte[] pdf = Files.readAllBytes(createPdf(1));
+        List<byte[]> images = PdfToImageConverter.executeBytes(
+            pdf, ImageFormat.JPEG, 72, PageRange.ALL, 0.8f, true, false);
+        BufferedImage img = ImageIO.read(new java.io.ByteArrayInputStream(images.get(0)));
+        assertFalse(img.getColorModel().hasAlpha(), "JPEG output never has alpha");
+    }
+
+    @Test
+    void grayscaleYieldsSingleComponentImage() throws Exception {
+        byte[] pdf = Files.readAllBytes(createPdf(1));
+        List<byte[]> images = PdfToImageConverter.executeBytes(
+            pdf, ImageFormat.PNG, 72, PageRange.ALL, 1f, false, true);
+        BufferedImage img = ImageIO.read(new java.io.ByteArrayInputStream(images.get(0)));
+        assertEquals(1, img.getColorModel().getNumComponents(),
+            "grayscale render should have a single colour component");
+    }
+
+    @Test
+    void transparentAndGrayscaleKeepsAlpha() throws Exception {
+        // Precedence: transparency wins the render type, grayscale applied as a post-process.
+        byte[] pdf = Files.readAllBytes(createPdf(1));
+        List<byte[]> images = PdfToImageConverter.executeBytes(
+            pdf, ImageFormat.PNG, 72, PageRange.ALL, 1f, true, true);
+        BufferedImage img = ImageIO.read(new java.io.ByteArrayInputStream(images.get(0)));
+        assertTrue(img.getColorModel().hasAlpha(),
+            "transparent+grayscale PNG keeps its alpha channel");
+        assertEquals(0, (img.getRGB(0, 0) >>> 24) & 0xFF,
+            "background stays transparent under grayscale");
+    }
+
     private Path createPdf(int pages) throws IOException {
         Path path = tmp.resolve("src-" + pages + ".pdf");
         try (PDDocument doc = new PDDocument()) {
