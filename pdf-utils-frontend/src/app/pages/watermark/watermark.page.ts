@@ -40,8 +40,8 @@ type Mode = 'text' | 'image';
 
       <div class="card">
         <div class="seg" role="group" [attr.aria-label]="'pages.watermark.typeAria' | transloco" style="margin-bottom:1rem">
-          <button type="button" [class.active]="mode() === 'text'" (click)="mode.set('text')">{{ 'pages.watermark.typeText' | transloco }}</button>
-          <button type="button" [class.active]="mode() === 'image'" (click)="mode.set('image')">{{ 'pages.watermark.typeImage' | transloco }}</button>
+          <button type="button" [class.active]="mode() === 'text'" [attr.aria-pressed]="mode() === 'text'" (click)="mode.set('text')">{{ 'pages.watermark.typeText' | transloco }}</button>
+          <button type="button" [class.active]="mode() === 'image'" [attr.aria-pressed]="mode() === 'image'" (click)="mode.set('image')">{{ 'pages.watermark.typeImage' | transloco }}</button>
         </div>
 
         <div class="form-grid">
@@ -84,7 +84,7 @@ type Mode = 'text' | 'image';
           <div class="field">
             <label for="wm-scale">{{ 'pages.watermark.scale' | transloco }} <span class="hint-note">{{ scale() | number: '1.2-2' }}</span></label>
             <div class="range-row">
-              <input id="wm-scale" type="range" min="0.1" max="1" step="0.05"
+              <input id="wm-scale" type="range" min="0.1" max="2" step="0.05"
                      [value]="scale()" (input)="scale.set(+$any($event.target).value)" />
               <output>{{ scale() | number: '1.2-2' }}</output>
             </div>

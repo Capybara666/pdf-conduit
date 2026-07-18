@@ -1,7 +1,23 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TranslocoModule } from '@jsverse/transloco';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { CanvasNode } from '../../../core/pipeline.models';
+
+/** NodeKind → operation id used for the existing `op.<id>.label` i18n lookup. */
+const KIND_TO_OP: Record<string, string> = {
+  MERGE: 'merge',
+  IMAGES_TO_PDF: 'to-pdf',
+  EXTRACT: 'extract',
+  COMPRESS: 'compress',
+  ROTATE: 'rotate',
+  ARRANGE: 'arrange',
+  PROTECT: 'protect',
+  UNLOCK: 'unlock',
+  METADATA: 'metadata',
+  WATERMARK: 'watermark',
+  TO_IMAGES: 'to-images',
+  TO_TEXT: 'to-text',
+};
 
 /**
  * Parameter form for the currently-selected canvas node. Each kind renders only
@@ -19,7 +35,7 @@ import { CanvasNode } from '../../../core/pipeline.models';
       <p class="hint-note">{{ 'pipeline.canvas.inspectorEmpty' | transloco }}</p>
     } @else {
       <div class="ins-head">
-        <span class="badge op">{{ node.kind }}</span>
+        <span class="badge op">{{ label() }}</span>
         <span class="node-id">{{ node.id }}</span>
       </div>
 
@@ -212,9 +228,28 @@ import { CanvasNode } from '../../../core/pipeline.models';
   ],
 })
 export class PipelineInspectorComponent {
+  private readonly transloco = inject(TranslocoService);
+
   @Input() node: CanvasNode | null = null;
   /** Uploaded file basenames available to include in a SOURCE node. */
   @Input() pool: string[] = [];
+
+  /**
+   * Human, translated operation label for the selected node's kind — the same
+   * `op.<id>.label` mechanism the node cards use. SOURCE has its own key; any
+   * kind without a mapping falls back to a Title-Cased enum so nothing breaks.
+   */
+  label(): string {
+    if (!this.node) return '';
+    if (this.node.kind === 'SOURCE') return this.transloco.translate('pipeline.canvas.source');
+    const op = KIND_TO_OP[this.node.kind];
+    if (op) return this.transloco.translate(`op.${op}.label`);
+    return this.node.kind
+      .toLowerCase()
+      .split('_')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  }
 
   @Output() patch = new EventEmitter<Partial<CanvasNode>>();
   /** Chosen watermark image (or null to clear) for the selected WATERMARK node. */

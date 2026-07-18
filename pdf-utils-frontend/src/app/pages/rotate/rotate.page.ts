@@ -40,7 +40,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           <span class="field-label">{{ 'pages.rotate.angle' | transloco }}</span>
           <div class="seg" role="group" [attr.aria-label]="'pages.rotate.angleAria' | transloco">
             @for (a of angles; track a) {
-              <button type="button" [class.active]="angle() === a" (click)="angle.set(a)">{{ a }}°</button>
+              <button type="button" [class.active]="angle() === a" [attr.aria-pressed]="angle() === a" (click)="angle.set(a)">{{ a }}°</button>
             }
           </div>
         </div>

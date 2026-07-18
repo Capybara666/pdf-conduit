@@ -84,8 +84,6 @@ const ICONS: Record<string, string> = {
       <span
         class="pl-port pl-port-out"
         [style.top.px]="portTop"
-        role="button"
-        tabindex="0"
         [attr.aria-label]="'pipeline.canvas.outPort' | transloco"
         (pointerdown)="onPortDown($event)"
       ></span>
