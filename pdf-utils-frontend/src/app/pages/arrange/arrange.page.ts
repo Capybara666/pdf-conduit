@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, ViewChild, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -52,6 +52,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             [formControl]="order"
             [placeholder]="'pages.arrange.orderPlaceholder' | transloco"
           />
+          <div class="btn-row">
+            <button type="button" class="btn" [disabled]="!file()" (click)="reverse()">
+              {{ 'pageGrid.reverse' | transloco }}
+            </button>
+            <button type="button" class="btn" [disabled]="!file()" (click)="reset()">
+              {{ 'pageGrid.reset' | transloco }}
+            </button>
+          </div>
           <span class="help">
             <code>3,1,2</code> {{ 'pages.arrange.orderHelp1' | transloco }} ·
             <code>5-1</code> {{ 'pages.arrange.orderHelp2' | transloco }} ·
@@ -85,7 +93,20 @@ export class ArrangePage {
   protected readonly order = new FormControl('', { nonNullable: true });
   protected readonly state = new OperationState();
 
+  /** The thumbnail grid; its reverse/reset emit `orderStringChange` → `order`. */
+  @ViewChild(PageGridComponent) private grid?: PageGridComponent;
+
   constructor(private readonly api: ApiService) {}
+
+  /** One-click reverse of the current page order (grid + text stay in sync). */
+  reverse(): void {
+    this.grid?.reverse();
+  }
+
+  /** Restore the natural 1..N page order. */
+  reset(): void {
+    this.grid?.reset();
+  }
 
   submit(): void {
     const f = this.file();

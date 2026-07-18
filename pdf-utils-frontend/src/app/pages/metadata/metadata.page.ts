@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { ApiError } from '../../core/api.models';
+import { errorCopyKeys } from '../../core/error-copy';
 import { OperationState } from '../../core/operation-state';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
@@ -44,7 +45,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
           <app-spinner [label]="'pages.metadata.reading' | transloco" />
         }
         @if (readError()) {
-          <span class="err">{{ readError()!.message }}</span>
+          <span class="err">{{ readErrorText }}</span>
         }
       </div>
 
@@ -100,12 +101,24 @@ export class MetadataPage {
     keywords: new FormControl('', { nonNullable: true }),
   });
   protected readonly state = new OperationState();
+  private readonly transloco = inject(TranslocoService);
 
   constructor(private readonly api: ApiService) {}
+
+  /** Friendly, code-aware headline for a failed manual read (never a raw stack). */
+  get readErrorText(): string {
+    const e = this.readError();
+    return e ? this.transloco.translate(errorCopyKeys(e).titleKey) : '';
+  }
 
   onFile(f: File | null): void {
     this.file.set(f);
     this.readError.set(null);
+    this.clearFields();
+    // Auto-prefill the moment a PDF is added (mirrors the desktop app). "Read
+    // current" stays as a manual refresh; a silent failure just leaves the
+    // fields blank + editable rather than shouting about a protected/damaged file.
+    if (f) this.read(f, true);
   }
 
   toggleStrip(ev: Event): void {
@@ -114,7 +127,10 @@ export class MetadataPage {
 
   readCurrent(): void {
     const f = this.file();
-    if (!f) return;
+    if (f) this.read(f, false);
+  }
+
+  private read(f: File, silent: boolean): void {
     this.reading.set(true);
     this.readError.set(null);
     const fd = new FormData();
@@ -130,10 +146,16 @@ export class MetadataPage {
         this.reading.set(false);
       },
       error: (e) => {
-        this.readError.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
+        if (!silent) {
+          this.readError.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
+        }
         this.reading.set(false);
       },
     });
+  }
+
+  private clearFields(): void {
+    this.form.setValue({ title: '', author: '', subject: '', keywords: '' });
   }
 
   submit(): void {

@@ -52,6 +52,20 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
               <button
                 type="button"
                 class="icon-btn"
+                (click)="moveUp(i)"
+                [disabled]="i === 0"
+                [attr.aria-label]="'common.moveUp' | transloco"
+              >↑</button>
+              <button
+                type="button"
+                class="icon-btn"
+                (click)="moveDown(i)"
+                [disabled]="i === files().length - 1"
+                [attr.aria-label]="'common.moveDown' | transloco"
+              >↓</button>
+              <button
+                type="button"
+                class="icon-btn"
                 (click)="remove(i)"
                 [attr.aria-label]="'common.remove' | transloco"
               >✕</button>
@@ -109,6 +123,23 @@ export class MergePage {
   remove(i: number): void {
     const next = this.files().slice();
     next.splice(i, 1);
+    this.files.set(next);
+  }
+
+  /** Keyboard/touch reorder — mirrors the drag path, moving a row up one slot. */
+  moveUp(i: number): void {
+    if (i <= 0) return;
+    this.swap(i, i - 1);
+  }
+
+  moveDown(i: number): void {
+    if (i >= this.files().length - 1) return;
+    this.swap(i, i + 1);
+  }
+
+  private swap(a: number, b: number): void {
+    const next = this.files().slice();
+    [next[a], next[b]] = [next[b], next[a]];
     this.files.set(next);
   }
 
