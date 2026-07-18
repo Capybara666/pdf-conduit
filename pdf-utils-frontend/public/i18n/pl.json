@@ -508,7 +508,18 @@
       "submit": "Zastosuj znak wodny",
       "needText": "Wpisz tekst znaku wodnego.",
       "needImage": "Wybierz obraz.",
-      "loading": "Nanoszenie…"
+      "loading": "Nanoszenie…",
+      "layout": "Układ",
+      "layoutSingle": "Pojedynczy",
+      "layoutTile": "Kafelki",
+      "layoutDiagonal": "Ukośnie",
+      "position": "Pozycja",
+      "positionCenter": "Środek",
+      "positionTopLeft": "Lewy górny",
+      "positionTopRight": "Prawy górny",
+      "positionBottomLeft": "Lewy dolny",
+      "positionBottomRight": "Prawy dolny",
+      "color": "Kolor tekstu"
     },
     "wizard": {
       "title": "Kreator",

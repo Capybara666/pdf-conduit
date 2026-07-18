@@ -508,7 +508,18 @@
       "submit": "Filigran uygula",
       "needText": "Filigran metni girin.",
       "needImage": "Bir görsel seçin.",
-      "loading": "Uygulanıyor…"
+      "loading": "Uygulanıyor…",
+      "layout": "Düzen",
+      "layoutSingle": "Tek",
+      "layoutTile": "Döşeme",
+      "layoutDiagonal": "Çapraz",
+      "position": "Konum",
+      "positionCenter": "Orta",
+      "positionTopLeft": "Sol üst",
+      "positionTopRight": "Sağ üst",
+      "positionBottomLeft": "Sol alt",
+      "positionBottomRight": "Sağ alt",
+      "color": "Metin rengi"
     },
     "wizard": {
       "title": "Sihirbaz",

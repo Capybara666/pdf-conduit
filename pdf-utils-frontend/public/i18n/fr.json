@@ -508,7 +508,18 @@
       "submit": "Appliquer le filigrane",
       "needText": "Saisissez le texte du filigrane.",
       "needImage": "Choisissez une image.",
-      "loading": "Application en cours…"
+      "loading": "Application en cours…",
+      "layout": "Disposition",
+      "layoutSingle": "Unique",
+      "layoutTile": "Mosaïque",
+      "layoutDiagonal": "Diagonale",
+      "position": "Position",
+      "positionCenter": "Centre",
+      "positionTopLeft": "En haut à gauche",
+      "positionTopRight": "En haut à droite",
+      "positionBottomLeft": "En bas à gauche",
+      "positionBottomRight": "En bas à droite",
+      "color": "Couleur du texte"
     },
     "wizard": {
       "title": "Assistant",

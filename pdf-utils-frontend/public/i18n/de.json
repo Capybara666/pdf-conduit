@@ -508,7 +508,18 @@
       "submit": "Wasserzeichen anwenden",
       "needText": "Wasserzeichentext eingeben.",
       "needImage": "Ein Bild auswählen.",
-      "loading": "Wird gestempelt…"
+      "loading": "Wird gestempelt…",
+      "layout": "Layout",
+      "layoutSingle": "Einzeln",
+      "layoutTile": "Kacheln",
+      "layoutDiagonal": "Diagonal",
+      "position": "Position",
+      "positionCenter": "Zentriert",
+      "positionTopLeft": "Oben links",
+      "positionTopRight": "Oben rechts",
+      "positionBottomLeft": "Unten links",
+      "positionBottomRight": "Unten rechts",
+      "color": "Textfarbe"
     },
     "wizard": {
       "title": "Assistent",

@@ -508,7 +508,18 @@
       "submit": "Применить водяной знак",
       "needText": "Введите текст водяного знака.",
       "needImage": "Выберите изображение.",
-      "loading": "Нанесение…"
+      "loading": "Нанесение…",
+      "layout": "Расположение",
+      "layoutSingle": "Один",
+      "layoutTile": "Плитка",
+      "layoutDiagonal": "Диагональ",
+      "position": "Позиция",
+      "positionCenter": "По центру",
+      "positionTopLeft": "Сверху слева",
+      "positionTopRight": "Сверху справа",
+      "positionBottomLeft": "Снизу слева",
+      "positionBottomRight": "Снизу справа",
+      "color": "Цвет текста"
     },
     "wizard": {
       "title": "Мастер",

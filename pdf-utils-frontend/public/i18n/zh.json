@@ -508,7 +508,18 @@
       "submit": "应用水印",
       "needText": "请输入水印文字。",
       "needImage": "请选择一张图片。",
-      "loading": "添加中…"
+      "loading": "添加中…",
+      "layout": "布局",
+      "layoutSingle": "单个",
+      "layoutTile": "平铺",
+      "layoutDiagonal": "对角线",
+      "position": "位置",
+      "positionCenter": "居中",
+      "positionTopLeft": "左上",
+      "positionTopRight": "右上",
+      "positionBottomLeft": "左下",
+      "positionBottomRight": "右下",
+      "color": "文字颜色"
     },
     "wizard": {
       "title": "向导",

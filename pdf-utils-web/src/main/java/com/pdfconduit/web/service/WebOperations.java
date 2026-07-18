@@ -266,10 +266,14 @@ public class WebOperations {
     // --------------------------------------------------------------- WATERMARK
 
     public List<NamedBytes> watermark(List<NamedBytes> inputs, String text, byte[] image,
-                                      double opacity, double rotation, double scale)
+                                      double opacity, double rotation, double scale,
+                                      com.pdfconduit.core.model.WatermarkOptions.Layout layout,
+                                      com.pdfconduit.core.model.WatermarkOptions.Position position,
+                                      String color)
             throws PdfOperationException {
         return MemoryOperations.runBatch(OperationType.WATERMARK, pdfData(inputs), names(inputs),
-            pdf -> PdfWatermarker.executeBytes(pdf, text, image, opacity, rotation, scale));
+            pdf -> PdfWatermarker.executeBytes(pdf, text, image, opacity, rotation, scale,
+                layout, position, color));
     }
 
     // ------------------------------------------------------------------ REDACT

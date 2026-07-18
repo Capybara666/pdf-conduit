@@ -10,6 +10,8 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.WatermarkOptions;
+import com.pdfconduit.core.model.WatermarkOptions.Layout;
+import com.pdfconduit.core.model.WatermarkOptions.Position;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -77,6 +79,49 @@ class PdfWatermarkerTest {
         float[] small = PdfWatermarker.imageSizeFor(0.3f, a4, 100, 100);
         float[] big = PdfWatermarker.imageSizeFor(0.6f, a4, 100, 100);
         assertEquals(2.0, big[0] / small[0], 0.01, "doubling scale should double the image width");
+    }
+
+    @Test
+    void tiledTextWatermarkProducesValidPdfAndKeepsPageCount() throws Exception {
+        Path src = pdf(2);
+        Path out = tmp.resolve("tile-wm.pdf");
+
+        PdfWatermarker.execute(new WatermarkOptions(src, "DRAFT", null, 0.25, 30, 0.25,
+            Layout.TILE, Position.CENTER, "#ff0000", out));
+
+        assertTrue(out.toFile().exists());
+        assertTrue(out.toFile().length() > 0, "output PDF should be non-empty");
+        try (PDDocument doc = Loader.loadPDF(out.toFile())) {
+            assertEquals(2, doc.getNumberOfPages());
+        }
+    }
+
+    @Test
+    void diagonalWatermarkViaBytesIsValid() throws Exception {
+        byte[] src;
+        try (PDDocument doc = new PDDocument()) {
+            doc.addPage(new PDPage(PDRectangle.A4));
+            var bos = new java.io.ByteArrayOutputStream();
+            doc.save(bos);
+            src = bos.toByteArray();
+        }
+        byte[] out = PdfWatermarker.executeBytes(src, "COPY", null, 0.2, 45, 0.3,
+            Layout.DIAGONAL, Position.CENTER, "#0033aa");
+        assertTrue(out.length > 0);
+        try (PDDocument doc = Loader.loadPDF(out)) {
+            assertEquals(1, doc.getNumberOfPages());
+        }
+    }
+
+    @Test
+    void parseColorHandlesHexAndFallsBackToGrey() {
+        float[] red = PdfWatermarker.parseColor("#ff0000");
+        assertEquals(1.0f, red[0], 0.001);
+        assertEquals(0.0f, red[1], 0.001);
+        float[] grey = PdfWatermarker.parseColor(null);
+        assertEquals(0.6f, grey[0], 0.001);
+        float[] greyOnGarbage = PdfWatermarker.parseColor("not-a-color");
+        assertEquals(0.6f, greyOnGarbage[1], 0.001);
     }
 
     private boolean hasImage(PDResources res) throws IOException {

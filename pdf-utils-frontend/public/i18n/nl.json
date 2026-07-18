@@ -508,7 +508,18 @@
       "submit": "Watermerk toepassen",
       "needText": "Voer watermerktekst in.",
       "needImage": "Kies een afbeelding.",
-      "loading": "Stempelen…"
+      "loading": "Stempelen…",
+      "layout": "Lay-out",
+      "layoutSingle": "Enkel",
+      "layoutTile": "Tegels",
+      "layoutDiagonal": "Diagonaal",
+      "position": "Positie",
+      "positionCenter": "Midden",
+      "positionTopLeft": "Linksboven",
+      "positionTopRight": "Rechtsboven",
+      "positionBottomLeft": "Linksonder",
+      "positionBottomRight": "Rechtsonder",
+      "color": "Tekstkleur"
     },
     "wizard": {
       "title": "Wizard",

@@ -508,7 +508,18 @@
       "submit": "워터마크 적용",
       "needText": "워터마크 텍스트를 입력하세요.",
       "needImage": "이미지를 선택하세요.",
-      "loading": "찍는 중…"
+      "loading": "찍는 중…",
+      "layout": "레이아웃",
+      "layoutSingle": "단일",
+      "layoutTile": "타일",
+      "layoutDiagonal": "대각선",
+      "position": "위치",
+      "positionCenter": "가운데",
+      "positionTopLeft": "왼쪽 위",
+      "positionTopRight": "오른쪽 위",
+      "positionBottomLeft": "왼쪽 아래",
+      "positionBottomRight": "오른쪽 아래",
+      "color": "텍스트 색상"
     },
     "wizard": {
       "title": "마법사",

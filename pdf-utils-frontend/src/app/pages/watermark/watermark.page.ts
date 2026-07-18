@@ -11,6 +11,8 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
 type Mode = 'text' | 'image';
+type Layout = 'single' | 'tile' | 'diagonal';
+type Position = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 /** Stamp text or an image watermark over every page. Exactly one of text/image. */
 @Component({
@@ -66,6 +68,35 @@ type Mode = 'text' | 'image';
                 [hint]="'pages.watermark.imageHint' | transloco"
                 (filesChange)="onImageFiles($event)"
               />
+            </div>
+          }
+
+          <div class="field full">
+            <label>{{ 'pages.watermark.layout' | transloco }}</label>
+            <div class="seg" role="group" [attr.aria-label]="'pages.watermark.layout' | transloco">
+              <button type="button" [class.active]="layout() === 'single'" [attr.aria-pressed]="layout() === 'single'" (click)="layout.set('single')">{{ 'pages.watermark.layoutSingle' | transloco }}</button>
+              <button type="button" [class.active]="layout() === 'tile'" [attr.aria-pressed]="layout() === 'tile'" (click)="layout.set('tile')">{{ 'pages.watermark.layoutTile' | transloco }}</button>
+              <button type="button" [class.active]="layout() === 'diagonal'" [attr.aria-pressed]="layout() === 'diagonal'" (click)="layout.set('diagonal')">{{ 'pages.watermark.layoutDiagonal' | transloco }}</button>
+            </div>
+          </div>
+
+          @if (layout() === 'single') {
+            <div class="field">
+              <label for="wm-position">{{ 'pages.watermark.position' | transloco }}</label>
+              <select id="wm-position" [value]="position()" (change)="position.set($any($event.target).value)">
+                <option value="center">{{ 'pages.watermark.positionCenter' | transloco }}</option>
+                <option value="top-left">{{ 'pages.watermark.positionTopLeft' | transloco }}</option>
+                <option value="top-right">{{ 'pages.watermark.positionTopRight' | transloco }}</option>
+                <option value="bottom-left">{{ 'pages.watermark.positionBottomLeft' | transloco }}</option>
+                <option value="bottom-right">{{ 'pages.watermark.positionBottomRight' | transloco }}</option>
+              </select>
+            </div>
+          }
+
+          @if (mode() === 'text') {
+            <div class="field">
+              <label for="wm-color">{{ 'pages.watermark.color' | transloco }}</label>
+              <input id="wm-color" type="color" [value]="color()" (input)="color.set($any($event.target).value)" />
             </div>
           }
 
@@ -125,6 +156,9 @@ export class WatermarkPage {
   protected readonly opacity = signal(0.3);
   protected readonly rotation = signal(45);
   protected readonly scale = signal(0.5);
+  protected readonly layout = signal<Layout>('single');
+  protected readonly position = signal<Position>('center');
+  protected readonly color = signal('#999999');
   protected readonly state = new OperationState();
 
   protected readonly hasContent = computed(() =>
@@ -151,6 +185,9 @@ export class WatermarkPage {
     fd.append('opacity', String(this.opacity()));
     fd.append('rotation', String(this.rotation()));
     fd.append('scale', String(this.scale()));
+    fd.append('layout', this.layout());
+    if (this.layout() === 'single') fd.append('position', this.position());
+    if (this.mode() === 'text') fd.append('color', this.color());
     this.state.run(this.api.watermark(fd));
   }
 }

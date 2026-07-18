@@ -10,6 +10,7 @@ import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.RedactRegion;
 import com.pdfconduit.core.model.TextFormat;
+import com.pdfconduit.core.model.WatermarkOptions;
 import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OperationType;
@@ -206,7 +207,10 @@ public class OperationsController {
                                             @RequestParam(required = false) MultipartFile image,
                                             @RequestParam(required = false) Double opacity,
                                             @RequestParam(required = false) Double rotation,
-                                            @RequestParam(required = false) Double scale)
+                                            @RequestParam(required = false) Double scale,
+                                            @RequestParam(required = false) String layout,
+                                            @RequestParam(required = false) String position,
+                                            @RequestParam(required = false) String color)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         boolean hasText = text != null && !text.isBlank();
@@ -215,14 +219,28 @@ public class OperationsController {
             throw new IllegalArgumentException("Provide either watermark text or an image, not both.");
         }
         byte[] imageBytes = hasImage ? image.getBytes() : null;
+        var wmLayout = parseEnum(WatermarkOptions.Layout.class, layout, WatermarkOptions.Layout.SINGLE);
+        var wmPosition = parseEnum(WatermarkOptions.Position.class, position, WatermarkOptions.Position.CENTER);
         List<NamedBytes> inputs = uploads.readAll(files);
         long bytes = totalBytes(inputs) + (imageBytes != null ? imageBytes.length : 0);
         List<NamedBytes> results = loadGuard.execute(bytes,
             () -> ops.watermark(inputs, hasText ? text : null, imageBytes,
                 opacity != null ? opacity : 0.3,
                 rotation != null ? rotation : 45,
-                scale != null ? scale : 0.5));
+                scale != null ? scale : 0.5,
+                wmLayout, wmPosition, color));
         return Responses.batch("watermark", results, MediaType.APPLICATION_PDF);
+    }
+
+    /** Case-insensitive enum parse for optional request params; falls back on null/unknown. */
+    private static <E extends Enum<E>> E parseEnum(Class<E> type, String value, E fallback) {
+        if (value == null || value.isBlank()) return fallback;
+        String normalized = value.trim().toUpperCase(java.util.Locale.ROOT).replace('-', '_');
+        try {
+            return Enum.valueOf(type, normalized);
+        } catch (IllegalArgumentException e) {
+            return fallback;
+        }
     }
 
     // ------------------------------------------------------------------- REDACT

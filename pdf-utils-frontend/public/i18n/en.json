@@ -508,7 +508,18 @@
       "submit": "Apply watermark",
       "needText": "Enter watermark text.",
       "needImage": "Choose an image.",
-      "loading": "Stamping…"
+      "loading": "Stamping…",
+      "layout": "Layout",
+      "layoutSingle": "Single",
+      "layoutTile": "Tile",
+      "layoutDiagonal": "Diagonal",
+      "position": "Position",
+      "positionCenter": "Center",
+      "positionTopLeft": "Top left",
+      "positionTopRight": "Top right",
+      "positionBottomLeft": "Bottom left",
+      "positionBottomRight": "Bottom right",
+      "color": "Text color"
     },
     "wizard": {
       "title": "Wizard",

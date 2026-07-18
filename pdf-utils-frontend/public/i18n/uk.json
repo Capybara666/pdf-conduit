@@ -508,7 +508,18 @@
       "submit": "Застосувати водяний знак",
       "needText": "Введіть текст водяного знака.",
       "needImage": "Виберіть зображення.",
-      "loading": "Нанесення…"
+      "loading": "Нанесення…",
+      "layout": "Розташування",
+      "layoutSingle": "Один",
+      "layoutTile": "Плитка",
+      "layoutDiagonal": "По діагоналі",
+      "position": "Позиція",
+      "positionCenter": "По центру",
+      "positionTopLeft": "Угорі ліворуч",
+      "positionTopRight": "Угорі праворуч",
+      "positionBottomLeft": "Унизу ліворуч",
+      "positionBottomRight": "Унизу праворуч",
+      "color": "Колір тексту"
     },
     "wizard": {
       "title": "Майстер",

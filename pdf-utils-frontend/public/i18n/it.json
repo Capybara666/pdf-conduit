@@ -508,7 +508,18 @@
       "submit": "Applica filigrana",
       "needText": "Inserisci il testo della filigrana.",
       "needImage": "Scegli un'immagine.",
-      "loading": "Applicazione in corso…"
+      "loading": "Applicazione in corso…",
+      "layout": "Disposizione",
+      "layoutSingle": "Singolo",
+      "layoutTile": "Affiancato",
+      "layoutDiagonal": "Diagonale",
+      "position": "Posizione",
+      "positionCenter": "Centro",
+      "positionTopLeft": "In alto a sinistra",
+      "positionTopRight": "In alto a destra",
+      "positionBottomLeft": "In basso a sinistra",
+      "positionBottomRight": "In basso a destra",
+      "color": "Colore del testo"
     },
     "wizard": {
       "title": "Procedura guidata",

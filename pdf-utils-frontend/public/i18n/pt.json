@@ -508,7 +508,18 @@
       "submit": "Aplicar marca de água",
       "needText": "Introduza o texto da marca de água.",
       "needImage": "Escolha uma imagem.",
-      "loading": "A carimbar…"
+      "loading": "A carimbar…",
+      "layout": "Disposição",
+      "layoutSingle": "Único",
+      "layoutTile": "Mosaico",
+      "layoutDiagonal": "Diagonal",
+      "position": "Posição",
+      "positionCenter": "Centro",
+      "positionTopLeft": "Superior esquerdo",
+      "positionTopRight": "Superior direito",
+      "positionBottomLeft": "Inferior esquerdo",
+      "positionBottomRight": "Inferior direito",
+      "color": "Cor do texto"
     },
     "wizard": {
       "title": "Assistente",
