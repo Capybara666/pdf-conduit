@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "AVG-scan",
       "description": "Een PDF scannen op persoonsgegevens (AVG / PII)."
+    },
+    "crop": {
+      "label": "Bijsnijden",
+      "description": "Trim margins off every page."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "Gedetecteerde gegevens redigeren",
       "redactHint": "Controleer de gemarkeerde gebieden en pas toe — het is gratis."
+    },
+    "crop": {
+      "title": "Bijsnijden",
+      "description": "Trim margins off every page.",
+      "privacyLine": "Your files are cropped privately and never stored.",
+      "hint": "PDF files — several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "top": "Boven",
+      "right": "Rechts",
+      "bottom": "Onder",
+      "left": "Links",
+      "unit": "Eenheid",
+      "unitPt": "Punten (pt)",
+      "unitMm": "Millimeter (mm)",
+      "unitHelp": "Each margin is trimmed off the matching page edge.",
+      "submit": "Crop pages",
+      "loading": "Cropping…"
     }
   },
   "pageGrid": {

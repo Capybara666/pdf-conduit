@@ -251,6 +251,27 @@ public class OperationsController {
         }
     }
 
+    // --------------------------------------------------------------------- CROP
+
+    @PostMapping(value = "/crop", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> crop(@RequestParam("files") List<MultipartFile> files,
+                                       @RequestParam(required = false) Double top,
+                                       @RequestParam(required = false) Double right,
+                                       @RequestParam(required = false) Double bottom,
+                                       @RequestParam(required = false) Double left,
+                                       @RequestParam(required = false) String unit)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        guardCount(files, maxFiles);
+        // Margins are points by default; "mm" switches to millimetres. Missing edge ⇒ 0 (no trim).
+        boolean mm = unit != null && unit.trim().equalsIgnoreCase("mm");
+        double t = top != null ? top : 0, r = right != null ? right : 0;
+        double b = bottom != null ? bottom : 0, l = left != null ? left : 0;
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
+            () -> ops.crop(inputs, t, r, b, l, mm));
+        return Responses.batch("crop", results, MediaType.APPLICATION_PDF);
+    }
+
     // ------------------------------------------------------------------- REDACT
 
     @PostMapping(value = "/redact", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

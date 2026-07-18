@@ -8,6 +8,7 @@ import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.*;
 import com.pdfconduit.core.operations.PdfArranger;
 import com.pdfconduit.core.operations.PdfCompressor;
+import com.pdfconduit.core.operations.PdfCropper;
 import com.pdfconduit.core.operations.PdfMerger;
 import com.pdfconduit.core.operations.PdfMetadataEditor;
 import com.pdfconduit.core.operations.PdfProtector;
@@ -252,6 +253,8 @@ public final class PipelineExecutor {
                             useImage ? Path.of(n.wmImage) : null,
                             n.wmOpacity, n.wmRotation, n.wmScale, out));
                     }
+                    case CROP -> PdfCropper.execute(new CropOptions(src,
+                        n.cropTop, n.cropRight, n.cropBottom, n.cropLeft, n.cropMm, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
@@ -557,6 +560,8 @@ public final class PipelineExecutor {
                     blankToNull(n.metaTitle), blankToNull(n.metaAuthor),
                     blankToNull(n.metaSubject), blankToNull(n.metaKeywords), n.metaStrip);
                 case WATERMARK -> watermarkBytes(n, pdf, nodeImages);
+                case CROP      -> PdfCropper.executeBytes(pdf,
+                    n.cropTop, n.cropRight, n.cropBottom, n.cropLeft, n.cropMm);
                 default -> throw new PipelineException("Not a map node: " + n.kind);
             };
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));

@@ -173,9 +173,18 @@ class NodeView extends HBox {
                 yield img ? I18n.t("pipeline.summary.watermarkimg")
                     : (node.wmText == null || node.wmText.isBlank() ? "—" : node.wmText);
             }
+            case CROP -> I18n.t("pipeline.summary.crop",
+                fmt(node.cropTop) + "/" + fmt(node.cropRight) + "/"
+                    + fmt(node.cropBottom) + "/" + fmt(node.cropLeft),
+                node.cropMm ? "mm" : "pt");
             case TO_IMAGES -> node.imageFormat + "  ·  " + node.imageDpi + " DPI";
             case TO_TEXT -> "." + node.textFormat.extension();
         });
+    }
+
+    /** Compact number: drops a trailing {@code .0} so "10.0" shows as "10". */
+    private static String fmt(double d) {
+        return d == Math.rint(d) ? String.valueOf((long) d) : String.valueOf(d);
     }
 
     /** SOURCE summary: lists the first few file names, then "+N more". */

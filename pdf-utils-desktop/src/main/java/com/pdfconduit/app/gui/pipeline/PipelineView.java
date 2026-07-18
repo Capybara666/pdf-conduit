@@ -45,7 +45,7 @@ public class PipelineView extends BorderPane {
         NodeKind.SOURCE, NodeKind.MERGE, NodeKind.IMAGES_TO_PDF,
         NodeKind.EXTRACT, NodeKind.COMPRESS, NodeKind.ROTATE, NodeKind.ARRANGE,
         NodeKind.PROTECT, NodeKind.UNLOCK, NodeKind.METADATA, NodeKind.WATERMARK,
-        NodeKind.TO_IMAGES, NodeKind.TO_TEXT);
+        NodeKind.CROP, NodeKind.TO_IMAGES, NodeKind.TO_TEXT);
 
     private final PipelineModel model = new PipelineModel();
     private final PipelineCanvas canvas = new PipelineCanvas(model);

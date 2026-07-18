@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "GDPR Scan",
       "description": "Scan a PDF for personal data (GDPR / PII)."
+    },
+    "crop": {
+      "label": "Crop",
+      "description": "Trim margins off every page."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "Redact detected data",
       "redactHint": "Review the highlighted areas, then apply — it's free."
+    },
+    "crop": {
+      "title": "Crop",
+      "description": "Trim margins off every page.",
+      "privacyLine": "Your files are cropped privately and never stored.",
+      "hint": "PDF files — several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "top": "Top",
+      "right": "Right",
+      "bottom": "Bottom",
+      "left": "Left",
+      "unit": "Unit",
+      "unitPt": "Points (pt)",
+      "unitMm": "Millimetres (mm)",
+      "unitHelp": "Each margin is trimmed off the matching page edge.",
+      "submit": "Crop pages",
+      "loading": "Cropping…"
     }
   },
   "pageGrid": {

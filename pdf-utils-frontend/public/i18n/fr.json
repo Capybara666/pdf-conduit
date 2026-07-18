@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "Analyse RGPD",
       "description": "Analyser un PDF à la recherche de données personnelles (RGPD / PII)."
+    },
+    "crop": {
+      "label": "Rogner",
+      "description": "Rognez les marges de chaque page."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "Caviarder les données détectées",
       "redactHint": "Vérifiez les zones surlignées, puis appliquez — c'est gratuit."
+    },
+    "crop": {
+      "title": "Rogner",
+      "description": "Rognez les marges de chaque page.",
+      "privacyLine": "Vos fichiers sont rognés en privé et jamais conservés.",
+      "hint": "Fichiers PDF — plusieurs fichiers reviennent en ZIP.",
+      "batchNote": "{{count}} fichiers sélectionnés — les marges s’appliquent à chacun ; résultats en ZIP.",
+      "top": "Haut",
+      "right": "Droite",
+      "bottom": "Bas",
+      "left": "Gauche",
+      "unit": "Unité",
+      "unitPt": "Points (pt)",
+      "unitMm": "Millimètres (mm)",
+      "unitHelp": "Chaque marge est rognée sur le bord de page correspondant.",
+      "submit": "Rogner les pages",
+      "loading": "Rognage…"
     }
   },
   "pageGrid": {

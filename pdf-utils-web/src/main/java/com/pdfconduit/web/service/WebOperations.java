@@ -15,6 +15,7 @@ import com.pdfconduit.core.model.RedactRegion;
 import com.pdfconduit.core.model.TextFormat;
 import com.pdfconduit.core.operations.PdfArranger;
 import com.pdfconduit.core.operations.PdfCompressor;
+import com.pdfconduit.core.operations.PdfCropper;
 import com.pdfconduit.core.operations.PdfMerger;
 import com.pdfconduit.core.operations.PdfMetadataEditor;
 import com.pdfconduit.core.operations.PdfProtector;
@@ -283,6 +284,15 @@ public class WebOperations {
         return MemoryOperations.runBatch(OperationType.WATERMARK, pdfData(inputs), names(inputs),
             pdf -> PdfWatermarker.executeBytes(pdf, text, image, opacity, rotation, scale,
                 layout, position, color));
+    }
+
+    // -------------------------------------------------------------------- CROP
+
+    /** Batch-crop every input, trimming the given per-edge margins (points, or mm when set). */
+    public List<NamedBytes> crop(List<NamedBytes> inputs, double top, double right, double bottom,
+                                 double left, boolean millimetres) throws PdfOperationException {
+        return MemoryOperations.runBatch(OperationType.CROP, pdfData(inputs), names(inputs),
+            pdf -> PdfCropper.executeBytes(pdf, top, right, bottom, left, millimetres));
     }
 
     // ------------------------------------------------------------------ REDACT

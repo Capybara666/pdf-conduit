@@ -59,6 +59,13 @@ public class PipelineNode {
     public double wmRotation = 45;
     public double wmScale = 0.7;
 
+    // CROP — trim a margin off each page edge; values are in points, or millimetres when cropMm.
+    public double cropTop = 0;
+    public double cropRight = 0;
+    public double cropBottom = 0;
+    public double cropLeft = 0;
+    public boolean cropMm = false;
+
     // TO_IMAGES export
     public com.pdfconduit.core.model.ImageFormat imageFormat = com.pdfconduit.core.model.ImageFormat.PNG;
     public int imageDpi = 150;

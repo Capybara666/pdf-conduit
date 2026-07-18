@@ -87,6 +87,14 @@ export const OP_ICONS: Record<string, string> = {
       '<path d="M9.7 13.6 A1.6 1.6 0 0 0 11.3 15.2"/>',
   ),
 
+  crop: g(
+    '<path d="M8.5 7 H15.5 V17 H8.5 Z" fill="currentColor" stroke="none" opacity=".18"/>' +
+      '<path d="M5 9 V5 H9"/>' +
+      '<path d="M15 5 H19 V9"/>' +
+      '<path d="M5 15 V19 H9"/>' +
+      '<path d="M15 19 H19 V15"/>',
+  ),
+
   // --- Existing single-path glyphs, wrapped into the uniform format ---
   'to-pdf': g(
     '<path d="M11 4 H17 L20 7 V20 H11 Z"/>' +
@@ -255,6 +263,13 @@ export const NAV_ITEMS: NavItem[] = [
     description: 'Stamp text or an image over every page.',
     group: 'edit',
     icon: OP_ICONS['watermark'],
+  },
+  {
+    id: 'crop',
+    label: 'Crop',
+    description: 'Trim margins off every page.',
+    group: 'edit',
+    icon: OP_ICONS['crop'],
   },
 
   // Advanced

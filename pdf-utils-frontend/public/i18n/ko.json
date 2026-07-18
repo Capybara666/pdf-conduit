@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "GDPR 검사",
       "description": "PDF에서 개인정보(GDPR / PII)를 검사합니다."
+    },
+    "crop": {
+      "label": "자르기",
+      "description": "Trim margins off every page."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "감지된 데이터 마스킹",
       "redactHint": "강조된 영역을 확인한 후 적용하세요 — 무료입니다."
+    },
+    "crop": {
+      "title": "자르기",
+      "description": "Trim margins off every page.",
+      "privacyLine": "Your files are cropped privately and never stored.",
+      "hint": "PDF files — several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "top": "위",
+      "right": "오른쪽",
+      "bottom": "아래",
+      "left": "왼쪽",
+      "unit": "단위",
+      "unitPt": "포인트 (pt)",
+      "unitMm": "밀리미터 (mm)",
+      "unitHelp": "Each margin is trimmed off the matching page edge.",
+      "submit": "Crop pages",
+      "loading": "Cropping…"
     }
   },
   "pageGrid": {

@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "Skan RODO",
       "description": "Skanuj PDF w poszukiwaniu danych osobowych (RODO / PII)."
+    },
+    "crop": {
+      "label": "Przytnij",
+      "description": "Przytnij marginesy każdej strony."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "Zredaguj wykryte dane",
       "redactHint": "Sprawdź zaznaczone obszary i zastosuj — za darmo."
+    },
+    "crop": {
+      "title": "Przytnij",
+      "description": "Przytnij marginesy każdej strony.",
+      "privacyLine": "Twoje pliki są przycinane prywatnie i nigdy nie są przechowywane.",
+      "hint": "Pliki PDF — wiele plików wróci jako ZIP.",
+      "batchNote": "Wybrano {{count}} plików — marginesy dotyczą każdego; wyniki w ZIP.",
+      "top": "Góra",
+      "right": "Prawo",
+      "bottom": "Dół",
+      "left": "Lewo",
+      "unit": "Jednostka",
+      "unitPt": "Punkty (pt)",
+      "unitMm": "Milimetry (mm)",
+      "unitHelp": "Każdy margines jest przycinany od odpowiedniej krawędzi strony.",
+      "submit": "Przytnij strony",
+      "loading": "Przycinanie…"
     }
   },
   "pageGrid": {

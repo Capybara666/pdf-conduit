@@ -78,6 +78,7 @@ class NodeInspector extends FlowPane {
             case UNLOCK -> buildUnlock(node);
             case METADATA -> buildMetadata(node);
             case WATERMARK -> buildWatermark(node);
+            case CROP -> buildCrop(node);
             case TO_IMAGES -> buildToImages(node);
             case TO_TEXT -> buildToText(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
@@ -326,6 +327,39 @@ class NodeInspector extends FlowPane {
             group("watermark.size.label", size),
             group("watermark.opacity.label", opacity),
             group("watermark.rotation.label", rot));
+    }
+
+    private void buildCrop(PipelineNode node) {
+        TextField top = marginField(node.cropTop, v -> node.cropTop = v, node);
+        TextField right = marginField(node.cropRight, v -> node.cropRight = v, node);
+        TextField bottom = marginField(node.cropBottom, v -> node.cropBottom = v, node);
+        TextField left = marginField(node.cropLeft, v -> node.cropLeft = v, node);
+
+        ComboBox<String> unit = new ComboBox<>(FXCollections.observableArrayList("pt", "mm"));
+        unit.setValue(node.cropMm ? "mm" : "pt");
+        unit.valueProperty().addListener((o, a, b) -> {
+            if (b != null) { node.cropMm = b.equals("mm"); canvas.refreshNode(node); }
+        });
+
+        getChildren().addAll(
+            group("pipeline.node.crop.top", top),
+            group("pipeline.node.crop.right", right),
+            group("pipeline.node.crop.bottom", bottom),
+            group("pipeline.node.crop.left", left),
+            group("pipeline.node.unit", unit));
+    }
+
+    /** A small numeric margin field; non-numeric input is ignored (keeps the last value). */
+    private TextField marginField(double value, java.util.function.DoubleConsumer setter, PipelineNode node) {
+        TextField f = new TextField(value == Math.rint(value) ? String.valueOf((long) value) : String.valueOf(value));
+        f.setPrefWidth(56);
+        f.textProperty().addListener((o, a, b) -> {
+            try {
+                setter.accept(b == null || b.isBlank() ? 0 : Double.parseDouble(b.trim()));
+                canvas.refreshNode(node);
+            } catch (NumberFormatException ignored) {}
+        });
+        return f;
     }
 
     private void buildDestination(PipelineNode node) {

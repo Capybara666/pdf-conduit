@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "GDPRスキャン",
       "description": "PDF内の個人データ（GDPR / PII）をスキャンします。"
+    },
+    "crop": {
+      "label": "トリミング",
+      "description": "Trim margins off every page."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "検出したデータを黒塗り",
       "redactHint": "ハイライトされた箇所を確認して適用してください（無料）。"
+    },
+    "crop": {
+      "title": "トリミング",
+      "description": "Trim margins off every page.",
+      "privacyLine": "Your files are cropped privately and never stored.",
+      "hint": "PDF files — several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "top": "上",
+      "right": "右",
+      "bottom": "下",
+      "left": "左",
+      "unit": "単位",
+      "unitPt": "ポイント (pt)",
+      "unitMm": "ミリメートル (mm)",
+      "unitHelp": "Each margin is trimmed off the matching page edge.",
+      "submit": "Crop pages",
+      "loading": "Cropping…"
     }
   },
   "pageGrid": {

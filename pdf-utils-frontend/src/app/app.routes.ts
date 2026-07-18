@@ -76,6 +76,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/redact/redact.page').then((m) => m.RedactPage),
   },
   {
+    path: 'crop',
+    data: { titleKey: 'op.crop.label' },
+    loadComponent: () => import('./pages/crop/crop.page').then((m) => m.CropPage),
+  },
+  {
     path: 'to-images',
     data: { titleKey: 'op.to-images.label' },
     loadComponent: () => import('./pages/to-images/to-images.page').then((m) => m.ToImagesPage),

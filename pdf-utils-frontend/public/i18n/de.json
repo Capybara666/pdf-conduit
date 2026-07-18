@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "DSGVO-Scan",
       "description": "Ein PDF auf personenbezogene Daten prüfen (DSGVO / PII)."
+    },
+    "crop": {
+      "label": "Zuschneiden",
+      "description": "Ränder von jeder Seite entfernen."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "Erkannte Daten schwärzen",
       "redactHint": "Prüfen Sie die markierten Bereiche und wenden Sie die Schwärzung an – kostenlos."
+    },
+    "crop": {
+      "title": "Zuschneiden",
+      "description": "Ränder von jeder Seite entfernen.",
+      "privacyLine": "Ihre Dateien werden privat zugeschnitten und niemals gespeichert.",
+      "hint": "PDF-Dateien — mehrere Dateien kommen als ZIP zurück.",
+      "batchNote": "{{count}} Dateien ausgewählt — die Ränder gelten für jede; Ergebnisse als ZIP.",
+      "top": "Oben",
+      "right": "Rechts",
+      "bottom": "Unten",
+      "left": "Links",
+      "unit": "Einheit",
+      "unitPt": "Punkte (pt)",
+      "unitMm": "Millimeter (mm)",
+      "unitHelp": "Jeder Rand wird von der passenden Seitenkante entfernt.",
+      "submit": "Seiten zuschneiden",
+      "loading": "Wird zugeschnitten…"
     }
   },
   "pageGrid": {

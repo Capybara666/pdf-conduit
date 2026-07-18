@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "Análise RGPD",
       "description": "Analisar um PDF em busca de dados pessoais (RGPD / PII)."
+    },
+    "crop": {
+      "label": "Recortar",
+      "description": "Trim margins off every page."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "Ocultar os dados detetados",
       "redactHint": "Reveja as áreas destacadas e aplique — é grátis."
+    },
+    "crop": {
+      "title": "Recortar",
+      "description": "Trim margins off every page.",
+      "privacyLine": "Your files are cropped privately and never stored.",
+      "hint": "PDF files — several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "top": "Superior",
+      "right": "Direita",
+      "bottom": "Inferior",
+      "left": "Esquerda",
+      "unit": "Unidade",
+      "unitPt": "Pontos (pt)",
+      "unitMm": "Milímetros (mm)",
+      "unitHelp": "Each margin is trimmed off the matching page edge.",
+      "submit": "Crop pages",
+      "loading": "Cropping…"
     }
   },
   "pageGrid": {

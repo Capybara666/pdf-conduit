@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "GDPR 扫描",
       "description": "扫描 PDF 中的个人数据（GDPR / PII）。"
+    },
+    "crop": {
+      "label": "裁剪",
+      "description": "裁去每页的页边距。"
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "涂黑检测到的数据",
       "redactHint": "查看高亮区域后应用即可，完全免费。"
+    },
+    "crop": {
+      "title": "裁剪",
+      "description": "裁去每页的页边距。",
+      "privacyLine": "您的文件将被私密裁剪，绝不存储。",
+      "hint": "PDF 文件 — 多个文件将以 ZIP 返回。",
+      "batchNote": "已选择 {{count}} 个文件 — 页边距应用于每个文件；结果以 ZIP 返回。",
+      "top": "上",
+      "right": "右",
+      "bottom": "下",
+      "left": "左",
+      "unit": "单位",
+      "unitPt": "点 (pt)",
+      "unitMm": "毫米 (mm)",
+      "unitHelp": "每个边距从对应的页面边缘裁去。",
+      "submit": "裁剪页面",
+      "loading": "正在裁剪…"
     }
   },
   "pageGrid": {

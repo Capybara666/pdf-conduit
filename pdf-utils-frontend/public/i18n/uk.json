@@ -118,6 +118,10 @@
     "gdpr-scan": {
       "label": "Перевірка GDPR",
       "description": "Перевірити PDF на персональні дані (GDPR / PII)."
+    },
+    "crop": {
+      "label": "Обрізати",
+      "description": "Trim margins off every page."
     }
   },
   "header": {
@@ -650,6 +654,23 @@
       },
       "redactCta": "Приховати виявлені дані",
       "redactHint": "Перегляньте виділені області та застосуйте — це безкоштовно."
+    },
+    "crop": {
+      "title": "Обрізати",
+      "description": "Trim margins off every page.",
+      "privacyLine": "Your files are cropped privately and never stored.",
+      "hint": "PDF files — several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "top": "Зверху",
+      "right": "Справа",
+      "bottom": "Знизу",
+      "left": "Зліва",
+      "unit": "Одиниця",
+      "unitPt": "Пункти (pt)",
+      "unitMm": "Міліметри (mm)",
+      "unitHelp": "Each margin is trimmed off the matching page edge.",
+      "submit": "Crop pages",
+      "loading": "Cropping…"
     }
   },
   "pageGrid": {

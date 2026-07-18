@@ -78,6 +78,9 @@ public final class Icons {
     // a water droplet (watermark)
     private static final String WATERMARK =
         "M12 4 C9 8 6.5 12 6.5 15 a5.5 5.5 0 0 0 11 0 C17.5 12 15 8 12 4 Z";
+    // four corner brackets framing a crop region (crop / margins)
+    private static final String CROP =
+        "M5 9 V5 H9 M15 5 H19 V9 M5 15 V19 H9 M15 19 H19 V15";
     // a document with a redaction bar struck over one of its text lines
     private static final String REDACT =
         "M7 3 H15 L19 7 V21 H7 Z M15 3 V7 H19 "
@@ -125,6 +128,7 @@ public final class Icons {
             case UNLOCK        -> UNLOCK;
             case METADATA      -> METADATA;
             case WATERMARK     -> WATERMARK;
+            case CROP          -> CROP;
             case TO_IMAGES     -> TO_IMAGES;
             case TO_TEXT       -> TO_TEXT;
         }, size);

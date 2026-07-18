@@ -132,6 +132,9 @@ export class ApiService {
   watermark(formData: FormData): Observable<RunResult> {
     return this.runOperation('watermark', formData);
   }
+  crop(formData: FormData): Observable<RunResult> {
+    return this.runOperation('crop', formData);
+  }
   redact(formData: FormData): Observable<RunResult> {
     return this.runOperation('redact', formData);
   }
