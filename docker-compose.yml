@@ -38,6 +38,10 @@ services:
     environment:
       # HTTP port inside the container (keep aligned with EXPOSE 8080).
       SERVER_PORT: "8080"
+      # JVM options. Default (set in the Dockerfile) makes the heap track the
+      # container memory limit and exit on OOM so Docker restarts it. Override
+      # here / via .env to pin a heap (e.g. "-Xmx1g -XX:+ExitOnOutOfMemoryError").
+      JAVA_OPTS: "${JAVA_OPTS:--XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError}"
       # Optional explicit path to the `soffice` binary; the bundled LibreOffice
       # is auto-detected, so this is normally left empty.
       PDFCONDUIT_WEB_SOFFICE_PATH: "${PDFCONDUIT_WEB_SOFFICE_PATH:-}"
@@ -46,12 +50,34 @@ services:
       PDFCONDUIT_WEB_OFFICE_ENABLED: "${PDFCONDUIT_WEB_OFFICE_ENABLED:-true}"
       # CORS allow-list for /api (comma-separated). Not needed for the nginx
       # same-origin proxy above, but harmless; matters for the dev split-origin.
+      # In prod set this to your real https://DOMAIN (see .env.example).
       PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS: "${PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS:-http://localhost:4200}"
       # Upload guardrails.
       PDFCONDUIT_WEB_MAX_FILE_SIZE: "${PDFCONDUIT_WEB_MAX_FILE_SIZE:-100MB}"
       PDFCONDUIT_WEB_MAX_REQUEST_SIZE: "${PDFCONDUIT_WEB_MAX_REQUEST_SIZE:-200MB}"
       PDFCONDUIT_WEB_MAX_FILES: "${PDFCONDUIT_WEB_MAX_FILES:-50}"
+      # --- Abuse protection (read by the backend; see .env.example) ----------
+      # Per-IP request rate limiting.
+      PDFCONDUIT_WEB_RATELIMIT_ENABLED: "${PDFCONDUIT_WEB_RATELIMIT_ENABLED:-true}"
+      PDFCONDUIT_WEB_RATELIMIT_REQUESTS_PER_MINUTE: "${PDFCONDUIT_WEB_RATELIMIT_REQUESTS_PER_MINUTE:-40}"
+      PDFCONDUIT_WEB_RATELIMIT_HEAVY_PER_MINUTE: "${PDFCONDUIT_WEB_RATELIMIT_HEAVY_PER_MINUTE:-10}"
+      PDFCONDUIT_WEB_RATELIMIT_BURST: "${PDFCONDUIT_WEB_RATELIMIT_BURST:-15}"
+      # Per-client daily quota / free-tier caps.
+      PDFCONDUIT_WEB_QUOTA_ENABLED: "${PDFCONDUIT_WEB_QUOTA_ENABLED:-true}"
+      PDFCONDUIT_WEB_QUOTA_DAILY_OPERATIONS: "${PDFCONDUIT_WEB_QUOTA_DAILY_OPERATIONS:-60}"
+      PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILE_SIZE: "${PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILE_SIZE:-25MB}"
+      PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILES: "${PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILES:-15}"
+      # Concurrency / in-flight memory caps (the core anti-OOM guard).
+      PDFCONDUIT_WEB_CONCURRENCY_MAX_HEAVY_OPS: "${PDFCONDUIT_WEB_CONCURRENCY_MAX_HEAVY_OPS:-4}"
+      PDFCONDUIT_WEB_CONCURRENCY_MAX_IN_FLIGHT_BYTES: "${PDFCONDUIT_WEB_CONCURRENCY_MAX_IN_FLIGHT_BYTES:-536870912}"
+      # Per-operation processing timeout + PDF page ceiling.
+      PDFCONDUIT_WEB_PROCESSING_TIMEOUT_SECONDS: "${PDFCONDUIT_WEB_PROCESSING_TIMEOUT_SECONDS:-60}"
+      PDFCONDUIT_WEB_PDF_MAX_PAGES: "${PDFCONDUIT_WEB_PDF_MAX_PAGES:-3000}"
+      # LibreOffice conversion concurrency + timeout.
+      PDFCONDUIT_WEB_OFFICE_MAX_CONCURRENT: "${PDFCONDUIT_WEB_OFFICE_MAX_CONCURRENT:-2}"
+      PDFCONDUIT_WEB_OFFICE_TIMEOUT_SECONDS: "${PDFCONDUIT_WEB_OFFICE_TIMEOUT_SECONDS:-90}"
     restart: unless-stopped
+    stop_grace_period: 30s
     healthcheck:
       # Mirrors the Dockerfile HEALTHCHECK; GET /api/health returns {status:"UP"}.
       test: ["CMD", "curl", "-fsS", "http://localhost:8080/api/health"]
@@ -73,6 +99,7 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    stop_grace_period: 15s
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost/"]
       interval: 30s

@@ -68,8 +68,19 @@ USER appuser
 # Default HTTP port (overridable via SERVER_PORT at runtime).
 EXPOSE 8080
 
+# JVM tuning. The backend does all PDF work IN MEMORY, so the heap is the DoS
+# surface. MaxRAMPercentage makes the heap track the *container* memory limit
+# (set via compose `mem_limit` / `deploy.resources.limits.memory`), so raising
+# that limit automatically gives the JVM more heap — no rebuild needed.
+# +ExitOnOutOfMemoryError turns an OutOfMemoryError into an immediate exit so
+# Docker's `restart: unless-stopped` recycles the container instead of letting a
+# thrashing, half-dead JVM stay "up". Override wholesale via the JAVA_OPTS env
+# (e.g. JAVA_OPTS="-Xmx1g ...").
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
+
 # Liveness: the app exposes GET /api/health returning {status:"UP"}.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
     CMD curl -fsS "http://localhost:${SERVER_PORT:-8080}/api/health" || exit 1
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# sh -c so $JAVA_OPTS is expanded (and word-split) at runtime.
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

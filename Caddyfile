@@ -1,0 +1,48 @@
+# Caddyfile for PDF Conduit — TLS edge in front of the frontend nginx.
+#
+# Caddy provisions and renews a Let's Encrypt certificate for {$DOMAIN}
+# automatically (using {$ACME_EMAIL} for the ACME account) and reverse-proxies
+# everything to the internal `frontend` nginx, which serves the SPA and proxies
+# /api to the backend.
+#
+# Env (from compose / .env):
+#   DOMAIN     e.g. pdf.example.com   → real domain enables automatic HTTPS.
+#              Set DOMAIN=:80 for a plain-HTTP, no-cert local/domainless trial.
+#   ACME_EMAIL you@example.com        → contact for Let's Encrypt (expiry notices).
+#
+# Security headers: the AUTHORITATIVE set is applied by the frontend nginx
+# (pdf-utils-frontend/nginx.conf) — including the pdf.js-tuned CSP. Caddy adds a
+# minimal belt-and-braces subset here and compresses responses at the edge.
+
+{
+	# ACME account email. Harmless when DOMAIN=:80 (no certs issued then).
+	email {$ACME_EMAIL}
+	# To avoid Let's Encrypt rate limits while testing, uncomment the staging CA:
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+{$DOMAIN} {
+	# Compress at the edge (zstd preferred, gzip fallback).
+	encode zstd gzip
+
+	# Belt-and-braces security headers. The full set (incl. the pdf.js CSP)
+	# lives in the frontend nginx; these are safe even if that changes.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options    "nosniff"
+		X-Frame-Options           "DENY"
+		Referrer-Policy           "strict-origin-when-cross-origin"
+		# Don't leak the server software.
+		-Server
+	}
+
+	# Everything (SPA + /api) goes to the internal nginx over the compose net.
+	reverse_proxy frontend:80 {
+		# Preserve the client IP chain + scheme for the backend's IP-based
+		# rate limiter and quotas. Caddy sets X-Forwarded-* by default; being
+		# explicit documents the contract.
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+	}
+}

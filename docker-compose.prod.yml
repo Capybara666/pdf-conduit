@@ -1,0 +1,109 @@
+# Production overlay for PDF Conduit — public, TLS-terminated deployment.
+#
+# Use it ON TOP OF the base compose (the base stays usable on its own for local
+# dev without TLS):
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# What this overlay changes vs. the base:
+#   * Adds a `caddy` reverse proxy that terminates HTTPS for ${DOMAIN} with
+#     automatic Let's Encrypt certs, and is the ONLY service publishing host
+#     ports (80/443). Everything else talks over the internal compose network.
+#   * Stops the `frontend` from publishing a host port (Caddy fronts it now).
+#   * Adds memory / CPU / pid limits and extra hardening to every service so a
+#     runaway request can't take the box down (defense-in-depth with the
+#     backend's own rate-limit / quota / concurrency guards).
+#
+# Required env (see .env.example): DOMAIN, ACME_EMAIL, and a prod CORS origin.
+# For a domainless local TLS-less trial, set DOMAIN=:80 (see deploy/README.md).
+
+services:
+  # ---------------------------------------------------------------------------
+  # Caddy — automatic-HTTPS reverse proxy at the edge.
+  # ---------------------------------------------------------------------------
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    stop_grace_period: 15s
+    depends_on:
+      - frontend
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3 (QUIC)
+    environment:
+      # Caddy reads these in the Caddyfile. DOMAIN drives the site + ACME; set
+      # DOMAIN=:80 to serve plain HTTP with no certs (local/domainless trial).
+      DOMAIN: "${DOMAIN:-:80}"
+      ACME_EMAIL: "${ACME_EMAIL:-}"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data      # issued certs + ACME account — MUST persist
+      - caddy_config:/config  # autosaved config
+    tmpfs:
+      - /tmp
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 256m
+    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+          pids: 256
+    healthcheck:
+      # Caddy's admin API on the loopback answers even before certs are issued.
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # Backend — the memory-bound work happens here, so this gets the real caps.
+  # ---------------------------------------------------------------------------
+  backend:
+    # Heap tracks this memory limit via -XX:MaxRAMPercentage (see Dockerfile).
+    # Raise BOTH together for a bigger box. ~1.5g suits a 2 GB VPS.
+    mem_limit: 1536m
+    cpus: 1.5
+    pids_limit: 512
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 1536m
+          cpus: "1.5"
+          pids: 512
+
+  # ---------------------------------------------------------------------------
+  # Frontend nginx — no host port in prod; Caddy proxies to it internally.
+  # ---------------------------------------------------------------------------
+  frontend:
+    # Drop the base compose's published port entirely (Caddy owns 80/443 now).
+    ports: !override []
+    read_only: true
+    tmpfs:
+      # nginx needs a few writable paths when the rootfs is read-only.
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 256m
+    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+          pids: 256
+
+volumes:
+  caddy_data:
+  caddy_config:
