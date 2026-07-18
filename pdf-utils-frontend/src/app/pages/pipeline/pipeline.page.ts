@@ -1,11 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { downloadRunResult } from '../../core/download.util';
 import { NodeKindInfo, NodeKindName, PipelineValidationError } from '../../core/pipeline.models';
-import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { PipelineCanvasComponent } from './canvas/pipeline-canvas.component';
@@ -60,7 +59,6 @@ const KIND_TO_OP: Record<string, string> = {
   standalone: true,
   imports: [
     TranslocoModule,
-    FileDropZoneComponent,
     PageHeaderComponent,
     SpinnerComponent,
     PipelineCanvasComponent,
@@ -95,29 +93,20 @@ const KIND_TO_OP: Record<string, string> = {
       <div class="pl-grid">
         <!-- Canvas -->
         <div class="col">
-          <app-pipeline-canvas #cv [poolNames]="fileNames()" />
+          <app-pipeline-canvas #cv />
           <p class="hint-note canvas-help">{{ 'pipeline.canvas.help' | transloco }}</p>
         </div>
 
         <!-- Right column -->
         <aside class="col side">
           <div class="card">
-            <h2 class="card-h">{{ 'pipeline.canvas.sourceTitle' | transloco }}</h2>
-            <app-file-drop-zone
-              [multiple]="true"
-              accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
-              [hint]="'pages.pipeline.sourceHint' | transloco"
-              (filesChange)="onFiles($event)"
-            />
-          </div>
-
-          <div class="card">
             <h2 class="card-h">{{ 'pipeline.canvas.inspector' | transloco }}</h2>
             <app-pipeline-inspector
               [node]="cv.selectedNode()"
-              [pool]="fileNames()"
+              [sourceFiles]="cv.selectedSourceFiles()"
               (patch)="cv.patchSelected($event)"
               (asset)="cv.setSelectedAsset($event)"
+              (sourceFilesChange)="cv.setSelectedSourceFiles($event)"
             />
           </div>
 
@@ -239,15 +228,12 @@ export class PipelinePage implements OnInit, AfterViewInit {
 
   @ViewChild('cv') private canvas!: PipelineCanvasComponent;
 
-  protected readonly files = signal<File[]>([]);
   protected readonly kinds = signal<NodeKindInfo[]>(FALLBACK_KINDS);
 
   protected readonly busy = signal(false);
   protected readonly error = signal<ApiError | null>(null);
   protected readonly result = signal<RunResult | null>(null);
   protected readonly validationErrors = signal<PipelineValidationError[] | null>(null);
-
-  protected readonly fileNames = computed(() => this.files().map((f) => f.name));
 
   ngOnInit(): void {
     // Best-effort: use the backend's node-kind catalog; fall back if absent.
@@ -263,10 +249,10 @@ export class PipelinePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Seed one SOURCE node so the surface is never empty on first visit.
+    // Seed one SOURCE node so the surface is never empty on first visit, and leave it selected so
+    // the inspector immediately shows its per-node upload drop zone.
     if (!this.canvas.hasSource()) {
       this.canvas.addNode('SOURCE');
-      this.canvas.selectedId.set(null);
     }
   }
 
@@ -275,14 +261,6 @@ export class PipelinePage implements OnInit, AfterViewInit {
     const opId = KIND_TO_OP[kind];
     if (opId) return this.transloco.translate(`op.${opId}.label`);
     return this.kinds().find((k) => k.name === kind)?.label ?? kind;
-  }
-
-  onFiles(files: File[]): void {
-    this.files.set(files);
-    // Feed the uploaded basenames into any not-yet-configured SOURCE node.
-    this.canvas.poolNames = this.fileNames();
-    this.canvas.syncEmptySources();
-    this.resetOutcome();
   }
 
   validate(cv: PipelineCanvasComponent): void {
@@ -306,7 +284,8 @@ export class PipelinePage implements OnInit, AfterViewInit {
     this.resetOutcome();
     const fd = new FormData();
     fd.append('pipeline', JSON.stringify(cv.toModel()));
-    for (const f of this.files()) fd.append('files', f, f.name);
+    // Each SOURCE node owns its uploads; gather them all (deduped by name) for the multipart request.
+    for (const f of cv.allSourceFiles()) fd.append('files', f, f.name);
     for (const a of cv.assetFiles()) fd.append('nodeAssets', a, a.name);
     this.api.runPipeline(fd).subscribe({
       next: (r) => {

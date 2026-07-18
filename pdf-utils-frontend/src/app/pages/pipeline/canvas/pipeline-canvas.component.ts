@@ -2,7 +2,6 @@ import {
   Component,
   ElementRef,
   HostListener,
-  Input,
   ViewChild,
   computed,
   signal,
@@ -86,6 +85,8 @@ interface Wire {
             [selected]="n.id === selectedId()"
             [inValid]="n.id === hoverTargetId() && hoverValid()"
             [inInvalid]="n.id === hoverTargetId() && !hoverValid()"
+            [inConnected]="inConnectedIds().has(n.id)"
+            [outConnected]="outConnectedIds().has(n.id)"
             (select)="selectNode($event)"
             (delete)="removeNode($event)"
             (move)="onNodeMove($event)"
@@ -147,9 +148,6 @@ interface Wire {
 export class PipelineCanvasComponent {
   @ViewChild('content', { static: true }) private content!: ElementRef<HTMLElement>;
 
-  /** Uploaded file basenames — new SOURCE nodes default to including all of them. */
-  @Input() poolNames: string[] = [];
-
   readonly nodes = signal<CanvasNode[]>([]);
   readonly connections = signal<ConnectionJson[]>([]);
   readonly selectedId = signal<string | null>(null);
@@ -159,6 +157,15 @@ export class PipelineCanvasComponent {
    * on the wire node, only the basename does via `wmImageName`). Sent on Run as `nodeAssets` parts.
    */
   private readonly nodeAssets = new Map<string, File>();
+
+  /**
+   * Uploaded source File objects, keyed by SOURCE node id (client-only — the wire node carries only
+   * the basenames via `files`). Each SOURCE node owns its own upload set; the page gathers them all
+   * (deduped by name) into the multipart `files` on Run. Stored refs are reused so the inspector's
+   * embedded drop zone doesn't churn between change-detection passes.
+   */
+  private readonly sourceFiles = new Map<string, File[]>();
+  private static readonly NO_FILES: File[] = [];
 
   readonly selectedNode = computed(() => this.nodes().find((n) => n.id === this.selectedId()) ?? null);
 
@@ -185,6 +192,11 @@ export class PipelineCanvasComponent {
     }
     return { w, h };
   });
+
+  /** Node ids whose INPUT port has a wire (target side) — drives the accent port fill. */
+  readonly inConnectedIds = computed(() => new Set(this.connections().map((c) => c.toNodeId)));
+  /** Node ids whose OUTPUT port has a wire (source side). */
+  readonly outConnectedIds = computed(() => new Set(this.connections().map((c) => c.fromNodeId)));
 
   readonly wires = computed<Wire[]>(() => {
     const byId = new Map(this.nodes().map((n) => [n.id, n]));
@@ -217,7 +229,6 @@ export class PipelineCanvasComponent {
     const x = 60 + (existing % 5) * 60;
     const y = 60 + (existing % 8) * 40 + (kind === 'SOURCE' ? 0 : 120);
     const node = newCanvasNode(this.mintId(), kind, x, y);
-    if (kind === 'SOURCE') node.files = [...this.poolNames];
     this.nodes.set([...this.nodes(), node]);
     this.selectedId.set(node.id);
     return node;
@@ -251,10 +262,41 @@ export class PipelineCanvasComponent {
     return [...this.nodeAssets.entries()].filter(([id]) => ids.has(id)).map(([, file]) => file);
   }
 
+  /** File objects uploaded into the currently-selected SOURCE node (stable ref for the drop zone). */
+  selectedSourceFiles(): File[] {
+    const id = this.selectedId();
+    if (!id) return PipelineCanvasComponent.NO_FILES;
+    return this.sourceFiles.get(id) ?? PipelineCanvasComponent.NO_FILES;
+  }
+
+  /**
+   * Replace the selected SOURCE node's uploaded files. Stores the File objects keyed by node id and
+   * mirrors their basenames into the node's `files` (the wire representation the backend resolves).
+   */
+  setSelectedSourceFiles(files: File[]): void {
+    const id = this.selectedId();
+    if (!id) return;
+    if (files.length) this.sourceFiles.set(id, files);
+    else this.sourceFiles.delete(id);
+    this.patchSelected({ files: files.map((f) => f.name) });
+  }
+
+  /** All uploaded source files across every SOURCE node still in the graph, deduped by name. */
+  allSourceFiles(): File[] {
+    const ids = new Set(this.nodes().map((n) => n.id));
+    const byName = new Map<string, File>();
+    for (const [id, files] of this.sourceFiles.entries()) {
+      if (!ids.has(id)) continue;
+      for (const f of files) if (!byName.has(f.name)) byName.set(f.name, f);
+    }
+    return [...byName.values()];
+  }
+
   removeNode(id: string): void {
     this.nodes.set(this.nodes().filter((n) => n.id !== id));
     this.connections.set(this.connections().filter((c) => c.fromNodeId !== id && c.toNodeId !== id));
     this.nodeAssets.delete(id);
+    this.sourceFiles.delete(id);
     if (this.selectedId() === id) this.selectedId.set(null);
   }
 
@@ -267,21 +309,9 @@ export class PipelineCanvasComponent {
     this.nodes.set([]);
     this.connections.set([]);
     this.nodeAssets.clear();
+    this.sourceFiles.clear();
     this.selectedId.set(null);
     this.seq = 0;
-  }
-
-  /** Fill any SOURCE node that has no files yet with the current upload pool. */
-  syncEmptySources(): void {
-    let changed = false;
-    const next = this.nodes().map((n) => {
-      if (n.kind === 'SOURCE' && n.files.length === 0 && this.poolNames.length) {
-        changed = true;
-        return { ...n, files: [...this.poolNames] };
-      }
-      return n;
-    });
-    if (changed) this.nodes.set(next);
   }
 
   hasSource(): boolean {

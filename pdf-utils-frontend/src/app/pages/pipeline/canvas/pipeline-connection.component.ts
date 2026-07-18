@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { Point, wirePath } from './pipeline-geometry';
@@ -16,7 +16,7 @@ import { Point, wirePath } from './pipeline-geometry';
   standalone: true,
   imports: [TranslocoModule],
   template: `
-    <svg:path class="wire" [attr.d]="d()" />
+    <svg:path class="wire" [class.danger]="delHover()" [attr.d]="d()" />
     <svg:path class="wire-hit" [attr.d]="d()" />
     <svg:g class="wire-del" [attr.transform]="'translate(' + midX() + ',' + midY() + ')'">
       <svg:circle
@@ -24,7 +24,13 @@ import { Point, wirePath } from './pipeline-geometry';
         role="button"
         tabindex="0"
         [attr.aria-label]="'pipeline.canvas.removeConnection' | transloco"
+        (pointerenter)="delHover.set(true)"
+        (pointerleave)="delHover.set(false)"
+        (focus)="delHover.set(true)"
+        (blur)="delHover.set(false)"
         (pointerdown)="onDelete($event)"
+        (keydown.enter)="onDelete($event)"
+        (keydown.space)="onDelete($event)"
       />
       <svg:text x="0" y="1" text-anchor="middle" dominant-baseline="middle">✕</svg:text>
     </svg:g>
@@ -36,12 +42,22 @@ import { Point, wirePath } from './pipeline-geometry';
       }
       .wire {
         fill: none;
-        stroke: var(--border-strong);
+        /* Accent (blue) by default so wires read clearly across all 6 themes. */
+        stroke: var(--accent);
         stroke-width: 2;
         pointer-events: none;
+        transition: stroke 0.1s, stroke-width 0.1s;
       }
+      /* Emphasise the whole wire on hover (colour unchanged — already accent). */
       :host(:hover) .wire {
-        stroke: var(--accent);
+        stroke-width: 3;
+      }
+      /* Hovering/focusing the delete control flags THIS wire for removal in red.
+         The second selector out-specifies the :host(:hover) rule above. */
+      .wire.danger,
+      :host(:hover) .wire.danger {
+        stroke: var(--danger);
+        stroke-width: 3.5;
       }
       .wire-hit {
         fill: none;
@@ -75,6 +91,9 @@ export class PipelineConnectionComponent {
   @Input({ required: true }) to!: Point;
   @Output() remove = new EventEmitter<void>();
 
+  /** True while the delete control is hovered/focused — turns this wire red. */
+  readonly delHover = signal(false);
+
   d(): string {
     return wirePath(this.from, this.to);
   }
@@ -85,7 +104,7 @@ export class PipelineConnectionComponent {
     return (this.from.y + this.to.y) / 2;
   }
 
-  onDelete(e: PointerEvent): void {
+  onDelete(e: Event): void {
     e.stopPropagation();
     e.preventDefault();
     this.remove.emit();

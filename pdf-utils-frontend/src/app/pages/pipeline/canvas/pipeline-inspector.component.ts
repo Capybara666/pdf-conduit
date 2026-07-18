@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { CanvasNode } from '../../../core/pipeline.models';
+import { FileDropZoneComponent } from '../../../shared/file-drop-zone/file-drop-zone.component';
 
 /** NodeKind → operation id used for the existing `op.<id>.label` i18n lookup. */
 const KIND_TO_OP: Record<string, string> = {
@@ -29,7 +30,7 @@ const KIND_TO_OP: Record<string, string> = {
 @Component({
   selector: 'app-pipeline-inspector',
   standalone: true,
-  imports: [TranslocoModule],
+  imports: [TranslocoModule, FileDropZoneComponent],
   template: `
     @if (!node) {
       <p class="hint-note">{{ 'pipeline.canvas.inspectorEmpty' | transloco }}</p>
@@ -43,22 +44,14 @@ const KIND_TO_OP: Record<string, string> = {
         @case ('SOURCE') {
           <div class="field">
             <span class="field-label">{{ 'pipeline.canvas.sourceFiles' | transloco }}</span>
-            @if (pool.length) {
-              <div class="src-list">
-                @for (name of pool; track name) {
-                  <label class="check">
-                    <input
-                      type="checkbox"
-                      [checked]="node.files.includes(name)"
-                      (change)="toggleFile(name, $any($event.target).checked)"
-                    />
-                    {{ name }}
-                  </label>
-                }
-              </div>
-            } @else {
-              <p class="hint-note">{{ 'pipeline.canvas.uploadFirst' | transloco }}</p>
-            }
+            <!-- Per-node upload: files dropped here feed ONLY this SOURCE node. -->
+            <app-file-drop-zone
+              [multiple]="true"
+              accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
+              [hint]="'pages.pipeline.sourceHint' | transloco"
+              [files]="sourceFiles"
+              (filesChange)="sourceFilesChange.emit($event)"
+            />
           </div>
         }
         @case ('EXTRACT') {
@@ -203,13 +196,6 @@ const KIND_TO_OP: Record<string, string> = {
         font-size: 0.8rem;
         color: var(--text-muted);
       }
-      .src-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-        max-height: 220px;
-        overflow: auto;
-      }
       .wm-asset {
         display: flex;
         align-items: center;
@@ -231,8 +217,8 @@ export class PipelineInspectorComponent {
   private readonly transloco = inject(TranslocoService);
 
   @Input() node: CanvasNode | null = null;
-  /** Uploaded file basenames available to include in a SOURCE node. */
-  @Input() pool: string[] = [];
+  /** File objects already uploaded into the selected SOURCE node (drives its drop zone). */
+  @Input() sourceFiles: File[] = [];
 
   /**
    * Human, translated operation label for the selected node's kind — the same
@@ -254,17 +240,11 @@ export class PipelineInspectorComponent {
   @Output() patch = new EventEmitter<Partial<CanvasNode>>();
   /** Chosen watermark image (or null to clear) for the selected WATERMARK node. */
   @Output() asset = new EventEmitter<File | null>();
+  /** New upload set for the selected SOURCE node (the canvas stores the File objects). */
+  @Output() sourceFilesChange = new EventEmitter<File[]>();
 
   emit<K extends keyof CanvasNode>(key: K, value: CanvasNode[K]): void {
     this.patch.emit({ [key]: value } as Partial<CanvasNode>);
-  }
-
-  toggleFile(name: string, on: boolean): void {
-    if (!this.node) return;
-    const files = on
-      ? [...this.node.files, name]
-      : this.node.files.filter((f) => f !== name);
-    this.patch.emit({ files });
   }
 
   onWmImage(input: HTMLInputElement): void {
