@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "Potok",
       "description": "Połącz operacje w graf węzłów."
+    },
+    "gdpr-scan": {
+      "label": "Skan RODO",
+      "description": "Skanuj PDF w poszukiwaniu danych osobowych (RODO / PII)."
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "Uruchamianie…",
       "valid": "✓ Potok jest prawidłowy.",
       "jsonTitle": "JSON potoku"
+    },
+    "gdprScan": {
+      "title": "Skan RODO / PII",
+      "description": "Znajdź dane osobowe w pliku PDF, zanim go udostępnisz.",
+      "hint": "Jeden plik PDF, obraz lub dokument biurowy.",
+      "privacyLine": "Twój plik jest skanowany w pamięci i nigdy nie jest przechowywany ani przesyłany osobom trzecim.",
+      "submit": "Skanuj w poszukiwaniu danych osobowych",
+      "loading": "Skanowanie…",
+      "riskLabel": "ryzyko",
+      "risk": {
+        "none": "Brak",
+        "low": "Niskie",
+        "medium": "Średnie",
+        "high": "Wysokie",
+        "noneExplain": "W tym dokumencie nie wykryto danych osobowych.",
+        "lowExplain": "Znaleziono jeden identyfikator o niskim ryzyku.",
+        "mediumExplain": "Znaleziono kilka identyfikatorów o niskim ryzyku, ale nic finansowego, krajowego identyfikatora ani kategorii szczególnej.",
+        "highExplain": "Występują dane finansowe, krajowy identyfikator lub dane szczególnej kategorii — obchodź się z nimi ostrożnie przed udostępnieniem."
+      },
+      "summary": "{count, plural, one {Znaleziono # element danych osobowych na {pages} stronach.} few {Znaleziono # elementy danych osobowych na {pages} stronach.} many {Znaleziono # elementów danych osobowych na {pages} stronach.} other {Znaleziono # elementu danych osobowych na {pages} stronach.}}",
+      "summaryClean": "Nie znaleziono danych osobowych na {{pages}} stronach.",
+      "byCategory": "Według kategorii",
+      "higherRisk": "Wyższe ryzyko",
+      "findings": "Wyniki",
+      "filterBy": "Filtruj wyniki według kategorii",
+      "filterAll": "Wszystkie",
+      "col": {
+        "type": "Typ",
+        "category": "Kategoria",
+        "page": "Strona",
+        "sample": "Próbka (zamaskowana)",
+        "occurrences": "Liczba"
+      },
+      "redactCta": "Zredaguj ten PDF →",
+      "proBadge": "Pro",
+      "proTeaser": "Automatyczne zamazywanie wykrytych danych — wkrótce w Pro"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "Przejdź do treści"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "Identyfikator",
+      "CONTACT": "Kontakt",
+      "FINANCIAL": "Dane finansowe",
+      "NATIONAL_ID": "Krajowy identyfikator",
+      "ONLINE_IDENTIFIER": "Identyfikator internetowy",
+      "SPECIAL_CATEGORY": "Kategoria szczególna"
+    },
+    "type": {
+      "EMAIL": "Adres e-mail",
+      "PHONE": "Numer telefonu",
+      "IPV4": "Adres IP (IPv4)",
+      "IPV6": "Adres IP (IPv6)",
+      "URL_CREDENTIALS": "URL z danymi logowania",
+      "IBAN": "Konto bankowe (IBAN)",
+      "CREDIT_CARD": "Karta płatnicza",
+      "PESEL": "PESEL",
+      "NIP": "NIP",
+      "REGON": "REGON",
+      "US_SSN": "Numer ubezpieczenia społecznego USA",
+      "HEALTH": "Dane o zdrowiu",
+      "RELIGION": "Przekonania religijne",
+      "ETHNICITY": "Pochodzenie etniczne / rasa",
+      "POLITICAL_OPINION": "Poglądy polityczne",
+      "TRADE_UNION": "Przynależność do związków zawodowych",
+      "SEXUAL_ORIENTATION": "Orientacja seksualna",
+      "BIOMETRIC_GENETIC": "Dane biometryczne / genetyczne"
+    }
   }
 }

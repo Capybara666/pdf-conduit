@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "파이프라인",
       "description": "작업을 노드 그래프로 연결합니다."
+    },
+    "gdpr-scan": {
+      "label": "GDPR 검사",
+      "description": "PDF에서 개인정보(GDPR / PII)를 검사합니다."
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "실행 중…",
       "valid": "✓ 파이프라인이 유효합니다.",
       "jsonTitle": "파이프라인 JSON"
+    },
+    "gdprScan": {
+      "title": "GDPR / PII 검사",
+      "description": "공유하기 전에 PDF의 개인정보를 찾습니다.",
+      "hint": "PDF, 이미지 또는 오피스 문서 하나.",
+      "privacyLine": "파일은 메모리에서 검사되며 저장되거나 제3자에게 전송되지 않습니다.",
+      "submit": "개인정보 검사",
+      "loading": "검사 중…",
+      "riskLabel": "위험도",
+      "risk": {
+        "none": "없음",
+        "low": "낮음",
+        "medium": "보통",
+        "high": "높음",
+        "noneExplain": "이 문서에서 개인정보가 발견되지 않았습니다.",
+        "lowExplain": "낮은 위험의 식별자가 하나 발견되었습니다.",
+        "mediumExplain": "낮은 위험의 식별자가 여러 개 발견되었지만 금융·국가 ID·특별 범주 정보는 없습니다.",
+        "highExplain": "금융·국가 ID·특별 범주 정보가 포함되어 있습니다. 공유하기 전에 주의해서 처리하세요."
+      },
+      "summary": "{count, plural, other {{pages}개 페이지에서 개인정보 #건이 발견되었습니다.}}",
+      "summaryClean": "{{pages}}개 페이지에서 개인정보가 발견되지 않았습니다.",
+      "byCategory": "범주별",
+      "higherRisk": "높은 위험",
+      "findings": "발견 항목",
+      "filterBy": "범주로 발견 항목 필터링",
+      "filterAll": "전체",
+      "col": {
+        "type": "유형",
+        "category": "범주",
+        "page": "페이지",
+        "sample": "샘플(마스킹됨)",
+        "occurrences": "횟수"
+      },
+      "redactCta": "이 PDF 마스킹 →",
+      "proBadge": "Pro",
+      "proTeaser": "감지된 데이터 자동 마스킹 — Pro에서 곧 제공"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "콘텐츠로 건너뛰기"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "식별자",
+      "CONTACT": "연락처",
+      "FINANCIAL": "금융 정보",
+      "NATIONAL_ID": "국가 ID",
+      "ONLINE_IDENTIFIER": "온라인 식별자",
+      "SPECIAL_CATEGORY": "특별 범주"
+    },
+    "type": {
+      "EMAIL": "이메일 주소",
+      "PHONE": "전화번호",
+      "IPV4": "IP 주소(IPv4)",
+      "IPV6": "IP 주소(IPv6)",
+      "URL_CREDENTIALS": "자격 증명이 포함된 URL",
+      "IBAN": "은행 계좌(IBAN)",
+      "CREDIT_CARD": "결제 카드",
+      "PESEL": "PESEL(PL)",
+      "NIP": "NIP(PL)",
+      "REGON": "REGON(PL)",
+      "US_SSN": "미국 사회보장번호",
+      "HEALTH": "건강 정보",
+      "RELIGION": "종교적 신념",
+      "ETHNICITY": "민족/인종",
+      "POLITICAL_OPINION": "정치적 견해",
+      "TRADE_UNION": "노동조합 가입",
+      "SEXUAL_ORIENTATION": "성적 지향",
+      "BIOMETRIC_GENETIC": "생체/유전 정보"
+    }
   }
 }

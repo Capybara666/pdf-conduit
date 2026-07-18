@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "Pipeline",
       "description": "Vorgänge als Knotengraph verketten."
+    },
+    "gdpr-scan": {
+      "label": "DSGVO-Scan",
+      "description": "Ein PDF auf personenbezogene Daten prüfen (DSGVO / PII)."
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "Wird ausgeführt…",
       "valid": "✓ Pipeline ist gültig.",
       "jsonTitle": "Pipeline-JSON"
+    },
+    "gdprScan": {
+      "title": "DSGVO-/PII-Scan",
+      "description": "Personenbezogene Daten in einem PDF finden, bevor Sie es teilen.",
+      "hint": "Ein PDF, Bild oder Office-Dokument.",
+      "privacyLine": "Ihre Datei wird im Arbeitsspeicher gescannt und niemals gespeichert oder an Dritte weitergegeben.",
+      "submit": "Auf personenbezogene Daten prüfen",
+      "loading": "Wird gescannt…",
+      "riskLabel": "Risiko",
+      "risk": {
+        "none": "Keins",
+        "low": "Niedrig",
+        "medium": "Mittel",
+        "high": "Hoch",
+        "noneExplain": "In diesem Dokument wurden keine personenbezogenen Daten gefunden.",
+        "lowExplain": "Ein einzelner Identifikator mit geringem Risiko wurde gefunden.",
+        "mediumExplain": "Mehrere Identifikatoren mit geringem Risiko wurden gefunden, aber nichts Finanzielles, keine nationale Kennung und keine besondere Kategorie.",
+        "highExplain": "Finanz-, nationale Kennungs- oder besondere Kategoriedaten sind vorhanden – vor dem Teilen sorgfältig behandeln."
+      },
+      "summary": "{count, plural, one {# personenbezogenes Datum auf {pages} Seiten gefunden.} other {# personenbezogene Daten auf {pages} Seiten gefunden.}}",
+      "summaryClean": "Keine personenbezogenen Daten auf {{pages}} Seiten gefunden.",
+      "byCategory": "Nach Kategorie",
+      "higherRisk": "Höheres Risiko",
+      "findings": "Funde",
+      "filterBy": "Funde nach Kategorie filtern",
+      "filterAll": "Alle",
+      "col": {
+        "type": "Typ",
+        "category": "Kategorie",
+        "page": "Seite",
+        "sample": "Beispiel (maskiert)",
+        "occurrences": "Anzahl"
+      },
+      "redactCta": "Dieses PDF schwärzen →",
+      "proBadge": "Pro",
+      "proTeaser": "Erkannte Daten automatisch schwärzen – kommt in Pro"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "Zum Inhalt springen"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "Identifikator",
+      "CONTACT": "Kontakt",
+      "FINANCIAL": "Finanzdaten",
+      "NATIONAL_ID": "Nationale Kennung",
+      "ONLINE_IDENTIFIER": "Online-Kennung",
+      "SPECIAL_CATEGORY": "Besondere Kategorie"
+    },
+    "type": {
+      "EMAIL": "E-Mail-Adresse",
+      "PHONE": "Telefonnummer",
+      "IPV4": "IP-Adresse (IPv4)",
+      "IPV6": "IP-Adresse (IPv6)",
+      "URL_CREDENTIALS": "URL mit Zugangsdaten",
+      "IBAN": "Bankkonto (IBAN)",
+      "CREDIT_CARD": "Zahlungskarte",
+      "PESEL": "PESEL (PL)",
+      "NIP": "NIP (PL)",
+      "REGON": "REGON (PL)",
+      "US_SSN": "US-Sozialversicherungsnummer",
+      "HEALTH": "Gesundheitsdaten",
+      "RELIGION": "Religiöse Überzeugungen",
+      "ETHNICITY": "Ethnische Zugehörigkeit / Rasse",
+      "POLITICAL_OPINION": "Politische Meinungen",
+      "TRADE_UNION": "Gewerkschaftszugehörigkeit",
+      "SEXUAL_ORIENTATION": "Sexuelle Orientierung",
+      "BIOMETRIC_GENETIC": "Biometrische / genetische Daten"
+    }
   }
 }

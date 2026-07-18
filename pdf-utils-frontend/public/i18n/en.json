@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "Pipeline",
       "description": "Chain operations as a node graph."
+    },
+    "gdpr-scan": {
+      "label": "GDPR Scan",
+      "description": "Scan a PDF for personal data (GDPR / PII)."
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "Running…",
       "valid": "✓ Pipeline is valid.",
       "jsonTitle": "Pipeline JSON"
+    },
+    "gdprScan": {
+      "title": "GDPR / PII Scan",
+      "description": "Find personal data in a PDF before you share it.",
+      "hint": "One PDF, image or office document.",
+      "privacyLine": "Your file is scanned in memory and never stored or sent to any third party.",
+      "submit": "Scan for personal data",
+      "loading": "Scanning…",
+      "riskLabel": "risk",
+      "risk": {
+        "none": "None",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "noneExplain": "No personal data was detected in this document.",
+        "lowExplain": "A single low-risk identifier was found.",
+        "mediumExplain": "Several low-risk identifiers were found, but nothing financial, national-ID or special-category.",
+        "highExplain": "Financial, national-ID or special-category data is present — handle with care before sharing."
+      },
+      "summary": "{count, plural, one {# piece of personal data found across {pages} pages.} other {# pieces of personal data found across {pages} pages.}}",
+      "summaryClean": "No personal data found across {{pages}} pages.",
+      "byCategory": "By category",
+      "higherRisk": "Higher risk",
+      "findings": "Findings",
+      "filterBy": "Filter findings by category",
+      "filterAll": "All",
+      "col": {
+        "type": "Type",
+        "category": "Category",
+        "page": "Page",
+        "sample": "Sample (masked)",
+        "occurrences": "Count"
+      },
+      "redactCta": "Redact this PDF →",
+      "proBadge": "Pro",
+      "proTeaser": "Auto-redact detected data — coming in Pro"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "Skip to content"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "Identifier",
+      "CONTACT": "Contact",
+      "FINANCIAL": "Financial",
+      "NATIONAL_ID": "National ID",
+      "ONLINE_IDENTIFIER": "Online identifier",
+      "SPECIAL_CATEGORY": "Special category"
+    },
+    "type": {
+      "EMAIL": "Email address",
+      "PHONE": "Phone number",
+      "IPV4": "IP address (IPv4)",
+      "IPV6": "IP address (IPv6)",
+      "URL_CREDENTIALS": "URL with credentials",
+      "IBAN": "Bank account (IBAN)",
+      "CREDIT_CARD": "Payment card",
+      "PESEL": "PESEL (PL)",
+      "NIP": "NIP (PL)",
+      "REGON": "REGON (PL)",
+      "US_SSN": "US Social Security Number",
+      "HEALTH": "Health data",
+      "RELIGION": "Religious beliefs",
+      "ETHNICITY": "Ethnicity / race",
+      "POLITICAL_OPINION": "Political opinions",
+      "TRADE_UNION": "Trade-union membership",
+      "SEXUAL_ORIENTATION": "Sexual orientation",
+      "BIOMETRIC_GENETIC": "Biometric / genetic data"
+    }
   }
 }

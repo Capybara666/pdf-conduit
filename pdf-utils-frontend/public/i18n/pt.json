@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "Pipeline",
       "description": "Encadeie operações como um grafo de nós."
+    },
+    "gdpr-scan": {
+      "label": "Análise RGPD",
+      "description": "Analisar um PDF em busca de dados pessoais (RGPD / PII)."
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "A executar…",
       "valid": "✓ O pipeline é válido.",
       "jsonTitle": "JSON do pipeline"
+    },
+    "gdprScan": {
+      "title": "Análise RGPD / PII",
+      "description": "Encontre dados pessoais num PDF antes de o partilhar.",
+      "hint": "Um PDF, imagem ou documento office.",
+      "privacyLine": "O seu ficheiro é analisado em memória e nunca é armazenado nem enviado a terceiros.",
+      "submit": "Procurar dados pessoais",
+      "loading": "A analisar…",
+      "riskLabel": "risco",
+      "risk": {
+        "none": "Nenhum",
+        "low": "Baixo",
+        "medium": "Médio",
+        "high": "Alto",
+        "noneExplain": "Não foram detetados dados pessoais neste documento.",
+        "lowExplain": "Foi encontrado um único identificador de baixo risco.",
+        "mediumExplain": "Foram encontrados vários identificadores de baixo risco, mas nada financeiro, de identificação nacional ou de categoria especial.",
+        "highExplain": "Existem dados financeiros, de identificação nacional ou de categoria especial — trate-os com cuidado antes de partilhar."
+      },
+      "summary": "{count, plural, one {# dado pessoal encontrado em {pages} páginas.} other {# dados pessoais encontrados em {pages} páginas.}}",
+      "summaryClean": "Não foram encontrados dados pessoais em {{pages}} páginas.",
+      "byCategory": "Por categoria",
+      "higherRisk": "Risco mais elevado",
+      "findings": "Resultados",
+      "filterBy": "Filtrar resultados por categoria",
+      "filterAll": "Todos",
+      "col": {
+        "type": "Tipo",
+        "category": "Categoria",
+        "page": "Página",
+        "sample": "Amostra (mascarada)",
+        "occurrences": "Contagem"
+      },
+      "redactCta": "Ocultar este PDF →",
+      "proBadge": "Pro",
+      "proTeaser": "Ocultação automática dos dados detetados — brevemente no Pro"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "Ir para o conteúdo"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "Identificador",
+      "CONTACT": "Contacto",
+      "FINANCIAL": "Dados financeiros",
+      "NATIONAL_ID": "Identificação nacional",
+      "ONLINE_IDENTIFIER": "Identificador online",
+      "SPECIAL_CATEGORY": "Categoria especial"
+    },
+    "type": {
+      "EMAIL": "Endereço de e-mail",
+      "PHONE": "Número de telefone",
+      "IPV4": "Endereço IP (IPv4)",
+      "IPV6": "Endereço IP (IPv6)",
+      "URL_CREDENTIALS": "URL com credenciais",
+      "IBAN": "Conta bancária (IBAN)",
+      "CREDIT_CARD": "Cartão de pagamento",
+      "PESEL": "PESEL (PL)",
+      "NIP": "NIP (PL)",
+      "REGON": "REGON (PL)",
+      "US_SSN": "Número de Segurança Social dos EUA",
+      "HEALTH": "Dados de saúde",
+      "RELIGION": "Convicções religiosas",
+      "ETHNICITY": "Origem étnica / raça",
+      "POLITICAL_OPINION": "Opiniões políticas",
+      "TRADE_UNION": "Filiação sindical",
+      "SEXUAL_ORIENTATION": "Orientação sexual",
+      "BIOMETRIC_GENETIC": "Dados biométricos / genéticos"
+    }
   }
 }

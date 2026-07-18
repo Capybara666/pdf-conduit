@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "Pijplijn",
       "description": "Koppel bewerkingen als een knooppuntgraaf."
+    },
+    "gdpr-scan": {
+      "label": "AVG-scan",
+      "description": "Een PDF scannen op persoonsgegevens (AVG / PII)."
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "Uitvoeren…",
       "valid": "✓ Pijplijn is geldig.",
       "jsonTitle": "Pijplijn-JSON"
+    },
+    "gdprScan": {
+      "title": "AVG-/PII-scan",
+      "description": "Vind persoonsgegevens in een PDF voordat je hem deelt.",
+      "hint": "Eén PDF, afbeelding of office-document.",
+      "privacyLine": "Je bestand wordt in het geheugen gescand en nooit opgeslagen of naar derden verzonden.",
+      "submit": "Scannen op persoonsgegevens",
+      "loading": "Scannen…",
+      "riskLabel": "risico",
+      "risk": {
+        "none": "Geen",
+        "low": "Laag",
+        "medium": "Gemiddeld",
+        "high": "Hoog",
+        "noneExplain": "Er zijn geen persoonsgegevens in dit document aangetroffen.",
+        "lowExplain": "Er is één identificator met laag risico gevonden.",
+        "mediumExplain": "Er zijn meerdere identificatoren met laag risico gevonden, maar niets financieels, nationaal-ID of bijzondere categorie.",
+        "highExplain": "Er zijn financiële, nationaal-ID- of bijzondere-categoriegegevens aanwezig — ga er zorgvuldig mee om voordat je deelt."
+      },
+      "summary": "{count, plural, one {# persoonsgegeven gevonden op {pages} pagina's.} other {# persoonsgegevens gevonden op {pages} pagina's.}}",
+      "summaryClean": "Geen persoonsgegevens gevonden op {{pages}} pagina's.",
+      "byCategory": "Per categorie",
+      "higherRisk": "Hoger risico",
+      "findings": "Bevindingen",
+      "filterBy": "Bevindingen filteren op categorie",
+      "filterAll": "Alle",
+      "col": {
+        "type": "Type",
+        "category": "Categorie",
+        "page": "Pagina",
+        "sample": "Voorbeeld (gemaskeerd)",
+        "occurrences": "Aantal"
+      },
+      "redactCta": "Deze PDF redigeren →",
+      "proBadge": "Pro",
+      "proTeaser": "Gedetecteerde gegevens automatisch redigeren — binnenkort in Pro"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "Naar inhoud gaan"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "Identificator",
+      "CONTACT": "Contact",
+      "FINANCIAL": "Financiële gegevens",
+      "NATIONAL_ID": "Nationaal ID",
+      "ONLINE_IDENTIFIER": "Online-identificator",
+      "SPECIAL_CATEGORY": "Bijzondere categorie"
+    },
+    "type": {
+      "EMAIL": "E-mailadres",
+      "PHONE": "Telefoonnummer",
+      "IPV4": "IP-adres (IPv4)",
+      "IPV6": "IP-adres (IPv6)",
+      "URL_CREDENTIALS": "URL met inloggegevens",
+      "IBAN": "Bankrekening (IBAN)",
+      "CREDIT_CARD": "Betaalkaart",
+      "PESEL": "PESEL (PL)",
+      "NIP": "NIP (PL)",
+      "REGON": "REGON (PL)",
+      "US_SSN": "Amerikaans burgerservicenummer",
+      "HEALTH": "Gezondheidsgegevens",
+      "RELIGION": "Religieuze overtuigingen",
+      "ETHNICITY": "Etniciteit / ras",
+      "POLITICAL_OPINION": "Politieke opvattingen",
+      "TRADE_UNION": "Vakbondslidmaatschap",
+      "SEXUAL_ORIENTATION": "Seksuele geaardheid",
+      "BIOMETRIC_GENETIC": "Biometrische / genetische gegevens"
+    }
   }
 }

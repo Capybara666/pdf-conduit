@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "İş akışı",
       "description": "İşlemleri bir düğüm grafiği olarak zincirleyin."
+    },
+    "gdpr-scan": {
+      "label": "GDPR Taraması",
+      "description": "Bir PDF'yi kişisel veriler açısından tarayın (GDPR / PII)."
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "Çalışıyor…",
       "valid": "✓ İş akışı geçerli.",
       "jsonTitle": "İş akışı JSON"
+    },
+    "gdprScan": {
+      "title": "GDPR / PII Taraması",
+      "description": "Paylaşmadan önce bir PDF'deki kişisel verileri bulun.",
+      "hint": "Bir PDF, görüntü veya ofis belgesi.",
+      "privacyLine": "Dosyanız bellekte taranır; asla saklanmaz veya üçüncü taraflara gönderilmez.",
+      "submit": "Kişisel verileri tara",
+      "loading": "Taranıyor…",
+      "riskLabel": "risk",
+      "risk": {
+        "none": "Yok",
+        "low": "Düşük",
+        "medium": "Orta",
+        "high": "Yüksek",
+        "noneExplain": "Bu belgede kişisel veri tespit edilmedi.",
+        "lowExplain": "Düşük riskli tek bir tanımlayıcı bulundu.",
+        "mediumExplain": "Birkaç düşük riskli tanımlayıcı bulundu, ancak finansal, ulusal kimlik veya özel kategori verisi yok.",
+        "highExplain": "Finansal, ulusal kimlik veya özel kategori verisi mevcut — paylaşmadan önce dikkatli olun."
+      },
+      "summary": "{count, plural, one {{pages} sayfada # kişisel veri bulundu.} other {{pages} sayfada # kişisel veri bulundu.}}",
+      "summaryClean": "{{pages}} sayfada kişisel veri bulunamadı.",
+      "byCategory": "Kategoriye göre",
+      "higherRisk": "Daha yüksek risk",
+      "findings": "Bulgular",
+      "filterBy": "Bulguları kategoriye göre filtrele",
+      "filterAll": "Tümü",
+      "col": {
+        "type": "Tür",
+        "category": "Kategori",
+        "page": "Sayfa",
+        "sample": "Örnek (maskeli)",
+        "occurrences": "Sayı"
+      },
+      "redactCta": "Bu PDF'yi karart →",
+      "proBadge": "Pro",
+      "proTeaser": "Tespit edilen verileri otomatik karartma — Pro'da yakında"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "İçeriğe geç"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "Tanımlayıcı",
+      "CONTACT": "İletişim",
+      "FINANCIAL": "Finansal veri",
+      "NATIONAL_ID": "Ulusal kimlik",
+      "ONLINE_IDENTIFIER": "Çevrimiçi tanımlayıcı",
+      "SPECIAL_CATEGORY": "Özel kategori"
+    },
+    "type": {
+      "EMAIL": "E-posta adresi",
+      "PHONE": "Telefon numarası",
+      "IPV4": "IP adresi (IPv4)",
+      "IPV6": "IP adresi (IPv6)",
+      "URL_CREDENTIALS": "Kimlik bilgili URL",
+      "IBAN": "Banka hesabı (IBAN)",
+      "CREDIT_CARD": "Ödeme kartı",
+      "PESEL": "PESEL (PL)",
+      "NIP": "NIP (PL)",
+      "REGON": "REGON (PL)",
+      "US_SSN": "ABD Sosyal Güvenlik Numarası",
+      "HEALTH": "Sağlık verileri",
+      "RELIGION": "Dini inançlar",
+      "ETHNICITY": "Etnik köken / ırk",
+      "POLITICAL_OPINION": "Siyasi görüşler",
+      "TRADE_UNION": "Sendika üyeliği",
+      "SEXUAL_ORIENTATION": "Cinsel yönelim",
+      "BIOMETRIC_GENETIC": "Biyometrik / genetik veriler"
+    }
   }
 }

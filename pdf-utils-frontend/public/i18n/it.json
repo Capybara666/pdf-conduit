@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "Pipeline",
       "description": "Concatena le operazioni come un grafo di nodi."
+    },
+    "gdpr-scan": {
+      "label": "Scansione GDPR",
+      "description": "Analizza un PDF alla ricerca di dati personali (GDPR / PII)."
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "Esecuzione in corso…",
       "valid": "✓ La pipeline è valida.",
       "jsonTitle": "JSON della pipeline"
+    },
+    "gdprScan": {
+      "title": "Scansione GDPR / PII",
+      "description": "Trova i dati personali in un PDF prima di condividerlo.",
+      "hint": "Un PDF, un’immagine o un documento office.",
+      "privacyLine": "Il file viene analizzato in memoria e non viene mai memorizzato né inviato a terzi.",
+      "submit": "Cerca dati personali",
+      "loading": "Scansione…",
+      "riskLabel": "rischio",
+      "risk": {
+        "none": "Nessuno",
+        "low": "Basso",
+        "medium": "Medio",
+        "high": "Alto",
+        "noneExplain": "Nessun dato personale rilevato in questo documento.",
+        "lowExplain": "È stato trovato un singolo identificatore a basso rischio.",
+        "mediumExplain": "Sono stati trovati diversi identificatori a basso rischio, ma nulla di finanziario, di identificazione nazionale o di categoria particolare.",
+        "highExplain": "Sono presenti dati finanziari, di identificazione nazionale o di categoria particolare: gestiscili con attenzione prima di condividerli."
+      },
+      "summary": "{count, plural, one {# dato personale trovato in {pages} pagine.} other {# dati personali trovati in {pages} pagine.}}",
+      "summaryClean": "Nessun dato personale trovato in {{pages}} pagine.",
+      "byCategory": "Per categoria",
+      "higherRisk": "Rischio più elevato",
+      "findings": "Risultati",
+      "filterBy": "Filtra i risultati per categoria",
+      "filterAll": "Tutti",
+      "col": {
+        "type": "Tipo",
+        "category": "Categoria",
+        "page": "Pagina",
+        "sample": "Campione (mascherato)",
+        "occurrences": "Conteggio"
+      },
+      "redactCta": "Oscura questo PDF →",
+      "proBadge": "Pro",
+      "proTeaser": "Oscuramento automatico dei dati rilevati — in arrivo in Pro"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "Vai al contenuto"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "Identificatore",
+      "CONTACT": "Contatto",
+      "FINANCIAL": "Dati finanziari",
+      "NATIONAL_ID": "Identificazione nazionale",
+      "ONLINE_IDENTIFIER": "Identificatore online",
+      "SPECIAL_CATEGORY": "Categoria particolare"
+    },
+    "type": {
+      "EMAIL": "Indirizzo e-mail",
+      "PHONE": "Numero di telefono",
+      "IPV4": "Indirizzo IP (IPv4)",
+      "IPV6": "Indirizzo IP (IPv6)",
+      "URL_CREDENTIALS": "URL con credenziali",
+      "IBAN": "Conto bancario (IBAN)",
+      "CREDIT_CARD": "Carta di pagamento",
+      "PESEL": "PESEL (PL)",
+      "NIP": "NIP (PL)",
+      "REGON": "REGON (PL)",
+      "US_SSN": "Numero di previdenza sociale USA",
+      "HEALTH": "Dati sanitari",
+      "RELIGION": "Convinzioni religiose",
+      "ETHNICITY": "Origine etnica / razza",
+      "POLITICAL_OPINION": "Opinioni politiche",
+      "TRADE_UNION": "Appartenenza sindacale",
+      "SEXUAL_ORIENTATION": "Orientamento sessuale",
+      "BIOMETRIC_GENETIC": "Dati biometrici / genetici"
+    }
   }
 }

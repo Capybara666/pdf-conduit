@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "パイプライン",
       "description": "操作をノードグラフとして連結します。"
+    },
+    "gdpr-scan": {
+      "label": "GDPRスキャン",
+      "description": "PDF内の個人データ（GDPR / PII）をスキャンします。"
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "実行中…",
       "valid": "✓ パイプラインは有効です。",
       "jsonTitle": "パイプライン JSON"
+    },
+    "gdprScan": {
+      "title": "GDPR / PII スキャン",
+      "description": "共有する前にPDF内の個人データを見つけます。",
+      "hint": "PDF、画像、またはオフィス文書を1つ。",
+      "privacyLine": "ファイルはメモリ内でスキャンされ、保存も第三者への送信も行われません。",
+      "submit": "個人データをスキャン",
+      "loading": "スキャン中…",
+      "riskLabel": "リスク",
+      "risk": {
+        "none": "なし",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "noneExplain": "この文書から個人データは検出されませんでした。",
+        "lowExplain": "低リスクの識別子が1件見つかりました。",
+        "mediumExplain": "低リスクの識別子が複数見つかりましたが、金融・国民ID・特別カテゴリーのデータはありません。",
+        "highExplain": "金融・国民ID・特別カテゴリーのデータが含まれています。共有前に慎重に扱ってください。"
+      },
+      "summary": "{count, plural, other {{pages} ページで個人データが # 件見つかりました。}}",
+      "summaryClean": "{{pages}} ページで個人データは見つかりませんでした。",
+      "byCategory": "カテゴリー別",
+      "higherRisk": "高リスク",
+      "findings": "検出結果",
+      "filterBy": "カテゴリーで検出結果を絞り込む",
+      "filterAll": "すべて",
+      "col": {
+        "type": "種類",
+        "category": "カテゴリー",
+        "page": "ページ",
+        "sample": "サンプル（マスク済み）",
+        "occurrences": "件数"
+      },
+      "redactCta": "このPDFを黒塗り →",
+      "proBadge": "Pro",
+      "proTeaser": "検出データの自動黒塗り — Proで近日提供"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "コンテンツにスキップ"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "識別子",
+      "CONTACT": "連絡先",
+      "FINANCIAL": "金融データ",
+      "NATIONAL_ID": "国民ID",
+      "ONLINE_IDENTIFIER": "オンライン識別子",
+      "SPECIAL_CATEGORY": "特別カテゴリー"
+    },
+    "type": {
+      "EMAIL": "メールアドレス",
+      "PHONE": "電話番号",
+      "IPV4": "IPアドレス（IPv4）",
+      "IPV6": "IPアドレス（IPv6）",
+      "URL_CREDENTIALS": "認証情報付きURL",
+      "IBAN": "銀行口座（IBAN）",
+      "CREDIT_CARD": "決済カード",
+      "PESEL": "PESEL（PL）",
+      "NIP": "NIP（PL）",
+      "REGON": "REGON（PL）",
+      "US_SSN": "米国社会保障番号",
+      "HEALTH": "健康データ",
+      "RELIGION": "宗教的信条",
+      "ETHNICITY": "民族／人種",
+      "POLITICAL_OPINION": "政治的見解",
+      "TRADE_UNION": "労働組合への加入",
+      "SEXUAL_ORIENTATION": "性的指向",
+      "BIOMETRIC_GENETIC": "生体／遺伝データ"
+    }
   }
 }

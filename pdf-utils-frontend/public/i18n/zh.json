@@ -112,6 +112,10 @@
     "pipeline": {
       "label": "流程",
       "description": "将多项操作串联为节点图。"
+    },
+    "gdpr-scan": {
+      "label": "GDPR 扫描",
+      "description": "扫描 PDF 中的个人数据（GDPR / PII）。"
     }
   },
   "header": {
@@ -518,6 +522,42 @@
       "running": "运行中…",
       "valid": "✓ 流程有效。",
       "jsonTitle": "流程 JSON"
+    },
+    "gdprScan": {
+      "title": "GDPR / PII 扫描",
+      "description": "在分享 PDF 之前查找其中的个人数据。",
+      "hint": "一个 PDF、图片或办公文档。",
+      "privacyLine": "您的文件在内存中扫描，绝不存储或发送给任何第三方。",
+      "submit": "扫描个人数据",
+      "loading": "扫描中…",
+      "riskLabel": "风险",
+      "risk": {
+        "none": "无",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "noneExplain": "未在此文档中检测到个人数据。",
+        "lowExplain": "发现了一个低风险标识符。",
+        "mediumExplain": "发现了多个低风险标识符，但没有金融、国家身份或特殊类别的数据。",
+        "highExplain": "包含金融、国家身份或特殊类别数据——分享前请谨慎处理。"
+      },
+      "summary": "{count, plural, other {在 {pages} 页中发现 # 项个人数据。}}",
+      "summaryClean": "在 {{pages}} 页中未发现个人数据。",
+      "byCategory": "按类别",
+      "higherRisk": "较高风险",
+      "findings": "发现项",
+      "filterBy": "按类别筛选发现项",
+      "filterAll": "全部",
+      "col": {
+        "type": "类型",
+        "category": "类别",
+        "page": "页码",
+        "sample": "样本（已掩码）",
+        "occurrences": "次数"
+      },
+      "redactCta": "涂黑此 PDF →",
+      "proBadge": "Pro",
+      "proTeaser": "自动涂黑检测到的数据——即将在 Pro 中推出"
     }
   },
   "pageGrid": {
@@ -582,5 +622,35 @@
   },
   "a11y": {
     "skipToContent": "跳到内容"
+  },
+  "pii": {
+    "category": {
+      "IDENTIFIER": "标识符",
+      "CONTACT": "联系方式",
+      "FINANCIAL": "金融数据",
+      "NATIONAL_ID": "国家身份",
+      "ONLINE_IDENTIFIER": "在线标识符",
+      "SPECIAL_CATEGORY": "特殊类别"
+    },
+    "type": {
+      "EMAIL": "电子邮件地址",
+      "PHONE": "电话号码",
+      "IPV4": "IP 地址（IPv4）",
+      "IPV6": "IP 地址（IPv6）",
+      "URL_CREDENTIALS": "含凭据的 URL",
+      "IBAN": "银行账户（IBAN）",
+      "CREDIT_CARD": "支付卡",
+      "PESEL": "PESEL（PL）",
+      "NIP": "NIP（PL）",
+      "REGON": "REGON（PL）",
+      "US_SSN": "美国社会安全号码",
+      "HEALTH": "健康数据",
+      "RELIGION": "宗教信仰",
+      "ETHNICITY": "族裔／种族",
+      "POLITICAL_OPINION": "政治观点",
+      "TRADE_UNION": "工会成员身份",
+      "SEXUAL_ORIENTATION": "性取向",
+      "BIOMETRIC_GENETIC": "生物识别／基因数据"
+    }
   }
 }
