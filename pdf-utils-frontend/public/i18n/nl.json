@@ -417,7 +417,11 @@
       "pages": "Pagina's",
       "pagesPlaceholder": "bijv. 1-3 (leeg = alle)",
       "submit": "Afbeeldingen weergeven",
-      "loading": "Weergeven…"
+      "loading": "Weergeven…",
+      "color": "Kleur",
+      "transparent": "Transparante achtergrond",
+      "transparentHelp": "Alleen PNG — de paginaachtergrond blijft doorzichtig.",
+      "grayscale": "Grijswaarden"
     },
     "toText": {
       "title": "Naar tekst",

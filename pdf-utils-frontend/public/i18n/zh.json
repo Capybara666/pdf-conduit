@@ -417,7 +417,11 @@
       "pages": "页面",
       "pagesPlaceholder": "例如 1-3（留空 = 全部）",
       "submit": "渲染图片",
-      "loading": "渲染中…"
+      "loading": "渲染中…",
+      "color": "颜色",
+      "transparent": "透明背景",
+      "transparentHelp": "仅限 PNG — 页面背景保持透明。",
+      "grayscale": "灰度"
     },
     "toText": {
       "title": "转为文本",

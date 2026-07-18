@@ -417,7 +417,11 @@
       "pages": "Pages",
       "pagesPlaceholder": "ex. 1-3 (vide = toutes)",
       "submit": "Générer les images",
-      "loading": "Génération en cours…"
+      "loading": "Génération en cours…",
+      "color": "Couleur",
+      "transparent": "Arrière-plan transparent",
+      "transparentHelp": "PNG uniquement — l'arrière-plan de la page reste transparent.",
+      "grayscale": "Niveaux de gris"
     },
     "toText": {
       "title": "Vers texte",

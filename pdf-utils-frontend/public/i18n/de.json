@@ -417,7 +417,11 @@
       "pages": "Seiten",
       "pagesPlaceholder": "z. B. 1-3 (leer = alle)",
       "submit": "Bilder rendern",
-      "loading": "Wird gerendert…"
+      "loading": "Wird gerendert…",
+      "color": "Farbe",
+      "transparent": "Transparenter Hintergrund",
+      "transparentHelp": "Nur PNG – der Seitenhintergrund bleibt durchsichtig.",
+      "grayscale": "Graustufen"
     },
     "toText": {
       "title": "In Text",

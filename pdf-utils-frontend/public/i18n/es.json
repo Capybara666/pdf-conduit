@@ -417,7 +417,11 @@
       "pages": "Páginas",
       "pagesPlaceholder": "p. ej. 1-3 (en blanco = todas)",
       "submit": "Generar imágenes",
-      "loading": "Generando…"
+      "loading": "Generando…",
+      "color": "Color",
+      "transparent": "Fondo transparente",
+      "transparentHelp": "Solo PNG: el fondo de la página permanece transparente.",
+      "grayscale": "Escala de grises"
     },
     "toText": {
       "title": "A texto",

@@ -417,7 +417,11 @@
       "pages": "ページ",
       "pagesPlaceholder": "例：1-3（空欄 = すべて）",
       "submit": "画像を書き出す",
-      "loading": "描画中…"
+      "loading": "描画中…",
+      "color": "色",
+      "transparent": "背景を透過",
+      "transparentHelp": "PNG のみ — ページの背景が透明のままになります。",
+      "grayscale": "グレースケール"
     },
     "toText": {
       "title": "テキストに変換",

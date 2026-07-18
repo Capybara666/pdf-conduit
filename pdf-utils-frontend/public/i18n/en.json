@@ -417,7 +417,11 @@
       "pages": "Pages",
       "pagesPlaceholder": "e.g. 1-3 (blank = all)",
       "submit": "Render images",
-      "loading": "Rendering…"
+      "loading": "Rendering…",
+      "color": "Color",
+      "transparent": "Transparent background",
+      "transparentHelp": "PNG only — the page background stays see-through.",
+      "grayscale": "Grayscale"
     },
     "toText": {
       "title": "To Text",

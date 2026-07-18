@@ -417,7 +417,11 @@
       "pages": "Sayfalar",
       "pagesPlaceholder": "örn. 1-3 (boş = tümü)",
       "submit": "Görselleri oluştur",
-      "loading": "Oluşturuluyor…"
+      "loading": "Oluşturuluyor…",
+      "color": "Renk",
+      "transparent": "Saydam arka plan",
+      "transparentHelp": "Yalnızca PNG — sayfa arka planı saydam kalır.",
+      "grayscale": "Gri tonlama"
     },
     "toText": {
       "title": "Metne",
