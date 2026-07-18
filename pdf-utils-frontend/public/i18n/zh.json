@@ -445,7 +445,11 @@
       "ownerPassword": "所有者密码（可选）",
       "ownerPasswordHelp": "控制权限；默认与用户密码相同。",
       "submit": "{count, plural, other {保护 # 个文件}}",
-      "loading": "加密中…"
+      "loading": "加密中…",
+      "encryption": "加密强度",
+      "encryption128": "AES-128（兼容性好）",
+      "encryption256": "AES-256（更强）",
+      "encryptionHelp": "AES-128 可在所有 PDF 阅读器中打开；AES-256 更安全，但需要较新的阅读器。"
     },
     "unlock": {
       "title": "解锁",

@@ -445,7 +445,11 @@
       "ownerPassword": "オーナーパスワード（任意）",
       "ownerPasswordHelp": "権限を制御します。既定ではユーザーパスワードと同じになります。",
       "submit": "{count, plural, other {# 個のファイルを保護}}",
-      "loading": "暗号化中…"
+      "loading": "暗号化中…",
+      "encryption": "暗号化強度",
+      "encryption128": "AES-128（互換性重視）",
+      "encryption256": "AES-256（より強力）",
+      "encryptionHelp": "AES-128 はすべての PDF リーダーで開けます。AES-256 はより強力ですが、最新のリーダーが必要です。"
     },
     "unlock": {
       "title": "ロック解除",

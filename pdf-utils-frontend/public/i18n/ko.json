@@ -445,7 +445,11 @@
       "ownerPassword": "소유자 비밀번호 (선택 사항)",
       "ownerPasswordHelp": "권한을 제어합니다. 기본값은 사용자 비밀번호입니다.",
       "submit": "{count, plural, other {파일 # 개 보호}}",
-      "loading": "암호화 중…"
+      "loading": "암호화 중…",
+      "encryption": "암호화 강도",
+      "encryption128": "AES-128 (호환성)",
+      "encryption256": "AES-256 (더 강력함)",
+      "encryptionHelp": "AES-128은 모든 PDF 뷰어에서 열립니다. AES-256은 더 강력하지만 최신 뷰어가 필요합니다."
     },
     "unlock": {
       "title": "잠금 해제",

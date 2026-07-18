@@ -445,7 +445,11 @@
       "ownerPassword": "Sahip parolası (isteğe bağlı)",
       "ownerPasswordHelp": "İzinleri kontrol eder; varsayılan olarak kullanıcı parolasıdır.",
       "submit": "{count, plural, one {# dosyayı koru} other {# dosyayı koru}}",
-      "loading": "Şifreleniyor…"
+      "loading": "Şifreleniyor…",
+      "encryption": "Şifreleme gücü",
+      "encryption128": "AES-128 (uyumlu)",
+      "encryption256": "AES-256 (daha güçlü)",
+      "encryptionHelp": "AES-128 tüm PDF okuyucularda açılır; AES-256 daha güçlüdür ancak modern bir okuyucu gerektirir."
     },
     "unlock": {
       "title": "Kilidi aç",

@@ -445,7 +445,11 @@
       "ownerPassword": "Eigenaarswachtwoord (optioneel)",
       "ownerPasswordHelp": "Regelt de rechten; standaard gelijk aan het gebruikerswachtwoord.",
       "submit": "{count, plural, one {# bestand beveiligen} other {# bestanden beveiligen}}",
-      "loading": "Versleutelen…"
+      "loading": "Versleutelen…",
+      "encryption": "Versleutelingssterkte",
+      "encryption128": "AES-128 (compatibel)",
+      "encryption256": "AES-256 (sterker)",
+      "encryptionHelp": "AES-128 opent in alle PDF-lezers; AES-256 is sterker maar vereist een moderne lezer."
     },
     "unlock": {
       "title": "Ontgrendelen",

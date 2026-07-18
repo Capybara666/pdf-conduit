@@ -45,6 +45,25 @@ class PdfPasswordTest {
     }
 
     @Test
+    void protectWithAes256IsEncryptedAndOpensWithPassword() throws Exception {
+        Path src = createPdf(2);
+        Path locked = tmp.resolve("locked-256.pdf");
+
+        PdfProtector.execute(new ProtectOptions(src, "secret", "", locked, 256));
+
+        // Cannot open without the password...
+        assertThrows(IOException.class, () -> {
+            try (PDDocument d = Loader.loadPDF(locked.toFile())) { d.getNumberOfPages(); }
+        });
+        // ...but opens with it, and is encrypted at the 256-bit key length.
+        try (PDDocument d = Loader.loadPDF(locked.toFile(), "secret")) {
+            assertEquals(2, d.getNumberOfPages());
+            assertTrue(d.isEncrypted(), "output should be encrypted");
+            assertEquals(256, d.getEncryption().getLength(), "AES-256 key length expected");
+        }
+    }
+
+    @Test
     void unlockWithWrongPasswordFailsClearly() throws Exception {
         Path src = createPdf(1);
         Path locked = tmp.resolve("locked.pdf");

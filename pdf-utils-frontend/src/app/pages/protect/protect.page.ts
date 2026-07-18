@@ -84,6 +84,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           <input id="pr-owner" type="password" formControlName="ownerPassword" autocomplete="new-password" />
           <span class="help">{{ 'pages.protect.ownerPasswordHelp' | transloco }}</span>
         </div>
+        <div class="field">
+          <label for="pr-strength">{{ 'pages.protect.encryption' | transloco }}</label>
+          <select id="pr-strength" formControlName="keyLength">
+            <option value="128">{{ 'pages.protect.encryption128' | transloco }}</option>
+            <option value="256">{{ 'pages.protect.encryption256' | transloco }}</option>
+          </select>
+          <span class="help">{{ 'pages.protect.encryptionHelp' | transloco }}</span>
+        </div>
       </form>
 
       <div class="btn-row">
@@ -132,6 +140,7 @@ export class ProtectPage {
       userPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
       confirmPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
       ownerPassword: new FormControl('', { nonNullable: true }),
+      keyLength: new FormControl('128', { nonNullable: true }),
     },
     { validators: [passwordsMatch] },
   );
@@ -149,6 +158,7 @@ export class ProtectPage {
     fd.append('userPassword', this.form.controls.userPassword.value);
     const owner = this.form.controls.ownerPassword.value.trim();
     if (owner) fd.append('ownerPassword', owner);
+    fd.append('keyLength', this.form.controls.keyLength.value);
     this.state.run(this.api.protect(fd));
   }
 }

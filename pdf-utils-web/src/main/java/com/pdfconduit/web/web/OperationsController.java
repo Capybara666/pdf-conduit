@@ -171,13 +171,16 @@ public class OperationsController {
     @PostMapping(value = "/protect", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> protect(@RequestParam("files") List<MultipartFile> files,
                                           @RequestParam String userPassword,
-                                          @RequestParam(required = false) String ownerPassword)
+                                          @RequestParam(required = false) String ownerPassword,
+                                          @RequestParam(required = false) Integer keyLength)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         Params.require(userPassword, "userPassword");
+        // Absent / any non-256 value → AES-128 (the compatibility default); 256 → AES-256.
+        int bits = keyLength != null && keyLength == 256 ? 256 : 128;
         List<NamedBytes> inputs = uploads.readAll(files);
         List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.protect(inputs, userPassword, ownerPassword));
+            () -> ops.protect(inputs, userPassword, ownerPassword, bits));
         return Responses.batch("protect", results, MediaType.APPLICATION_PDF);
     }
 

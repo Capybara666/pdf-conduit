@@ -445,7 +445,11 @@
       "ownerPassword": "Password proprietario (facoltativa)",
       "ownerPasswordHelp": "Controlla i permessi; per impostazione predefinita coincide con la password utente.",
       "submit": "{count, plural, one {Proteggi # file} other {Proteggi # file}}",
-      "loading": "Crittografia in corso…"
+      "loading": "Crittografia in corso…",
+      "encryption": "Livello di crittografia",
+      "encryption128": "AES-128 (compatibile)",
+      "encryption256": "AES-256 (più forte)",
+      "encryptionHelp": "AES-128 si apre in tutti i lettori PDF; AES-256 è più forte ma richiede un lettore moderno."
     },
     "unlock": {
       "title": "Sblocca",

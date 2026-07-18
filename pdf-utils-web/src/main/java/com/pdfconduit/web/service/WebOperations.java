@@ -208,10 +208,10 @@ public class WebOperations {
 
     // ----------------------------------------------------------------- PROTECT
 
-    public List<NamedBytes> protect(List<NamedBytes> inputs, String userPassword, String ownerPassword)
-            throws PdfOperationException {
+    public List<NamedBytes> protect(List<NamedBytes> inputs, String userPassword, String ownerPassword,
+                                    int keyLength) throws PdfOperationException {
         return MemoryOperations.runBatch(OperationType.PROTECT, pdfData(inputs), names(inputs),
-            pdf -> PdfProtector.executeBytes(pdf, userPassword, ownerPassword));
+            pdf -> PdfProtector.executeBytes(pdf, userPassword, ownerPassword, keyLength));
     }
 
     // ------------------------------------------------------------------ UNLOCK

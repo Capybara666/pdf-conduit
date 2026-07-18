@@ -445,7 +445,11 @@
       "ownerPassword": "Besitzerpasswort (optional)",
       "ownerPasswordHelp": "Steuert Berechtigungen; standardmäßig das Benutzerpasswort.",
       "submit": "{count, plural, one {# Datei schützen} other {# Dateien schützen}}",
-      "loading": "Wird verschlüsselt…"
+      "loading": "Wird verschlüsselt…",
+      "encryption": "Verschlüsselungsstärke",
+      "encryption128": "AES-128 (kompatibel)",
+      "encryption256": "AES-256 (stärker)",
+      "encryptionHelp": "AES-128 lässt sich in allen PDF-Readern öffnen; AES-256 ist stärker, erfordert aber einen modernen Reader."
     },
     "unlock": {
       "title": "Entsperren",

@@ -445,7 +445,11 @@
       "ownerPassword": "Palavra-passe de proprietário (opcional)",
       "ownerPasswordHelp": "Controla as permissões; por predefinição, é igual à palavra-passe de utilizador.",
       "submit": "{count, plural, one {Proteger # ficheiro} other {Proteger # ficheiros}}",
-      "loading": "A encriptar…"
+      "loading": "A encriptar…",
+      "encryption": "Nível de criptografia",
+      "encryption128": "AES-128 (compatível)",
+      "encryption256": "AES-256 (mais forte)",
+      "encryptionHelp": "AES-128 abre em todos os leitores de PDF; AES-256 é mais forte, mas exige um leitor moderno."
     },
     "unlock": {
       "title": "Desbloquear",
