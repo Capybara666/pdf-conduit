@@ -3,7 +3,10 @@ package com.pdfconduit.web.quota;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.TooLargeException;
 import com.pdfconduit.web.observability.WebMetrics;
-import com.pdfconduit.web.support.ClientIp;
+import com.pdfconduit.web.plan.PlanLimits;
+import com.pdfconduit.web.plan.PlanLimitsResolver;
+import com.pdfconduit.web.principal.PrincipalResolver;
+import com.pdfconduit.web.principal.RequestPrincipal;
 import com.pdfconduit.web.support.Endpoints;
 import com.pdfconduit.web.support.JsonErrors;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,21 +39,21 @@ import java.util.Map;
 public class QuotaInterceptor implements HandlerInterceptor {
 
     private final QuotaService quota;
-    private final ClientIp clientIp;
+    private final PrincipalResolver principals;
+    private final PlanLimitsResolver planLimits;
     private final WebMetrics metrics;
     private final boolean quotaEnabled;
-    private final int freeMaxFiles;
-    private final long freeMaxFileBytes;
     private final int hardMaxFiles;
 
-    public QuotaInterceptor(QuotaService quota, ClientIp clientIp, WebMetrics metrics, WebProperties props) {
+    public QuotaInterceptor(QuotaService quota, PrincipalResolver principals, PlanLimitsResolver planLimits,
+                            WebMetrics metrics, WebProperties props) {
         this.quota = quota;
-        this.clientIp = clientIp;
+        this.principals = principals;
+        this.planLimits = planLimits;
         this.metrics = metrics;
+        // System-level toggle + absolute hard cap stay sourced from WebProperties; the free-tier
+        // ceilings (per-file count/size, daily operations) now come from the resolved PlanLimits.
         this.quotaEnabled = props.quota().enabled();
-        this.freeMaxFiles = props.quota().freeMaxFiles();
-        DataSize freeSize = props.quota().freeMaxFileSize();
-        this.freeMaxFileBytes = freeSize.toBytes();
         this.hardMaxFiles = props.maxFilesPerRequest();
     }
 
@@ -70,6 +73,13 @@ public class QuotaInterceptor implements HandlerInterceptor {
 
         if (!quotaEnabled) return true;
 
+        // The caller's entitlements for this request (today: the constant FREE plan).
+        RequestPrincipal principal = principals.resolve(request);
+        PlanLimits plan = planLimits.resolve(principal);
+        int freeMaxFiles = plan.maxFiles();
+        long freeMaxFileBytes = plan.maxFileSizeBytes();
+        int dailyLimit = plan.dailyOperations();
+
         // Free-tier per-request and per-file caps (stricter than the absolute multipart ceiling).
         if (files.size() > freeMaxFiles) {
             throw new TooLargeException("Free tier allows at most " + freeMaxFiles
@@ -84,15 +94,15 @@ public class QuotaInterceptor implements HandlerInterceptor {
         }
 
         // Daily free quota.
-        String ip = clientIp.resolve(request);
-        long used = quota.used(ip);
-        boolean exhausted = used >= quota.dailyLimit();
+        String key = principal.id();
+        long used = quota.used(key);
+        boolean exhausted = used >= dailyLimit;
         // The header must reflect POST-request state: a request that proceeds here will be counted
         // on success (afterCompletion), so advertise the remaining allowance AFTER this op counts.
         // For an exhausted (blocked) request this clamps to 0. The actual count is still incremented
         // only in afterCompletion on a 2xx, so there is no double-counting.
-        long remainingAfter = Math.max(0, quota.dailyLimit() - (used + 1));
-        response.setHeader("X-Quota-Limit", Integer.toString(quota.dailyLimit()));
+        long remainingAfter = Math.max(0, dailyLimit - (used + 1));
+        response.setHeader("X-Quota-Limit", Integer.toString(dailyLimit));
         response.setHeader("X-Quota-Remaining", Long.toString(exhausted ? 0 : remainingAfter));
         response.setHeader("X-Quota-Reset", Long.toString(quota.resetEpochSeconds()));
         if (exhausted) {
@@ -112,7 +122,7 @@ public class QuotaInterceptor implements HandlerInterceptor {
         if (!Endpoints.isQuotaOp(Endpoints.path(request))) return;
         int status = response.getStatus();
         if (status >= 200 && status < 300) {
-            quota.increment(clientIp.resolve(request));
+            quota.increment(principals.resolve(request).id());
         }
     }
 

@@ -34,6 +34,8 @@ import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OfficeDisabledException;
 import com.pdfconduit.web.guard.OfficeGuard;
+import com.pdfconduit.web.plan.PlanLimits;
+import com.pdfconduit.web.plan.PlanLimitsResolver;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -63,11 +65,16 @@ public class WebOperations {
     private final long maxOutputPixels;
     private final boolean officeEnabled;
 
-    public WebOperations(OfficeGuard officeGuard, WebProperties props) {
+    public WebOperations(OfficeGuard officeGuard, PlanLimitsResolver planLimits, WebProperties props) {
         this.officeGuard = officeGuard;
-        this.maxPages = props.pdf().maxPages();
-        this.maxDpi = props.render().maxDpi();
-        this.maxOutputPixels = props.render().maxOutputPixels();
+        // Page-count and render ceilings are read from the resolved plan (today the constant FREE
+        // plan built from WebProperties, so identical values); office availability stays a
+        // system-level WebProperties toggle. The service guards by value with no request in scope,
+        // so it resolves the default plan — a later per-principal plan would be threaded in here.
+        PlanLimits plan = planLimits.resolveDefault();
+        this.maxPages = plan.maxPages();
+        this.maxDpi = plan.maxDpi();
+        this.maxOutputPixels = plan.maxOutputPixels();
         this.officeEnabled = props.officeEnabled();
     }
 

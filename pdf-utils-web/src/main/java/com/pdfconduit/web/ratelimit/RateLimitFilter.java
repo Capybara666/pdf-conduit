@@ -2,7 +2,10 @@ package com.pdfconduit.web.ratelimit;
 
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.observability.WebMetrics;
-import com.pdfconduit.web.support.ClientIp;
+import com.pdfconduit.web.plan.PlanLimits;
+import com.pdfconduit.web.plan.PlanLimitsResolver;
+import com.pdfconduit.web.principal.PrincipalResolver;
+import com.pdfconduit.web.principal.RequestPrincipal;
 import com.pdfconduit.web.support.Endpoints;
 import com.pdfconduit.web.support.JsonErrors;
 import io.github.bucket4j.Bandwidth;
@@ -50,22 +53,20 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final long CLEANUP_INTERVAL_MIN = 5;
 
     private final boolean enabled;
-    private final int burst;
-    private final int requestsPerMinute;
-    private final int heavyPerMinute;
 
     private final ConcurrentHashMap<String, Buckets> store = new ConcurrentHashMap<>();
-    private final ClientIp clientIp;
+    private final PrincipalResolver principals;
+    private final PlanLimitsResolver planLimits;
     private final WebMetrics metrics;
     private ScheduledExecutorService cleaner;
 
-    public RateLimitFilter(WebProperties props, ClientIp clientIp, WebMetrics metrics) {
-        WebProperties.RateLimit rl = props.ratelimit();
-        this.enabled = rl.enabled();
-        this.burst = rl.burst();
-        this.requestsPerMinute = rl.requestsPerMinute();
-        this.heavyPerMinute = rl.heavyPerMinute();
-        this.clientIp = clientIp;
+    public RateLimitFilter(WebProperties props, PrincipalResolver principals,
+                           PlanLimitsResolver planLimits, WebMetrics metrics) {
+        // The on/off toggle stays a system-level WebProperties setting; the bucket sizes (burst +
+        // refill) are read from the resolved PlanLimits per request, so a later paid tier tunes them.
+        this.enabled = props.ratelimit().enabled();
+        this.principals = principals;
+        this.planLimits = planLimits;
         this.metrics = metrics;
     }
 
@@ -95,10 +96,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        Buckets buckets = bucketsFor(clientIp.resolve(request));
+        RequestPrincipal principal = principals.resolve(request);
+        PlanLimits plan = planLimits.resolve(principal);
+        Buckets buckets = bucketsFor(principal.id(), plan);
 
         ConsumptionProbe general = buckets.general.tryConsumeAndReturnRemaining(1);
-        response.setHeader("X-RateLimit-Limit", Integer.toString(burst));
+        response.setHeader("X-RateLimit-Limit", Integer.toString(plan.rateBurst()));
         response.setHeader("X-RateLimit-Remaining", Long.toString(Math.max(0, general.getRemainingTokens())));
         if (!general.isConsumed()) {
             reject(response, general.getNanosToWaitForRefill());
@@ -128,10 +131,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
     /** Cap the entries scanned per hot-path eviction so a flood can't turn each request into an O(map) sweep. */
     private static final int MAX_EVICT_SCAN = 2_048;
 
-    private Buckets bucketsFor(String ip) {
-        // Existing keys never trigger eviction; only admitting a brand-new IP when the map is full
-        // does, and then only a bounded scan (the scheduled cleaner does the full sweep off-thread).
-        Buckets existing = store.get(ip);
+    private Buckets bucketsFor(String key, PlanLimits plan) {
+        // Existing keys never trigger eviction; only admitting a brand-new caller when the map is
+        // full does, and then only a bounded scan (the scheduled cleaner does the full sweep off-thread).
+        Buckets existing = store.get(key);
         if (existing != null) {
             existing.lastAccess = System.currentTimeMillis();
             return existing;
@@ -141,10 +144,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
             if (store.size() >= MAX_ENTRIES) {
                 // Still full after a bounded sweep — shed rather than grow unbounded; reuse a
                 // transient bucket that is not retained, so the map stays capped.
-                return new Buckets(newGeneral(), newHeavy());
+                return new Buckets(newGeneral(plan), newHeavy(plan));
             }
         }
-        Buckets b = store.computeIfAbsent(ip, k -> new Buckets(newGeneral(), newHeavy()));
+        Buckets b = store.computeIfAbsent(key, k -> new Buckets(newGeneral(plan), newHeavy(plan)));
         b.lastAccess = System.currentTimeMillis();
         return b;
     }
@@ -159,18 +162,18 @@ public class RateLimitFilter extends OncePerRequestFilter {
         }
     }
 
-    private Bucket newGeneral() {
+    private Bucket newGeneral(PlanLimits plan) {
         Bandwidth limit = Bandwidth.builder()
-            .capacity(burst)
-            .refillGreedy(requestsPerMinute, Duration.ofMinutes(1))
+            .capacity(plan.rateBurst())
+            .refillGreedy(plan.rateRequestsPerMinute(), Duration.ofMinutes(1))
             .build();
         return Bucket.builder().addLimit(limit).build();
     }
 
-    private Bucket newHeavy() {
+    private Bucket newHeavy(PlanLimits plan) {
         Bandwidth limit = Bandwidth.builder()
-            .capacity(heavyPerMinute)
-            .refillGreedy(heavyPerMinute, Duration.ofMinutes(1))
+            .capacity(plan.rateHeavyPerMinute())
+            .refillGreedy(plan.rateHeavyPerMinute(), Duration.ofMinutes(1))
             .build();
         return Bucket.builder().addLimit(limit).build();
     }
