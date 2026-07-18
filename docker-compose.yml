@@ -39,6 +39,11 @@ services:
       - "8080"
       - "8081"
     environment:
+      # Active Spring profile → which per-environment limit preset loads
+      # (application-<profile>.yml). Base compose is local dev, so default to the
+      # RELAXED `local` preset; the prod overlay forces `prod` (strict public).
+      # Set SPRING_PROFILES_ACTIVE=dev to use the dev preset instead.
+      SPRING_PROFILES_ACTIVE: "${SPRING_PROFILES_ACTIVE:-local}"
       # HTTP port inside the container (keep aligned with EXPOSE 8080).
       SERVER_PORT: "8080"
       # Internal-only management port for actuator (health/info/metrics/prometheus).

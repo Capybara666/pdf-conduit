@@ -1,0 +1,31 @@
+# PDF Conduit — web backend, DEV profile (RELAXED, shared non-public dev/staging box).
+#
+# Activate with SPRING_PROFILES_ACTIVE=dev. Same intent as the `local` profile —
+# relaxed size/count/rate/OOM guards for frictionless, non-public development — but
+# kept as a distinct profile so a shared dev/staging environment can diverge from a
+# single developer's `local` box later without touching either one.
+#
+# Overrides ONLY the pdfconduit.web.* keys that differ from the strict base default in
+# application.yml; every other setting still comes from there. Each key stays
+# env-overridable (an explicit PDFCONDUIT_WEB_* env var still wins over this file).
+pdfconduit:
+  web:
+    max-files-per-request: 500
+    ratelimit:
+      requests-per-minute: 6000
+      heavy-per-minute: 3000
+      burst: 2000
+    quota:
+      daily-operations: 1000000
+      free-max-file-size: 1GB
+      free-max-files: 500
+    concurrency:
+      max-heavy-ops: 32
+      max-in-flight-bytes: 4294967296
+    processing:
+      timeout-seconds: 600
+    pdf:
+      max-pages: 100000
+    render:
+      max-dpi: 1200
+      max-output-pixels: 500000000

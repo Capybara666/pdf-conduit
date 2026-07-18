@@ -188,6 +188,40 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
   and the `pdfconduit.web.{ratelimit,quota,concurrency,processing,pdf,office}.*`
   abuse-protection settings). For prod, set `DOMAIN`, `ACME_EMAIL`, and
   `PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS` to your real origin.
+- **Per-environment limit presets (Spring profiles):** the same size/count/rate/
+  concurrency knobs are pre-tuned per environment, selected by
+  `SPRING_PROFILES_ACTIVE`. The **no-profile base** (`application.yml`) is already
+  the strict, fail-closed public baseline, so a misconfigured deploy is safe by
+  default. Profiles layer over it and override only what differs:
+
+  | Profile | File | Intent |
+  | --- | --- | --- |
+  | `local` | `application-local.yml` | RELAXED — single-developer box, guards stay out of the way. **Base compose default.** |
+  | `dev` | `application-dev.yml` | RELAXED — shared non-public dev/staging (same intent as `local`). |
+  | `prod` | `application-prod.yml` | STRICT — explicit public ceilings (re-states the base default verbatim). **`docker-compose.prod.yml` forces this.** |
+
+  Relaxed vs. strict at a glance (base default = strict):
+
+  | Key | `local`/`dev` (relaxed) | base / `prod` (strict) |
+  | --- | --- | --- |
+  | `quota.free-max-file-size` | 1GB | 25MB |
+  | `quota.free-max-files` | 500 | 15 |
+  | `quota.daily-operations` | 1000000 | 60 |
+  | `ratelimit.requests-per-minute` | 6000 | 40 |
+  | `ratelimit.heavy-per-minute` | 3000 | 10 |
+  | `ratelimit.burst` | 2000 | 15 |
+  | `concurrency.max-heavy-ops` | 32 | 4 |
+  | `concurrency.max-in-flight-bytes` | 4294967296 | 536870912 |
+  | `processing.timeout-seconds` | 600 | 60 |
+  | `pdf.max-pages` | 100000 | 3000 |
+  | `render.max-dpi` | 1200 | 300 |
+  | `render.max-output-pixels` | 500000000 | 60000000 |
+  | `max-files-per-request` | 500 | 50 |
+
+  An explicit `PDFCONDUIT_WEB_*` env var **always wins over the profile preset**
+  (the env-var name is the property path upper-cased with `.`/`-` → `_`, e.g.
+  `pdfconduit.web.quota.free-max-file-size` → `PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILE_SIZE`).
+  So you can start from a preset and tune a single ceiling without editing YAML.
 
 ## Releases (native packages)
 

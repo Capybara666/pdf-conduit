@@ -1,0 +1,32 @@
+# PDF Conduit — web backend, PROD profile (explicit STRICT public values).
+#
+# Activate with SPRING_PROFILES_ACTIVE=prod (see docker-compose.prod.yml / .env.example).
+# The no-profile base default in application.yml is ALREADY strict/safe (fail closed), so
+# this profile re-states the same public ceilings VERBATIM. That is deliberate: it makes
+# the strict public intent explicit and self-documenting at the deploy surface, and it
+# pins the values even if the base default is ever loosened for convenience later.
+#
+# Each key stays env-overridable — an explicit PDFCONDUIT_WEB_* env var still wins, so a
+# specific public deployment can tighten (or, deliberately, raise) an individual ceiling
+# without editing this file.
+pdfconduit:
+  web:
+    max-files-per-request: 50
+    ratelimit:
+      requests-per-minute: 40
+      heavy-per-minute: 10
+      burst: 15
+    quota:
+      daily-operations: 60
+      free-max-file-size: 25MB
+      free-max-files: 15
+    concurrency:
+      max-heavy-ops: 4
+      max-in-flight-bytes: 536870912   # 512 MiB
+    processing:
+      timeout-seconds: 60
+    pdf:
+      max-pages: 3000
+    render:
+      max-dpi: 300
+      max-output-pixels: 60000000      # ~60 MP/page

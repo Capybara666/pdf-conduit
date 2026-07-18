@@ -66,6 +66,10 @@ services:
   # Backend — the memory-bound work happens here, so this gets the real caps.
   # ---------------------------------------------------------------------------
   backend:
+    environment:
+      # Force the STRICT public limit preset (application-prod.yml) regardless of any
+      # SPRING_PROFILES_ACTIVE in .env — this overlay is the public, TLS-fronted deploy.
+      SPRING_PROFILES_ACTIVE: "prod"
     # Heap tracks this memory limit via -XX:MaxRAMPercentage (see Dockerfile).
     # Raise BOTH together for a bigger box. ~1.5g suits a 2 GB VPS.
     mem_limit: 1536m
