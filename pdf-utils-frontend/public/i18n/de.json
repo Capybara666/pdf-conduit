@@ -196,13 +196,37 @@
       "privacy": "Datenschutz",
       "github": "GitHub",
       "copy": "Ihre Dateien werden verarbeitet und nie gespeichert. Kostenlos nutzbar."
+    },
+    "how": {
+      "title": "So funktioniert's",
+      "subtitle": "Drei Schritte. Kein Konto, nichts zu installieren.",
+      "step1Title": "Werkzeug wählen",
+      "step1Desc": "Wählen Sie, was Sie brauchen – zusammenführen, komprimieren, umwandeln, schützen und mehr.",
+      "step2Title": "Datei hinzufügen",
+      "step2Desc": "Ziehen Sie sie hinein oder wählen Sie sie aus. Ihre Datei wird sofort verarbeitet und niemals auf unseren Servern gespeichert.",
+      "step3Title": "Ergebnis herunterladen",
+      "step3Desc": "Erhalten Sie Ihr fertiges PDF sofort. Wenn Sie gehen, bleibt nichts zurück.",
+      "wizardTitle": "Neu bei PDF Conduit?",
+      "wizardDesc": "Lassen Sie sich vom geführten Assistenten Schritt für Schritt durch Auswählen, Anordnen und Exportieren führen.",
+      "wizardCta": "Geführten Assistenten starten"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Willkommen bei PDF Conduit",
+      "message": "Kostenlose PDF-Werkzeuge direkt in Ihrem Browser – Ihre Dateien werden sofort verarbeitet und niemals gespeichert. Neu hier? Am einfachsten starten Sie mit dem geführten Assistenten.",
+      "cta": "Geführten Assistenten ausprobieren",
+      "secondary": "Alle Werkzeuge durchsuchen",
+      "dismiss": "Schließen"
+    },
+    "help": "Erste Schritte",
+    "helpTitle": "So funktioniert PDF Conduit"
   },
   "privacy": {
     "title": "Datenschutz",
     "description": "Wie PDF Conduit mit Ihren Dateien umgeht — kurz gesagt: Es behält sie nicht.",
     "memoryTitle": "Ihre Dateien werden nie gespeichert",
-    "memoryBody": "Ihre Dateien werden nie gespeichert. Jeder Vorgang läuft auf dem Server im Arbeitsspeicher (RAM): Ihr Upload wird innerhalb einer einzigen Anfrage dekodiert, verarbeitet und zurückgesendet, dann werden die Bytes verworfen — wir schreiben Ihre Dateien nie auf die Festplatte und bewahren sie danach nie auf.",
+    "memoryBody": "Ihre Dateien werden niemals gespeichert. Jede Operation läuft vollständig innerhalb einer einzigen Anfrage ab – Ihr Upload wird verarbeitet und direkt an Sie zurückgesendet und danach im selben Moment verworfen. Nichts bleibt erhalten und nichts wird jemals für andere Zwecke verwendet.",
     "exceptionTitle": "Die eine vorübergehende Ausnahme",
     "exceptionBody": "Das Umwandeln von Office- oder Textdokumenten (zum Beispiel .docx, .xlsx, .pptx) erfordert ein headless LibreOffice. Nur für diesen Schritt wird die Datei in einen isolierten temporären Ordner geschrieben, der unmittelbar nach Abschluss der Umwandlung gelöscht wird. Reine PDFs und Bilder berühren die Festplatte nie.",
     "accountTitle": "Kein Konto, keine Tracking-Hürde",
@@ -632,7 +656,8 @@
         "metaStrip": "Metadaten entfernen",
         "metaEdit": "Metadaten bearbeiten"
       }
-    }
+    },
+    "mobileHint": "Der Pipeline-Editor funktioniert am besten auf einem größeren Bildschirm."
   },
   "a11y": {
     "skipToContent": "Zum Inhalt springen"

@@ -196,13 +196,37 @@
       "privacy": "隐私",
       "github": "GitHub",
       "copy": "您的文件经过处理，绝不存储。免费使用。"
+    },
+    "how": {
+      "title": "使用方法",
+      "subtitle": "三步搞定。无需账户，无需安装。",
+      "step1Title": "选择工具",
+      "step1Desc": "选择您需要的功能 — 合并、压缩、转换、加密等等。",
+      "step2Title": "添加文件",
+      "step2Desc": "拖入或浏览选择。您的文件会被即时处理，绝不会保存在我们的服务器上。",
+      "step3Title": "下载结果",
+      "step3Desc": "立即获得处理好的 PDF。离开后不会留下任何痕迹。",
+      "wizardTitle": "第一次使用 PDF Conduit？",
+      "wizardDesc": "让向导带您一步步完成选择、排列和导出。",
+      "wizardCta": "启动向导"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "欢迎使用 PDF Conduit",
+      "message": "在浏览器中即可使用的免费 PDF 工具 — 您的文件会被即时处理，绝不会保存。第一次使用？向导是最简单的入门方式。",
+      "cta": "试用向导",
+      "secondary": "浏览所有工具",
+      "dismiss": "关闭"
+    },
+    "help": "快速上手",
+    "helpTitle": "了解 PDF Conduit 的工作方式"
   },
   "privacy": {
     "title": "隐私",
     "description": "PDF Conduit 如何处理您的文件 — 简而言之：它不会留存文件。",
     "memoryTitle": "您的文件绝不存储",
-    "memoryBody": "您的文件绝不会被保存。每项操作都在服务器的内存（RAM）中运行：您上传的文件在同一次请求内被解码、处理并返回，随后相关字节即被丢弃 — 我们绝不会将您的文件写入磁盘，事后也绝不保留。",
+    "memoryBody": "您的文件绝不会被保存。每一次操作都在一次请求中完整完成：您上传的文件经过处理后直接返回给您，随后即被立即丢弃。任何内容都不会保留，也绝不会用于任何其他用途。",
     "exceptionTitle": "唯一的临时例外",
     "exceptionBody": "转换办公或文本文档（例如 .docx、.xlsx、.pptx）需要无界面的 LibreOffice。仅在该步骤中，文件会被写入一个隔离的临时文件夹，并在转换完成后立即删除。普通的 PDF 和图片绝不接触磁盘。",
     "accountTitle": "无账户，无跟踪墙",
@@ -632,7 +656,8 @@
         "metaStrip": "清除元数据",
         "metaEdit": "编辑元数据"
       }
-    }
+    },
+    "mobileHint": "流程编辑器在较大的屏幕上体验最佳。"
   },
   "a11y": {
     "skipToContent": "跳到内容"

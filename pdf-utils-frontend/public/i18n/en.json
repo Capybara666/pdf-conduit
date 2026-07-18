@@ -196,13 +196,37 @@
       "privacy": "Privacy",
       "github": "GitHub",
       "copy": "Your files are processed and never stored. Free to use."
+    },
+    "how": {
+      "title": "How it works",
+      "subtitle": "Three steps. No account, nothing to install.",
+      "step1Title": "Pick a tool",
+      "step1Desc": "Choose what you need — merge, compress, convert, protect and more.",
+      "step2Title": "Add your file",
+      "step2Desc": "Drag it in or browse. Your file is processed instantly and never stored on our servers.",
+      "step3Title": "Download your result",
+      "step3Desc": "Get your finished PDF right away. When you leave, nothing is left behind.",
+      "wizardTitle": "New to PDF Conduit?",
+      "wizardDesc": "Let the guided Wizard walk you through selecting, arranging and exporting — one step at a time.",
+      "wizardCta": "Start the guided Wizard"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to PDF Conduit",
+      "message": "Free PDF tools that run right in your browser — your files are processed instantly and never stored. New here? The guided Wizard is the easiest way to start.",
+      "cta": "Try the guided Wizard",
+      "secondary": "Browse all tools",
+      "dismiss": "Dismiss"
+    },
+    "help": "Getting started",
+    "helpTitle": "See how PDF Conduit works"
   },
   "privacy": {
     "title": "Privacy",
     "description": "How PDF Conduit handles your files — in short: it doesn't keep them.",
     "memoryTitle": "Your files are never stored",
-    "memoryBody": "Your files are never saved. Every operation runs on the server in memory (RAM): your upload is decoded, processed and streamed back within a single request, then the bytes are discarded — we never write your files to disk and never keep them afterwards.",
+    "memoryBody": "Your files are never stored. Each operation runs entirely within a single request — your upload is processed and streamed straight back to you, then discarded the moment it's done. Nothing is kept, and nothing is ever used for anything else.",
     "exceptionTitle": "The one temporary exception",
     "exceptionBody": "Converting office or text documents (for example .docx, .xlsx, .pptx) requires a headless LibreOffice. For that step only, the file is written to an isolated temporary folder that is deleted immediately after the conversion completes. Plain PDFs and images never touch the disk.",
     "accountTitle": "No account, no tracking wall",
@@ -632,7 +656,8 @@
         "metaStrip": "Strip metadata",
         "metaEdit": "Edit metadata"
       }
-    }
+    },
+    "mobileHint": "The pipeline builder works best on a larger screen."
   },
   "a11y": {
     "skipToContent": "Skip to content"

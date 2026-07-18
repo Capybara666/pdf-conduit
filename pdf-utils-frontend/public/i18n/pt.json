@@ -196,13 +196,37 @@
       "privacy": "Privacidade",
       "github": "GitHub",
       "copy": "Os seus ficheiros são processados e nunca guardados. Utilização gratuita."
+    },
+    "how": {
+      "title": "Como funciona",
+      "subtitle": "Três passos. Sem conta, nada para instalar.",
+      "step1Title": "Escolha uma ferramenta",
+      "step1Desc": "Escolha o que precisa — juntar, comprimir, converter, proteger e muito mais.",
+      "step2Title": "Adicione o seu ficheiro",
+      "step2Desc": "Arraste-o ou procure. O seu ficheiro é processado instantaneamente e nunca armazenado nos nossos servidores.",
+      "step3Title": "Descarregue o resultado",
+      "step3Desc": "Receba o seu PDF terminado de imediato. Quando sai, não fica nada para trás.",
+      "wizardTitle": "Novo no PDF Conduit?",
+      "wizardDesc": "Deixe o Assistente guiado acompanhá-lo passo a passo ao selecionar, organizar e exportar.",
+      "wizardCta": "Iniciar o Assistente guiado"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bem-vindo ao PDF Conduit",
+      "message": "Ferramentas PDF gratuitas que funcionam diretamente no seu navegador — os seus ficheiros são processados instantaneamente e nunca armazenados. É a primeira vez? O Assistente guiado é a forma mais fácil de começar.",
+      "cta": "Experimentar o Assistente guiado",
+      "secondary": "Explorar todas as ferramentas",
+      "dismiss": "Dispensar"
+    },
+    "help": "Primeiros passos",
+    "helpTitle": "Veja como o PDF Conduit funciona"
   },
   "privacy": {
     "title": "Privacidade",
     "description": "Como o PDF Conduit trata os seus ficheiros — em resumo: não os guarda.",
     "memoryTitle": "Os seus ficheiros nunca são guardados",
-    "memoryBody": "Os seus ficheiros nunca são guardados. Cada operação é executada no servidor em memória (RAM): o seu carregamento é descodificado, processado e devolvido dentro de um único pedido, e depois os bytes são descartados — nunca gravamos os seus ficheiros em disco nem os mantemos depois.",
+    "memoryBody": "Os seus ficheiros nunca são armazenados. Cada operação decorre por completo dentro de um único pedido: o ficheiro enviado é processado e devolvido diretamente a si e, em seguida, eliminado nesse mesmo instante. Nada é mantido e nada é alguma vez utilizado para qualquer outro fim.",
     "exceptionTitle": "A única exceção temporária",
     "exceptionBody": "Converter documentos office ou de texto (por exemplo .docx, .xlsx, .pptx) requer um LibreOffice em modo headless. Apenas para esse passo, o ficheiro é gravado numa pasta temporária isolada que é eliminada imediatamente após a conclusão da conversão. Os PDF simples e as imagens nunca tocam no disco.",
     "accountTitle": "Sem conta, sem barreiras de rastreio",
@@ -632,7 +656,8 @@
         "metaStrip": "Remover metadados",
         "metaEdit": "Editar metadados"
       }
-    }
+    },
+    "mobileHint": "O editor de pipelines funciona melhor num ecrã maior."
   },
   "a11y": {
     "skipToContent": "Ir para o conteúdo"

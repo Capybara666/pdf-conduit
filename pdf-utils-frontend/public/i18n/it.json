@@ -196,13 +196,37 @@
       "privacy": "Privacy",
       "github": "GitHub",
       "copy": "I tuoi file vengono elaborati e mai salvati. Uso gratuito."
+    },
+    "how": {
+      "title": "Come funziona",
+      "subtitle": "Tre passaggi. Nessun account, niente da installare.",
+      "step1Title": "Scegli uno strumento",
+      "step1Desc": "Scegli ciò che ti serve: unire, comprimere, convertire, proteggere e altro ancora.",
+      "step2Title": "Aggiungi il tuo file",
+      "step2Desc": "Trascinalo o sfoglia. Il tuo file viene elaborato all'istante e mai memorizzato sui nostri server.",
+      "step3Title": "Scarica il risultato",
+      "step3Desc": "Ottieni subito il tuo PDF finito. Quando esci, non resta nulla.",
+      "wizardTitle": "Nuovo su PDF Conduit?",
+      "wizardDesc": "Lascia che la procedura guidata ti accompagni passo dopo passo nella selezione, nella disposizione e nell'esportazione.",
+      "wizardCta": "Avvia la procedura guidata"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Benvenuto in PDF Conduit",
+      "message": "Strumenti PDF gratuiti che funzionano direttamente nel tuo browser: i tuoi file vengono elaborati all'istante e mai memorizzati. Prima volta qui? La procedura guidata è il modo più semplice per iniziare.",
+      "cta": "Prova la procedura guidata",
+      "secondary": "Esplora tutti gli strumenti",
+      "dismiss": "Ignora"
+    },
+    "help": "Primi passi",
+    "helpTitle": "Scopri come funziona PDF Conduit"
   },
   "privacy": {
     "title": "Privacy",
     "description": "Come PDF Conduit gestisce i tuoi file — in breve: non li conserva.",
     "memoryTitle": "I tuoi file non vengono mai salvati",
-    "memoryBody": "I tuoi file non vengono mai salvati. Ogni operazione viene eseguita sul server in memoria (RAM): il file caricato viene decodificato, elaborato e restituito all'interno di una singola richiesta, poi i byte vengono eliminati — non scriviamo mai i tuoi file su disco né li conserviamo in seguito.",
+    "memoryBody": "I tuoi file non vengono mai memorizzati. Ogni operazione si svolge interamente all'interno di una singola richiesta: il file caricato viene elaborato e restituito direttamente a te, per poi essere eliminato in quello stesso istante. Nulla viene conservato e nulla viene mai usato per altri scopi.",
     "exceptionTitle": "L'unica eccezione temporanea",
     "exceptionBody": "La conversione di documenti office o di testo (ad esempio .docx, .xlsx, .pptx) richiede un LibreOffice headless. Solo per quel passaggio, il file viene scritto in una cartella temporanea isolata che viene eliminata immediatamente al termine della conversione. I PDF e le immagini semplici non toccano mai il disco.",
     "accountTitle": "Nessun account, nessun muro di tracciamento",
@@ -632,7 +656,8 @@
         "metaStrip": "Rimuovi metadati",
         "metaEdit": "Modifica metadati"
       }
-    }
+    },
+    "mobileHint": "L'editor della pipeline funziona meglio su uno schermo più grande."
   },
   "a11y": {
     "skipToContent": "Vai al contenuto"

@@ -196,13 +196,37 @@
       "privacy": "Confidentialité",
       "github": "GitHub",
       "copy": "Vos fichiers sont traités et jamais stockés. Utilisation gratuite."
+    },
+    "how": {
+      "title": "Comment ça marche",
+      "subtitle": "Trois étapes. Sans compte, rien à installer.",
+      "step1Title": "Choisissez un outil",
+      "step1Desc": "Choisissez ce dont vous avez besoin : fusionner, compresser, convertir, protéger et bien plus.",
+      "step2Title": "Ajoutez votre fichier",
+      "step2Desc": "Glissez-le ou parcourez vos fichiers. Votre fichier est traité instantanément et jamais stocké sur nos serveurs.",
+      "step3Title": "Téléchargez votre résultat",
+      "step3Desc": "Récupérez votre PDF terminé sans attendre. Quand vous partez, rien ne subsiste.",
+      "wizardTitle": "Nouveau sur PDF Conduit ?",
+      "wizardDesc": "Laissez l'Assistant guidé vous accompagner pas à pas pour sélectionner, organiser et exporter.",
+      "wizardCta": "Lancer l'Assistant guidé"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur PDF Conduit",
+      "message": "Des outils PDF gratuits qui fonctionnent directement dans votre navigateur : vos fichiers sont traités instantanément et jamais stockés. Première visite ? L'Assistant guidé est le moyen le plus simple de commencer.",
+      "cta": "Essayer l'Assistant guidé",
+      "secondary": "Parcourir tous les outils",
+      "dismiss": "Ignorer"
+    },
+    "help": "Premiers pas",
+    "helpTitle": "Découvrez comment fonctionne PDF Conduit"
   },
   "privacy": {
     "title": "Confidentialité",
     "description": "Comment PDF Conduit traite vos fichiers — en bref : il ne les conserve pas.",
     "memoryTitle": "Vos fichiers ne sont jamais stockés",
-    "memoryBody": "Vos fichiers ne sont jamais enregistrés. Chaque opération s'exécute sur le serveur en mémoire (RAM) : votre fichier importé est décodé, traité et renvoyé au sein d'une même requête, puis les données sont supprimées — nous n'écrivons jamais vos fichiers sur disque et ne les conservons jamais ensuite.",
+    "memoryBody": "Vos fichiers ne sont jamais stockés. Chaque opération se déroule entièrement au sein d'une seule requête : votre fichier est traité puis renvoyé directement, avant d'être supprimé dans l'instant. Rien n'est conservé et rien n'est jamais utilisé à d'autres fins.",
     "exceptionTitle": "La seule exception temporaire",
     "exceptionBody": "La conversion de documents bureautiques ou texte (par exemple .docx, .xlsx, .pptx) nécessite un LibreOffice en mode sans interface. Pour cette étape uniquement, le fichier est écrit dans un dossier temporaire isolé qui est supprimé immédiatement après la fin de la conversion. Les simples PDF et images ne touchent jamais le disque.",
     "accountTitle": "Aucun compte, aucun mur de suivi",
@@ -632,7 +656,8 @@
         "metaStrip": "Supprimer les métadonnées",
         "metaEdit": "Modifier les métadonnées"
       }
-    }
+    },
+    "mobileHint": "L'éditeur de pipeline fonctionne mieux sur un grand écran."
   },
   "a11y": {
     "skipToContent": "Aller au contenu"

@@ -196,13 +196,37 @@
       "privacy": "Gizlilik",
       "github": "GitHub",
       "copy": "Dosyalarınız işlenir ve asla saklanmaz. Kullanımı ücretsizdir."
+    },
+    "how": {
+      "title": "Nasıl çalışır",
+      "subtitle": "Üç adım. Hesap yok, kurulacak bir şey yok.",
+      "step1Title": "Bir araç seçin",
+      "step1Desc": "İhtiyacınız olanı seçin — birleştirme, sıkıştırma, dönüştürme, koruma ve daha fazlası.",
+      "step2Title": "Dosyanızı ekleyin",
+      "step2Desc": "Sürükleyin ya da göz atın. Dosyanız anında işlenir ve sunucularımızda asla saklanmaz.",
+      "step3Title": "Sonucunuzu indirin",
+      "step3Desc": "Tamamlanan PDF'nizi hemen alın. Ayrıldığınızda geride hiçbir şey kalmaz.",
+      "wizardTitle": "PDF Conduit'te yeni misiniz?",
+      "wizardDesc": "Rehberli Sihirbaz seçme, düzenleme ve dışa aktarma adımlarında size adım adım eşlik etsin.",
+      "wizardCta": "Rehberli Sihirbazı başlat"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "PDF Conduit'e hoş geldiniz",
+      "message": "Doğrudan tarayıcınızda çalışan ücretsiz PDF araçları — dosyalarınız anında işlenir ve asla saklanmaz. Yeni misiniz? Başlamanın en kolay yolu rehberli Sihirbazdır.",
+      "cta": "Rehberli Sihirbazı deneyin",
+      "secondary": "Tüm araçlara göz atın",
+      "dismiss": "Kapat"
+    },
+    "help": "Başlarken",
+    "helpTitle": "PDF Conduit'in nasıl çalıştığını görün"
   },
   "privacy": {
     "title": "Gizlilik",
     "description": "PDF Conduit dosyalarınızı nasıl işler — kısacası: onları saklamaz.",
     "memoryTitle": "Dosyalarınız asla saklanmaz",
-    "memoryBody": "Dosyalarınız asla kaydedilmez. Her işlem sunucuda bellekte (RAM) çalışır: yüklediğiniz dosya tek bir istek içinde çözülür, işlenir ve geri iletilir, ardından baytlar atılır — dosyalarınızı asla diske yazmaz ve sonrasında asla saklamayız.",
+    "memoryBody": "Dosyalarınız asla saklanmaz. Her işlem tamamen tek bir istek içinde gerçekleşir: yüklediğiniz dosya işlenir, doğrudan size geri gönderilir ve hemen ardından silinir. Hiçbir şey tutulmaz ve hiçbir şey asla başka bir amaçla kullanılmaz.",
     "exceptionTitle": "Tek geçici istisna",
     "exceptionBody": "Ofis veya metin belgelerini (örneğin .docx, .xlsx, .pptx) dönüştürmek için başsız bir LibreOffice gerekir. Yalnızca o adım için dosya, dönüştürme tamamlandıktan hemen sonra silinen izole bir geçici klasöre yazılır. Düz PDF'ler ve görseller diske hiç dokunmaz.",
     "accountTitle": "Hesap yok, takip duvarı yok",
@@ -632,7 +656,8 @@
         "metaStrip": "Meta verileri kaldır",
         "metaEdit": "Meta verileri düzenle"
       }
-    }
+    },
+    "mobileHint": "İş akışı düzenleyicisi daha büyük bir ekranda en iyi şekilde çalışır."
   },
   "a11y": {
     "skipToContent": "İçeriğe geç"

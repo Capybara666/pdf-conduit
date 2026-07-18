@@ -196,13 +196,37 @@
       "privacy": "Privacy",
       "github": "GitHub",
       "copy": "Je bestanden worden verwerkt en nooit opgeslagen. Gratis te gebruiken."
+    },
+    "how": {
+      "title": "Zo werkt het",
+      "subtitle": "Drie stappen. Geen account, niets te installeren.",
+      "step1Title": "Kies een tool",
+      "step1Desc": "Kies wat u nodig hebt — samenvoegen, comprimeren, converteren, beveiligen en meer.",
+      "step2Title": "Voeg uw bestand toe",
+      "step2Desc": "Sleep het erin of blader. Uw bestand wordt direct verwerkt en nooit opgeslagen op onze servers.",
+      "step3Title": "Download uw resultaat",
+      "step3Desc": "Ontvang uw voltooide PDF meteen. Wanneer u weggaat, blijft er niets achter.",
+      "wizardTitle": "Nieuw bij PDF Conduit?",
+      "wizardDesc": "Laat de begeleide Wizard u stap voor stap door het selecteren, ordenen en exporteren leiden.",
+      "wizardCta": "Begeleide Wizard starten"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welkom bij PDF Conduit",
+      "message": "Gratis PDF-tools die direct in uw browser draaien — uw bestanden worden direct verwerkt en nooit opgeslagen. Nieuw hier? De begeleide Wizard is de makkelijkste manier om te beginnen.",
+      "cta": "Begeleide Wizard proberen",
+      "secondary": "Alle tools bekijken",
+      "dismiss": "Sluiten"
+    },
+    "help": "Aan de slag",
+    "helpTitle": "Bekijk hoe PDF Conduit werkt"
   },
   "privacy": {
     "title": "Privacy",
     "description": "Hoe PDF Conduit met je bestanden omgaat — kort gezegd: het bewaart ze niet.",
     "memoryTitle": "Je bestanden worden nooit opgeslagen",
-    "memoryBody": "Je bestanden worden nooit bewaard. Elke bewerking draait op de server in het geheugen (RAM): je upload wordt binnen één verzoek gedecodeerd, verwerkt en teruggestuurd, waarna de bytes worden weggegooid — we schrijven je bestanden nooit naar schijf en bewaren ze daarna nooit.",
+    "memoryBody": "Uw bestanden worden nooit opgeslagen. Elke bewerking verloopt volledig binnen één enkel verzoek: uw bestand wordt verwerkt en rechtstreeks aan u teruggestuurd, en daarna direct weggegooid. Er wordt niets bewaard en niets wordt ooit voor iets anders gebruikt.",
     "exceptionTitle": "De enige tijdelijke uitzondering",
     "exceptionBody": "Het converteren van office- of tekstdocumenten (bijvoorbeeld .docx, .xlsx, .pptx) vereist een headless LibreOffice. Alleen voor die stap wordt het bestand naar een geïsoleerde tijdelijke map geschreven die onmiddellijk na de conversie wordt verwijderd. Gewone PDF's en afbeeldingen raken de schijf nooit aan.",
     "accountTitle": "Geen account, geen trackingmuur",
@@ -632,7 +656,8 @@
         "metaStrip": "Metadata verwijderen",
         "metaEdit": "Metadata bewerken"
       }
-    }
+    },
+    "mobileHint": "De pijplijn-editor werkt het best op een groter scherm."
   },
   "a11y": {
     "skipToContent": "Naar inhoud gaan"

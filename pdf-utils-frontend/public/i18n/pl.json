@@ -196,13 +196,37 @@
       "privacy": "Prywatność",
       "github": "GitHub",
       "copy": "Twoje pliki są przetwarzane i nigdy nieprzechowywane. Darmowe w użyciu."
+    },
+    "how": {
+      "title": "Jak to działa",
+      "subtitle": "Trzy kroki. Bez konta, nic do zainstalowania.",
+      "step1Title": "Wybierz narzędzie",
+      "step1Desc": "Wybierz to, czego potrzebujesz — scalanie, kompresję, konwersję, zabezpieczanie i więcej.",
+      "step2Title": "Dodaj plik",
+      "step2Desc": "Przeciągnij go lub wskaż. Twój plik jest przetwarzany natychmiast i nigdy nie jest przechowywany na naszych serwerach.",
+      "step3Title": "Pobierz wynik",
+      "step3Desc": "Odbierz gotowy plik PDF od razu. Gdy wychodzisz, nic nie pozostaje.",
+      "wizardTitle": "Pierwszy raz w PDF Conduit?",
+      "wizardDesc": "Pozwól, aby Kreator przeprowadził Cię krok po kroku przez wybór, uporządkowanie i eksport.",
+      "wizardCta": "Uruchom Kreatora"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Witamy w PDF Conduit",
+      "message": "Darmowe narzędzia PDF działające bezpośrednio w przeglądarce — Twoje pliki są przetwarzane natychmiast i nigdy nie są przechowywane. Pierwszy raz? Kreator to najłatwiejszy sposób, aby zacząć.",
+      "cta": "Wypróbuj Kreatora",
+      "secondary": "Przeglądaj wszystkie narzędzia",
+      "dismiss": "Zamknij"
+    },
+    "help": "Pierwsze kroki",
+    "helpTitle": "Zobacz, jak działa PDF Conduit"
   },
   "privacy": {
     "title": "Prywatność",
     "description": "Jak PDF Conduit obchodzi się z Twoimi plikami — w skrócie: nie zatrzymuje ich.",
     "memoryTitle": "Twoje pliki nigdy nie są przechowywane",
-    "memoryBody": "Twoje pliki nigdy nie są zapisywane. Każda operacja przebiega na serwerze w pamięci (RAM): Twój plik jest dekodowany, przetwarzany i odsyłany w ramach jednego żądania, a następnie bajty są odrzucane — nigdy nie zapisujemy Twoich plików na dysku i nigdy nie przechowujemy ich później.",
+    "memoryBody": "Twoje pliki nigdy nie są przechowywane. Każda operacja odbywa się w całości w ramach jednego żądania — przesłany plik jest przetwarzany i zwracany bezpośrednio do Ciebie, a następnie w tej samej chwili usuwany. Nic nie jest zachowywane i nic nigdy nie jest wykorzystywane do innych celów.",
     "exceptionTitle": "Jeden tymczasowy wyjątek",
     "exceptionBody": "Konwersja dokumentów biurowych lub tekstowych (na przykład .docx, .xlsx, .pptx) wymaga bezokienkowego LibreOffice. Tylko na potrzeby tego kroku plik jest zapisywany w odizolowanym folderze tymczasowym, który jest usuwany natychmiast po zakończeniu konwersji. Zwykłe pliki PDF i obrazy nigdy nie dotykają dysku.",
     "accountTitle": "Bez konta, bez ściany śledzenia",
@@ -632,7 +656,8 @@
         "metaStrip": "Usuń metadane",
         "metaEdit": "Edytuj metadane"
       }
-    }
+    },
+    "mobileHint": "Edytor potoków działa najlepiej na większym ekranie."
   },
   "a11y": {
     "skipToContent": "Przejdź do treści"

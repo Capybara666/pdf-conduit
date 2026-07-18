@@ -196,13 +196,37 @@
       "privacy": "Privacidad",
       "github": "GitHub",
       "copy": "Tus archivos se procesan y nunca se almacenan. Gratis de usar."
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "subtitle": "Tres pasos. Sin cuenta, nada que instalar.",
+      "step1Title": "Elige una herramienta",
+      "step1Desc": "Elige lo que necesitas: combinar, comprimir, convertir, proteger y mucho más.",
+      "step2Title": "Añade tu archivo",
+      "step2Desc": "Arrástralo o búscalo. Tu archivo se procesa al instante y nunca se almacena en nuestros servidores.",
+      "step3Title": "Descarga tu resultado",
+      "step3Desc": "Obtén tu PDF terminado al momento. Cuando te vas, no queda nada.",
+      "wizardTitle": "¿Nuevo en PDF Conduit?",
+      "wizardDesc": "Deja que el Asistente guiado te acompañe paso a paso al seleccionar, organizar y exportar.",
+      "wizardCta": "Iniciar el Asistente guiado"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Te damos la bienvenida a PDF Conduit",
+      "message": "Herramientas PDF gratuitas que funcionan directamente en tu navegador: tus archivos se procesan al instante y nunca se almacenan. ¿Es tu primera vez? El Asistente guiado es la forma más fácil de empezar.",
+      "cta": "Probar el Asistente guiado",
+      "secondary": "Explorar todas las herramientas",
+      "dismiss": "Descartar"
+    },
+    "help": "Primeros pasos",
+    "helpTitle": "Descubre cómo funciona PDF Conduit"
   },
   "privacy": {
     "title": "Privacidad",
     "description": "Cómo trata PDF Conduit tus archivos — en resumen: no los conserva.",
     "memoryTitle": "Tus archivos nunca se almacenan",
-    "memoryBody": "Tus archivos nunca se guardan. Cada operación se ejecuta en el servidor en memoria (RAM): tu archivo subido se decodifica, se procesa y se devuelve dentro de una única solicitud, y luego los bytes se descartan — nunca escribimos tus archivos en disco ni los conservamos después.",
+    "memoryBody": "Tus archivos nunca se almacenan. Cada operación se realiza por completo dentro de una única solicitud: tu archivo se procesa y se te devuelve directamente, y luego se descarta en ese mismo instante. No se conserva nada y nada se utiliza jamás para ningún otro fin.",
     "exceptionTitle": "La única excepción temporal",
     "exceptionBody": "Convertir documentos de oficina o de texto (por ejemplo .docx, .xlsx, .pptx) requiere un LibreOffice sin interfaz. Solo para ese paso, el archivo se escribe en una carpeta temporal aislada que se elimina inmediatamente después de completarse la conversión. Los PDF y las imágenes normales nunca tocan el disco.",
     "accountTitle": "Sin cuenta, sin muro de seguimiento",
@@ -632,7 +656,8 @@
         "metaStrip": "Eliminar metadatos",
         "metaEdit": "Editar metadatos"
       }
-    }
+    },
+    "mobileHint": "El editor de flujos funciona mejor en una pantalla más grande."
   },
   "a11y": {
     "skipToContent": "Saltar al contenido"
