@@ -2,6 +2,7 @@ package com.pdfconduit.web.dto;
 
 import com.pdfconduit.core.analyze.PiiCategory;
 import com.pdfconduit.core.analyze.PiiFinding;
+import com.pdfconduit.core.analyze.PiiRegion;
 import com.pdfconduit.core.analyze.PiiScanResult;
 
 import java.util.LinkedHashMap;
@@ -27,17 +28,38 @@ public record PiiReportDto(
         Map<String, Integer> countsByCategory,
         List<Finding> findings) {
 
-    /** A single finding row (type + category as enum names, masked sample, page, occurrences). */
+    /**
+     * A single finding row (type + category as enum names, masked sample, page, occurrences)
+     * plus the on-page {@code regions} of every occurrence. Each region matches the redact
+     * tool's region shape ({@code pageIndex, x, y, width, height} in displayed-page points,
+     * top-left origin, 0-based page), so the frontend can feed them straight into Redact.
+     * {@code regions} is empty for special-category keyword findings.
+     */
     public record Finding(
             String type,
             String category,
             int page,
             String maskedSample,
-            int occurrences) {
+            int occurrences,
+            List<Region> regions) {
 
         static Finding of(PiiFinding f) {
+            List<Region> regions = f.regions().stream().map(Region::of).toList();
             return new Finding(
-                    f.type().name(), f.category().name(), f.page(), f.maskedSample(), f.occurrences());
+                    f.type().name(), f.category().name(), f.page(), f.maskedSample(),
+                    f.occurrences(), regions);
+        }
+    }
+
+    /**
+     * A redaction rectangle for one occurrence, mirroring
+     * {@link com.pdfconduit.web.dto.RedactRegionDto}: {@code pageIndex} is 0-based and the
+     * coordinates are displayed-page points with a top-left origin.
+     */
+    public record Region(int pageIndex, double x, double y, double width, double height) {
+
+        static Region of(PiiRegion r) {
+            return new Region(r.page(), r.x(), r.y(), r.width(), r.height());
         }
     }
 

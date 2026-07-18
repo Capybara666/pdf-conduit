@@ -108,6 +108,51 @@ class PiiScannerTest {
     }
 
     @Test
+    void valueFindingsCarryRegionsInRedactCoordinates() throws Exception {
+        // The email sits on its own line, drawn at x=70 near the top of the A4 page
+        // (baseline y=760 of 841.89). The health keyword is a context signal, not a value.
+        byte[] pdf = pdf(List.of(List.of(
+                EMAIL,
+                "The diagnosis is confidential.")));
+
+        PiiScanResult r = PiiScanner.scanBytes(pdf);
+
+        PiiFinding email = find(r, PiiType.EMAIL);
+        assertEquals(1, email.occurrences());
+        assertFalse(email.regions().isEmpty(), "value finding must carry at least one region");
+
+        PiiRegion box = email.regions().get(0);
+        assertEquals(0, box.page(), "region page is 0-based");
+        // Plausible, non-zero box overlapping the drawn text, in points, top-left origin.
+        assertTrue(box.width() > 40, "box should span the address: width=" + box.width());
+        assertTrue(box.height() > 3 && box.height() < 40, "glyph-height box: " + box.height());
+        assertTrue(box.x() >= 40 && box.x() < 200, "starts near the left margin: x=" + box.x());
+        assertTrue(box.y() > 0 && box.y() < 200, "sits in the upper text area: y=" + box.y());
+
+        // Special-category keyword flags never carry regions (nothing concrete to black out).
+        PiiFinding health = find(r, PiiType.HEALTH);
+        assertTrue(health.regions().isEmpty(), "special-category finding must have no regions");
+    }
+
+    @Test
+    void multipleOccurrencesYieldOneRegionEach() throws Exception {
+        // Same email twice on the same page → two occurrences, two distinct regions.
+        byte[] pdf = pdf(List.of(List.of(
+                "First " + EMAIL,
+                "Again " + EMAIL)));
+
+        PiiScanResult r = PiiScanner.scanBytes(pdf);
+
+        PiiFinding email = find(r, PiiType.EMAIL);
+        assertEquals(2, email.occurrences());
+        assertEquals(2, email.regions().size(), "one region per occurrence");
+        // The two occurrences are on different lines → different y.
+        double y0 = email.regions().get(0).y();
+        double y1 = email.regions().get(1).y();
+        assertTrue(Math.abs(y1 - y0) > 5, "occurrences on separate lines: " + y0 + " vs " + y1);
+    }
+
+    @Test
     void pageNumbersAreCorrectForMultiPage() throws Exception {
         byte[] pdf = pdf(List.of(
                 List.of("Cover page, nothing sensitive here."),

@@ -49,6 +49,23 @@ class GdprScanTest {
     }
 
     @Test
+    void scan_valueFinding_includesRedactRegions() throws Exception {
+        // A single email → one finding whose regions can be fed straight into the redact tool
+        // (pageIndex + x/y/width/height in displayed-page points, top-left origin, 0-based page).
+        byte[] pdf = TestPdfs.withText("Contact john.doe@example.com");
+
+        mvc().perform(multipart("/api/gdpr-scan").file(pdf(pdf)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.findings[0].type").value("EMAIL"))
+            .andExpect(jsonPath("$.findings[0].regions").isArray())
+            .andExpect(jsonPath("$.findings[0].regions[0].pageIndex").value(0))
+            .andExpect(jsonPath("$.findings[0].regions[0].width")
+                .value(org.hamcrest.Matchers.greaterThan(5.0)))
+            .andExpect(jsonPath("$.findings[0].regions[0].height")
+                .value(org.hamcrest.Matchers.greaterThan(3.0)));
+    }
+
+    @Test
     void scan_cleanPdf_reportsNoFindings() throws Exception {
         byte[] pdf = TestPdfs.withText("Nothing sensitive here, just a friendly note.");
 
