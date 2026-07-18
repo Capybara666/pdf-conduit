@@ -88,7 +88,12 @@ export const OP_ICONS: Record<string, string> = {
   ),
 
   // --- Existing single-path glyphs, wrapped into the uniform format ---
-  'to-pdf': g('<path d="M4 4h16v16H4z M8 8h8 M8 12h8 M8 16h5"/>'),
+  'to-pdf': g(
+    '<path d="M11 4 H17 L20 7 V20 H11 Z"/>' +
+      '<path d="M17 4 V7 H20"/>' +
+      '<path d="M3 12 H10.5"/>' +
+      '<path d="M8 9.5 L10.5 12 L8 14.5"/>',
+  ),
   'to-images': g(
     '<path d="M4 6 H20 V18 H4 Z"/>' +
       '<circle cx="8.5" cy="10" r="1.4"/>' +
@@ -124,7 +129,10 @@ export const OP_ICONS: Record<string, string> = {
     '<path d="M12 3 L19 6 V11 C19 15.5 16 18.6 12 20.2 C8 18.6 5 15.5 5 11 V6 Z"/>' +
       '<path d="M8.8 11.6 L11 13.8 L15.2 9.2"/>',
   ),
-  metadata: g('<path d="M12 8a2 2 0 1 0 0-.01 M4 6h16v12H4z M8 14h8 M8 17h5"/>'),
+  metadata: g(
+    '<path d="M4 13 L11 6 H18 V13 L11 20 Z"/>' +
+      '<circle cx="15" cy="9.5" r="1.1"/>',
+  ),
   wizard: g(
     '<path d="M12 3.2 L14.05 9.1 L20.2 9.25 L15.25 12.95 L17.05 18.9 L12 15.35 L6.95 18.9 L8.75 12.95 L3.8 9.25 L9.95 9.1 Z"/>',
   ),
