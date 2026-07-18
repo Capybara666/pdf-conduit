@@ -566,9 +566,8 @@
         "sample": "Amostra (mascarada)",
         "occurrences": "Contagem"
       },
-      "redactCta": "Ocultar este PDF →",
-      "proBadge": "Pro",
-      "proTeaser": "Ocultação automática dos dados detetados — brevemente no Pro"
+      "redactCta": "Ocultar os dados detetados",
+      "redactHint": "Reveja as áreas destacadas e aplique — é grátis."
     }
   },
   "pageGrid": {

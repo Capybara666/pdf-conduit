@@ -211,6 +211,18 @@ export class PdfViewerComponent implements OnDestroy {
     return this.regions();
   }
 
+  /**
+   * Replace the drawn regions with a pre-computed set (PDF points, top-left,
+   * 0-based page index) — used to seed boxes handed off from the GDPR scan.
+   * They render via the same `r.x * scale` mapping as user-drawn boxes, so no
+   * conversion is needed here: the input is already in the viewer's point space.
+   */
+  setRegions(regions: RegionRect[]): void {
+    const next = regions.slice();
+    this.regions.set(next);
+    this.regionsChange.emit(next);
+  }
+
   removeRegion(index: number): void {
     const next = this.regions().slice();
     next.splice(index, 1);

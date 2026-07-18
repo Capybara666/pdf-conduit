@@ -1,11 +1,12 @@
 import { NgClass } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 
-import { ApiError, PiiReport } from '../../core/api.models';
+import { ApiError, PiiReport, RedactRegion } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { errorCopyKeys } from '../../core/error-copy';
+import { RedactHandoffService } from '../../core/redact-handoff.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
@@ -38,7 +39,6 @@ interface CategoryView {
   standalone: true,
   imports: [
     NgClass,
-    RouterLink,
     TranslocoModule,
     FileDropZoneComponent,
     PageHeaderComponent,
@@ -49,6 +49,8 @@ interface CategoryView {
 })
 export class GdprScanPage {
   private readonly api = inject(ApiService);
+  private readonly handoff = inject(RedactHandoffService);
+  private readonly router = inject(Router);
 
   protected readonly file = signal<File | null>(null);
   protected readonly loading = signal(false);
@@ -72,6 +74,14 @@ export class GdprScanPage {
     this.categories()
       .filter((c) => c.count > 0)
       .map((c) => c.key),
+  );
+
+  /**
+   * True when at least one finding carries redact regions — the free
+   * "Redact detected data" CTA only appears then (keyword flags have none).
+   */
+  protected readonly hasRedactable = computed(() =>
+    (this.report()?.findings ?? []).some((f) => f.regions?.length),
   );
 
   /** Findings honouring the active category filter. */
@@ -113,6 +123,34 @@ export class GdprScanPage {
 
   setFilter(key: string | null): void {
     this.filter.set(this.filter() === key ? null : key);
+  }
+
+  /**
+   * Free redaction handoff: gather every finding's regions (already in the
+   * redact viewer's point space), stash them with the scanned file, then open
+   * the redact page — which pre-draws the boxes over the detected text.
+   */
+  redactDetected(): void {
+    const f = this.file();
+    const r = this.report();
+    if (!f || !r) return;
+    const regions = this.dedupe(r.findings.flatMap((x) => x.regions ?? []));
+    if (!regions.length) return;
+    this.handoff.set(f, regions);
+    this.router.navigate(['/', 'redact']);
+  }
+
+  /** Drop exact-duplicate boxes (same page + rounded rect) to avoid stacked overlays. */
+  private dedupe(regions: RedactRegion[]): RedactRegion[] {
+    const seen = new Set<string>();
+    const out: RedactRegion[] = [];
+    for (const g of regions) {
+      const key = `${g.pageIndex}:${g.x.toFixed(1)}:${g.y.toFixed(1)}:${g.width.toFixed(1)}:${g.height.toFixed(1)}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(g);
+    }
+    return out;
   }
 
   /** Translation keys for the current error (title/detail/hint), via the shared copy map. */

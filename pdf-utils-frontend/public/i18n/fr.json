@@ -566,9 +566,8 @@
         "sample": "Échantillon (masqué)",
         "occurrences": "Nombre"
       },
-      "redactCta": "Caviarder ce PDF →",
-      "proBadge": "Pro",
-      "proTeaser": "Caviardage automatique des données détectées — bientôt dans Pro"
+      "redactCta": "Caviarder les données détectées",
+      "redactHint": "Vérifiez les zones surlignées, puis appliquez — c'est gratuit."
     }
   },
   "pageGrid": {

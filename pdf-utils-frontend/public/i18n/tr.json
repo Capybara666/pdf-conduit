@@ -566,9 +566,8 @@
         "sample": "Örnek (maskeli)",
         "occurrences": "Sayı"
       },
-      "redactCta": "Bu PDF'yi karart →",
-      "proBadge": "Pro",
-      "proTeaser": "Tespit edilen verileri otomatik karartma — Pro'da yakında"
+      "redactCta": "Algılanan verileri karart",
+      "redactHint": "Vurgulanan alanları gözden geçirip uygulayın — ücretsiz."
     }
   },
   "pageGrid": {

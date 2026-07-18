@@ -566,9 +566,8 @@
         "sample": "Campione (mascherato)",
         "occurrences": "Conteggio"
       },
-      "redactCta": "Oscura questo PDF →",
-      "proBadge": "Pro",
-      "proTeaser": "Oscuramento automatico dei dati rilevati — in arrivo in Pro"
+      "redactCta": "Oscura i dati rilevati",
+      "redactHint": "Controlla le aree evidenziate, poi applica: è gratis."
     }
   },
   "pageGrid": {

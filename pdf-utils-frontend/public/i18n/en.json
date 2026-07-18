@@ -566,9 +566,8 @@
         "sample": "Sample (masked)",
         "occurrences": "Count"
       },
-      "redactCta": "Redact this PDF →",
-      "proBadge": "Pro",
-      "proTeaser": "Auto-redact detected data — coming in Pro"
+      "redactCta": "Redact detected data",
+      "redactHint": "Review the highlighted areas, then apply — it's free."
     }
   },
   "pageGrid": {

@@ -566,9 +566,8 @@
         "sample": "Muestra (enmascarada)",
         "occurrences": "Recuento"
       },
-      "redactCta": "Redactar este PDF →",
-      "proBadge": "Pro",
-      "proTeaser": "Redacción automática de los datos detectados: próximamente en Pro"
+      "redactCta": "Ocultar los datos detectados",
+      "redactHint": "Revisa las áreas resaltadas y aplícalas: es gratis."
     }
   },
   "pageGrid": {

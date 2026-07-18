@@ -1,9 +1,10 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { RedactHandoffService } from '../../core/redact-handoff.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { PdfViewerComponent, RegionRect } from '../../shared/pdf-viewer/pdf-viewer.component';
@@ -48,6 +49,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
               [file]="file()"
               [drawable]="true"
               [scale]="1.3"
+              (loaded)="onViewerLoaded()"
               (regionsChange)="regions.set($event)"
             />
           </div>
@@ -154,16 +156,49 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     `,
   ],
 })
-export class RedactPage {
+export class RedactPage implements OnInit {
   @ViewChild('viewer') private viewer?: PdfViewerComponent;
 
   protected readonly file = signal<File | null>(null);
   protected readonly regions = signal<RegionRect[]>([]);
   protected readonly state = new OperationState();
 
+  private readonly handoff = inject(RedactHandoffService);
+
+  /**
+   * Regions handed off from the GDPR scan, waiting to be drawn once the viewer
+   * has loaded the file. Seeded before draw (regions cleared during reload), so
+   * we defer to the viewer's `loaded` event, then clear this so re-picking a
+   * file later doesn't re-seed.
+   */
+  private pendingRegions: RegionRect[] = [];
+
   constructor(private readonly api: ApiService) {}
 
+  ngOnInit(): void {
+    const h = this.handoff.consume();
+    if (!h) return;
+    // Same point space as the viewer's internal regions (top-left, 0-based,
+    // display-page points) — no conversion needed, just seed after load.
+    this.pendingRegions = h.regions;
+    this.file.set(h.file);
+    this.regions.set([]);
+    this.state.reset();
+  }
+
+  /**
+   * The viewer clears regions during its reload, so pre-drawn handoff boxes are
+   * applied here — after pages exist and before the user interacts. Cleared so a
+   * subsequent file choice starts blank.
+   */
+  onViewerLoaded(): void {
+    if (!this.pendingRegions.length) return;
+    this.viewer?.setRegions(this.pendingRegions);
+    this.pendingRegions = [];
+  }
+
   onFile(f: File | null): void {
+    this.pendingRegions = [];
     this.file.set(f);
     this.regions.set([]);
     this.state.reset();

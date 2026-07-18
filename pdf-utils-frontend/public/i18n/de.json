@@ -566,9 +566,8 @@
         "sample": "Beispiel (maskiert)",
         "occurrences": "Anzahl"
       },
-      "redactCta": "Dieses PDF schwärzen →",
-      "proBadge": "Pro",
-      "proTeaser": "Erkannte Daten automatisch schwärzen – kommt in Pro"
+      "redactCta": "Erkannte Daten schwärzen",
+      "redactHint": "Prüfen Sie die markierten Bereiche und wenden Sie die Schwärzung an – kostenlos."
     }
   },
   "pageGrid": {

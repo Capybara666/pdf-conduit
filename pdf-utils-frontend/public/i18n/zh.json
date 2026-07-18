@@ -566,9 +566,8 @@
         "sample": "样本（已掩码）",
         "occurrences": "次数"
       },
-      "redactCta": "涂黑此 PDF →",
-      "proBadge": "Pro",
-      "proTeaser": "自动涂黑检测到的数据——即将在 Pro 中推出"
+      "redactCta": "涂黑检测到的数据",
+      "redactHint": "查看高亮区域后应用即可，完全免费。"
     }
   },
   "pageGrid": {

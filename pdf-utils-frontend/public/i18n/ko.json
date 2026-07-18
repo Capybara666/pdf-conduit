@@ -566,9 +566,8 @@
         "sample": "샘플(마스킹됨)",
         "occurrences": "횟수"
       },
-      "redactCta": "이 PDF 마스킹 →",
-      "proBadge": "Pro",
-      "proTeaser": "감지된 데이터 자동 마스킹 — Pro에서 곧 제공"
+      "redactCta": "감지된 데이터 마스킹",
+      "redactHint": "강조된 영역을 확인한 후 적용하세요 — 무료입니다."
     }
   },
   "pageGrid": {

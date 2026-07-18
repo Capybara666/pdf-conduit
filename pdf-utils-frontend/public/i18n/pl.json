@@ -566,9 +566,8 @@
         "sample": "Próbka (zamaskowana)",
         "occurrences": "Liczba"
       },
-      "redactCta": "Zredaguj ten PDF →",
-      "proBadge": "Pro",
-      "proTeaser": "Automatyczne zamazywanie wykrytych danych — wkrótce w Pro"
+      "redactCta": "Zredaguj wykryte dane",
+      "redactHint": "Sprawdź zaznaczone obszary i zastosuj — za darmo."
     }
   },
   "pageGrid": {

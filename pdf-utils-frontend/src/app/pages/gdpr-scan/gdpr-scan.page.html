@@ -141,14 +141,15 @@
         </div>
       }
 
-      <!-- Next-step CTAs -->
-      <div class="cta-row">
-        <a class="btn btn-primary" [routerLink]="['/', 'redact']">{{ t('pages.gdprScan.redactCta') }}</a>
-        <div class="pro-teaser" role="note">
-          <span class="pro-badge">{{ t('pages.gdprScan.proBadge') }}</span>
-          <span>{{ t('pages.gdprScan.proTeaser') }}</span>
+      <!-- Free redaction handoff — only when findings carry redactable regions. -->
+      @if (hasRedactable()) {
+        <div class="cta-row">
+          <button type="button" class="btn btn-primary" (click)="redactDetected()">
+            {{ t('pages.gdprScan.redactCta') }}
+          </button>
+          <span class="cta-hint" role="note">{{ t('pages.gdprScan.redactHint') }}</span>
         </div>
-      </div>
+      }
     </div>
   }
 </section>

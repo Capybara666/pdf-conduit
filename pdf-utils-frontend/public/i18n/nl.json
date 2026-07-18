@@ -566,9 +566,8 @@
         "sample": "Voorbeeld (gemaskeerd)",
         "occurrences": "Aantal"
       },
-      "redactCta": "Deze PDF redigeren →",
-      "proBadge": "Pro",
-      "proTeaser": "Gedetecteerde gegevens automatisch redigeren — binnenkort in Pro"
+      "redactCta": "Gedetecteerde gegevens redigeren",
+      "redactHint": "Controleer de gemarkeerde gebieden en pas toe — het is gratis."
     }
   },
   "pageGrid": {

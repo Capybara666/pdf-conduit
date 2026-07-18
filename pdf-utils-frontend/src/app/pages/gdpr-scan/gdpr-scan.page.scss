@@ -263,32 +263,9 @@ table.findings {
   margin-top: 0.5rem;
 }
 
-a.btn-primary {
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-}
-
-.pro-teaser {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.8rem;
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius);
+.cta-hint {
   color: var(--text-muted);
   font-size: 0.85rem;
-
-  .pro-badge {
-    font-size: 0.68rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--accent-contrast);
-    background: var(--accent);
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-  }
 }
 
 .report {

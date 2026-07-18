@@ -51,6 +51,20 @@ export interface MetadataDto {
 /** GDPR risk level for a scanned document (mirrors the backend `RiskLevel`). */
 export type PiiRisk = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
 
+/**
+ * A redaction rectangle in displayed-page PDF points: top-left origin (x right,
+ * y down), page rotation already applied, 0-based `pageIndex`. Mirrors the
+ * backend `RedactRegionDto` and the viewer's `RegionRect` — the scan returns
+ * findings' regions in this exact space so they feed straight into `/api/redact`.
+ */
+export interface RedactRegion {
+  pageIndex: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 /** A single distinct piece of personal data found (masked — never the raw value). */
 export interface PiiFinding {
   /** `PiiType` enum name, e.g. `EMAIL`, `IBAN`, `PESEL`. */
@@ -63,6 +77,12 @@ export interface PiiFinding {
   maskedSample: string;
   /** How many times this exact value occurred across the document. */
   occurrences: number;
+  /**
+   * Bounding boxes for every occurrence of this value (redact-ready points).
+   * Concrete value findings (email/phone/IBAN/…) carry regions; SPECIAL_CATEGORY
+   * keyword flags come back with an empty array.
+   */
+  regions: RedactRegion[];
 }
 
 /** GDPR / PII scan report from `POST /api/gdpr-scan` (JSON, not a download). */

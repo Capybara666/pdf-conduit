@@ -566,9 +566,8 @@
         "sample": "サンプル（マスク済み）",
         "occurrences": "件数"
       },
-      "redactCta": "このPDFを黒塗り →",
-      "proBadge": "Pro",
-      "proTeaser": "検出データの自動黒塗り — Proで近日提供"
+      "redactCta": "検出したデータを黒塗り",
+      "redactHint": "ハイライトされた箇所を確認して適用してください（無料）。"
     }
   },
   "pageGrid": {
