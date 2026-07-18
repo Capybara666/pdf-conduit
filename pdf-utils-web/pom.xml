@@ -21,7 +21,7 @@
       pdf-utils reactor, not spring-boot-starter-parent).
     -->
     <properties>
-        <spring-boot.version>3.3.5</spring-boot.version>
+        <spring-boot.version>3.3.13</spring-boot.version>
         <!-- Retain method parameter names so Spring can bind @RequestParam without
              explicit names (starter-parent enables this; our custom parent does not). -->
         <maven.compiler.parameters>true</maven.compiler.parameters>
