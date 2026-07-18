@@ -38,12 +38,16 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       @if (files().length) {
         <ul class="reorder-list">
           @for (f of files(); track f; let i = $index) {
+            @if (dragIndex() !== null && dropIndex() === i) {
+              <li class="drop-marker" aria-hidden="true"></li>
+            }
             <li
               [class.dragging]="dragIndex() === i"
               draggable="true"
               (dragstart)="onDragStart(i)"
               (dragover)="onDragOver($event, i)"
-              (dragend)="dragIndex.set(null)"
+              (drop)="onDrop($event)"
+              (dragend)="onDragEnd()"
             >
               <span class="grip" aria-hidden="true">⠿</span>
               <span class="idx">{{ i + 1 }}</span>
@@ -70,6 +74,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
                 [attr.aria-label]="'common.remove' | transloco"
               >✕</button>
             </li>
+          }
+          @if (dragIndex() !== null && dropIndex() === files().length) {
+            <li class="drop-marker" aria-hidden="true"></li>
           }
         </ul>
       }
@@ -103,13 +110,34 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         [loadingLabel]="'pages.merge.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
+        (retry)="submit()"
       />
     </section>
   `,
+  styles: [
+    `
+      /* Slim insertion marker: a horizontal bar sitting in the gap where the
+         dragged row will land. Overrides the global .reorder-list li chrome so
+         it reads as a thin accent bar, not a full tile. */
+      .reorder-list li.drop-marker {
+        height: 3px;
+        min-height: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        border-radius: 2px;
+        background: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent-soft);
+      }
+    `,
+  ],
 })
 export class MergePage {
   protected readonly files = signal<File[]>([]);
+  /** Index of the row currently being dragged (drives the source-row fade). */
   protected readonly dragIndex = signal<number | null>(null);
+  /** Insertion index (0..files().length) where a drop would land, or null. */
+  protected readonly dropIndex = signal<number | null>(null);
   protected readonly outputName = new FormControl('', { nonNullable: true });
   protected readonly state = new OperationState();
   protected readonly formatBytes = formatBytes;
@@ -147,15 +175,40 @@ export class MergePage {
     this.dragIndex.set(i);
   }
 
+  /**
+   * Move the insertion marker (not the list) while dragging: the cursor in the
+   * top half of a row inserts BEFORE it, the bottom half AFTER it — so the
+   * marker can also land above the first row (index 0) and below the last
+   * (index N). The list is never mutated here; it only commits on drop.
+   */
   onDragOver(ev: DragEvent, over: number): void {
     ev.preventDefault();
+    if (this.dragIndex() === null) return;
+    const el = ev.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const leading = ev.clientY < rect.top + rect.height / 2;
+    this.dropIndex.set(leading ? over : over + 1);
+  }
+
+  onDrop(ev: DragEvent): void {
+    ev.preventDefault();
     const from = this.dragIndex();
-    if (from === null || from === over) return;
-    const next = this.files().slice();
-    const [moved] = next.splice(from, 1);
-    next.splice(over, 0, moved);
-    this.files.set(next);
-    this.dragIndex.set(over);
+    const to = this.dropIndex();
+    if (from !== null && to !== null) {
+      const next = this.files().slice();
+      const [moved] = next.splice(from, 1);
+      // Same-list off-by-one: removing `from` shifts everything after it down by
+      // one, so a marker at `to` past the source maps to `to - 1`.
+      const target = to > from ? to - 1 : to;
+      next.splice(target, 0, moved);
+      this.files.set(next);
+    }
+    this.onDragEnd();
+  }
+
+  onDragEnd(): void {
+    this.dragIndex.set(null);
+    this.dropIndex.set(null);
   }
 
   submit(): void {
