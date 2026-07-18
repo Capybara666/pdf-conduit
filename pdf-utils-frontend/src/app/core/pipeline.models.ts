@@ -72,14 +72,21 @@ export interface PipelineModelJson {
   connections: ConnectionJson[];
 }
 
-/** Entry from `GET /api/pipeline/kinds` (best-effort; we fall back if absent). */
+/**
+ * Entry from `GET /api/pipeline/kinds` (best-effort; we fall back if absent).
+ * Field names mirror the backend `NodeKindInfo` record wire shape exactly
+ * (`name`, `label`, `isSource`, `isReduce`, `isExport`) — Jackson serialises the
+ * record components verbatim, so these are load-bearing.
+ */
 export interface NodeKindInfo {
   name: NodeKindName;
   label: string;
-  /** REDUCE collapses a bundle to one output; MAP is 1:1. Source has neither. */
-  cardinality?: 'MAP' | 'REDUCE';
-  source?: boolean;
-  export?: boolean;
+  /** The file-source node (filtered out of the palette; added by its own chip). */
+  isSource: boolean;
+  /** Collapses a bundle into one output (Merge). MAP ops are 1:1 (`false`). */
+  isReduce: boolean;
+  /** Terminal export whose output is not a PDF (To Images / To Text). */
+  isExport: boolean;
 }
 
 /** Validation error from `POST /api/pipeline/validate`. */

@@ -11,20 +11,25 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { PipelineCanvasComponent } from './canvas/pipeline-canvas.component';
 import { PipelineInspectorComponent } from './canvas/pipeline-inspector.component';
 
-/** Palette fallback if `GET /api/pipeline/kinds` is unavailable. Names match NodeKind. */
+/**
+ * Palette fallback if `GET /api/pipeline/kinds` is unavailable. Field names and
+ * flags mirror the backend `/api/pipeline/kinds` wire shape (minus SOURCE, which
+ * the palette adds via its own chip): `isReduce` marks Merge, `isExport` marks
+ * the non-PDF terminals. Names match NodeKind.
+ */
 const FALLBACK_KINDS: NodeKindInfo[] = [
-  { name: 'MERGE', label: 'Merge', cardinality: 'REDUCE' },
-  { name: 'IMAGES_TO_PDF', label: 'To PDF', cardinality: 'MAP' },
-  { name: 'EXTRACT', label: 'Extract', cardinality: 'MAP' },
-  { name: 'COMPRESS', label: 'Compress', cardinality: 'MAP' },
-  { name: 'ROTATE', label: 'Rotate', cardinality: 'MAP' },
-  { name: 'ARRANGE', label: 'Arrange', cardinality: 'MAP' },
-  { name: 'PROTECT', label: 'Protect', cardinality: 'MAP' },
-  { name: 'UNLOCK', label: 'Unlock', cardinality: 'MAP' },
-  { name: 'METADATA', label: 'Metadata', cardinality: 'MAP' },
-  { name: 'WATERMARK', label: 'Watermark', cardinality: 'MAP' },
-  { name: 'TO_IMAGES', label: 'To Images', cardinality: 'MAP', export: true },
-  { name: 'TO_TEXT', label: 'To Text', cardinality: 'MAP', export: true },
+  { name: 'MERGE', label: 'Merge', isSource: false, isReduce: true, isExport: false },
+  { name: 'IMAGES_TO_PDF', label: 'To PDF', isSource: false, isReduce: false, isExport: false },
+  { name: 'EXTRACT', label: 'Extract', isSource: false, isReduce: false, isExport: false },
+  { name: 'COMPRESS', label: 'Compress', isSource: false, isReduce: false, isExport: false },
+  { name: 'ROTATE', label: 'Rotate', isSource: false, isReduce: false, isExport: false },
+  { name: 'ARRANGE', label: 'Arrange', isSource: false, isReduce: false, isExport: false },
+  { name: 'PROTECT', label: 'Protect', isSource: false, isReduce: false, isExport: false },
+  { name: 'UNLOCK', label: 'Unlock', isSource: false, isReduce: false, isExport: false },
+  { name: 'METADATA', label: 'Metadata', isSource: false, isReduce: false, isExport: false },
+  { name: 'WATERMARK', label: 'Watermark', isSource: false, isReduce: false, isExport: false },
+  { name: 'TO_IMAGES', label: 'To Images', isSource: false, isReduce: false, isExport: true },
+  { name: 'TO_TEXT', label: 'To Text', isSource: false, isReduce: false, isExport: true },
 ];
 
 /** NodeKind → operation id used for i18n label lookup (`op.<id>.label`). */
@@ -238,7 +243,8 @@ export class PipelinePage implements OnInit, AfterViewInit {
     // Best-effort: use the backend's node-kind catalog; fall back if absent.
     this.api.getPipelineKinds().subscribe({
       next: (ks) => {
-        if (ks?.length) this.kinds.set(ks.filter((k) => k.name !== 'SOURCE'));
+        // SOURCE has its own dedicated palette chip; drop it from the op list.
+        if (ks?.length) this.kinds.set(ks.filter((k) => !k.isSource));
       },
       error: () => {
         /* keep FALLBACK_KINDS */
