@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /** Builds in-memory attachment download responses (a single file, or many zipped). */
@@ -15,12 +16,23 @@ public final class Responses {
 
     private Responses() {}
 
+    /**
+     * Builds a UTF-8-safe {@code attachment} Content-Disposition. Non-ASCII names (Polish, CJK, …)
+     * are RFC 5987 encoded as {@code filename*=UTF-8''…}; passing the charset makes Spring emit both
+     * that and an ASCII-sanitised {@code filename=} fallback for legacy clients.
+     */
+    public static String contentDisposition(String filename) {
+        return ContentDisposition.attachment()
+            .filename(filename, StandardCharsets.UTF_8)
+            .build()
+            .toString();
+    }
+
     /** An {@code attachment} response with the given bytes, filename and content type. */
     public static ResponseEntity<byte[]> file(byte[] bytes, String filename, MediaType type) {
         return ResponseEntity.ok()
             .contentType(type)
-            .header(HttpHeaders.CONTENT_DISPOSITION,
-                ContentDisposition.attachment().filename(filename).build().toString())
+            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition(filename))
             .contentLength(bytes.length)
             .body(bytes);
     }

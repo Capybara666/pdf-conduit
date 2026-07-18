@@ -48,4 +48,25 @@ class ZipsTest {
         assertTrue(names.contains("passwd"), names.toString());
         assertTrue(names.contains("a.pdf"), names.toString());
     }
+
+    /** P7: batch inputs sharing a basename must not overwrite each other in the archive. */
+    @Test
+    void zip_deduplicatesCollidingBasenames() throws IOException {
+        byte[] archive = Zips.zip(List.of(
+            new NamedBytes("report.pdf", new byte[]{1}),
+            new NamedBytes("a/report.pdf", new byte[]{2}),
+            new NamedBytes("b/report.pdf", new byte[]{3})));
+
+        List<String> names = new ArrayList<>();
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(archive))) {
+            for (ZipEntry e; (e = zis.getNextEntry()) != null; ) names.add(e.getName());
+        }
+
+        // Three inputs collide on "report.pdf" → three distinct entries, none lost.
+        assertEquals(3, names.size(), names.toString());
+        assertEquals(3, names.stream().distinct().count(), names.toString());
+        assertTrue(names.contains("report.pdf"), names.toString());
+        assertTrue(names.contains("report_2.pdf"), names.toString());
+        assertTrue(names.contains("report_3.pdf"), names.toString());
+    }
 }

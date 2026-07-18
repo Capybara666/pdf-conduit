@@ -20,7 +20,6 @@ import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Params;
 import com.pdfconduit.web.support.Responses;
 import com.pdfconduit.web.support.Uploads;
-import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -117,8 +116,7 @@ public class OperationsController {
             String name = MemoryOperations.outputName(OperationType.COMPRESS, in.filename());
             return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                    ContentDisposition.attachment().filename(name).build().toString())
+                .header(HttpHeaders.CONTENT_DISPOSITION, Responses.contentDisposition(name))
                 .header("X-Target-Reached", String.valueOf(r.targetReached()))
                 .header("X-Original-Bytes", String.valueOf(r.originalBytes()))
                 .header("X-Result-Bytes", String.valueOf(r.resultBytes()))
