@@ -167,6 +167,89 @@
   }
 }
 
+/* ================= How it works ================= */
+.how-steps {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.how-step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.how-badge {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.how-step-title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.how-step-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.how-wizard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.how-wizard-copy {
+  flex: 1 1 20rem;
+}
+
+.how-wizard-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.how-wizard-desc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.how-wizard-cta {
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
 /* ===================== Tools ===================== */
 .feature-grid {
   display: grid;
@@ -423,6 +506,12 @@
     grid-template-columns: 1fr;
   }
   .plans {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .how-steps {
     grid-template-columns: 1fr;
   }
 }

@@ -5,6 +5,7 @@
     <div class="scrim" aria-hidden="true" (click)="closeDrawer()"></div>
     <app-sidebar [class.open]="drawerOpen()"></app-sidebar>
     <main id="content" class="content" tabindex="-1" #content>
+      <app-welcome-banner />
       <router-outlet></router-outlet>
     </main>
   </div>

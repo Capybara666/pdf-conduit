@@ -1,0 +1,34 @@
+@if (!onboarding.dismissed()) {
+  <aside
+    class="welcome"
+    role="region"
+    [attr.aria-label]="'onboarding.welcome.title' | transloco"
+  >
+    <p class="welcome-message">{{ 'onboarding.welcome.message' | transloco }}</p>
+
+    <div class="welcome-actions">
+      <a class="btn btn-primary" routerLink="/wizard">
+        {{ 'onboarding.welcome.cta' | transloco }}
+      </a>
+      <a class="btn" routerLink="/" fragment="tools">
+        {{ 'onboarding.welcome.secondary' | transloco }}
+      </a>
+    </div>
+
+    <button
+      type="button"
+      class="welcome-dismiss"
+      (click)="onboarding.dismiss()"
+      [attr.aria-label]="'onboarding.welcome.dismiss' | transloco"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M6 6l12 12 M18 6 6 18"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+  </aside>
+}

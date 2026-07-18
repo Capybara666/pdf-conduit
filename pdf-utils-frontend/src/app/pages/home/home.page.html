@@ -73,6 +73,40 @@
     </div>
   </section>
 
+  <!-- ================= How it works ================= -->
+  <section id="how-it-works" class="how" aria-labelledby="how-title">
+    <div class="section-head">
+      <h2 id="how-title">{{ 'home.how.title' | transloco }}</h2>
+      <p>{{ 'home.how.subtitle' | transloco }}</p>
+    </div>
+
+    <ol class="how-steps">
+      <li class="how-step">
+        <span class="how-badge" aria-hidden="true">1</span>
+        <h3 class="how-step-title">{{ 'home.how.step1Title' | transloco }}</h3>
+        <p class="how-step-desc">{{ 'home.how.step1Desc' | transloco }}</p>
+      </li>
+      <li class="how-step">
+        <span class="how-badge" aria-hidden="true">2</span>
+        <h3 class="how-step-title">{{ 'home.how.step2Title' | transloco }}</h3>
+        <p class="how-step-desc">{{ 'home.how.step2Desc' | transloco }}</p>
+      </li>
+      <li class="how-step">
+        <span class="how-badge" aria-hidden="true">3</span>
+        <h3 class="how-step-title">{{ 'home.how.step3Title' | transloco }}</h3>
+        <p class="how-step-desc">{{ 'home.how.step3Desc' | transloco }}</p>
+      </li>
+    </ol>
+
+    <div class="how-wizard">
+      <div class="how-wizard-copy">
+        <h3 class="how-wizard-title">{{ 'home.how.wizardTitle' | transloco }}</h3>
+        <p class="how-wizard-desc">{{ 'home.how.wizardDesc' | transloco }}</p>
+      </div>
+      <a class="btn btn-primary how-wizard-cta" routerLink="/wizard">{{ 'home.how.wizardCta' | transloco }}</a>
+    </div>
+  </section>
+
   <!-- ===================== Tools ===================== -->
   <section id="tools" class="tools" aria-labelledby="tools-title">
     <div class="section-head">

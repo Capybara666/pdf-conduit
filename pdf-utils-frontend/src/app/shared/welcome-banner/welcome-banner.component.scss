@@ -1,0 +1,88 @@
+:host {
+  display: block;
+}
+
+.welcome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .welcome {
+    animation: welcome-in 0.24s ease-out;
+  }
+}
+
+@keyframes welcome-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.welcome-message {
+  flex: 1 1 20rem;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+
+  .btn {
+    text-decoration: none;
+  }
+}
+
+.welcome-dismiss {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: calc(var(--radius) - 4px);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+
+  svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+  }
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+/* On narrow widths the CTAs stack under the message and the dismiss stays put. */
+@media (max-width: 640px) {
+  .welcome-actions {
+    flex: 1 1 100%;
+    order: 3;
+  }
+}

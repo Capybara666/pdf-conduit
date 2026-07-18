@@ -57,6 +57,7 @@
 .header-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -125,6 +126,33 @@
     .quota-count {
       color: var(--danger);
     }
+  }
+}
+
+.help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.25rem;
+  padding: 0 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
+
+  .help-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 }
 
@@ -238,7 +266,42 @@
 
 @media (max-width: 640px) {
   .health-text,
-  .quota-text {
+  .quota-text,
+  .help-text {
     display: none;
+  }
+
+  /* Tighten the row and keep wrapped actions aligned to the right edge. */
+  .header-actions {
+    gap: 0.4rem;
+    justify-content: flex-end;
+  }
+
+  /* Icon-only: keep it square so the accessible name lives on the title. */
+  .help-link {
+    padding: 0 0.55rem;
+  }
+
+  /* Selects show only the icon + short glyph here, so they can shrink to fit
+     two side by side without overflowing the header. */
+  .lang-select,
+  .theme-select {
+    max-width: 5.5rem;
+  }
+}
+
+/* Smallest phones: if the wrapped actions still can't share a line with the
+   brand, let them drop to their own full-width row below it. */
+@media (max-width: 400px) {
+  .app-header {
+    flex-wrap: wrap;
+    height: auto;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    row-gap: 0.5rem;
+  }
+
+  .header-actions {
+    width: 100%;
   }
 }

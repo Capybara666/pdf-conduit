@@ -15,6 +15,7 @@ import { LanguageService } from './core/i18n/language.service';
 import { HeaderComponent } from './layout/header/header.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { ToastContainerComponent } from './shared/toast/toast-container.component';
+import { WelcomeBannerComponent } from './shared/welcome-banner/welcome-banner.component';
 
 /**
  * App shell. Owns the mobile off-canvas navigation state: below the mobile
@@ -30,6 +31,7 @@ import { ToastContainerComponent } from './shared/toast/toast-container.componen
     HeaderComponent,
     SidebarComponent,
     ToastContainerComponent,
+    WelcomeBannerComponent,
     TranslocoModule,
   ],
   templateUrl: './app.component.html',
