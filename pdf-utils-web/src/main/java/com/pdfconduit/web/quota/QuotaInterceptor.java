@@ -80,10 +80,17 @@ public class QuotaInterceptor implements HandlerInterceptor {
 
         // Daily free quota.
         String ip = ClientIp.resolve(request);
+        long used = quota.used(ip);
+        boolean exhausted = used >= quota.dailyLimit();
+        // The header must reflect POST-request state: a request that proceeds here will be counted
+        // on success (afterCompletion), so advertise the remaining allowance AFTER this op counts.
+        // For an exhausted (blocked) request this clamps to 0. The actual count is still incremented
+        // only in afterCompletion on a 2xx, so there is no double-counting.
+        long remainingAfter = Math.max(0, quota.dailyLimit() - (used + 1));
         response.setHeader("X-Quota-Limit", Integer.toString(quota.dailyLimit()));
-        response.setHeader("X-Quota-Remaining", Long.toString(quota.remaining(ip)));
+        response.setHeader("X-Quota-Remaining", Long.toString(exhausted ? 0 : remainingAfter));
         response.setHeader("X-Quota-Reset", Long.toString(quota.resetEpochSeconds()));
-        if (quota.isExhausted(ip)) {
+        if (exhausted) {
             JsonErrors.write(response, 429, "quota_exceeded",
                 "Daily free limit reached. Please try again after the quota resets.",
                 Map.of("resetEpochSeconds", quota.resetEpochSeconds()));

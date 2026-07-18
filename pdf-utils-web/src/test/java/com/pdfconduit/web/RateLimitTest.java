@@ -38,12 +38,13 @@ class RateLimitTest {
     void exceedingBurst_returns429() throws Exception {
         byte[] a = TestPdfs.blank(1);
 
-        // Capacity is 3: the first three requests pass and carry the rate headers.
+        // Capacity is 3: the first three requests pass and carry the rate headers. X-RateLimit-Remaining
+        // is POST-consume (tokens left after the current request), so it counts down 2, 1, 0.
         for (int i = 0; i < 3; i++) {
             mvc.perform(multipart("/api/rotate").file(pdf(a)).param("angle", "90"))
                 .andExpect(status().isOk())
-                .andExpect(header().exists("X-RateLimit-Limit"))
-                .andExpect(header().exists("X-RateLimit-Remaining"));
+                .andExpect(header().string("X-RateLimit-Limit", "3"))
+                .andExpect(header().string("X-RateLimit-Remaining", Integer.toString(2 - i)));
         }
 
         // The fourth is over the burst (refill is only 1/min) → rejected.
