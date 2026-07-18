@@ -4,6 +4,7 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { downloadRunResult } from '../../core/download.util';
+import { OP_ICONS } from '../../core/operations';
 import { NodeKindInfo, NodeKindName, PipelineValidationError } from '../../core/pipeline.models';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
@@ -78,9 +79,19 @@ const KIND_TO_OP: Record<string, string> = {
       <div class="card">
         <div class="palette">
           <span class="field-label">{{ 'pipeline.canvas.addNode' | transloco }}</span>
-          <button type="button" class="btn chip" (click)="cv.addNode('SOURCE')">+ {{ 'pipeline.canvas.source' | transloco }}</button>
+          <button type="button" class="btn chip" (click)="cv.addNode('SOURCE')">
+            <svg class="chip-ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path [attr.d]="nodeIcon('SOURCE')" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            {{ 'pipeline.canvas.source' | transloco }}
+          </button>
           @for (k of kinds(); track k.name) {
-            <button type="button" class="btn chip" (click)="cv.addNode(k.name)">+ {{ nodeLabel(k.name) }}</button>
+            <button type="button" class="btn chip" (click)="cv.addNode(k.name)">
+              <svg class="chip-ico" viewBox="0 0 24 24" aria-hidden="true">
+                <path [attr.d]="nodeIcon(k.name)" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              {{ nodeLabel(k.name) }}
+            </button>
           }
           <span class="tb-spacer"></span>
           <button type="button" class="btn btn-ghost" (click)="save()" [disabled]="!cv.nodes().length">{{ 'pipeline.canvas.save' | transloco }}</button>
@@ -170,8 +181,16 @@ const KIND_TO_OP: Record<string, string> = {
         align-items: center;
       }
       .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
         padding: 0.4rem 0.7rem;
         font-size: 0.82rem;
+      }
+      .chip-ico {
+        width: 15px;
+        height: 15px;
+        flex: none;
       }
       .tb-spacer {
         flex: 1;
@@ -261,6 +280,12 @@ export class PipelinePage implements OnInit, AfterViewInit {
     const opId = KIND_TO_OP[kind];
     if (opId) return this.transloco.translate(`op.${opId}.label`);
     return this.kinds().find((k) => k.name === kind)?.label ?? kind;
+  }
+
+  /** Canonical line-art glyph (SVG path `d`) for a node kind, from the shared registry. */
+  nodeIcon(kind: NodeKindName): string {
+    const opId = kind === 'SOURCE' ? 'source' : KIND_TO_OP[kind];
+    return OP_ICONS[opId] ?? '';
   }
 
   validate(cv: PipelineCanvasComponent): void {

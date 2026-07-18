@@ -1,10 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, Output, inject } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
+import { OP_ICONS } from '../../../core/operations';
 import { CanvasNode } from '../../../core/pipeline.models';
 import { CARD_W, PORT_TOP } from './pipeline-geometry';
 
-/** NodeKind → operation id used for the existing `op.<id>.label` i18n lookup. */
+/** NodeKind → operation id, used for both the `op.<id>.label` i18n lookup and the canonical icon registry. */
 const KIND_TO_OP: Record<string, string> = {
   MERGE: 'merge',
   IMAGES_TO_PDF: 'to-pdf',
@@ -18,22 +19,6 @@ const KIND_TO_OP: Record<string, string> = {
   WATERMARK: 'watermark',
   TO_IMAGES: 'to-images',
   TO_TEXT: 'to-text',
-};
-
-const ICONS: Record<string, string> = {
-  SOURCE: '📄',
-  MERGE: '🔗',
-  IMAGES_TO_PDF: '🖼️',
-  EXTRACT: '✂️',
-  COMPRESS: '🗜️',
-  ROTATE: '🔄',
-  ARRANGE: '🔀',
-  PROTECT: '🔒',
-  UNLOCK: '🔓',
-  METADATA: 'ℹ️',
-  WATERMARK: '💧',
-  TO_IMAGES: '🎞️',
-  TO_TEXT: '🔤',
 };
 
 /**
@@ -58,7 +43,16 @@ const ICONS: Record<string, string> = {
       (pointerdown)="onSelect($event)"
     >
       <div class="pl-node-head" (pointerdown)="onHeadDown($event)">
-        <span class="pl-ico" aria-hidden="true">{{ icon() }}</span>
+        <svg class="pl-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            [attr.d]="icon()"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
         <span class="pl-title">{{ title() }}</span>
         <button
           type="button"
@@ -126,7 +120,10 @@ const ICONS: Record<string, string> = {
         cursor: grabbing;
       }
       .pl-ico {
-        font-size: 0.95rem;
+        flex: none;
+        width: 16px;
+        height: 16px;
+        color: var(--text);
       }
       .pl-title {
         flex: 1;
@@ -224,7 +221,8 @@ export class PipelineNodeComponent {
   private dragOff: { dx: number; dy: number } | null = null;
 
   icon(): string {
-    return ICONS[this.node.kind] ?? '▫️';
+    const opId = this.node.kind === 'SOURCE' ? 'source' : KIND_TO_OP[this.node.kind];
+    return OP_ICONS[opId] ?? '';
   }
 
   title(): string {
