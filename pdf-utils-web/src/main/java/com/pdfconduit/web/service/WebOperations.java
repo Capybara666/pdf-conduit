@@ -1,5 +1,7 @@
 package com.pdfconduit.web.service;
 
+import com.pdfconduit.core.analyze.PiiScanResult;
+import com.pdfconduit.core.analyze.PiiScanner;
 import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
@@ -238,6 +240,17 @@ public class WebOperations {
         byte[] out = PdfTextExporter.toTextBytes(pdf, format, range(pagesExpr, pdf));
         String name = stem(in.filename()) + OperationType.PDF_TO_TEXT.suffix() + "." + format.extension();
         return new NamedBytes(name, out);
+    }
+
+    // --------------------------------------------------------------- GDPR-SCAN
+
+    /**
+     * Scan an input for GDPR-relevant personal data. Non-PDF inputs (images/office) are routed to
+     * PDF first via {@link #toPdf} (which also enforces the page-count guard), then handed to the
+     * offline {@link PiiScanner}. Nothing is stored; the scan runs entirely in memory.
+     */
+    public PiiScanResult scanPii(NamedBytes in) throws PdfOperationException {
+        return PiiScanner.scanBytes(toPdf(in));
     }
 
     // ------------------------------------------------------------------ RENDER

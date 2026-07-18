@@ -43,6 +43,7 @@ public final class Endpoints {
         "/api/metadata",
         "/api/watermark",
         "/api/redact",
+        "/api/gdpr-scan",
         "/api/pipeline/run",
         "/api/render");
 
@@ -59,6 +60,7 @@ public final class Endpoints {
         "/api/metadata",
         "/api/watermark",
         "/api/redact",
+        "/api/gdpr-scan",
         "/api/to-images",
         "/api/to-text",
         "/api/pipeline/run");

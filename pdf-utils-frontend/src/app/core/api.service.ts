@@ -10,6 +10,7 @@ import {
   HealthStatus,
   MetadataDto,
   OperationInfo,
+  PiiReport,
   RunResult,
 } from './api.models';
 import { errorCopyKeys } from './error-copy';
@@ -56,6 +57,30 @@ export class ApiService {
     return this.http
       .post<MetadataDto>(`${this.base}/metadata/read`, formData)
       .pipe(catchError((err) => this.toApiError(err)));
+  }
+
+  // ---- JSON analysis (report, not a download) --------------------------
+
+  /**
+   * POST a multipart body to an analysis endpoint that returns a JSON report
+   * (rather than a binary download). Unlike {@link runOperation} this parses the
+   * body as JSON, but it still consumes quota, so the quota chip is updated from
+   * the response headers just like a binary run.
+   */
+  analyze<T>(endpoint: string, formData: FormData): Observable<T> {
+    const url = this.resolve(endpoint);
+    return this.http.post<T>(url, formData, { observe: 'response' }).pipe(
+      map((res) => {
+        this.quota.update(res.headers);
+        return res.body as T;
+      }),
+      catchError((err) => this.toApiError(err)),
+    );
+  }
+
+  /** `POST /api/gdpr-scan` → GDPR / PII scan report JSON. */
+  gdprScan(formData: FormData): Observable<PiiReport> {
+    return this.analyze<PiiReport>('gdpr-scan', formData);
   }
 
   // ---- Generic binary operation ----------------------------------------

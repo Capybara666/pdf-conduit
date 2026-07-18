@@ -81,6 +81,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/to-images/to-images.page').then((m) => m.ToImagesPage),
   },
   {
+    path: 'gdpr-scan',
+    data: { titleKey: 'op.gdpr-scan.label' },
+    loadComponent: () => import('./pages/gdpr-scan/gdpr-scan.page').then((m) => m.GdprScanPage),
+  },
+  {
     path: 'to-text',
     data: { titleKey: 'op.to-text.label' },
     loadComponent: () => import('./pages/to-text/to-text.page').then((m) => m.ToTextPage),

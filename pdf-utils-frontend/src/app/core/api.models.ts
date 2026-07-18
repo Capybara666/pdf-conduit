@@ -48,6 +48,33 @@ export interface MetadataDto {
   keywords?: string;
 }
 
+/** GDPR risk level for a scanned document (mirrors the backend `RiskLevel`). */
+export type PiiRisk = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
+
+/** A single distinct piece of personal data found (masked — never the raw value). */
+export interface PiiFinding {
+  /** `PiiType` enum name, e.g. `EMAIL`, `IBAN`, `PESEL`. */
+  type: string;
+  /** `PiiCategory` enum name, e.g. `CONTACT`, `FINANCIAL`, `SPECIAL_CATEGORY`. */
+  category: string;
+  /** 1-based page of the first occurrence. */
+  page: number;
+  /** A redacted, recognisable sample that never reveals the full value. */
+  maskedSample: string;
+  /** How many times this exact value occurred across the document. */
+  occurrences: number;
+}
+
+/** GDPR / PII scan report from `POST /api/gdpr-scan` (JSON, not a download). */
+export interface PiiReport {
+  totalFindings: number;
+  risk: PiiRisk;
+  pagesScanned: number;
+  /** Distinct-finding count keyed by `PiiCategory` enum name. */
+  countsByCategory: Record<string, number>;
+  findings: PiiFinding[];
+}
+
 /**
  * Rate-limit / daily-quota snapshot parsed from response headers
  * (`X-RateLimit-*`, `X-Quota-*`). Every field is optional — the backend may

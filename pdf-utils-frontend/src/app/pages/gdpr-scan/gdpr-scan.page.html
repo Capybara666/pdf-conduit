@@ -1,0 +1,154 @@
+<section class="op-page gdpr" *transloco="let t">
+  <app-page-header [title]="t('pages.gdprScan.title')" [description]="t('pages.gdprScan.description')" />
+
+  <!-- Privacy reassurance — the whole point of this feature. -->
+  <p class="privacy-line" role="note">
+    <svg viewBox="0 0 24 24" aria-hidden="true" class="lock">
+      <path
+        d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z M9 11.5l2 2 4-4.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    {{ t('pages.gdprScan.privacyLine') }}
+  </p>
+
+  <app-file-drop-zone
+    [multiple]="false"
+    accept=".pdf"
+    [hint]="t('pages.gdprScan.hint')"
+    (filesChange)="onFile($event.length ? $event[0] : null)"
+  />
+
+  <div class="btn-row">
+    <button type="button" class="btn btn-primary" [disabled]="!file() || loading()" (click)="scan()">
+      {{ t('pages.gdprScan.submit') }}
+    </button>
+    @if (loading()) {
+      <app-spinner [label]="t('pages.gdprScan.loading')" />
+    }
+  </div>
+
+  <!-- Error state -->
+  @if (error(); as e) {
+    <div class="card error" role="alert">
+      <h2>{{ t(errorKeys!.titleKey) }}</h2>
+      <p>{{ errorKeys!.detailText || (errorKeys!.detailKey ? t(errorKeys!.detailKey!) : '') }}</p>
+      @if (errorKeys!.hintKey) {
+        <p class="hint-note">{{ t(errorKeys!.hintKey!, errorKeys!.hintParams) }}</p>
+      }
+      <button type="button" class="btn" (click)="scan()">{{ t('result.tryAgain') }}</button>
+    </div>
+  }
+
+  <!-- Report -->
+  @if (report(); as r) {
+    <div class="report">
+      <!-- Risk badge + plain-language summary -->
+      <div class="risk-card card" [ngClass]="'risk-' + riskKey()">
+        <div class="risk-badge" [attr.aria-label]="t('pages.gdprScan.risk.' + riskKey()) + ' risk'">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="lvl">{{ t('pages.gdprScan.risk.' + riskKey()) }}</span>
+          <span class="sub">{{ t('pages.gdprScan.riskLabel') }}</span>
+        </div>
+        <div class="risk-copy">
+          @if (r.totalFindings > 0) {
+            <p class="summary">
+              {{ t('pages.gdprScan.summary', { count: r.totalFindings, pages: r.pagesScanned }) }}
+            </p>
+          } @else {
+            <p class="summary">
+              {{ t('pages.gdprScan.summaryClean', { pages: r.pagesScanned }) }}
+            </p>
+          }
+          <p class="risk-explain">{{ t('pages.gdprScan.risk.' + riskKey() + 'Explain') }}</p>
+        </div>
+      </div>
+
+      <!-- Per-category cards -->
+      <h2 class="section-title">{{ t('pages.gdprScan.byCategory') }}</h2>
+      <div class="cat-grid">
+        @for (c of categories(); track c.key) {
+          <div
+            class="cat-card"
+            [ngClass]="{ high: c.high, empty: c.count === 0, hit: c.count > 0 }"
+          >
+            <span class="cat-count">{{ c.count }}</span>
+            <span class="cat-name">{{ t('pii.category.' + c.key) }}</span>
+            @if (c.high) {
+              <span class="cat-tag">{{ t('pages.gdprScan.higherRisk') }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Findings -->
+      @if (r.totalFindings > 0) {
+        <div class="findings-head">
+          <h2 class="section-title">{{ t('pages.gdprScan.findings') }}</h2>
+          <div class="filters" role="group" [attr.aria-label]="t('pages.gdprScan.filterBy')">
+            <button
+              type="button"
+              class="chip"
+              [class.active]="filter() === null"
+              (click)="setFilter(null)"
+            >
+              {{ t('pages.gdprScan.filterAll') }}
+            </button>
+            @for (key of presentCategories(); track key) {
+              <button
+                type="button"
+                class="chip"
+                [class.active]="filter() === key"
+                (click)="setFilter(key)"
+              >
+                {{ t('pii.category.' + key) }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="findings">
+            <thead>
+              <tr>
+                <th scope="col">{{ t('pages.gdprScan.col.type') }}</th>
+                <th scope="col">{{ t('pages.gdprScan.col.category') }}</th>
+                <th scope="col" class="num">{{ t('pages.gdprScan.col.page') }}</th>
+                <th scope="col">{{ t('pages.gdprScan.col.sample') }}</th>
+                <th scope="col" class="num">{{ t('pages.gdprScan.col.occurrences') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (f of visibleFindings(); track $index) {
+                <tr>
+                  <td class="type">{{ t('pii.type.' + f.type) }}</td>
+                  <td>
+                    <span class="cat-pill" [attr.data-cat]="f.category">{{
+                      t('pii.category.' + f.category)
+                    }}</span>
+                  </td>
+                  <td class="num">{{ f.page }}</td>
+                  <td class="sample"><code>{{ f.maskedSample }}</code></td>
+                  <td class="num">{{ f.occurrences }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Next-step CTAs -->
+      <div class="cta-row">
+        <a class="btn btn-primary" [routerLink]="['/', 'redact']">{{ t('pages.gdprScan.redactCta') }}</a>
+        <div class="pro-teaser" role="note">
+          <span class="pro-badge">{{ t('pages.gdprScan.proBadge') }}</span>
+          <span>{{ t('pages.gdprScan.proTeaser') }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</section>

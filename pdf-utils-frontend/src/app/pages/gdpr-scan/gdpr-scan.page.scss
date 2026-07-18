@@ -1,0 +1,307 @@
+:host {
+  display: block;
+}
+
+.gdpr {
+  // Per-risk accent, resolved from the level class on the risk card.
+  --risk: var(--text-muted);
+  --risk-soft: var(--surface-2);
+}
+
+/* Privacy reassurance line — deliberately prominent. */
+.privacy-line {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--success);
+  background: var(--success-soft);
+  color: var(--text);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  .lock {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    color: var(--success);
+  }
+}
+
+/* ---- Risk badge card ---- */
+.risk-card {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+  border-left: 5px solid var(--risk);
+}
+
+.risk-card.risk-none {
+  --risk: var(--success);
+  --risk-soft: var(--success-soft);
+}
+.risk-card.risk-low {
+  --risk: var(--accent);
+  --risk-soft: var(--accent-soft);
+}
+.risk-card.risk-medium {
+  --risk: var(--warning);
+  --risk-soft: color-mix(in srgb, var(--warning) 16%, transparent);
+}
+.risk-card.risk-high {
+  --risk: var(--danger);
+  --risk-soft: var(--danger-soft);
+}
+
+.risk-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-width: 130px;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius);
+  background: var(--risk-soft);
+  color: var(--risk);
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--risk);
+    margin-bottom: 0.2rem;
+  }
+  .lvl {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .sub {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+}
+
+.risk-copy {
+  flex: 1;
+  min-width: 220px;
+
+  .summary {
+    margin: 0 0 0.3rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .risk-explain {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+}
+
+.section-title {
+  margin: 0.5rem 0 0;
+  font-size: 1.05rem;
+}
+
+/* ---- Category cards ---- */
+.cat-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.cat-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+
+  .cat-count {
+    font-size: 1.6rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .cat-name {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .cat-tag {
+    margin-top: 0.35rem;
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--danger);
+  }
+}
+
+.cat-card.empty {
+  opacity: 0.6;
+}
+.cat-card.hit {
+  border-color: var(--border-strong);
+}
+.cat-card.high.hit {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* ---- Findings table ---- */
+.findings-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  appearance: none;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.chip:hover {
+  border-color: var(--accent);
+}
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+table.findings {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  th {
+    background: var(--surface-2);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+  }
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .type {
+    font-weight: 600;
+  }
+  .sample code {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0.1rem 0.4rem;
+  }
+}
+
+.cat-pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+.cat-pill[data-cat='FINANCIAL'],
+.cat-pill[data-cat='NATIONAL_ID'],
+.cat-pill[data-cat='SPECIAL_CATEGORY'] {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* ---- Next-step CTAs ---- */
+.cta-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+a.btn-primary {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pro-teaser {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+
+  .pro-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent-contrast);
+    background: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+}
+
+.report {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.card.error h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.1rem;
+  color: var(--danger);
+}
+.card.error p {
+  margin: 0 0 0.5rem;
+}
