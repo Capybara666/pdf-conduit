@@ -4,14 +4,44 @@
 
 server:
   port: ${SERVER_PORT:8080}
+  # Drain in-flight requests on shutdown instead of severing them. A redeploy (SIGTERM)
+  # stops accepting new connections, then waits up to the lifecycle timeout below for
+  # active operations to finish before the JVM exits. compose stop_grace_period (30s)
+  # must stay >= that timeout so Docker doesn't SIGKILL mid-drain.
+  shutdown: graceful
   tomcat:
     # Cap how many bytes of a rejected (oversize) upload Tomcat will swallow, so an
     # over-limit request isn't fully read into the server before being refused.
     max-swallow-size: ${PDFCONDUIT_WEB_MAX_SWALLOW_SIZE:2MB}
 
+# Management / observability endpoints live on a DISTINCT internal port (default 8081),
+# NEVER on the public 8080. Only publish/expose 8081 on the internal network (see
+# docker-compose) — it must not be reachable from the internet. The public 8080 serves
+# only the app + the custom GET /api/health; it carries no actuator surface.
+management:
+  server:
+    port: ${MANAGEMENT_SERVER_PORT:8081}
+  endpoints:
+    web:
+      exposure:
+        # Exactly these four — health (incl. the custom saturation indicator), info,
+        # metrics, and the Prometheus scrape endpoint. Nothing else is exposed.
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      # Internal-only port, so it is safe to always show the saturation details
+      # (permits, in-flight bytes, soffice availability) the custom indicator reports.
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 spring:
   application:
     name: pdf-conduit-web
+  lifecycle:
+    # How long graceful shutdown waits for in-flight requests to drain before forcing exit.
+    timeout-per-shutdown-phase: ${PDFCONDUIT_WEB_SHUTDOWN_TIMEOUT:25s}
   servlet:
     multipart:
       # Absolute per-file and per-request upload ceilings (hard cap). The free-tier

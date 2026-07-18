@@ -6,6 +6,7 @@ import com.pdfconduit.core.pipeline.PipelineException;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.ProcessingTimeoutException;
 import com.pdfconduit.web.error.ServerBusyException;
+import com.pdfconduit.web.observability.WebMetrics;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +50,16 @@ public class LoadGuard {
     private final Semaphore permits;
     private final AtomicLong inFlightBytes = new AtomicLong();
     private final long maxInFlightBytes;
+    private final int maxHeavyOps;
     private final long timeoutSeconds;
     private final ExecutorService executor;
+    private final WebMetrics metrics;
 
-    public LoadGuard(WebProperties props) {
+    public LoadGuard(WebProperties props, WebMetrics metrics) {
+        this.metrics = metrics;
         this.permits = new Semaphore(props.concurrency().maxHeavyOps(), true);
         this.maxInFlightBytes = props.concurrency().maxInFlightBytes();
+        this.maxHeavyOps = props.concurrency().maxHeavyOps();
         this.timeoutSeconds = props.processing().timeoutSeconds();
         ThreadFactory tf = new ThreadFactory() {
             private final AtomicLong n = new AtomicLong();
@@ -92,7 +97,10 @@ public class LoadGuard {
             Thread.currentThread().interrupt();
             throw new ServerBusyException();
         }
-        if (!acquired) throw new ServerBusyException();
+        if (!acquired) {
+            metrics.loadShed();
+            throw new ServerBusyException();
+        }
 
         // The permit + byte reservation are released exactly once, when the task actually finishes
         // (see releaseOnce, wired to the future's completion) — NOT in a caller-side finally. A
@@ -108,6 +116,7 @@ public class LoadGuard {
         long now = inFlightBytes.addAndGet(bytes);
         if (now > maxInFlightBytes) {
             releaseOnce.run();  // nothing submitted yet; give the reservation straight back
+            metrics.loadShed();
             throw new ServerBusyException("Server busy (memory pressure), try again shortly.");
         }
 
@@ -150,6 +159,29 @@ public class LoadGuard {
             case null -> throw new IllegalStateException("Heavy task failed with no cause");
             default -> throw new IllegalStateException("Heavy task failed", cause);
         }
+    }
+
+    // ---- read-only state accessors for observability (health + metrics gauges) ----
+    // Additive only; they report live counters and never alter admission behaviour.
+
+    /** Heavy-op permits currently free (0 ⇒ all heavy slots busy, new heavy ops are being shed). */
+    public int availablePermits() {
+        return permits.availablePermits();
+    }
+
+    /** Configured maximum number of concurrent heavy operations. */
+    public int maxHeavyOps() {
+        return maxHeavyOps;
+    }
+
+    /** Summed bytes of the heavy requests currently in flight (reserved against the OOM cap). */
+    public long inFlightBytes() {
+        return inFlightBytes.get();
+    }
+
+    /** The in-flight-byte ceiling; requests that would push past it are shed as 503. */
+    public long maxInFlightBytes() {
+        return maxInFlightBytes;
     }
 
     @PreDestroy

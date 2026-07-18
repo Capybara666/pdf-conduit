@@ -33,11 +33,17 @@ services:
       dockerfile: pdf-utils-web/Dockerfile
     image: pdf-conduit-backend:1.0.0
     # No published port — reached only by the frontend over the compose network.
+    # 8081 is the actuator/metrics management port: exposed on the internal compose
+    # network only (for a sidecar/Prometheus scrape), NEVER published to the host.
     expose:
       - "8080"
+      - "8081"
     environment:
       # HTTP port inside the container (keep aligned with EXPOSE 8080).
       SERVER_PORT: "8080"
+      # Internal-only management port for actuator (health/info/metrics/prometheus).
+      # Do NOT map this to a host port — it must not be internet-reachable.
+      MANAGEMENT_SERVER_PORT: "${MANAGEMENT_SERVER_PORT:-8081}"
       # JVM options. Default (set in the Dockerfile) makes the heap track the
       # container memory limit and exit on OOM so Docker restarts it. Override
       # here / via .env to pin a heap (e.g. "-Xmx1g -XX:+ExitOnOutOfMemoryError").

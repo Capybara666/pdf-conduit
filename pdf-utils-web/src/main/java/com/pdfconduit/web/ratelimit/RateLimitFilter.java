@@ -1,6 +1,7 @@
 package com.pdfconduit.web.ratelimit;
 
 import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.observability.WebMetrics;
 import com.pdfconduit.web.support.ClientIp;
 import com.pdfconduit.web.support.Endpoints;
 import com.pdfconduit.web.support.JsonErrors;
@@ -37,8 +38,11 @@ import java.util.concurrent.TimeUnit;
  * otherwise {@code X-RateLimit-Limit}/{@code X-RateLimit-Remaining} (general bucket) are emitted and
  * the chain continues. The whole filter is a no-op when {@code ratelimit.enabled=false}.
  */
+// One rung below HIGHEST_PRECEDENCE so the RequestIdFilter (which sits at HIGHEST_PRECEDENCE)
+// wraps it and a rate-limit rejection is still logged/returned with a correlation id. This
+// filter remains the first hardening layer proper.
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final int MAX_ENTRIES = 100_000;
@@ -52,15 +56,17 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private final ConcurrentHashMap<String, Buckets> store = new ConcurrentHashMap<>();
     private final ClientIp clientIp;
+    private final WebMetrics metrics;
     private ScheduledExecutorService cleaner;
 
-    public RateLimitFilter(WebProperties props, ClientIp clientIp) {
+    public RateLimitFilter(WebProperties props, ClientIp clientIp, WebMetrics metrics) {
         WebProperties.RateLimit rl = props.ratelimit();
         this.enabled = rl.enabled();
         this.burst = rl.burst();
         this.requestsPerMinute = rl.requestsPerMinute();
         this.heavyPerMinute = rl.heavyPerMinute();
         this.clientIp = clientIp;
+        this.metrics = metrics;
     }
 
     @PostConstruct
@@ -111,6 +117,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     private void reject(HttpServletResponse response, long nanosToWait) throws IOException {
+        metrics.rateLimited();
         long retryAfter = Math.max(1, (nanosToWait + 999_999_999L) / 1_000_000_000L);
         response.setHeader("Retry-After", Long.toString(retryAfter));
         JsonErrors.write(response, 429, "rate_limited",

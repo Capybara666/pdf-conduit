@@ -5,6 +5,7 @@ import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.ProcessingTimeoutException;
 import com.pdfconduit.web.error.ServerBusyException;
+import com.pdfconduit.web.observability.WebMetrics;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 
@@ -34,10 +35,14 @@ public class OfficeGuard {
     private static final long ACQUIRE_TIMEOUT_MS = 1_000;
 
     private final Semaphore permits;
+    private final int maxConcurrent;
     private final long timeoutSeconds;
     private final ExecutorService executor;
+    private final WebMetrics metrics;
 
-    public OfficeGuard(WebProperties props) {
+    public OfficeGuard(WebProperties props, WebMetrics metrics) {
+        this.metrics = metrics;
+        this.maxConcurrent = props.office().maxConcurrent();
         this.permits = new Semaphore(props.office().maxConcurrent(), true);
         // Never let an office conversion outlive the request's own processing deadline: on timeout
         // we interrupt the core conversion thread, which force-kills the soffice process.
@@ -76,6 +81,7 @@ public class OfficeGuard {
         }
         if (!acquired) throw new ServerBusyException("Server busy (office conversion), try again shortly.");
 
+        metrics.officeConversion();
         Future<byte[]> future = executor.submit((Callable<byte[]>) conversion::run);
         try {
             return future.get(timeoutSeconds, TimeUnit.SECONDS);
@@ -101,6 +107,18 @@ public class OfficeGuard {
 
     private static boolean isOffice(String filename) {
         return DocumentConverter.classify(Path.of(filename)) == DocumentConverter.Kind.OFFICE;
+    }
+
+    // ---- read-only state accessors for observability (health + metrics gauge) ----
+
+    /** Office-conversion permits currently free (0 ⇒ all LibreOffice slots busy). */
+    public int availablePermits() {
+        return permits.availablePermits();
+    }
+
+    /** Configured maximum number of concurrent office conversions. */
+    public int maxConcurrent() {
+        return maxConcurrent;
     }
 
     @PreDestroy

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Structured (logfmt-style) console logging for the web backend.
+
+  Every line is a set of key=value fields — timestamp, level, logger, thread, the
+  per-request correlation id from the SLF4J MDC (requestId, set by RequestIdFilter),
+  and the message — so logs are greppable and machine-parseable by a shipper/agent
+  without pulling in an extra JSON-encoder dependency (logstash-logback-encoder would
+  add itself + a Jackson runtime). The message is quoted and its embedded quotes are
+  escaped so a multi-word message stays one field. Never log request bodies or PII.
+
+  Uses Spring Boot's logback base (sensible defaults + the CONSOLE appender wiring)
+  and only overrides the console pattern. -->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <property name="LOGFMT_PATTERN"
+              value="ts=%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} level=%p logger=%logger{40} thread=%thread requestId=%X{requestId:-none} msg=&quot;%replace(%m){'[\r\n]+', ' '}&quot;%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOGFMT_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

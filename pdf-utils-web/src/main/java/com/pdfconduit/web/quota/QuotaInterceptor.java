@@ -2,6 +2,7 @@ package com.pdfconduit.web.quota;
 
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.TooLargeException;
+import com.pdfconduit.web.observability.WebMetrics;
 import com.pdfconduit.web.support.ClientIp;
 import com.pdfconduit.web.support.Endpoints;
 import com.pdfconduit.web.support.JsonErrors;
@@ -36,14 +37,16 @@ public class QuotaInterceptor implements HandlerInterceptor {
 
     private final QuotaService quota;
     private final ClientIp clientIp;
+    private final WebMetrics metrics;
     private final boolean quotaEnabled;
     private final int freeMaxFiles;
     private final long freeMaxFileBytes;
     private final int hardMaxFiles;
 
-    public QuotaInterceptor(QuotaService quota, ClientIp clientIp, WebProperties props) {
+    public QuotaInterceptor(QuotaService quota, ClientIp clientIp, WebMetrics metrics, WebProperties props) {
         this.quota = quota;
         this.clientIp = clientIp;
+        this.metrics = metrics;
         this.quotaEnabled = props.quota().enabled();
         this.freeMaxFiles = props.quota().freeMaxFiles();
         DataSize freeSize = props.quota().freeMaxFileSize();
@@ -93,6 +96,7 @@ public class QuotaInterceptor implements HandlerInterceptor {
         response.setHeader("X-Quota-Remaining", Long.toString(exhausted ? 0 : remainingAfter));
         response.setHeader("X-Quota-Reset", Long.toString(quota.resetEpochSeconds()));
         if (exhausted) {
+            metrics.quotaExhausted();
             JsonErrors.write(response, 429, "quota_exceeded",
                 "Daily free limit reached. Please try again after the quota resets.",
                 Map.of("resetEpochSeconds", quota.resetEpochSeconds()));
