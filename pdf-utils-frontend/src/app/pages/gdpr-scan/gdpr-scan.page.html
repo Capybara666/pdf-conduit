@@ -49,7 +49,7 @@
     <div class="report">
       <!-- Risk badge + plain-language summary -->
       <div class="risk-card card" [ngClass]="'risk-' + riskKey()">
-        <div class="risk-badge" [attr.aria-label]="t('pages.gdprScan.risk.' + riskKey()) + ' risk'">
+        <div class="risk-badge" [attr.aria-label]="t('pages.gdprScan.riskBadgeAria', { level: t('pages.gdprScan.risk.' + riskKey()) })">
           <span class="dot" aria-hidden="true"></span>
           <span class="lvl">{{ t('pages.gdprScan.risk.' + riskKey()) }}</span>
           <span class="sub">{{ t('pages.gdprScan.riskLabel') }}</span>

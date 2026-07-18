@@ -33,13 +33,31 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         (filesChange)="files.set($event)"
       />
 
+      <p class="hint-note" role="note">{{ 'pages.unlock.privacyLine' | transloco }}</p>
+
       <div class="card form-grid">
         <div class="field">
           <label for="ul-pass">{{ 'pages.unlock.password' | transloco }}</label>
-          <input id="ul-pass" type="password" [formControl]="password" autocomplete="off" />
+          <div class="pw-row">
+            <input
+              id="ul-pass"
+              [type]="showPass() ? 'text' : 'password'"
+              [formControl]="password"
+              autocomplete="off"
+            />
+            <button
+              type="button"
+              class="btn pw-toggle"
+              [attr.aria-pressed]="showPass()"
+              [attr.aria-label]="(showPass() ? 'common.hidePassword' : 'common.showPassword') | transloco"
+              (click)="showPass.set(!showPass())"
+            >
+              {{ (showPass() ? 'common.hide' : 'common.show') | transloco }}
+            </button>
+          </div>
           <span class="help">{{ 'pages.unlock.passwordHelp' | transloco }}</span>
           @if (password.invalid && password.touched) {
-            <span class="err">{{ 'pages.unlock.passwordError' | transloco }}</span>
+            <span class="err" aria-live="polite">{{ 'pages.unlock.passwordError' | transloco }}</span>
           }
         </div>
       </div>
@@ -64,9 +82,27 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
     </section>
   `,
+  styles: [
+    `
+      .pw-row {
+        display: flex;
+        gap: 0.4rem;
+        align-items: stretch;
+      }
+      .pw-row input {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .pw-toggle {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+    `,
+  ],
 })
 export class UnlockPage {
   protected readonly files = signal<File[]>([]);
+  protected readonly showPass = signal(false);
   protected readonly password = new FormControl('', { nonNullable: true, validators: [Validators.required] });
   protected readonly state = new OperationState();
 

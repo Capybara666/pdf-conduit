@@ -35,6 +35,8 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         (filesChange)="files.set($event)"
       />
 
+      <p class="hint-note" role="note">{{ 'pages.toImages.privacyLine' | transloco }}</p>
+
       <div class="card form-grid">
         <div class="field">
           <label for="ti-format">{{ 'pages.toImages.format' | transloco }}</label>
@@ -47,6 +49,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           <label for="ti-dpi">{{ 'pages.toImages.dpi' | transloco }}</label>
           <input id="ti-dpi" type="number" min="36" max="600" step="1" [formControl]="dpi" />
           <span class="help">{{ 'pages.toImages.dpiHelp' | transloco }}</span>
+          @if (dpi.invalid && dpi.touched) {
+            <span class="err" aria-live="polite">{{ 'pages.toImages.dpiError' | transloco }}</span>
+          }
         </div>
         @if (format() === 'JPG') {
           <div class="field">
@@ -105,7 +110,10 @@ export class ToImagesPage {
   constructor(private readonly api: ApiService) {}
 
   submit(): void {
-    if (!this.files().length || this.dpi.invalid) return;
+    if (!this.files().length || this.dpi.invalid) {
+      this.dpi.markAsTouched();
+      return;
+    }
     const fd = new FormData();
     for (const f of this.files()) fd.append('files', f, f.name);
     fd.append('format', this.format());

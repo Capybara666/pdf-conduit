@@ -38,6 +38,8 @@ type Mode = 'text' | 'image';
         (filesChange)="files.set($event)"
       />
 
+      <p class="hint-note" role="note">{{ 'pages.watermark.privacyLine' | transloco }}</p>
+
       <div class="card">
         <div class="seg" role="group" [attr.aria-label]="'pages.watermark.typeAria' | transloco" style="margin-bottom:1rem">
           <button type="button" [class.active]="mode() === 'text'" [attr.aria-pressed]="mode() === 'text'" (click)="mode.set('text')">{{ 'pages.watermark.typeText' | transloco }}</button>
@@ -57,11 +59,13 @@ type Mode = 'text' | 'image';
             </div>
           } @else {
             <div class="field full">
-              <label for="wm-image">{{ 'pages.watermark.image' | transloco }}</label>
-              <input id="wm-image" type="file" accept="image/*" (change)="onImage($event)" />
-              @if (image()) {
-                <span class="help">{{ image()!.name }}</span>
-              }
+              <span class="field-label" id="wm-image-label">{{ 'pages.watermark.image' | transloco }}</span>
+              <app-file-drop-zone
+                [multiple]="false"
+                accept="image/*"
+                [hint]="'pages.watermark.imageHint' | transloco"
+                (filesChange)="onImageFiles($event)"
+              />
             </div>
           }
 
@@ -130,9 +134,8 @@ export class WatermarkPage {
 
   constructor(private readonly api: ApiService) {}
 
-  onImage(ev: Event): void {
-    const input = ev.target as HTMLInputElement;
-    this.image.set(input.files?.[0] ?? null);
+  onImageFiles(files: File[]): void {
+    this.image.set(files[0] ?? null);
   }
 
   submit(): void {

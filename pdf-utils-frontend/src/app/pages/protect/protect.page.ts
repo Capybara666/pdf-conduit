@@ -1,5 +1,12 @@
 import { Component, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
@@ -33,13 +40,43 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         (filesChange)="files.set($event)"
       />
 
+      <p class="hint-note" role="note">{{ 'pages.protect.privacyLine' | transloco }}</p>
+
       <form class="card form-grid" [formGroup]="form">
         <div class="field">
           <label for="pr-user">{{ 'pages.protect.userPassword' | transloco }}</label>
-          <input id="pr-user" type="password" formControlName="userPassword" autocomplete="new-password" />
+          <div class="pw-row">
+            <input
+              id="pr-user"
+              [type]="showUser() ? 'text' : 'password'"
+              formControlName="userPassword"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="btn pw-toggle"
+              [attr.aria-pressed]="showUser()"
+              [attr.aria-label]="(showUser() ? 'common.hidePassword' : 'common.showPassword') | transloco"
+              (click)="showUser.set(!showUser())"
+            >
+              {{ (showUser() ? 'common.hide' : 'common.show') | transloco }}
+            </button>
+          </div>
           <span class="help">{{ 'pages.protect.userPasswordHelp' | transloco }}</span>
           @if (form.controls.userPassword.invalid && form.controls.userPassword.touched) {
-            <span class="err">{{ 'pages.protect.userPasswordError' | transloco }}</span>
+            <span class="err" aria-live="polite">{{ 'pages.protect.userPasswordError' | transloco }}</span>
+          }
+        </div>
+        <div class="field">
+          <label for="pr-confirm">{{ 'pages.protect.confirmPassword' | transloco }}</label>
+          <input
+            id="pr-confirm"
+            [type]="showUser() ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+          />
+          @if (form.errors?.['mismatch'] && form.controls.confirmPassword.touched) {
+            <span class="err" aria-live="polite">{{ 'pages.protect.confirmError' | transloco }}</span>
           }
         </div>
         <div class="field">
@@ -69,13 +106,35 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
     </section>
   `,
+  styles: [
+    `
+      .pw-row {
+        display: flex;
+        gap: 0.4rem;
+        align-items: stretch;
+      }
+      .pw-row input {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .pw-toggle {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+    `,
+  ],
 })
 export class ProtectPage {
   protected readonly files = signal<File[]>([]);
-  protected readonly form = new FormGroup({
-    userPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    ownerPassword: new FormControl('', { nonNullable: true }),
-  });
+  protected readonly showUser = signal(false);
+  protected readonly form = new FormGroup(
+    {
+      userPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      confirmPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      ownerPassword: new FormControl('', { nonNullable: true }),
+    },
+    { validators: [passwordsMatch] },
+  );
   protected readonly state = new OperationState();
 
   constructor(private readonly api: ApiService) {}
@@ -92,4 +151,14 @@ export class ProtectPage {
     if (owner) fd.append('ownerPassword', owner);
     this.state.run(this.api.protect(fd));
   }
+}
+
+/**
+ * Cross-field validator: the confirm field must equal the user password.
+ * A typo here would permanently lock the file, so a mismatch blocks submit.
+ */
+function passwordsMatch(group: AbstractControl): ValidationErrors | null {
+  const user = group.get('userPassword')?.value ?? '';
+  const confirm = group.get('confirmPassword')?.value ?? '';
+  return user === confirm ? null : { mismatch: true };
 }
