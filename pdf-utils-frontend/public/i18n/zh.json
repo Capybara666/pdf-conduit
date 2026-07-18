@@ -126,6 +126,10 @@
     "crop": {
       "label": "裁剪",
       "description": "裁去每页的页边距。"
+    },
+    "page-marks": {
+      "label": "Page Marks",
+      "description": "Add page numbers and header/footer text."
     }
   },
   "header": {
@@ -639,7 +643,12 @@
       "run": "运行流程",
       "running": "运行中…",
       "valid": "✓ 流程有效。",
-      "jsonTitle": "流程 JSON"
+      "jsonTitle": "流程 JSON",
+      "fieldHeaderCenter": "Header (center)",
+      "fieldFooterCenter": "Footer (center)",
+      "fieldStartNumber": "Start number",
+      "fieldPrefix": "Bates prefix",
+      "skipFirst": "Skip first page"
     },
     "gdprScan": {
       "title": "GDPR / PII 扫描",
@@ -693,6 +702,28 @@
       "unitHelp": "每个边距从对应的页面边缘裁去。",
       "submit": "裁剪页面",
       "loading": "正在裁剪…"
+    },
+    "pageMarks": {
+      "title": "Page Marks",
+      "description": "Add page numbers and header/footer text to every page.",
+      "hint": "One or more PDFs to mark (several files → ZIP).",
+      "privacyLine": "Your files are marked privately and never stored.",
+      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
+      "header": "Header",
+      "footer": "Footer",
+      "left": "Left",
+      "center": "Center",
+      "right": "Right",
+      "slotPlaceholder": "e.g. {page} / {pages}",
+      "fontSize": "Font size (pt)",
+      "margin": "Margin (pt)",
+      "startNumber": "Start number",
+      "prefix": "Bates prefix",
+      "prefixPlaceholder": "e.g. ACME-",
+      "skipFirst": "Skip the first page",
+      "submit": "Add page marks",
+      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
+      "loading": "Marking…"
     }
   },
   "pageGrid": {

@@ -16,6 +16,7 @@ const NODE_KIND_OP_IDS = [
   'unlock',
   'metadata',
   'watermark',
+  'page-marks',
   'to-images',
   'to-text',
 ];

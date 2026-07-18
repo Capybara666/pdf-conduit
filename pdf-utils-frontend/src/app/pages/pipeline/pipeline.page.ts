@@ -29,6 +29,7 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
   { name: 'METADATA', label: 'Metadata', isSource: false, isReduce: false, isExport: false },
   { name: 'WATERMARK', label: 'Watermark', isSource: false, isReduce: false, isExport: false },
   { name: 'NUP', label: 'N-up', isSource: false, isReduce: false, isExport: false },
+  { name: 'PAGE_MARKS', label: 'Page Marks', isSource: false, isReduce: false, isExport: false },
   { name: 'TO_IMAGES', label: 'To Images', isSource: false, isReduce: false, isExport: true },
   { name: 'TO_TEXT', label: 'To Text', isSource: false, isReduce: false, isExport: true },
 ];
@@ -47,6 +48,7 @@ const KIND_TO_OP: Record<string, string> = {
   METADATA: 'metadata',
   WATERMARK: 'watermark',
   NUP: 'nup',
+  PAGE_MARKS: 'page-marks',
   TO_IMAGES: 'to-images',
   TO_TEXT: 'to-text',
 };

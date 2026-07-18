@@ -18,6 +18,7 @@ import com.pdfconduit.core.operations.PdfCompressor;
 import com.pdfconduit.core.operations.PdfCropper;
 import com.pdfconduit.core.operations.PdfMerger;
 import com.pdfconduit.core.operations.PdfMetadataEditor;
+import com.pdfconduit.core.operations.PdfPageMarker;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.core.operations.PdfRotator;
@@ -301,6 +302,23 @@ public class WebOperations {
             throws PdfOperationException {
         return MemoryOperations.runBatch(OperationType.NUP, pdfData(inputs), names(inputs),
             pdf -> com.pdfconduit.core.operations.PdfNupImposer.executeBytes(pdf, layout, booklet));
+    // -------------------------------------------------------------- PAGE-MARKS
+
+    /**
+     * Batch-stamp page numbers and/or header/footer text onto every input. Each of the six slots
+     * may carry the tokens {@code {page}}/{@code {n}}/{@code {pages}}/{@code {date}}; a non-blank
+     * {@code numberPrefix} switches page numbers to Bates-style (prefix + zero-padded).
+     */
+    public List<NamedBytes> pageMarks(List<NamedBytes> inputs,
+                                      String headerLeft, String headerCenter, String headerRight,
+                                      String footerLeft, String footerCenter, String footerRight,
+                                      float fontSize, float margin, boolean skipFirst,
+                                      int startNumber, String numberPrefix)
+            throws PdfOperationException {
+        return MemoryOperations.runBatch(OperationType.PAGE_MARKS, pdfData(inputs), names(inputs),
+            pdf -> PdfPageMarker.executeBytes(pdf, headerLeft, headerCenter, headerRight,
+                footerLeft, footerCenter, footerRight, fontSize, margin, skipFirst,
+                startNumber, numberPrefix));
     }
 
     // ------------------------------------------------------------------ REDACT

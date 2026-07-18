@@ -84,6 +84,9 @@ public final class Icons {
     // four corner brackets framing a crop region (crop / margins)
     private static final String CROP =
         "M5 9 V5 H9 M15 5 H19 V9 M5 15 V19 H9 M15 19 H19 V15";
+    // a page with header + footer bars (page numbers / headers & footers)
+    private static final String PAGE_MARKS =
+        "M5 3 H14 L17 6 V21 H5 Z M14 3 V6 H17 M7 8 H15 M7 16 H15";
     // a document with a redaction bar struck over one of its text lines
     private static final String REDACT =
         "M7 3 H15 L19 7 V21 H7 Z M15 3 V7 H19 "
@@ -134,6 +137,7 @@ public final class Icons {
             case METADATA      -> METADATA;
             case WATERMARK     -> WATERMARK;
             case CROP          -> CROP;
+            case PAGE_MARKS    -> PAGE_MARKS;
             case TO_IMAGES     -> TO_IMAGES;
             case TO_TEXT       -> TO_TEXT;
         }, size);

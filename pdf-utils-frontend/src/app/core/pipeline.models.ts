@@ -26,6 +26,7 @@ export type NodeKindName =
   | 'METADATA'
   | 'WATERMARK'
   | 'NUP'
+  | 'PAGE_MARKS'
   | 'TO_IMAGES'
   | 'TO_TEXT';
 
@@ -64,6 +65,17 @@ export interface PipelineNodeJson {
   wmScale?: number;
   nupLayout?: NupLayoutName;
   nupBooklet?: boolean;
+  pmHeaderLeft?: string;
+  pmHeaderCenter?: string;
+  pmHeaderRight?: string;
+  pmFooterLeft?: string;
+  pmFooterCenter?: string;
+  pmFooterRight?: string;
+  pmFontSize?: number;
+  pmMargin?: number;
+  pmSkipFirst?: boolean;
+  pmStartNumber?: number;
+  pmPrefix?: string;
   imageFormat?: ImageFormatName;
   imageDpi?: number;
   jpegQuality?: number;
@@ -136,6 +148,17 @@ export interface CanvasNode {
   wmScale: number;
   nupLayout: NupLayoutName;
   nupBooklet: boolean;
+  pmHeaderLeft: string;
+  pmHeaderCenter: string;
+  pmHeaderRight: string;
+  pmFooterLeft: string;
+  pmFooterCenter: string;
+  pmFooterRight: string;
+  pmFontSize: number;
+  pmMargin: number;
+  pmSkipFirst: boolean;
+  pmStartNumber: number;
+  pmPrefix: string;
   imageFormat: ImageFormatName;
   imageDpi: number;
   textFormat: TextFormatName;
@@ -169,6 +192,17 @@ export function newCanvasNode(id: string, kind: NodeKindName, x: number, y: numb
     wmScale: 0.5,
     nupLayout: 'TWO_UP',
     nupBooklet: false,
+    pmHeaderLeft: '',
+    pmHeaderCenter: '',
+    pmHeaderRight: '',
+    pmFooterLeft: '',
+    pmFooterCenter: '{page} / {pages}',
+    pmFooterRight: '',
+    pmFontSize: 10,
+    pmMargin: 36,
+    pmSkipFirst: false,
+    pmStartNumber: 1,
+    pmPrefix: '',
     imageFormat: 'PNG',
     imageDpi: 150,
     textFormat: 'TXT',
@@ -217,6 +251,21 @@ export function toWireNode(n: CanvasNode): PipelineNodeJson {
       };
     case 'NUP':
       return { ...base, nupLayout: n.nupLayout, nupBooklet: n.nupBooklet };
+    case 'PAGE_MARKS':
+      return {
+        ...base,
+        pmHeaderLeft: n.pmHeaderLeft,
+        pmHeaderCenter: n.pmHeaderCenter,
+        pmHeaderRight: n.pmHeaderRight,
+        pmFooterLeft: n.pmFooterLeft,
+        pmFooterCenter: n.pmFooterCenter,
+        pmFooterRight: n.pmFooterRight,
+        pmFontSize: n.pmFontSize,
+        pmMargin: n.pmMargin,
+        pmSkipFirst: n.pmSkipFirst,
+        pmStartNumber: n.pmStartNumber,
+        pmPrefix: n.pmPrefix,
+      };
     case 'TO_IMAGES':
       return { ...base, imageFormat: n.imageFormat, imageDpi: n.imageDpi };
     case 'TO_TEXT':
@@ -250,6 +299,17 @@ export function fromWireNode(w: PipelineNodeJson): CanvasNode {
   if (w.wmScale != null) n.wmScale = w.wmScale;
   if (w.nupLayout != null) n.nupLayout = w.nupLayout;
   if (w.nupBooklet != null) n.nupBooklet = w.nupBooklet;
+  if (w.pmHeaderLeft != null) n.pmHeaderLeft = w.pmHeaderLeft;
+  if (w.pmHeaderCenter != null) n.pmHeaderCenter = w.pmHeaderCenter;
+  if (w.pmHeaderRight != null) n.pmHeaderRight = w.pmHeaderRight;
+  if (w.pmFooterLeft != null) n.pmFooterLeft = w.pmFooterLeft;
+  if (w.pmFooterCenter != null) n.pmFooterCenter = w.pmFooterCenter;
+  if (w.pmFooterRight != null) n.pmFooterRight = w.pmFooterRight;
+  if (w.pmFontSize != null) n.pmFontSize = w.pmFontSize;
+  if (w.pmMargin != null) n.pmMargin = w.pmMargin;
+  if (w.pmSkipFirst != null) n.pmSkipFirst = w.pmSkipFirst;
+  if (w.pmStartNumber != null) n.pmStartNumber = w.pmStartNumber;
+  if (w.pmPrefix != null) n.pmPrefix = w.pmPrefix;
   if (w.imageFormat != null) n.imageFormat = w.imageFormat;
   if (w.imageDpi != null) n.imageDpi = w.imageDpi;
   if (w.textFormat != null) n.textFormat = w.textFormat;

@@ -134,6 +134,8 @@ export class ApiService {
   }
   crop(formData: FormData): Observable<RunResult> {
     return this.runOperation('crop', formData);
+  pageMarks(formData: FormData): Observable<RunResult> {
+    return this.runOperation('page-marks', formData);
   }
   redact(formData: FormData): Observable<RunResult> {
     return this.runOperation('redact', formData);

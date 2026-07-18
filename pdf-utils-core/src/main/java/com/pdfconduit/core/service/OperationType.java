@@ -17,6 +17,7 @@ public enum OperationType {
     METADATA      ("metadata",   "_metadata",    Cardinality.MAP,    false),
     WATERMARK     ("watermark",  "_watermarked", Cardinality.MAP,    false),
     CROP          ("crop",       "_cropped",     Cardinality.MAP,    false),
+    PAGE_MARKS    ("page-marks", "_marked",      Cardinality.MAP,    false),
     REDACT        ("redact",     "_redacted",    Cardinality.MAP,    false),
     NUP           ("nup",        "_nup",         Cardinality.MAP,    false),
     // Terminal exports: output is not a PDF. They appear as terminal-only pipeline nodes.

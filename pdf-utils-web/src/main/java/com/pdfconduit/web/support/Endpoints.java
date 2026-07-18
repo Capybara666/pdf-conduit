@@ -21,7 +21,8 @@ public final class Endpoints {
         "/api/operations",
         "/api/pipeline/kinds",
         "/api/pipeline/validate",
-        "/api/metadata/read");
+        "/api/metadata/read",
+        "/api/page-marks");
 
     /**
      * Expensive endpoints: subject to the heavy rate bucket and the load-guard (concurrency /

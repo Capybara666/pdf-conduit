@@ -22,6 +22,7 @@ const KIND_TO_OP: Record<string, string> = {
   METADATA: 'metadata',
   WATERMARK: 'watermark',
   NUP: 'nup',
+  PAGE_MARKS: 'page-marks',
   TO_IMAGES: 'to-images',
   TO_TEXT: 'to-text',
 };

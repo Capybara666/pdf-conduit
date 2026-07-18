@@ -158,6 +158,15 @@ export const OP_ICONS: Record<string, string> = {
       '<path d="M12 5.5 V18.5"/>',
   ),
 
+  'page-marks': g(
+    '<path d="M5 3 H14 L17 6 V21 H5 Z"/>' +
+      '<path d="M14 3 V6 H17"/>' +
+      '<path d="M7 8 H15 V10.2 H7 Z" fill="currentColor" stroke="none" opacity=".18"/>' +
+      '<path d="M7 8 H15 V10.2 H7 Z"/>' +
+      '<path d="M7 15.8 H15 V18 H7 Z" fill="currentColor" stroke="none" opacity=".18"/>' +
+      '<path d="M7 15.8 H15 V18 H7 Z"/>',
+  ),
+
   // Pipeline SOURCE node (not an operation) — a plain page glyph.
   source: g('<path d="M6 2h9l5 5v15H6z M15 2v5h5"/>'),
 };
@@ -283,6 +292,13 @@ export const NAV_ITEMS: NavItem[] = [
     description: 'Trim margins off every page.',
     group: 'edit',
     icon: OP_ICONS['crop'],
+  },
+  {
+    id: 'page-marks',
+    label: 'Page Marks',
+    description: 'Add page numbers and header/footer text.',
+    group: 'edit',
+    icon: OP_ICONS['page-marks'],
   },
 
   // Advanced

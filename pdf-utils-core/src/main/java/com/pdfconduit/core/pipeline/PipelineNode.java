@@ -68,6 +68,18 @@ public class PipelineNode {
     // NUP — imposition grid preset; booklet mode overrides the grid with 2-up saddle-stitch.
     public com.pdfconduit.core.model.NupLayout nupLayout = com.pdfconduit.core.model.NupLayout.TWO_UP;
     public boolean nupBooklet = false;
+    // PAGE_MARKS — header/footer slots (tokens {page},{n},{pages},{date}); Bates via pmPrefix.
+    public String pmHeaderLeft = "";
+    public String pmHeaderCenter = "";
+    public String pmHeaderRight = "";
+    public String pmFooterLeft = "";
+    public String pmFooterCenter = "{page} / {pages}";
+    public String pmFooterRight = "";
+    public double pmFontSize = 10;
+    public double pmMargin = 36;
+    public boolean pmSkipFirst = false;
+    public int pmStartNumber = 1;
+    public String pmPrefix = "";
 
     // TO_IMAGES export
     public com.pdfconduit.core.model.ImageFormat imageFormat = com.pdfconduit.core.model.ImageFormat.PNG;

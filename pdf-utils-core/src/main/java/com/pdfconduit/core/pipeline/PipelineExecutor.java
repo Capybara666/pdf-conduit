@@ -12,6 +12,7 @@ import com.pdfconduit.core.operations.PdfCropper;
 import com.pdfconduit.core.operations.PdfMerger;
 import com.pdfconduit.core.operations.PdfMetadataEditor;
 import com.pdfconduit.core.operations.PdfNupImposer;
+import com.pdfconduit.core.operations.PdfPageMarker;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRotator;
 import com.pdfconduit.core.operations.PdfSplitter;
@@ -258,6 +259,11 @@ public final class PipelineExecutor {
                         n.cropTop, n.cropRight, n.cropBottom, n.cropLeft, n.cropMm, out));
                     case NUP -> PdfNupImposer.execute(
                         new NupOptions(src, n.nupLayout, n.nupBooklet, out));
+                    case PAGE_MARKS -> PdfPageMarker.execute(new PageMarksOptions(src,
+                        n.pmHeaderLeft, n.pmHeaderCenter, n.pmHeaderRight,
+                        n.pmFooterLeft, n.pmFooterCenter, n.pmFooterRight,
+                        (float) n.pmFontSize, (float) n.pmMargin, n.pmSkipFirst,
+                        n.pmStartNumber, n.pmPrefix, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
@@ -566,6 +572,11 @@ public final class PipelineExecutor {
                 case CROP      -> PdfCropper.executeBytes(pdf,
                     n.cropTop, n.cropRight, n.cropBottom, n.cropLeft, n.cropMm);
                 case NUP       -> PdfNupImposer.executeBytes(pdf, n.nupLayout, n.nupBooklet);
+                case PAGE_MARKS -> PdfPageMarker.executeBytes(pdf,
+                    n.pmHeaderLeft, n.pmHeaderCenter, n.pmHeaderRight,
+                    n.pmFooterLeft, n.pmFooterCenter, n.pmFooterRight,
+                    (float) n.pmFontSize, (float) n.pmMargin, n.pmSkipFirst,
+                    n.pmStartNumber, n.pmPrefix);
                 default -> throw new PipelineException("Not a map node: " + n.kind);
             };
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));

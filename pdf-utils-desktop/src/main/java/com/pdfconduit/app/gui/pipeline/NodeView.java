@@ -180,6 +180,12 @@ class NodeView extends HBox {
             case NUP -> node.nupBooklet
                 ? I18n.t("nup.booklet")
                 : I18n.t("nup.layout." + node.nupLayout.id());
+            case PAGE_MARKS -> {
+                String prefix = node.pmPrefix == null ? "" : node.pmPrefix.trim();
+                yield prefix.isEmpty()
+                    ? I18n.t("pipeline.summary.pagemarks")
+                    : I18n.t("pipeline.summary.pagemarksbates", prefix);
+            }
             case TO_IMAGES -> node.imageFormat + "  ·  " + node.imageDpi + " DPI";
             case TO_TEXT -> "." + node.textFormat.extension();
         });

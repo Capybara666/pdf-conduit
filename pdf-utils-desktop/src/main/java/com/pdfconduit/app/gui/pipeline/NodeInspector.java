@@ -80,6 +80,7 @@ class NodeInspector extends FlowPane {
             case WATERMARK -> buildWatermark(node);
             case CROP -> buildCrop(node);
             case NUP -> buildNup(node);
+            case PAGE_MARKS -> buildPageMarks(node);
             case TO_IMAGES -> buildToImages(node);
             case TO_TEXT -> buildToText(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
@@ -383,6 +384,40 @@ class NodeInspector extends FlowPane {
                 canvas.refreshNode(node);
             } catch (NumberFormatException ignored) {}
         });
+    private void buildPageMarks(PipelineNode node) {
+        TextField hc = pmField(node.pmHeaderCenter, v -> node.pmHeaderCenter = v, node);
+        TextField fc = pmField(node.pmFooterCenter, v -> node.pmFooterCenter = v, node);
+
+        TextField start = new TextField(String.valueOf(node.pmStartNumber));
+        start.setPrefWidth(60);
+        start.textProperty().addListener((o, a, b) -> {
+            try { node.pmStartNumber = Integer.parseInt(b.strip()); canvas.refreshNode(node); }
+            catch (NumberFormatException ignored) {}
+        });
+
+        TextField prefix = new TextField(node.pmPrefix);
+        prefix.setPromptText(I18n.t("pagemarks.prefix.prompt"));
+        prefix.setPrefWidth(110);
+        prefix.textProperty().addListener((o, a, b) -> { node.pmPrefix = b; canvas.refreshNode(node); });
+
+        CheckBox skip = new CheckBox(I18n.t("pagemarks.skipfirst"));
+        skip.setSelected(node.pmSkipFirst);
+        skip.setMinWidth(Region.USE_PREF_SIZE);
+        skip.selectedProperty().addListener((o, a, b) -> { node.pmSkipFirst = b; canvas.refreshNode(node); });
+
+        getChildren().addAll(
+            group("pagemarks.header", hc),
+            group("pagemarks.footer", fc),
+            group("pagemarks.start", start),
+            group("pagemarks.prefix", prefix),
+            skip);
+    }
+
+    private TextField pmField(String value, java.util.function.Consumer<String> setter, PipelineNode node) {
+        TextField f = new TextField(value);
+        f.setPromptText(I18n.t("pagemarks.slot.prompt"));
+        f.setPrefWidth(150);
+        f.textProperty().addListener((o, a, b) -> { setter.accept(b); canvas.refreshNode(node); });
         return f;
     }
 

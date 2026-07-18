@@ -283,6 +283,33 @@ public class OperationsController {
         List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
             () -> ops.nup(inputs, nupLayout, booklet));
         return Responses.batch("nup", results, MediaType.APPLICATION_PDF);
+    // --------------------------------------------------------------- PAGE-MARKS
+
+    @PostMapping(value = "/page-marks", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> pageMarks(@RequestParam("files") List<MultipartFile> files,
+                                            @RequestParam(required = false) String headerLeft,
+                                            @RequestParam(required = false) String headerCenter,
+                                            @RequestParam(required = false) String headerRight,
+                                            @RequestParam(required = false) String footerLeft,
+                                            @RequestParam(required = false) String footerCenter,
+                                            @RequestParam(required = false) String footerRight,
+                                            @RequestParam(required = false) Float fontSize,
+                                            @RequestParam(required = false) Float margin,
+                                            @RequestParam(defaultValue = "false") boolean skipFirst,
+                                            @RequestParam(required = false) Integer startNumber,
+                                            @RequestParam(required = false) String prefix)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        guardCount(files, maxFiles);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
+            () -> ops.pageMarks(inputs, headerLeft, headerCenter, headerRight,
+                footerLeft, footerCenter, footerRight,
+                fontSize != null ? fontSize : 10f,
+                margin != null ? margin : 36f,
+                skipFirst,
+                startNumber != null ? startNumber : 1,
+                prefix));
+        return Responses.batch("page-marks", results, MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------- REDACT

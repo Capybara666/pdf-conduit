@@ -126,6 +126,10 @@
     "crop": {
       "label": "Przytnij",
       "description": "Przytnij marginesy każdej strony."
+    },
+    "page-marks": {
+      "label": "Page Marks",
+      "description": "Add page numbers and header/footer text."
     }
   },
   "header": {
@@ -639,7 +643,12 @@
       "run": "Uruchom potok",
       "running": "Uruchamianie…",
       "valid": "✓ Potok jest prawidłowy.",
-      "jsonTitle": "JSON potoku"
+      "jsonTitle": "JSON potoku",
+      "fieldHeaderCenter": "Header (center)",
+      "fieldFooterCenter": "Footer (center)",
+      "fieldStartNumber": "Start number",
+      "fieldPrefix": "Bates prefix",
+      "skipFirst": "Skip first page"
     },
     "gdprScan": {
       "title": "Skan RODO / PII",
@@ -693,6 +702,28 @@
       "unitHelp": "Każdy margines jest przycinany od odpowiedniej krawędzi strony.",
       "submit": "Przytnij strony",
       "loading": "Przycinanie…"
+    },
+    "pageMarks": {
+      "title": "Page Marks",
+      "description": "Add page numbers and header/footer text to every page.",
+      "hint": "One or more PDFs to mark (several files → ZIP).",
+      "privacyLine": "Your files are marked privately and never stored.",
+      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
+      "header": "Header",
+      "footer": "Footer",
+      "left": "Left",
+      "center": "Center",
+      "right": "Right",
+      "slotPlaceholder": "e.g. {page} / {pages}",
+      "fontSize": "Font size (pt)",
+      "margin": "Margin (pt)",
+      "startNumber": "Start number",
+      "prefix": "Bates prefix",
+      "prefixPlaceholder": "e.g. ACME-",
+      "skipFirst": "Skip the first page",
+      "submit": "Add page marks",
+      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
+      "loading": "Marking…"
     }
   },
   "pageGrid": {

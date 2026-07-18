@@ -76,6 +76,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/watermark/watermark.page').then((m) => m.WatermarkPage),
   },
   {
+    path: 'page-marks',
+    data: { titleKey: 'op.page-marks.label' },
+    loadComponent: () => import('./pages/page-marks/page-marks.page').then((m) => m.PageMarksPage),
+  },
+  {
     path: 'redact',
     data: { titleKey: 'op.redact.label' },
     loadComponent: () => import('./pages/redact/redact.page').then((m) => m.RedactPage),
