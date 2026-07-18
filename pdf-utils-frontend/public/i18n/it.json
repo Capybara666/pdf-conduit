@@ -14,10 +14,29 @@
     "hide": "Nascondi",
     "done": "Fatto",
     "loading": "Caricamento",
-    "processing": "Elaborazione…"
+    "processing": "Elaborazione…",
+    "moveUp": "Sposta su",
+    "moveDown": "Sposta giù"
   },
   "dropzone": {
-    "defaultLabel": "Trascina i file qui o clicca per sfogliare"
+    "defaultLabel": "Trascina i file qui o clicca per sfogliare",
+    "upToSize": "fino a {{size}} MB",
+    "maxFiles": "max {{count}} file",
+    "rejectedTitle": "Alcuni file non sono stati aggiunti",
+    "dismiss": "Ignora",
+    "pageOverlay": "Trascina i file qui",
+    "reason": {
+      "size": "oltre il limite di {{size}} MB",
+      "type": "tipo di file non supportato",
+      "count": "oltre il limite di {{count}} file"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "immagini",
+      "office": "documenti Office",
+      "json": "JSON",
+      "any": "Qualsiasi file"
+    }
   },
   "nav": {
     "aria": "Operazioni",
@@ -30,7 +49,8 @@
       "secure": "Proteggi",
       "edit": "Modifica",
       "advanced": "Avanzate"
-    }
+    },
+    "menuToggle": "Attiva/disattiva il menu di navigazione"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Vedi i piani Pro →",
     "seeProPlansShort": "Vedi i piani Pro",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "Dettagli tecnici"
+    "technicalDetails": "Dettagli tecnici",
+    "tryAgain": "Riprova",
+    "expandPreview": "Ingrandisci anteprima",
+    "close": "Chiudi"
   },
   "viewer": {
     "renderingPreview": "Generazione anteprima…",
@@ -537,6 +560,9 @@
       "removeConnection": "Rimuovi connessione",
       "inPort": "Porta di ingresso",
       "outPort": "Porta di uscita (trascina per collegare)",
+      "wmImageLabel": "Filigrana immagine",
+      "wmImageClear": "Rimuovi",
+      "wmImageHint": "Un'immagine caricata sostituisce la filigrana di testo.",
       "summary": {
         "noFiles": "Nessun file",
         "pages": "Pagine: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "Modifica metadati"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "Vai al contenuto"
   }
 }

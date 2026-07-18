@@ -14,10 +14,29 @@
     "hide": "Hide",
     "done": "Done",
     "loading": "Loading",
-    "processing": "Processing…"
+    "processing": "Processing…",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
   },
   "dropzone": {
-    "defaultLabel": "Drop files here or click to browse"
+    "defaultLabel": "Drop files here or click to browse",
+    "upToSize": "up to {{size}} MB",
+    "maxFiles": "max {{count}} files",
+    "rejectedTitle": "Some files were not added",
+    "dismiss": "Dismiss",
+    "pageOverlay": "Drop files here",
+    "reason": {
+      "size": "over the {{size}} MB limit",
+      "type": "unsupported file type",
+      "count": "over the {{count}} file limit"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "images",
+      "office": "Office docs",
+      "json": "JSON",
+      "any": "Any file"
+    }
   },
   "nav": {
     "aria": "Operations",
@@ -30,7 +49,8 @@
       "secure": "Secure",
       "edit": "Edit",
       "advanced": "Advanced"
-    }
+    },
+    "menuToggle": "Toggle navigation menu"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "See Pro plans →",
     "seeProPlansShort": "See Pro plans",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "Technical details"
+    "technicalDetails": "Technical details",
+    "tryAgain": "Try again",
+    "expandPreview": "Expand preview",
+    "close": "Close"
   },
   "viewer": {
     "renderingPreview": "Rendering preview…",
@@ -537,6 +560,9 @@
       "removeConnection": "Remove connection",
       "inPort": "Input port",
       "outPort": "Output port (drag to connect)",
+      "wmImageLabel": "Image watermark",
+      "wmImageClear": "Remove",
+      "wmImageHint": "An uploaded image is used instead of the text watermark.",
       "summary": {
         "noFiles": "No files",
         "pages": "Pages: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "Edit metadata"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
   }
 }

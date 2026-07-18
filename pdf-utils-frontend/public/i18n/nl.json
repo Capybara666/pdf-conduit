@@ -14,10 +14,29 @@
     "hide": "Verbergen",
     "done": "Klaar",
     "loading": "Laden",
-    "processing": "Bezig…"
+    "processing": "Bezig…",
+    "moveUp": "Omhoog verplaatsen",
+    "moveDown": "Omlaag verplaatsen"
   },
   "dropzone": {
-    "defaultLabel": "Sleep bestanden hierheen of klik om te bladeren"
+    "defaultLabel": "Sleep bestanden hierheen of klik om te bladeren",
+    "upToSize": "tot {{size}} MB",
+    "maxFiles": "max. {{count}} bestanden",
+    "rejectedTitle": "Sommige bestanden zijn niet toegevoegd",
+    "dismiss": "Sluiten",
+    "pageOverlay": "Sleep bestanden hierheen",
+    "reason": {
+      "size": "boven de limiet van {{size}} MB",
+      "type": "niet-ondersteund bestandstype",
+      "count": "boven de limiet van {{count}} bestanden"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "afbeeldingen",
+      "office": "Office-documenten",
+      "json": "JSON",
+      "any": "Elk bestand"
+    }
   },
   "nav": {
     "aria": "Bewerkingen",
@@ -30,7 +49,8 @@
       "secure": "Beveiligen",
       "edit": "Bewerken",
       "advanced": "Geavanceerd"
-    }
+    },
+    "menuToggle": "Navigatiemenu in-/uitschakelen"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Bekijk Pro-abonnementen →",
     "seeProPlansShort": "Bekijk Pro-abonnementen",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "Technische details"
+    "technicalDetails": "Technische details",
+    "tryAgain": "Opnieuw proberen",
+    "expandPreview": "Voorbeeld vergroten",
+    "close": "Sluiten"
   },
   "viewer": {
     "renderingPreview": "Voorbeeld weergeven…",
@@ -537,6 +560,9 @@
       "removeConnection": "Verbinding verwijderen",
       "inPort": "Invoerpoort",
       "outPort": "Uitvoerpoort (sleep om te verbinden)",
+      "wmImageLabel": "Afbeeldingswatermerk",
+      "wmImageClear": "Verwijderen",
+      "wmImageHint": "Een geüploade afbeelding wordt gebruikt in plaats van het tekstwatermerk.",
       "summary": {
         "noFiles": "Geen bestanden",
         "pages": "Pagina's: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "Metadata bewerken"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "Naar inhoud gaan"
   }
 }

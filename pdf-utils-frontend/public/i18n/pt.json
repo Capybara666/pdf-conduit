@@ -14,10 +14,29 @@
     "hide": "Ocultar",
     "done": "Concluído",
     "loading": "A carregar",
-    "processing": "A processar…"
+    "processing": "A processar…",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo"
   },
   "dropzone": {
-    "defaultLabel": "Largue os ficheiros aqui ou clique para procurar"
+    "defaultLabel": "Largue os ficheiros aqui ou clique para procurar",
+    "upToSize": "até {{size}} MB",
+    "maxFiles": "máx. {{count}} ficheiros",
+    "rejectedTitle": "Alguns ficheiros não foram adicionados",
+    "dismiss": "Dispensar",
+    "pageOverlay": "Largue os ficheiros aqui",
+    "reason": {
+      "size": "acima do limite de {{size}} MB",
+      "type": "tipo de ficheiro não suportado",
+      "count": "acima do limite de {{count}} ficheiros"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "imagens",
+      "office": "documentos do Office",
+      "json": "JSON",
+      "any": "Qualquer ficheiro"
+    }
   },
   "nav": {
     "aria": "Operações",
@@ -30,7 +49,8 @@
       "secure": "Proteger",
       "edit": "Editar",
       "advanced": "Avançado"
-    }
+    },
+    "menuToggle": "Alternar menu de navegação"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Ver planos Pro →",
     "seeProPlansShort": "Ver planos Pro",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "Detalhes técnicos"
+    "technicalDetails": "Detalhes técnicos",
+    "tryAgain": "Tentar novamente",
+    "expandPreview": "Ampliar pré-visualização",
+    "close": "Fechar"
   },
   "viewer": {
     "renderingPreview": "A preparar pré-visualização…",
@@ -537,6 +560,9 @@
       "removeConnection": "Remover ligação",
       "inPort": "Porta de entrada",
       "outPort": "Porta de saída (arraste para ligar)",
+      "wmImageLabel": "Marca d'água de imagem",
+      "wmImageClear": "Remover",
+      "wmImageHint": "Uma imagem enviada é usada no lugar da marca d'água de texto.",
       "summary": {
         "noFiles": "Sem ficheiros",
         "pages": "Páginas: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "Editar metadados"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "Ir para o conteúdo"
   }
 }

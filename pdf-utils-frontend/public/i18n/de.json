@@ -14,10 +14,29 @@
     "hide": "Ausblenden",
     "done": "Fertig",
     "loading": "Wird geladen",
-    "processing": "Wird verarbeitet…"
+    "processing": "Wird verarbeitet…",
+    "moveUp": "Nach oben verschieben",
+    "moveDown": "Nach unten verschieben"
   },
   "dropzone": {
-    "defaultLabel": "Dateien hierher ziehen oder zum Durchsuchen klicken"
+    "defaultLabel": "Dateien hierher ziehen oder zum Durchsuchen klicken",
+    "upToSize": "bis zu {{size}} MB",
+    "maxFiles": "max. {{count}} Dateien",
+    "rejectedTitle": "Einige Dateien wurden nicht hinzugefügt",
+    "dismiss": "Schließen",
+    "pageOverlay": "Dateien hierher ziehen",
+    "reason": {
+      "size": "über dem Limit von {{size}} MB",
+      "type": "nicht unterstützter Dateityp",
+      "count": "über dem Limit von {{count}} Dateien"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "Bilder",
+      "office": "Office-Dokumente",
+      "json": "JSON",
+      "any": "Beliebige Datei"
+    }
   },
   "nav": {
     "aria": "Vorgänge",
@@ -30,7 +49,8 @@
       "secure": "Schützen",
       "edit": "Bearbeiten",
       "advanced": "Erweitert"
-    }
+    },
+    "menuToggle": "Navigationsmenü umschalten"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Pro-Tarife ansehen →",
     "seeProPlansShort": "Pro-Tarife ansehen",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "Technische Details"
+    "technicalDetails": "Technische Details",
+    "tryAgain": "Erneut versuchen",
+    "expandPreview": "Vorschau vergrößern",
+    "close": "Schließen"
   },
   "viewer": {
     "renderingPreview": "Vorschau wird gerendert…",
@@ -537,6 +560,9 @@
       "removeConnection": "Verbindung entfernen",
       "inPort": "Eingangsport",
       "outPort": "Ausgangsport (zum Verbinden ziehen)",
+      "wmImageLabel": "Bild-Wasserzeichen",
+      "wmImageClear": "Entfernen",
+      "wmImageHint": "Ein hochgeladenes Bild wird anstelle des Text-Wasserzeichens verwendet.",
       "summary": {
         "noFiles": "Keine Dateien",
         "pages": "Seiten: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "Metadaten bearbeiten"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "Zum Inhalt springen"
   }
 }

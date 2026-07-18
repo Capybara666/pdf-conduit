@@ -14,10 +14,29 @@
     "hide": "Ukryj",
     "done": "Gotowe",
     "loading": "Ładowanie",
-    "processing": "Przetwarzanie…"
+    "processing": "Przetwarzanie…",
+    "moveUp": "Przesuń w górę",
+    "moveDown": "Przesuń w dół"
   },
   "dropzone": {
-    "defaultLabel": "Upuść pliki tutaj lub kliknij, aby wybrać"
+    "defaultLabel": "Upuść pliki tutaj lub kliknij, aby wybrać",
+    "upToSize": "do {{size}} MB",
+    "maxFiles": "maks. {{count}} plików",
+    "rejectedTitle": "Niektóre pliki nie zostały dodane",
+    "dismiss": "Zamknij",
+    "pageOverlay": "Upuść pliki tutaj",
+    "reason": {
+      "size": "powyżej limitu {{size}} MB",
+      "type": "nieobsługiwany typ pliku",
+      "count": "powyżej limitu {{count}} plików"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "obrazy",
+      "office": "dokumenty Office",
+      "json": "JSON",
+      "any": "Dowolny plik"
+    }
   },
   "nav": {
     "aria": "Operacje",
@@ -30,7 +49,8 @@
       "secure": "Zabezpieczanie",
       "edit": "Edycja",
       "advanced": "Zaawansowane"
-    }
+    },
+    "menuToggle": "Przełącz menu nawigacji"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Zobacz plany Pro →",
     "seeProPlansShort": "Zobacz plany Pro",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "Szczegóły techniczne"
+    "technicalDetails": "Szczegóły techniczne",
+    "tryAgain": "Spróbuj ponownie",
+    "expandPreview": "Powiększ podgląd",
+    "close": "Zamknij"
   },
   "viewer": {
     "renderingPreview": "Renderowanie podglądu…",
@@ -537,6 +560,9 @@
       "removeConnection": "Usuń połączenie",
       "inPort": "Port wejściowy",
       "outPort": "Port wyjściowy (przeciągnij, aby połączyć)",
+      "wmImageLabel": "Znak wodny z obrazu",
+      "wmImageClear": "Usuń",
+      "wmImageHint": "Przesłany obraz zostanie użyty zamiast tekstowego znaku wodnego.",
       "summary": {
         "noFiles": "Brak plików",
         "pages": "Strony: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "Edytuj metadane"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "Przejdź do treści"
   }
 }

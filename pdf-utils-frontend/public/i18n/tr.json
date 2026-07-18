@@ -14,10 +14,29 @@
     "hide": "Gizle",
     "done": "Tamam",
     "loading": "Yükleniyor",
-    "processing": "İşleniyor…"
+    "processing": "İşleniyor…",
+    "moveUp": "Yukarı taşı",
+    "moveDown": "Aşağı taşı"
   },
   "dropzone": {
-    "defaultLabel": "Dosyaları buraya bırakın veya göz atmak için tıklayın"
+    "defaultLabel": "Dosyaları buraya bırakın veya göz atmak için tıklayın",
+    "upToSize": "en fazla {{size}} MB",
+    "maxFiles": "en fazla {{count}} dosya",
+    "rejectedTitle": "Bazı dosyalar eklenmedi",
+    "dismiss": "Kapat",
+    "pageOverlay": "Dosyaları buraya bırakın",
+    "reason": {
+      "size": "{{size}} MB sınırının üzerinde",
+      "type": "desteklenmeyen dosya türü",
+      "count": "{{count}} dosya sınırının üzerinde"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "görseller",
+      "office": "Office belgeleri",
+      "json": "JSON",
+      "any": "Herhangi bir dosya"
+    }
   },
   "nav": {
     "aria": "İşlemler",
@@ -30,7 +49,8 @@
       "secure": "Güvenlik",
       "edit": "Düzenleme",
       "advanced": "Gelişmiş"
-    }
+    },
+    "menuToggle": "Gezinme menüsünü aç/kapat"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Pro planlarına bakın →",
     "seeProPlansShort": "Pro planlarına bakın",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "Teknik ayrıntılar"
+    "technicalDetails": "Teknik ayrıntılar",
+    "tryAgain": "Tekrar dene",
+    "expandPreview": "Önizlemeyi büyüt",
+    "close": "Kapat"
   },
   "viewer": {
     "renderingPreview": "Önizleme oluşturuluyor…",
@@ -537,6 +560,9 @@
       "removeConnection": "Bağlantıyı kaldır",
       "inPort": "Giriş bağlantı noktası",
       "outPort": "Çıkış bağlantı noktası (bağlamak için sürükleyin)",
+      "wmImageLabel": "Görsel filigran",
+      "wmImageClear": "Kaldır",
+      "wmImageHint": "Yüklenen görsel, metin filigranı yerine kullanılır.",
       "summary": {
         "noFiles": "Dosya yok",
         "pages": "Sayfalar: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "Meta verileri düzenle"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "İçeriğe geç"
   }
 }

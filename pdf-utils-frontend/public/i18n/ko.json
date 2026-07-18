@@ -14,10 +14,29 @@
     "hide": "숨기기",
     "done": "완료",
     "loading": "불러오는 중",
-    "processing": "처리 중…"
+    "processing": "처리 중…",
+    "moveUp": "위로 이동",
+    "moveDown": "아래로 이동"
   },
   "dropzone": {
-    "defaultLabel": "여기에 파일을 놓거나 클릭하여 찾아보기"
+    "defaultLabel": "여기에 파일을 놓거나 클릭하여 찾아보기",
+    "upToSize": "최대 {{size}} MB",
+    "maxFiles": "최대 {{count}}개 파일",
+    "rejectedTitle": "일부 파일이 추가되지 않았습니다",
+    "dismiss": "닫기",
+    "pageOverlay": "여기에 파일을 놓으세요",
+    "reason": {
+      "size": "{{size}} MB 제한 초과",
+      "type": "지원되지 않는 파일 형식",
+      "count": "{{count}}개 파일 제한 초과"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "이미지",
+      "office": "Office 문서",
+      "json": "JSON",
+      "any": "모든 파일"
+    }
   },
   "nav": {
     "aria": "작업",
@@ -30,7 +49,8 @@
       "secure": "보안",
       "edit": "편집",
       "advanced": "고급"
-    }
+    },
+    "menuToggle": "탐색 메뉴 전환"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Pro 플랜 보기 →",
     "seeProPlansShort": "Pro 플랜 보기",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "기술 세부 정보"
+    "technicalDetails": "기술 세부 정보",
+    "tryAgain": "다시 시도",
+    "expandPreview": "미리보기 확대",
+    "close": "닫기"
   },
   "viewer": {
     "renderingPreview": "미리보기 렌더링 중…",
@@ -537,6 +560,9 @@
       "removeConnection": "연결 제거",
       "inPort": "입력 포트",
       "outPort": "출력 포트 (드래그하여 연결)",
+      "wmImageLabel": "이미지 워터마크",
+      "wmImageClear": "제거",
+      "wmImageHint": "업로드한 이미지가 텍스트 워터마크 대신 사용됩니다.",
       "summary": {
         "noFiles": "파일 없음",
         "pages": "페이지: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "메타데이터 편집"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "콘텐츠로 건너뛰기"
   }
 }

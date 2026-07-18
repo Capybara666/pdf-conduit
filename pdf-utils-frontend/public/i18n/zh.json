@@ -14,10 +14,29 @@
     "hide": "隐藏",
     "done": "完成",
     "loading": "加载中",
-    "processing": "处理中…"
+    "processing": "处理中…",
+    "moveUp": "上移",
+    "moveDown": "下移"
   },
   "dropzone": {
-    "defaultLabel": "将文件拖到此处，或点击浏览"
+    "defaultLabel": "将文件拖到此处，或点击浏览",
+    "upToSize": "最大 {{size}} MB",
+    "maxFiles": "最多 {{count}} 个文件",
+    "rejectedTitle": "部分文件未添加",
+    "dismiss": "关闭",
+    "pageOverlay": "将文件拖到此处",
+    "reason": {
+      "size": "超过 {{size}} MB 限制",
+      "type": "不支持的文件类型",
+      "count": "超过 {{count}} 个文件的限制"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "图片",
+      "office": "Office 文档",
+      "json": "JSON",
+      "any": "任意文件"
+    }
   },
   "nav": {
     "aria": "操作",
@@ -30,7 +49,8 @@
       "secure": "加密",
       "edit": "编辑",
       "advanced": "高级"
-    }
+    },
+    "menuToggle": "切换导航菜单"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "查看 Pro 方案 →",
     "seeProPlansShort": "查看 Pro 方案",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "技术详情"
+    "technicalDetails": "技术详情",
+    "tryAgain": "重试",
+    "expandPreview": "展开预览",
+    "close": "关闭"
   },
   "viewer": {
     "renderingPreview": "正在渲染预览…",
@@ -537,6 +560,9 @@
       "removeConnection": "移除连接",
       "inPort": "输入端口",
       "outPort": "输出端口（拖动以连接）",
+      "wmImageLabel": "图片水印",
+      "wmImageClear": "移除",
+      "wmImageHint": "上传的图片将替代文字水印。",
       "summary": {
         "noFiles": "无文件",
         "pages": "页面：{{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "编辑元数据"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "跳到内容"
   }
 }

@@ -14,10 +14,29 @@
     "hide": "非表示",
     "done": "完了",
     "loading": "読み込み中",
-    "processing": "処理中…"
+    "processing": "処理中…",
+    "moveUp": "上へ移動",
+    "moveDown": "下へ移動"
   },
   "dropzone": {
-    "defaultLabel": "ここにファイルをドロップ、またはクリックして選択"
+    "defaultLabel": "ここにファイルをドロップ、またはクリックして選択",
+    "upToSize": "最大 {{size}} MB",
+    "maxFiles": "最大 {{count}} 件",
+    "rejectedTitle": "一部のファイルは追加されませんでした",
+    "dismiss": "閉じる",
+    "pageOverlay": "ここにファイルをドロップ",
+    "reason": {
+      "size": "{{size}} MB の上限を超えています",
+      "type": "サポートされていないファイル形式",
+      "count": "{{count}} 件のファイル上限を超えています"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "画像",
+      "office": "Office 文書",
+      "json": "JSON",
+      "any": "任意のファイル"
+    }
   },
   "nav": {
     "aria": "操作",
@@ -30,7 +49,8 @@
       "secure": "保護",
       "edit": "編集",
       "advanced": "高度な設定"
-    }
+    },
+    "menuToggle": "ナビゲーションメニューを切り替え"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Pro プランを見る →",
     "seeProPlansShort": "Pro プランを見る",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "技術的な詳細"
+    "technicalDetails": "技術的な詳細",
+    "tryAgain": "再試行",
+    "expandPreview": "プレビューを拡大",
+    "close": "閉じる"
   },
   "viewer": {
     "renderingPreview": "プレビューを描画中…",
@@ -537,6 +560,9 @@
       "removeConnection": "接続を削除",
       "inPort": "入力ポート",
       "outPort": "出力ポート（ドラッグして接続）",
+      "wmImageLabel": "画像の透かし",
+      "wmImageClear": "削除",
+      "wmImageHint": "アップロードした画像がテキストの透かしの代わりに使用されます。",
       "summary": {
         "noFiles": "ファイルなし",
         "pages": "ページ: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "メタデータを編集"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "コンテンツにスキップ"
   }
 }

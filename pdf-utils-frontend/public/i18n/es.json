@@ -14,10 +14,29 @@
     "hide": "Ocultar",
     "done": "Listo",
     "loading": "Cargando",
-    "processing": "Procesando…"
+    "processing": "Procesando…",
+    "moveUp": "Mover arriba",
+    "moveDown": "Mover abajo"
   },
   "dropzone": {
-    "defaultLabel": "Suelta archivos aquí o haz clic para explorar"
+    "defaultLabel": "Suelta archivos aquí o haz clic para explorar",
+    "upToSize": "hasta {{size}} MB",
+    "maxFiles": "máx. {{count}} archivos",
+    "rejectedTitle": "Algunos archivos no se añadieron",
+    "dismiss": "Descartar",
+    "pageOverlay": "Suelta archivos aquí",
+    "reason": {
+      "size": "supera el límite de {{size}} MB",
+      "type": "tipo de archivo no admitido",
+      "count": "supera el límite de {{count}} archivos"
+    },
+    "types": {
+      "pdf": "PDF",
+      "images": "imágenes",
+      "office": "documentos de Office",
+      "json": "JSON",
+      "any": "Cualquier archivo"
+    }
   },
   "nav": {
     "aria": "Operaciones",
@@ -30,7 +49,8 @@
       "secure": "Proteger",
       "edit": "Editar",
       "advanced": "Avanzado"
-    }
+    },
+    "menuToggle": "Alternar menú de navegación"
   },
   "op": {
     "merge": {
@@ -243,7 +263,10 @@
     "seeProPlans": "Ver planes Pro →",
     "seeProPlansShort": "Ver planes Pro",
     "httpStatus": "· HTTP {{status}}",
-    "technicalDetails": "Detalles técnicos"
+    "technicalDetails": "Detalles técnicos",
+    "tryAgain": "Intentar de nuevo",
+    "expandPreview": "Ampliar vista previa",
+    "close": "Cerrar"
   },
   "viewer": {
     "renderingPreview": "Generando vista previa…",
@@ -537,6 +560,9 @@
       "removeConnection": "Quitar conexión",
       "inPort": "Puerto de entrada",
       "outPort": "Puerto de salida (arrastra para conectar)",
+      "wmImageLabel": "Marca de agua de imagen",
+      "wmImageClear": "Quitar",
+      "wmImageHint": "Se usa una imagen subida en lugar de la marca de agua de texto.",
       "summary": {
         "noFiles": "Sin archivos",
         "pages": "Páginas: {{pages}}",
@@ -553,5 +579,8 @@
         "metaEdit": "Editar metadatos"
       }
     }
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido"
   }
 }
