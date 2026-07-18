@@ -173,11 +173,11 @@
       "proFeat3": "워크플로 자동화를 위한 <b>배치 &amp; API 접근</b>",
       "proFeat4": "혼잡한 시간에도 <b>우선 처리</b>",
       "proFeat5": "물론 무료의 모든 기능 포함",
-      "proCta": "알림 받기",
-      "proCtaDone": "목록에 등록되었습니다 ✓",
-      "proNote": "아직 요금은 없습니다 — Pro가 출시될 때만 이메일로 알려드립니다.",
-      "notifyTitle": "목록에 등록되었습니다",
-      "notifyMessage": "PDF Conduit Pro가 준비되는 즉시 알려드리겠습니다."
+      "proCta": "관심 있어요",
+      "proCtaDone": "관심 가져 주셔서 감사합니다 ✓",
+      "proNote": "무료 도구는 영원히 무료로 유지됩니다 — Pro 가격은 아직 미정입니다.",
+      "notifyTitle": "관심 가져 주셔서 감사합니다",
+      "notifyMessage": "PDF Conduit Pro가 곧 출시됩니다. 무료 도구는 어느 쪽이든 무료로 유지됩니다."
     },
     "footer": {
       "aria": "푸터",

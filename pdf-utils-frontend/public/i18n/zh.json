@@ -173,11 +173,11 @@
       "proFeat3": "<b>批处理与 API 访问</b>，实现工作流自动化",
       "proFeat4": "<b>优先处理</b>，即使在高峰时段",
       "proFeat5": "当然，包含免费版的一切",
-      "proCta": "通知我",
-      "proCtaDone": "您已加入名单 ✓",
-      "proNote": "暂不收费 — 只有在 Pro 上线时我们才会给您发邮件。",
-      "notifyTitle": "您已加入名单",
-      "notifyMessage": "PDF Conduit Pro 一准备就绪，我们就会通知您。"
+      "proCta": "我有兴趣",
+      "proCtaDone": "感谢您的关注 ✓",
+      "proNote": "免费工具永久免费 — Pro 价格尚未确定。",
+      "notifyTitle": "感谢您的关注",
+      "notifyMessage": "PDF Conduit Pro 即将推出。无论如何，免费工具都将保持免费。"
     },
     "footer": {
       "aria": "页脚",

@@ -173,11 +173,11 @@
       "proFeat3": "İş akışlarını otomatikleştirmek için <b>toplu &amp; API erişimi</b>",
       "proFeat4": "Yoğun zamanlarda bile <b>öncelikli işleme</b>",
       "proFeat5": "Elbette Ücretsiz'deki her şey",
-      "proCta": "Bana haber ver",
-      "proCtaDone": "Listedesiniz ✓",
-      "proNote": "Henüz ücret yok — yalnızca Pro yayınlandığında size e-posta göndereceğiz.",
-      "notifyTitle": "Listedesiniz",
-      "notifyMessage": "PDF Conduit Pro hazır olduğu anda size haber vereceğiz."
+      "proCta": "İlgileniyorum",
+      "proCtaDone": "İlginiz için teşekkürler ✓",
+      "proNote": "Ücretsiz araçlar sonsuza dek ücretsiz kalır — Pro fiyatı henüz belirlenmedi.",
+      "notifyTitle": "İlginiz için teşekkürler",
+      "notifyMessage": "PDF Conduit Pro yakında geliyor. Ücretsiz araçlar her hâlükârda ücretsiz kalır."
     },
     "footer": {
       "aria": "Alt bilgi",

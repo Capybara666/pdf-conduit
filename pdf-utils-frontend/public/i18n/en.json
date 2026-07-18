@@ -173,11 +173,11 @@
       "proFeat3": "<b>Batch &amp; API access</b> to automate workflows",
       "proFeat4": "<b>Priority processing</b> even at peak times",
       "proFeat5": "Everything in Free, of course",
-      "proCta": "Notify me",
-      "proCtaDone": "You're on the list ✓",
-      "proNote": "No charge yet — we'll only email you when Pro launches.",
-      "notifyTitle": "You're on the list",
-      "notifyMessage": "We'll let you know the moment PDF Conduit Pro is ready."
+      "proCta": "I'm interested",
+      "proCtaDone": "Thanks for your interest ✓",
+      "proNote": "The free tools stay free, forever — Pro pricing is still to be decided.",
+      "notifyTitle": "Thanks for your interest",
+      "notifyMessage": "PDF Conduit Pro is coming soon. The free tools stay free either way."
     },
     "footer": {
       "aria": "Footer",

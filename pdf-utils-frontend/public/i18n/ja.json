@@ -173,11 +173,11 @@
       "proFeat3": "ワークフローを自動化する<b>バッチ &amp; API アクセス</b>",
       "proFeat4": "混雑時でも<b>優先処理</b>",
       "proFeat5": "もちろん無料版の機能もすべて含みます",
-      "proCta": "通知を受け取る",
-      "proCtaDone": "リストに登録済み ✓",
-      "proNote": "まだ料金は発生しません — Pro の提供開始時にのみメールでお知らせします。",
-      "notifyTitle": "リストに登録されました",
-      "notifyMessage": "PDF Conduit Pro の準備が整い次第、すぐにお知らせします。"
+      "proCta": "興味があります",
+      "proCtaDone": "ご関心ありがとうございます ✓",
+      "proNote": "無料ツールは永遠に無料のまま — Pro の価格は未定です。",
+      "notifyTitle": "ご関心ありがとうございます",
+      "notifyMessage": "PDF Conduit Pro は近日公開予定です。無料ツールはいずれにせよ無料のままです。"
     },
     "footer": {
       "aria": "フッター",

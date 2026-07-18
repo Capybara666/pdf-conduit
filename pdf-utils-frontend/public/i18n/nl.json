@@ -173,11 +173,11 @@
       "proFeat3": "<b>Batch- &amp; API-toegang</b> om workflows te automatiseren",
       "proFeat4": "<b>Prioriteitsverwerking</b> zelfs tijdens piekmomenten",
       "proFeat5": "Uiteraard alles uit Gratis",
-      "proCta": "Houd me op de hoogte",
-      "proCtaDone": "Je staat op de lijst ✓",
-      "proNote": "Nog geen kosten — we e-mailen je pas wanneer Pro wordt gelanceerd.",
-      "notifyTitle": "Je staat op de lijst",
-      "notifyMessage": "We laten het je weten zodra PDF Conduit Pro klaar is."
+      "proCta": "Ik heb interesse",
+      "proCtaDone": "Bedankt voor je interesse ✓",
+      "proNote": "De gratis tools blijven voor altijd gratis — de Pro-prijs moet nog worden bepaald.",
+      "notifyTitle": "Bedankt voor je interesse",
+      "notifyMessage": "PDF Conduit Pro komt binnenkort. De gratis tools blijven hoe dan ook gratis."
     },
     "footer": {
       "aria": "Voettekst",
