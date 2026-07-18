@@ -1,0 +1,495 @@
+{
+  "common": {
+    "download": "下载",
+    "downloadZip": "下载 ZIP",
+    "back": "返回",
+    "next": "下一步",
+    "startOver": "重新开始",
+    "export": "导出",
+    "reExport": "重新导出",
+    "remove": "移除",
+    "removeFile": "移除 {{name}}",
+    "clearAll": "全部清除",
+    "show": "显示",
+    "hide": "隐藏",
+    "done": "完成",
+    "loading": "加载中",
+    "processing": "处理中…"
+  },
+  "dropzone": {
+    "defaultLabel": "将文件拖到此处，或点击浏览"
+  },
+  "nav": {
+    "aria": "操作",
+    "home": "首页",
+    "homeTitle": "返回 PDF Conduit 首页",
+    "groups": {
+      "organise": "整理",
+      "optimise": "优化",
+      "convert": "转换",
+      "secure": "加密",
+      "edit": "编辑",
+      "advanced": "高级"
+    }
+  },
+  "op": {
+    "merge": {
+      "label": "合并",
+      "description": "将多个 PDF（或图片／办公文档）合并为一个。"
+    },
+    "extract": {
+      "label": "提取",
+      "description": "从 PDF 中提取所选页面。"
+    },
+    "rotate": {
+      "label": "旋转",
+      "description": "将页面旋转 90°、180° 或 270°。"
+    },
+    "arrange": {
+      "label": "排列",
+      "description": "重新排序、反转或复制页面。"
+    },
+    "compress": {
+      "label": "压缩",
+      "description": "将 PDF 压缩至目标大小。"
+    },
+    "to-pdf": {
+      "label": "转为 PDF",
+      "description": "将图片和办公文档转换为 PDF。"
+    },
+    "to-images": {
+      "label": "转为图片",
+      "description": "将 PDF 页面渲染为 PNG 或 JPG。"
+    },
+    "to-text": {
+      "label": "转为文本",
+      "description": "提取 PDF 的文本内容。"
+    },
+    "protect": {
+      "label": "保护",
+      "description": "为 PDF 添加密码加密。"
+    },
+    "unlock": {
+      "label": "解锁",
+      "description": "从 PDF 中移除已知密码。"
+    },
+    "redact": {
+      "label": "涂黑",
+      "description": "永久涂黑页面上的区域。"
+    },
+    "metadata": {
+      "label": "元数据",
+      "description": "查看、编辑或清除文档信息。"
+    },
+    "watermark": {
+      "label": "水印",
+      "description": "在每一页上叠加文字或图片。"
+    },
+    "wizard": {
+      "label": "向导",
+      "description": "分步引导式构建与导出。"
+    },
+    "pipeline": {
+      "label": "流程",
+      "description": "将多项操作串联为节点图。"
+    }
+  },
+  "header": {
+    "brandHome": "PDF Conduit 首页",
+    "quotaFreeLeft": "今日剩余免费次数",
+    "quotaTitleSpent": "今日免费额度已用完 — 查看 Pro 方案",
+    "quotaTitleLeft": "今日剩余免费操作次数 — 查看 Pro 方案",
+    "serverOnline": "服务器在线",
+    "serverOffline": "服务器离线",
+    "serverChecking": "正在检查服务器…",
+    "themeToLight": "切换到浅色主题",
+    "themeToDark": "切换到深色主题",
+    "languageLabel": "语言"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "免费 · 在浏览器中运行",
+      "title": "所需的每一款 PDF 工具，尽在一个简洁的工作区。",
+      "lede": "几秒内完成 PDF 的合并、压缩、转换、加密和涂黑 — 全程在内存中处理，绝不存储在我们的服务器上。无需账户，无需安装。",
+      "ctaStart": "免费开始",
+      "ctaExplore": "浏览工具",
+      "note": "文件绝不离开内存 · 无需注册 · 适用于任何设备"
+    },
+    "trust": {
+      "aria": "为何选择 PDF Conduit",
+      "memoryTitle": "在内存中处理",
+      "memoryDesc": "您的文件在内存（RAM）中处理，绝不写入磁盘或存储。",
+      "accountTitle": "无需账户",
+      "accountDesc": "直接开始 — 无需邮箱、无需密码、无需跨过跟踪墙。",
+      "browserTitle": "在浏览器中打开",
+      "browserDesc": "无需安装。适用于 Windows、macOS、Linux 和移动设备。"
+    },
+    "tools": {
+      "title": "选一款工具，即刻开始",
+      "subtitle": "十五款专注的工具，每一款都把一件事做好。"
+    },
+    "pro": {
+      "soon": "即将推出",
+      "title": "PDF Conduit Pro 带来更强性能",
+      "subtitle": "免费工具永久免费。Pro 为繁重任务提供更大空间。",
+      "freeName": "免费版",
+      "freePrice": "$0",
+      "freePer": "／永久",
+      "freeFeat1": "全部十五款 PDF 工具",
+      "freeFeat2": "内存处理，不存储任何内容",
+      "freeFeat3": "每日操作次数上限",
+      "freeFeat4": "标准文件大小上限",
+      "freeFeat5": "无需账户",
+      "freeCta": "立即使用",
+      "proName": "Pro",
+      "proPrice": "TBA",
+      "proPer": "／月",
+      "proFeat1": "<b>更大的文件</b> — 解除免费版大小上限",
+      "proFeat2": "<b>更高的每日限额</b>，适用于大批量处理",
+      "proFeat3": "<b>批处理与 API 访问</b>，实现工作流自动化",
+      "proFeat4": "<b>优先处理</b>，即使在高峰时段",
+      "proFeat5": "当然，包含免费版的一切",
+      "proCta": "通知我",
+      "proCtaDone": "您已加入名单 ✓",
+      "proNote": "暂不收费 — 只有在 Pro 上线时我们才会给您发邮件。",
+      "notifyTitle": "您已加入名单",
+      "notifyMessage": "PDF Conduit Pro 一准备就绪，我们就会通知您。"
+    },
+    "footer": {
+      "aria": "页脚",
+      "tools": "工具",
+      "privacy": "隐私",
+      "github": "GitHub",
+      "copy": "文件在内存中处理，绝不存储。免费使用。"
+    }
+  },
+  "privacy": {
+    "title": "隐私",
+    "description": "PDF Conduit 如何处理您的文件 — 简而言之：它不会留存文件。",
+    "memoryTitle": "您的文件仅停留在内存中",
+    "memoryBody": "每项操作都完全在服务器的内存（RAM）中运行。您上传的文件在同一次请求内被解码、处理并作为下载流式返回。我们不会将您的文件写入磁盘，事后也不会存储。响应发送完毕后，相关字节即被丢弃。",
+    "exceptionTitle": "唯一的临时例外",
+    "exceptionBody": "转换办公或文本文档（例如 .docx、.xlsx、.pptx）需要无界面的 LibreOffice。仅在该步骤中，文件会被写入一个隔离的临时文件夹，并在转换完成后立即删除。普通的 PDF 和图片绝不接触磁盘。",
+    "accountTitle": "无账户，无跟踪墙",
+    "accountBody": "使用免费工具无需注册、登录或提供邮箱地址。我们不需要个人信息即可处理文件。",
+    "limitsTitle": "免费版限制",
+    "limitsBody1": "为了让每个人都能使用免费服务，请求会受到每日操作配额、单个文件大小上限和基本速率限制的约束。当您达到限制时，应用会明确提示。更高的限额、更大的文件以及批处理／API 访问已计划在未来的付费版中提供 — 请参阅首页上的",
+    "limitsLink": "Pro 方案",
+    "limitsBody2": "预告。",
+    "questionsTitle": "疑问",
+    "questionsBody": "PDF Conduit 按现状提供。本页描述我们当前的做法，可能会随产品的演进而更新。",
+    "backHome": "返回首页"
+  },
+  "errors": {
+    "generic": {
+      "title": "出了点问题",
+      "detail": "操作无法完成。"
+    },
+    "quota_exceeded": {
+      "title": "您已用完今日的免费操作",
+      "detail": "目前已达到每日免费限额。",
+      "hint": "PDF Conduit Pro 将带来更高的每日限额。额度将于明天重置 — 或在下方获取抢先体验。"
+    },
+    "rate_limited": {
+      "title": "请稍慢一点",
+      "detail": "短时间内请求过多。",
+      "hintRetry": "{seconds, plural, other {请在约 # 秒后重试。}}",
+      "hintWait": "请等待几秒后重试。"
+    },
+    "server_busy": {
+      "title": "我们当前已满负荷",
+      "detail": "服务器正在处理大量请求。",
+      "hint": "请稍后重试。Pro 将带来优先处理。"
+    },
+    "processing_timeout": {
+      "title": "耗时过长",
+      "detail": "操作在完成前已超时。",
+      "hint": "请尝试更小或更简单的文件，或将任务拆分为多个步骤。"
+    },
+    "too_large": {
+      "title": "此文件超出免费大小限制",
+      "detail": "上传的文件超过了免费版允许的大小。",
+      "hint": "PDF Conduit Pro 将支持更大的上传。"
+    },
+    "office_disabled": {
+      "title": "办公文档转换不可用",
+      "detail": "此服务器未启用办公文档转换。",
+      "hint": "您仍可处理 PDF 和图片。"
+    },
+    "operation_failed": {
+      "title": "该文件无法处理",
+      "detail": "对此输入的操作失败。",
+      "hint": "请确认该文件是有效且未加密的 PDF，然后重试。"
+    },
+    "bad_request": {
+      "title": "请检查您的输入",
+      "detail": "请求无效。"
+    },
+    "network_error": {
+      "title": "无法连接到服务器",
+      "detail": "请求未能送达 PDF Conduit。",
+      "hint": "请检查您的网络连接后重试。"
+    }
+  },
+  "result": {
+    "done": "完成",
+    "original": "原始",
+    "result": "结果",
+    "saved": "已节省",
+    "target": "目标",
+    "targetReached": "已达到",
+    "targetNotReached": "未达到",
+    "batchFailures": "部分输入失败：{{count}}",
+    "seeProPlans": "查看 Pro 方案 →",
+    "seeProPlansShort": "查看 Pro 方案",
+    "httpStatus": "· HTTP {{status}}"
+  },
+  "viewer": {
+    "renderingPreview": "正在渲染预览…",
+    "renderError": "无法渲染此 PDF。",
+    "pageCaption": "第 {{n}} 页"
+  },
+  "toast": {
+    "dismiss": "关闭通知"
+  },
+  "pages": {
+    "merge": {
+      "title": "合并",
+      "description": "将多个 PDF、图片或办公文档合并为一个 PDF。",
+      "hint": "PDF、图片和办公文档。拖动下方列表以设置顺序。",
+      "outputName": "输出名称（可选）",
+      "outputNamePlaceholder": "merged.pdf",
+      "outputNameHelp": "默认使用第一个文件的名称并加上 “_merged” 后缀。",
+      "removeAria": "移除",
+      "submit": "{count, plural, other {合并 # 个文件}}",
+      "loading": "合并中…"
+    },
+    "extract": {
+      "title": "提取",
+      "description": "从 PDF 中提取所选页面。",
+      "hint": "一个 PDF。",
+      "pages": "页面",
+      "pagesPlaceholder": "例如 1,3,5-8",
+      "pagesHelp": "留空 = 所有页面。语法：",
+      "output": "输出",
+      "separate": "每页拆分为一个文件（ZIP）",
+      "submit": "提取",
+      "loading": "提取中…"
+    },
+    "compress": {
+      "title": "压缩",
+      "description": "将 PDF 压缩至目标大小。",
+      "hint": "一个或多个 PDF（多个文件 → ZIP）。",
+      "target": "目标大小",
+      "targetPlaceholder": "例如 5MB、800KB",
+      "targetHelp1": "接受",
+      "targetHelp2": "或原始字节数。",
+      "targetError": "请输入大小，例如",
+      "submit": "{count, plural, other {压缩 # 个文件}}",
+      "loading": "压缩中…"
+    },
+    "rotate": {
+      "title": "旋转",
+      "description": "将页面旋转 90°、180° 或 270°。",
+      "hint": "一个或多个 PDF（多个文件 → ZIP）。",
+      "angle": "角度",
+      "angleAria": "旋转角度",
+      "pages": "页面",
+      "pagesPlaceholder": "例如 1,3,5-8（留空 = 全部）",
+      "pagesHelp": "留空 = 每一页。",
+      "submit": "{count, plural, other {旋转 # 个文件}}",
+      "loading": "旋转中…"
+    },
+    "arrange": {
+      "title": "排列",
+      "description": "重新排序、反转或复制页面。",
+      "hint": "一个 PDF。",
+      "order": "页面顺序",
+      "orderPlaceholder": "例如 3,1,2",
+      "orderHelp1": "重新排序",
+      "orderHelp2": "反转",
+      "orderHelp3": "重复以复制",
+      "submit": "排列",
+      "loading": "排列中…"
+    },
+    "toPdf": {
+      "title": "转为 PDF",
+      "description": "将图片和办公文档转换为 PDF。",
+      "hint": "图片和办公文档。每个输入生成各自的 PDF（多个 → ZIP）。",
+      "pageSize": "页面大小",
+      "sizeFit": "适应内容",
+      "sizeLetter": "Letter",
+      "sizeHelp": "图片输入将放置在此页面大小上（办公文档保留自身大小）。",
+      "submit": "{count, plural, other {转换 # 个文件}}",
+      "loading": "转换中…"
+    },
+    "toImages": {
+      "title": "转为图片",
+      "description": "将 PDF 页面渲染为 PNG 或 JPG。",
+      "hint": "一个 PDF（多页 → ZIP）。",
+      "format": "格式",
+      "dpi": "DPI",
+      "dpiHelp": "越高 = 越清晰、文件越大（36–600）。",
+      "pages": "页面",
+      "pagesPlaceholder": "例如 1-3（留空 = 全部）",
+      "submit": "渲染图片",
+      "loading": "渲染中…"
+    },
+    "toText": {
+      "title": "转为文本",
+      "description": "提取 PDF 的文本内容。",
+      "hint": "一个 PDF。",
+      "format": "格式",
+      "formatTxt": "纯文本（.txt）",
+      "pages": "页面",
+      "pagesPlaceholder": "例如 1-3（留空 = 全部）",
+      "submit": "提取文本",
+      "loading": "提取文本中…"
+    },
+    "protect": {
+      "title": "保护",
+      "description": "为 PDF 添加密码加密。",
+      "hint": "一个或多个 PDF（多个文件 → ZIP）。",
+      "userPassword": "用户密码",
+      "userPasswordHelp": "打开文档时必需。",
+      "userPasswordError": "需要用户密码。",
+      "ownerPassword": "所有者密码（可选）",
+      "ownerPasswordHelp": "控制权限；默认与用户密码相同。",
+      "submit": "{count, plural, other {保护 # 个文件}}",
+      "loading": "加密中…"
+    },
+    "unlock": {
+      "title": "解锁",
+      "description": "从 PDF 中移除已知密码。",
+      "hint": "一个或多个受保护的 PDF（多个文件 → ZIP）。",
+      "password": "密码",
+      "passwordHelp": "用于打开该 PDF 的当前密码。",
+      "passwordError": "需要密码。",
+      "submit": "{count, plural, other {解锁 # 个文件}}",
+      "loading": "解锁中…"
+    },
+    "redact": {
+      "title": "涂黑",
+      "description": "在内容上绘制方框以永久涂黑。",
+      "hint": "一个 PDF。然后在要涂黑的区域上拖动矩形。",
+      "dragHint": "在页面上拖动以标记区域。",
+      "chooseAnother": "选择另一个 PDF",
+      "regions": "区域（{{count}}）",
+      "regionsEmpty": "尚无区域。在要移除的内容上拖动一个矩形。",
+      "removeRegion": "移除区域",
+      "submit": "涂黑并下载",
+      "loading": "涂黑中…"
+    },
+    "metadata": {
+      "title": "元数据",
+      "description": "查看、编辑或清除文档信息。",
+      "hint": "一个 PDF。",
+      "readCurrent": "读取当前值",
+      "reading": "读取中…",
+      "titleField": "标题",
+      "author": "作者",
+      "subject": "主题",
+      "keywords": "关键词",
+      "strip": "清除所有元数据（忽略上方字段）",
+      "submitStrip": "清除元数据",
+      "submitApply": "应用元数据",
+      "loading": "更新中…"
+    },
+    "watermark": {
+      "title": "水印",
+      "description": "在每一页上叠加文字或图片。",
+      "hint": "要添加水印的一个或多个 PDF（多个文件 → ZIP）。",
+      "typeAria": "水印类型",
+      "typeText": "文字",
+      "typeImage": "图片",
+      "text": "水印文字",
+      "textPlaceholder": "例如 机密",
+      "image": "水印图片",
+      "opacity": "不透明度",
+      "rotation": "旋转",
+      "scale": "缩放",
+      "submit": "应用水印",
+      "needText": "请输入水印文字。",
+      "needImage": "请选择一张图片。",
+      "loading": "添加中…"
+    },
+    "wizard": {
+      "title": "向导",
+      "description": "分步引导式构建与导出。",
+      "step1": "选择",
+      "step2": "排列",
+      "step3": "页面设置",
+      "step4": "压缩",
+      "step5": "导出",
+      "selectTitle": "选择文件",
+      "selectHint": "PDF、图片和办公文档。",
+      "arrangeTitle": "排列与页面范围",
+      "arrangeHint": "拖动以重新排序。页面范围仅适用于 PDF 输入（留空 = 全部）。",
+      "rangePlaceholder": "页面，例如 1-3",
+      "typeImage": "图片",
+      "typeDocument": "文档",
+      "removeAria": "移除",
+      "pageSettingsTitle": "页面设置",
+      "imagePageSize": "图片输入的页面大小",
+      "sizeFit": "适应图片",
+      "sizeLetter": "Letter",
+      "imagePageSizeHelp": "图片和办公文档在合并前以此大小转换为 PDF。",
+      "compressionTitle": "压缩",
+      "compressToggle": "将导出的 PDF 压缩至目标大小",
+      "target": "目标大小",
+      "targetPlaceholder": "例如 5MB",
+      "reviewTitle": "审阅并导出",
+      "sumFiles": "文件",
+      "sumOrder": "顺序",
+      "sumImageSize": "图片页面大小",
+      "sumCompress": "压缩",
+      "compressNo": "否",
+      "preparing": "正在准备 {{current}}/{{total}}：{{name}}",
+      "merging": "合并中…",
+      "compressing": "压缩中…"
+    },
+    "pipeline": {
+      "title": "流程",
+      "description": "将多项操作串联为节点图。",
+      "sourceTitle": "源文件",
+      "sourceHint": "这些文件供入 SOURCE 节点；下游节点按名称引用它们。",
+      "nodes": "节点",
+      "nodeCount": "{count, plural, other {# 个操作节点}}",
+      "sourceFiles": "文件（{{count}}）",
+      "sourceAddAbove": "在上方添加源文件。",
+      "removeNode": "移除节点",
+      "inputs": "输入",
+      "sourceOption": "SOURCE（文件）",
+      "fieldPages": "页面",
+      "fieldMode": "模式",
+      "modeCombine": "合并",
+      "modeSeparate": "拆分文件",
+      "fieldAngle": "角度",
+      "fieldOrder": "顺序",
+      "fieldTarget": "目标大小",
+      "fieldPageSize": "页面大小",
+      "sizeFit": "适应",
+      "fieldUserPassword": "用户密码",
+      "fieldOwnerPassword": "所有者密码",
+      "fieldPassword": "密码",
+      "fieldTitle": "标题",
+      "fieldAuthor": "作者",
+      "fieldSubject": "主题",
+      "fieldKeywords": "关键词",
+      "stripMetadata": "清除所有元数据",
+      "fieldText": "文字",
+      "fieldOpacity": "不透明度",
+      "fieldRotation": "旋转",
+      "fieldScale": "缩放",
+      "fieldFormat": "格式",
+      "fieldDpi": "DPI",
+      "pagesBlank": "留空 = 全部",
+      "addNode": "添加节点：",
+      "validate": "验证",
+      "run": "运行流程",
+      "running": "运行中…",
+      "valid": "✓ 流程有效。",
+      "jsonTitle": "流程 JSON"
+    }
+  }
+}

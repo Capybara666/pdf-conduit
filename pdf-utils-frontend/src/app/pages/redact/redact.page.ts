@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, ViewChild, signal } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -17,19 +18,19 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-redact-page',
   standalone: true,
-  imports: [DecimalPipe, FileDropZoneComponent, PageHeaderComponent, PdfViewerComponent, ResultPanelComponent],
+  imports: [DecimalPipe, TranslocoModule, FileDropZoneComponent, PageHeaderComponent, PdfViewerComponent, ResultPanelComponent],
   template: `
     <section class="op-page wide">
       <app-page-header
-        title="Redact"
-        description="Draw boxes over content to permanently black it out."
+        [title]="'pages.redact.title' | transloco"
+        [description]="'pages.redact.description' | transloco"
       />
 
       @if (!file()) {
         <app-file-drop-zone
           [multiple]="false"
           accept=".pdf"
-          hint="One PDF. Then drag rectangles over the areas to redact."
+          [hint]="'pages.redact.hint' | transloco"
           (filesChange)="onFile($event.length ? $event[0] : null)"
         />
       }
@@ -39,8 +40,8 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           <div class="viewer-col card">
             <div class="btn-row" style="margin-bottom:0.75rem">
               <strong class="fname">{{ file()!.name }}</strong>
-              <span class="hint-note">Drag on a page to mark a region.</span>
-              <button type="button" class="btn btn-ghost" (click)="reset()">Choose another PDF</button>
+              <span class="hint-note">{{ 'pages.redact.dragHint' | transloco }}</span>
+              <button type="button" class="btn btn-ghost" (click)="reset()">{{ 'pages.redact.chooseAnother' | transloco }}</button>
             </div>
             <app-pdf-viewer
               #viewer
@@ -53,9 +54,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 
           <aside class="side">
             <div class="card">
-              <h2 class="side-title">Regions ({{ regions().length }})</h2>
+              <h2 class="side-title">{{ 'pages.redact.regions' | transloco: { count: regions().length } }}</h2>
               @if (!regions().length) {
-                <p class="hint-note">No regions yet. Drag a rectangle over the content you want removed.</p>
+                <p class="hint-note">{{ 'pages.redact.regionsEmpty' | transloco }}</p>
               } @else {
                 <ul class="region-list">
                   @for (r of regions(); track $index; let i = $index) {
@@ -63,11 +64,11 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
                       <span class="rmeta">
                         p{{ r.pageIndex + 1 }} · {{ r.width | number: '1.0-0' }}×{{ r.height | number: '1.0-0' }} pt
                       </span>
-                      <button type="button" class="icon-btn" (click)="removeRegion(i)" aria-label="Remove region">✕</button>
+                      <button type="button" class="icon-btn" (click)="removeRegion(i)" [attr.aria-label]="'pages.redact.removeRegion' | transloco">✕</button>
                     </li>
                   }
                 </ul>
-                <button type="button" class="btn btn-ghost" (click)="clear()">Clear all</button>
+                <button type="button" class="btn btn-ghost" (click)="clear()">{{ 'common.clearAll' | transloco }}</button>
               }
             </div>
 
@@ -78,13 +79,13 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
                 [disabled]="!regions().length || state.loading()"
                 (click)="submit()"
               >
-                Redact &amp; download
+                {{ 'pages.redact.submit' | transloco }}
               </button>
             </div>
 
             <app-result-panel
               [loading]="state.loading()"
-              loadingLabel="Redacting…"
+              [loadingLabel]="'pages.redact.loading' | transloco"
               [error]="state.error()"
               [result]="state.result()"
             />

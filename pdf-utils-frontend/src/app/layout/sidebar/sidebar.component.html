@@ -1,14 +1,39 @@
-<nav class="sidebar" aria-label="Operations">
+<nav class="sidebar" [attr.aria-label]="'nav.aria' | transloco">
+  <div class="group">
+    <ul>
+      <li>
+        <a
+          [routerLink]="['/']"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [title]="'nav.homeTitle' | transloco"
+        >
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 11l8-7 8 7 M6 10v9h12v-9 M10 19v-5h4v5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span class="text">{{ 'nav.home' | transloco }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
   @for (group of groups; track group.key) {
     <div class="group">
-      <span class="group-label">{{ group.label }}</span>
+      <span class="group-label">{{ 'nav.groups.' + group.key | transloco }}</span>
       <ul>
         @for (item of itemsFor(group.key); track item.id) {
           <li>
             <a
               [routerLink]="['/', item.id]"
               routerLinkActive="active"
-              [title]="item.description"
+              [title]="'op.' + item.id + '.description' | transloco"
             >
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path
@@ -20,7 +45,7 @@
                   stroke-linejoin="round"
                 />
               </svg>
-              <span class="text">{{ item.label }}</span>
+              <span class="text">{{ 'op.' + item.id + '.label' | transloco }}</span>
             </a>
           </li>
         }

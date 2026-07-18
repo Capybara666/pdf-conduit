@@ -1,0 +1,495 @@
+{
+  "common": {
+    "download": "다운로드",
+    "downloadZip": "ZIP 다운로드",
+    "back": "뒤로",
+    "next": "다음",
+    "startOver": "다시 시작",
+    "export": "내보내기",
+    "reExport": "다시 내보내기",
+    "remove": "제거",
+    "removeFile": "{{name}} 제거",
+    "clearAll": "모두 지우기",
+    "show": "표시",
+    "hide": "숨기기",
+    "done": "완료",
+    "loading": "불러오는 중",
+    "processing": "처리 중…"
+  },
+  "dropzone": {
+    "defaultLabel": "여기에 파일을 놓거나 클릭하여 찾아보기"
+  },
+  "nav": {
+    "aria": "작업",
+    "home": "홈",
+    "homeTitle": "PDF Conduit 홈페이지로 돌아가기",
+    "groups": {
+      "organise": "정리",
+      "optimise": "최적화",
+      "convert": "변환",
+      "secure": "보안",
+      "edit": "편집",
+      "advanced": "고급"
+    }
+  },
+  "op": {
+    "merge": {
+      "label": "병합",
+      "description": "여러 PDF(또는 이미지/오피스 문서)를 하나로 합칩니다."
+    },
+    "extract": {
+      "label": "추출",
+      "description": "PDF에서 선택한 페이지를 뽑아냅니다."
+    },
+    "rotate": {
+      "label": "회전",
+      "description": "페이지를 90°, 180° 또는 270° 회전합니다."
+    },
+    "arrange": {
+      "label": "정렬",
+      "description": "페이지 순서를 바꾸거나, 뒤집거나, 복제합니다."
+    },
+    "compress": {
+      "label": "압축",
+      "description": "PDF를 목표 크기에 맞춰 줄입니다."
+    },
+    "to-pdf": {
+      "label": "PDF로 변환",
+      "description": "이미지와 오피스 문서를 PDF로 변환합니다."
+    },
+    "to-images": {
+      "label": "이미지로 변환",
+      "description": "PDF 페이지를 PNG 또는 JPG로 렌더링합니다."
+    },
+    "to-text": {
+      "label": "텍스트로 변환",
+      "description": "PDF의 텍스트 내용을 추출합니다."
+    },
+    "protect": {
+      "label": "보호",
+      "description": "PDF에 비밀번호 암호화를 추가합니다."
+    },
+    "unlock": {
+      "label": "잠금 해제",
+      "description": "알고 있는 비밀번호를 PDF에서 제거합니다."
+    },
+    "redact": {
+      "label": "블랙아웃",
+      "description": "페이지의 특정 영역을 영구적으로 가립니다."
+    },
+    "metadata": {
+      "label": "메타데이터",
+      "description": "문서 정보를 보거나, 편집하거나, 삭제합니다."
+    },
+    "watermark": {
+      "label": "워터마크",
+      "description": "모든 페이지에 텍스트나 이미지를 찍습니다."
+    },
+    "wizard": {
+      "label": "마법사",
+      "description": "단계별 안내에 따라 만들고 내보냅니다."
+    },
+    "pipeline": {
+      "label": "파이프라인",
+      "description": "작업을 노드 그래프로 연결합니다."
+    }
+  },
+  "header": {
+    "brandHome": "PDF Conduit 홈",
+    "quotaFreeLeft": "오늘 남은 무료 횟수",
+    "quotaTitleSpent": "오늘의 무료 한도에 도달했습니다 — Pro 플랜 보기",
+    "quotaTitleLeft": "오늘 남은 무료 작업 — Pro 플랜 보기",
+    "serverOnline": "서버 온라인",
+    "serverOffline": "서버 오프라인",
+    "serverChecking": "서버 확인 중…",
+    "themeToLight": "밝은 테마로 전환",
+    "themeToDark": "어두운 테마로 전환",
+    "languageLabel": "언어"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "무료 · 브라우저에서",
+      "title": "필요한 모든 PDF 도구를 하나의 깔끔한 작업 공간에서.",
+      "lede": "PDF를 병합, 압축, 변환, 보호, 블랙아웃까지 몇 초 만에 — 모든 처리는 메모리에서만 이루어지며 서버에 절대 저장되지 않습니다. 계정 불필요. 설치 불필요.",
+      "ctaStart": "무료로 시작하기",
+      "ctaExplore": "도구 살펴보기",
+      "note": "파일은 메모리를 벗어나지 않습니다 · 가입 불필요 · 모든 기기에서 작동"
+    },
+    "trust": {
+      "aria": "PDF Conduit를 선택하는 이유",
+      "memoryTitle": "메모리에서 처리",
+      "memoryDesc": "파일은 RAM에서 처리되며 디스크에 기록되거나 저장되지 않습니다.",
+      "accountTitle": "계정 불필요",
+      "accountDesc": "바로 시작하세요 — 이메일도, 비밀번호도, 가입 장벽도 없습니다.",
+      "browserTitle": "브라우저에서 바로 열기",
+      "browserDesc": "설치할 것이 없습니다. Windows, macOS, Linux, 모바일에서 작동합니다."
+    },
+    "tools": {
+      "title": "도구를 골라 바로 시작하세요",
+      "subtitle": "각각 한 가지 일을 잘 해내는 15가지 전문 도구."
+    },
+    "pro": {
+      "soon": "출시 예정",
+      "title": "PDF Conduit Pro로 더 강력하게",
+      "subtitle": "무료 도구는 영원히 무료로 유지됩니다. Pro는 무거운 작업을 위한 여유를 더합니다.",
+      "freeName": "무료",
+      "freePrice": "$0",
+      "freePer": "/ 영구",
+      "freeFeat1": "15가지 PDF 도구 전체",
+      "freeFeat2": "메모리 내 처리, 아무것도 저장하지 않음",
+      "freeFeat3": "일일 작업 한도",
+      "freeFeat4": "표준 파일 크기 제한",
+      "freeFeat5": "계정 불필요",
+      "freeCta": "지금 사용하기",
+      "proName": "Pro",
+      "proPrice": "TBA",
+      "proPer": "/ 월",
+      "proFeat1": "<b>더 큰 파일</b> — 무료 크기 제한 해제",
+      "proFeat2": "대량 작업을 위한 <b>더 높은 일일 한도</b>",
+      "proFeat3": "워크플로 자동화를 위한 <b>배치 &amp; API 접근</b>",
+      "proFeat4": "혼잡한 시간에도 <b>우선 처리</b>",
+      "proFeat5": "물론 무료의 모든 기능 포함",
+      "proCta": "알림 받기",
+      "proCtaDone": "목록에 등록되었습니다 ✓",
+      "proNote": "아직 요금은 없습니다 — Pro가 출시될 때만 이메일로 알려드립니다.",
+      "notifyTitle": "목록에 등록되었습니다",
+      "notifyMessage": "PDF Conduit Pro가 준비되는 즉시 알려드리겠습니다."
+    },
+    "footer": {
+      "aria": "푸터",
+      "tools": "도구",
+      "privacy": "개인정보",
+      "github": "GitHub",
+      "copy": "파일은 메모리에서 처리되며 절대 저장되지 않습니다. 무료로 사용하세요."
+    }
+  },
+  "privacy": {
+    "title": "개인정보",
+    "description": "PDF Conduit가 파일을 다루는 방식 — 요약하자면: 보관하지 않습니다.",
+    "memoryTitle": "파일은 메모리에 머뭅니다",
+    "memoryBody": "모든 작업은 서버에서 전적으로 메모리(RAM)에서 실행됩니다. 업로드한 파일은 하나의 요청 안에서 디코딩되고, 처리되어, 다운로드로 다시 전송됩니다. 파일을 디스크에 기록하지 않으며 이후에도 저장하지 않습니다. 응답이 전송되면 데이터는 폐기됩니다.",
+    "exceptionTitle": "단 하나의 임시 예외",
+    "exceptionBody": "오피스 또는 텍스트 문서(예: .docx, .xlsx, .pptx) 변환에는 헤드리스 LibreOffice가 필요합니다. 그 단계에서만 파일이 격리된 임시 폴더에 기록되며, 변환이 완료되는 즉시 삭제됩니다. 일반 PDF와 이미지는 디스크에 전혀 닿지 않습니다.",
+    "accountTitle": "계정도, 가입 장벽도 없음",
+    "accountBody": "무료 도구를 사용하는 데 가입, 로그인, 이메일 주소 제공이 필요하지 않습니다. 파일을 처리하는 데 개인정보를 요구하지 않습니다.",
+    "limitsTitle": "무료 등급 한도",
+    "limitsBody1": "무료 서비스를 모두에게 제공하기 위해 요청에는 일일 작업 할당량, 파일당 크기 제한, 기본 속도 제한이 적용됩니다. 한도에 도달하면 앱이 명확하게 알려줍니다. 더 높은 한도, 더 큰 파일, 배치/API 접근은 향후 유료 등급에서 제공될 예정입니다 —",
+    "limitsLink": "Pro 플랜",
+    "limitsBody2": "홈페이지의 티저를 참고하세요.",
+    "questionsTitle": "문의",
+    "questionsBody": "PDF Conduit는 있는 그대로 제공됩니다. 이 페이지는 현재의 동작을 설명하며 제품이 발전함에 따라 업데이트될 수 있습니다.",
+    "backHome": "홈으로 돌아가기"
+  },
+  "errors": {
+    "generic": {
+      "title": "문제가 발생했습니다",
+      "detail": "작업을 완료할 수 없습니다."
+    },
+    "quota_exceeded": {
+      "title": "오늘의 무료 작업을 모두 사용했습니다",
+      "detail": "현재 무료 일일 한도에 도달했습니다.",
+      "hint": "더 높은 일일 한도가 PDF Conduit Pro와 함께 제공될 예정입니다. 내일 초기화됩니다 — 또는 아래에서 미리 사용해 보세요."
+    },
+    "rate_limited": {
+      "title": "잠시 천천히 진행해 주세요",
+      "detail": "짧은 시간에 너무 많은 요청이 있었습니다.",
+      "hintRetry": "{seconds, plural, other {약 # 초 후에 다시 시도해 주세요.}}",
+      "hintWait": "몇 초 기다렸다가 다시 시도해 주세요."
+    },
+    "server_busy": {
+      "title": "지금은 처리 용량이 가득 찼습니다",
+      "detail": "서버가 많은 요청을 처리하고 있습니다.",
+      "hint": "잠시 후 다시 시도해 주세요. 우선 처리 기능이 Pro와 함께 제공될 예정입니다."
+    },
+    "processing_timeout": {
+      "title": "시간이 너무 오래 걸렸습니다",
+      "detail": "작업이 완료되기 전에 시간이 초과되었습니다.",
+      "hint": "더 작거나 단순한 파일로 시도하거나, 작업을 단계별로 나누어 보세요."
+    },
+    "too_large": {
+      "title": "이 파일은 무료 크기 제한을 초과합니다",
+      "detail": "업로드 파일이 무료 등급에서 허용하는 크기보다 큽니다.",
+      "hint": "더 큰 업로드가 PDF Conduit Pro와 함께 제공될 예정입니다."
+    },
+    "office_disabled": {
+      "title": "오피스 변환을 사용할 수 없습니다",
+      "detail": "이 서버에서는 오피스 문서 변환이 활성화되어 있지 않습니다.",
+      "hint": "PDF와 이미지로는 계속 작업할 수 있습니다."
+    },
+    "operation_failed": {
+      "title": "이 파일을 처리할 수 없습니다",
+      "detail": "이 입력에 대해 작업이 실패했습니다.",
+      "hint": "파일이 유효하고 암호화되지 않은 PDF인지 확인한 후 다시 시도해 주세요."
+    },
+    "bad_request": {
+      "title": "입력을 확인해 주세요",
+      "detail": "요청이 유효하지 않았습니다."
+    },
+    "network_error": {
+      "title": "서버에 연결할 수 없습니다",
+      "detail": "요청이 PDF Conduit에 도달하지 못했습니다.",
+      "hint": "연결을 확인하고 다시 시도해 주세요."
+    }
+  },
+  "result": {
+    "done": "완료",
+    "original": "원본",
+    "result": "결과",
+    "saved": "절약됨",
+    "target": "목표",
+    "targetReached": "도달함",
+    "targetNotReached": "도달하지 못함",
+    "batchFailures": "일부 입력이 실패했습니다: {{count}}",
+    "seeProPlans": "Pro 플랜 보기 →",
+    "seeProPlansShort": "Pro 플랜 보기",
+    "httpStatus": "· HTTP {{status}}"
+  },
+  "viewer": {
+    "renderingPreview": "미리보기 렌더링 중…",
+    "renderError": "이 PDF를 렌더링할 수 없습니다.",
+    "pageCaption": "{{n}} 페이지"
+  },
+  "toast": {
+    "dismiss": "알림 닫기"
+  },
+  "pages": {
+    "merge": {
+      "title": "병합",
+      "description": "여러 PDF, 이미지 또는 오피스 문서를 하나의 PDF로 합칩니다.",
+      "hint": "PDF, 이미지, 오피스 문서. 아래 목록을 드래그하여 순서를 정하세요.",
+      "outputName": "출력 이름 (선택 사항)",
+      "outputNamePlaceholder": "merged.pdf",
+      "outputNameHelp": "기본값은 첫 번째 파일 이름에 “_merged” 접미사가 붙습니다.",
+      "removeAria": "제거",
+      "submit": "{count, plural, other {파일 # 개 병합}}",
+      "loading": "병합 중…"
+    },
+    "extract": {
+      "title": "추출",
+      "description": "PDF에서 선택한 페이지를 뽑아냅니다.",
+      "hint": "PDF 한 개.",
+      "pages": "페이지",
+      "pagesPlaceholder": "예: 1,3,5-8",
+      "pagesHelp": "비워 두면 = 모든 페이지. 문법:",
+      "output": "출력",
+      "separate": "페이지마다 하나의 파일로 분할 (ZIP)",
+      "submit": "추출",
+      "loading": "추출 중…"
+    },
+    "compress": {
+      "title": "압축",
+      "description": "PDF를 목표 크기에 맞춰 줄입니다.",
+      "hint": "PDF 하나 이상 (여러 파일 → ZIP).",
+      "target": "목표 크기",
+      "targetPlaceholder": "예: 5MB, 800KB",
+      "targetHelp1": "허용 형식:",
+      "targetHelp2": "또는 원시 바이트 수.",
+      "targetError": "다음과 같은 크기를 입력하세요:",
+      "submit": "{count, plural, other {파일 # 개 압축}}",
+      "loading": "압축 중…"
+    },
+    "rotate": {
+      "title": "회전",
+      "description": "페이지를 90°, 180° 또는 270° 회전합니다.",
+      "hint": "PDF 하나 이상 (여러 파일 → ZIP).",
+      "angle": "각도",
+      "angleAria": "회전 각도",
+      "pages": "페이지",
+      "pagesPlaceholder": "예: 1,3,5-8 (비워 두면 = 전체)",
+      "pagesHelp": "비워 두면 = 모든 페이지.",
+      "submit": "{count, plural, other {파일 # 개 회전}}",
+      "loading": "회전 중…"
+    },
+    "arrange": {
+      "title": "정렬",
+      "description": "페이지 순서를 바꾸거나, 뒤집거나, 복제합니다.",
+      "hint": "PDF 한 개.",
+      "order": "페이지 순서",
+      "orderPlaceholder": "예: 3,1,2",
+      "orderHelp1": "순서 변경",
+      "orderHelp2": "뒤집기",
+      "orderHelp3": "반복으로 복제",
+      "submit": "정렬",
+      "loading": "정렬 중…"
+    },
+    "toPdf": {
+      "title": "PDF로 변환",
+      "description": "이미지와 오피스 문서를 PDF로 변환합니다.",
+      "hint": "이미지와 오피스 문서. 각 입력이 개별 PDF가 됩니다 (여러 개 → ZIP).",
+      "pageSize": "페이지 크기",
+      "sizeFit": "내용에 맞춤",
+      "sizeLetter": "Letter",
+      "sizeHelp": "이미지 입력은 이 페이지 크기에 배치됩니다 (오피스 문서는 자체 크기를 유지합니다).",
+      "submit": "{count, plural, other {파일 # 개 변환}}",
+      "loading": "변환 중…"
+    },
+    "toImages": {
+      "title": "이미지로 변환",
+      "description": "PDF 페이지를 PNG 또는 JPG로 렌더링합니다.",
+      "hint": "PDF 한 개 (여러 페이지 → ZIP).",
+      "format": "형식",
+      "dpi": "DPI",
+      "dpiHelp": "높을수록 = 더 선명하고 더 큼 (36–600).",
+      "pages": "페이지",
+      "pagesPlaceholder": "예: 1-3 (비워 두면 = 전체)",
+      "submit": "이미지 렌더링",
+      "loading": "렌더링 중…"
+    },
+    "toText": {
+      "title": "텍스트로 변환",
+      "description": "PDF의 텍스트 내용을 추출합니다.",
+      "hint": "PDF 한 개.",
+      "format": "형식",
+      "formatTxt": "일반 텍스트 (.txt)",
+      "pages": "페이지",
+      "pagesPlaceholder": "예: 1-3 (비워 두면 = 전체)",
+      "submit": "텍스트 추출",
+      "loading": "텍스트 추출 중…"
+    },
+    "protect": {
+      "title": "보호",
+      "description": "PDF에 비밀번호 암호화를 추가합니다.",
+      "hint": "PDF 하나 이상 (여러 파일 → ZIP).",
+      "userPassword": "사용자 비밀번호",
+      "userPasswordHelp": "문서를 여는 데 필요합니다.",
+      "userPasswordError": "사용자 비밀번호가 필요합니다.",
+      "ownerPassword": "소유자 비밀번호 (선택 사항)",
+      "ownerPasswordHelp": "권한을 제어합니다. 기본값은 사용자 비밀번호입니다.",
+      "submit": "{count, plural, other {파일 # 개 보호}}",
+      "loading": "암호화 중…"
+    },
+    "unlock": {
+      "title": "잠금 해제",
+      "description": "알고 있는 비밀번호를 PDF에서 제거합니다.",
+      "hint": "보호된 PDF 하나 이상 (여러 파일 → ZIP).",
+      "password": "비밀번호",
+      "passwordHelp": "PDF를 여는 데 사용하는 현재 비밀번호.",
+      "passwordError": "비밀번호가 필요합니다.",
+      "submit": "{count, plural, other {파일 # 개 잠금 해제}}",
+      "loading": "잠금 해제 중…"
+    },
+    "redact": {
+      "title": "블랙아웃",
+      "description": "내용 위에 상자를 그려 영구적으로 가립니다.",
+      "hint": "PDF 한 개. 그런 다음 가릴 영역 위에 사각형을 드래그하세요.",
+      "dragHint": "페이지에서 드래그하여 영역을 표시하세요.",
+      "chooseAnother": "다른 PDF 선택",
+      "regions": "영역 ({{count}})",
+      "regionsEmpty": "아직 영역이 없습니다. 제거할 내용 위에 사각형을 드래그하세요.",
+      "removeRegion": "영역 제거",
+      "submit": "가리고 다운로드",
+      "loading": "가리는 중…"
+    },
+    "metadata": {
+      "title": "메타데이터",
+      "description": "문서 정보를 보거나, 편집하거나, 삭제합니다.",
+      "hint": "PDF 한 개.",
+      "readCurrent": "현재 값 읽기",
+      "reading": "읽는 중…",
+      "titleField": "제목",
+      "author": "작성자",
+      "subject": "주제",
+      "keywords": "키워드",
+      "strip": "모든 메타데이터 삭제 (위 필드는 무시됨)",
+      "submitStrip": "메타데이터 삭제",
+      "submitApply": "메타데이터 적용",
+      "loading": "업데이트 중…"
+    },
+    "watermark": {
+      "title": "워터마크",
+      "description": "모든 페이지에 텍스트나 이미지를 찍습니다.",
+      "hint": "찍을 PDF 하나 이상 (여러 파일 → ZIP).",
+      "typeAria": "워터마크 유형",
+      "typeText": "텍스트",
+      "typeImage": "이미지",
+      "text": "워터마크 텍스트",
+      "textPlaceholder": "예: 대외비",
+      "image": "워터마크 이미지",
+      "opacity": "불투명도",
+      "rotation": "회전",
+      "scale": "크기",
+      "submit": "워터마크 적용",
+      "needText": "워터마크 텍스트를 입력하세요.",
+      "needImage": "이미지를 선택하세요.",
+      "loading": "찍는 중…"
+    },
+    "wizard": {
+      "title": "마법사",
+      "description": "단계별 안내에 따라 만들고 내보냅니다.",
+      "step1": "선택",
+      "step2": "정렬",
+      "step3": "페이지 설정",
+      "step4": "압축",
+      "step5": "내보내기",
+      "selectTitle": "파일 선택",
+      "selectHint": "PDF, 이미지, 오피스 문서.",
+      "arrangeTitle": "정렬 및 페이지 범위",
+      "arrangeHint": "드래그하여 순서를 바꾸세요. 페이지 범위는 PDF 입력에만 적용됩니다 (비워 두면 = 전체).",
+      "rangePlaceholder": "페이지 예: 1-3",
+      "typeImage": "이미지",
+      "typeDocument": "문서",
+      "removeAria": "제거",
+      "pageSettingsTitle": "페이지 설정",
+      "imagePageSize": "이미지 입력의 페이지 크기",
+      "sizeFit": "이미지에 맞춤",
+      "sizeLetter": "Letter",
+      "imagePageSizeHelp": "이미지와 오피스 문서는 병합 전에 이 크기의 PDF로 변환됩니다.",
+      "compressionTitle": "압축",
+      "compressToggle": "내보낸 PDF를 목표 크기에 맞춰 압축",
+      "target": "목표 크기",
+      "targetPlaceholder": "예: 5MB",
+      "reviewTitle": "검토 및 내보내기",
+      "sumFiles": "파일",
+      "sumOrder": "순서",
+      "sumImageSize": "이미지 페이지 크기",
+      "sumCompress": "압축",
+      "compressNo": "아니오",
+      "preparing": "준비 중 {{current}}/{{total}}: {{name}}",
+      "merging": "병합 중…",
+      "compressing": "압축 중…"
+    },
+    "pipeline": {
+      "title": "파이프라인",
+      "description": "작업을 노드 그래프로 연결합니다.",
+      "sourceTitle": "소스 파일",
+      "sourceHint": "이 파일들은 SOURCE 노드에 공급되며, 하위 노드는 이름으로 이를 참조합니다.",
+      "nodes": "노드",
+      "nodeCount": "{count, plural, other {작업 노드 # 개}}",
+      "sourceFiles": "파일 ({{count}})",
+      "sourceAddAbove": "위에서 소스 파일을 추가하세요.",
+      "removeNode": "노드 제거",
+      "inputs": "입력",
+      "sourceOption": "SOURCE (파일)",
+      "fieldPages": "페이지",
+      "fieldMode": "모드",
+      "modeCombine": "결합",
+      "modeSeparate": "파일 분리",
+      "fieldAngle": "각도",
+      "fieldOrder": "순서",
+      "fieldTarget": "목표 크기",
+      "fieldPageSize": "페이지 크기",
+      "sizeFit": "맞춤",
+      "fieldUserPassword": "사용자 비밀번호",
+      "fieldOwnerPassword": "소유자 비밀번호",
+      "fieldPassword": "비밀번호",
+      "fieldTitle": "제목",
+      "fieldAuthor": "작성자",
+      "fieldSubject": "주제",
+      "fieldKeywords": "키워드",
+      "stripMetadata": "모든 메타데이터 삭제",
+      "fieldText": "텍스트",
+      "fieldOpacity": "불투명도",
+      "fieldRotation": "회전",
+      "fieldScale": "크기",
+      "fieldFormat": "형식",
+      "fieldDpi": "DPI",
+      "pagesBlank": "비워 두면 = 전체",
+      "addNode": "노드 추가:",
+      "validate": "검증",
+      "run": "파이프라인 실행",
+      "running": "실행 중…",
+      "valid": "✓ 파이프라인이 유효합니다.",
+      "jsonTitle": "파이프라인 JSON"
+    }
+  }
+}

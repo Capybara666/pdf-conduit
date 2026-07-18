@@ -1,0 +1,495 @@
+{
+  "common": {
+    "download": "Download",
+    "downloadZip": "Download ZIP",
+    "back": "Back",
+    "next": "Next",
+    "startOver": "Start over",
+    "export": "Export",
+    "reExport": "Re-export",
+    "remove": "Remove",
+    "removeFile": "Remove {{name}}",
+    "clearAll": "Clear all",
+    "show": "Show",
+    "hide": "Hide",
+    "done": "Done",
+    "loading": "Loading",
+    "processing": "Processing…"
+  },
+  "dropzone": {
+    "defaultLabel": "Drop files here or click to browse"
+  },
+  "nav": {
+    "aria": "Operations",
+    "home": "Home",
+    "homeTitle": "Back to the PDF Conduit home page",
+    "groups": {
+      "organise": "Organise",
+      "optimise": "Optimise",
+      "convert": "Convert",
+      "secure": "Secure",
+      "edit": "Edit",
+      "advanced": "Advanced"
+    }
+  },
+  "op": {
+    "merge": {
+      "label": "Merge",
+      "description": "Combine several PDFs (or images/office docs) into one."
+    },
+    "extract": {
+      "label": "Extract",
+      "description": "Pull selected pages out of a PDF."
+    },
+    "rotate": {
+      "label": "Rotate",
+      "description": "Rotate pages 90°, 180° or 270°."
+    },
+    "arrange": {
+      "label": "Arrange",
+      "description": "Reorder, reverse or duplicate pages."
+    },
+    "compress": {
+      "label": "Compress",
+      "description": "Shrink a PDF toward a target size."
+    },
+    "to-pdf": {
+      "label": "To PDF",
+      "description": "Convert images and office documents to PDF."
+    },
+    "to-images": {
+      "label": "To Images",
+      "description": "Render PDF pages to PNG or JPG."
+    },
+    "to-text": {
+      "label": "To Text",
+      "description": "Extract the text content of a PDF."
+    },
+    "protect": {
+      "label": "Protect",
+      "description": "Add password encryption to a PDF."
+    },
+    "unlock": {
+      "label": "Unlock",
+      "description": "Remove a known password from a PDF."
+    },
+    "redact": {
+      "label": "Redact",
+      "description": "Permanently black out regions of a page."
+    },
+    "metadata": {
+      "label": "Metadata",
+      "description": "View, edit or strip document info."
+    },
+    "watermark": {
+      "label": "Watermark",
+      "description": "Stamp text or an image over every page."
+    },
+    "wizard": {
+      "label": "Wizard",
+      "description": "Guided step-by-step build & export."
+    },
+    "pipeline": {
+      "label": "Pipeline",
+      "description": "Chain operations as a node graph."
+    }
+  },
+  "header": {
+    "brandHome": "PDF Conduit home",
+    "quotaFreeLeft": "free left today",
+    "quotaTitleSpent": "Daily free limit reached — see Pro plans",
+    "quotaTitleLeft": "Free operations left today — see Pro plans",
+    "serverOnline": "Server online",
+    "serverOffline": "Server offline",
+    "serverChecking": "Checking server…",
+    "themeToLight": "Switch to light theme",
+    "themeToDark": "Switch to dark theme",
+    "languageLabel": "Language"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Free · In your browser",
+      "title": "Every PDF tool you need, in one clean workspace.",
+      "lede": "Merge, compress, convert, protect and redact PDFs in seconds — processed entirely in memory and never stored on our servers. No account. No installs.",
+      "ctaStart": "Start for free",
+      "ctaExplore": "Explore the tools",
+      "note": "Files never leave memory · No sign-up required · Works on any device"
+    },
+    "trust": {
+      "aria": "Why PDF Conduit",
+      "memoryTitle": "Processed in memory",
+      "memoryDesc": "Your files are handled in RAM and never written to disk or stored.",
+      "accountTitle": "No account needed",
+      "accountDesc": "Jump straight in — no email, no password, no tracking wall.",
+      "browserTitle": "Open in your browser",
+      "browserDesc": "Nothing to install. Works on Windows, macOS, Linux and mobile."
+    },
+    "tools": {
+      "title": "Pick a tool and go",
+      "subtitle": "Fifteen focused tools, each doing one job well."
+    },
+    "pro": {
+      "soon": "Coming soon",
+      "title": "More power with PDF Conduit Pro",
+      "subtitle": "The free tools stay free, forever. Pro adds headroom for heavy lifting.",
+      "freeName": "Free",
+      "freePrice": "$0",
+      "freePer": "/ forever",
+      "freeFeat1": "All fifteen PDF tools",
+      "freeFeat2": "In-memory processing, nothing stored",
+      "freeFeat3": "Daily operation limit",
+      "freeFeat4": "Standard file-size cap",
+      "freeFeat5": "No account required",
+      "freeCta": "Use it now",
+      "proName": "Pro",
+      "proPrice": "TBA",
+      "proPer": "/ month",
+      "proFeat1": "<b>Larger files</b> — lift the free size cap",
+      "proFeat2": "<b>Higher daily limits</b> for big batches",
+      "proFeat3": "<b>Batch &amp; API access</b> to automate workflows",
+      "proFeat4": "<b>Priority processing</b> even at peak times",
+      "proFeat5": "Everything in Free, of course",
+      "proCta": "Notify me",
+      "proCtaDone": "You're on the list ✓",
+      "proNote": "No charge yet — we'll only email you when Pro launches.",
+      "notifyTitle": "You're on the list",
+      "notifyMessage": "We'll let you know the moment PDF Conduit Pro is ready."
+    },
+    "footer": {
+      "aria": "Footer",
+      "tools": "Tools",
+      "privacy": "Privacy",
+      "github": "GitHub",
+      "copy": "Files are processed in memory and never stored. Free to use."
+    }
+  },
+  "privacy": {
+    "title": "Privacy",
+    "description": "How PDF Conduit handles your files — in short: it doesn't keep them.",
+    "memoryTitle": "Your files stay in memory",
+    "memoryBody": "Every operation runs on the server entirely in memory (RAM). Your uploads are decoded, processed and streamed back as a download within a single request. We do not write your files to disk and we do not store them afterwards. Once the response is sent, the bytes are discarded.",
+    "exceptionTitle": "The one temporary exception",
+    "exceptionBody": "Converting office or text documents (for example .docx, .xlsx, .pptx) requires a headless LibreOffice. For that step only, the file is written to an isolated temporary folder that is deleted immediately after the conversion completes. Plain PDFs and images never touch the disk.",
+    "accountTitle": "No account, no tracking wall",
+    "accountBody": "You don't need to sign up, log in, or give us an email address to use the free tools. We don't require personal information to process a file.",
+    "limitsTitle": "Free-tier limits",
+    "limitsBody1": "To keep the free service available to everyone, requests are subject to a daily operation quota, a per-file size cap and basic rate limiting. When you hit a limit, the app tells you clearly. Higher limits, larger files and batch/API access are planned for a future paid tier — see the",
+    "limitsLink": "Pro plans",
+    "limitsBody2": "teaser on the home page.",
+    "questionsTitle": "Questions",
+    "questionsBody": "PDF Conduit is provided as-is. This page describes our current behaviour and may be updated as the product evolves.",
+    "backHome": "Back to home"
+  },
+  "errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "detail": "The operation could not be completed."
+    },
+    "quota_exceeded": {
+      "title": "You've used today's free operations",
+      "detail": "The free daily limit has been reached for now.",
+      "hint": "Higher daily limits are coming with PDF Conduit Pro. It resets tomorrow — or get early access below."
+    },
+    "rate_limited": {
+      "title": "Slow down a moment",
+      "detail": "Too many requests in a short time.",
+      "hintRetry": "{seconds, plural, one {Please try again in about # second.} other {Please try again in about # seconds.}}",
+      "hintWait": "Please wait a few seconds and try again."
+    },
+    "server_busy": {
+      "title": "We're at capacity right now",
+      "detail": "The server is handling a lot of requests.",
+      "hint": "Please try again shortly. Priority processing is coming with Pro."
+    },
+    "processing_timeout": {
+      "title": "That took too long",
+      "detail": "The operation timed out before it finished.",
+      "hint": "Try a smaller or simpler file, or split the work into steps."
+    },
+    "too_large": {
+      "title": "This file exceeds the free size limit",
+      "detail": "The upload is larger than the free tier allows.",
+      "hint": "Larger uploads are coming with PDF Conduit Pro."
+    },
+    "office_disabled": {
+      "title": "Office conversion is unavailable",
+      "detail": "Converting office documents is not enabled on this server.",
+      "hint": "You can still work with PDFs and images."
+    },
+    "operation_failed": {
+      "title": "That file couldn't be processed",
+      "detail": "The operation failed on this input.",
+      "hint": "Check the file is a valid, unencrypted PDF and try again."
+    },
+    "bad_request": {
+      "title": "Please check your input",
+      "detail": "The request was not valid."
+    },
+    "network_error": {
+      "title": "Can't reach the server",
+      "detail": "The request did not reach PDF Conduit.",
+      "hint": "Check your connection and try again."
+    }
+  },
+  "result": {
+    "done": "Done",
+    "original": "Original",
+    "result": "Result",
+    "saved": "Saved",
+    "target": "Target",
+    "targetReached": "reached",
+    "targetNotReached": "not reached",
+    "batchFailures": "Some inputs failed: {{count}}",
+    "seeProPlans": "See Pro plans →",
+    "seeProPlansShort": "See Pro plans",
+    "httpStatus": "· HTTP {{status}}"
+  },
+  "viewer": {
+    "renderingPreview": "Rendering preview…",
+    "renderError": "Could not render this PDF.",
+    "pageCaption": "Page {{n}}"
+  },
+  "toast": {
+    "dismiss": "Dismiss notification"
+  },
+  "pages": {
+    "merge": {
+      "title": "Merge",
+      "description": "Combine several PDFs, images or office documents into one PDF.",
+      "hint": "PDFs, images and office docs. Drag the list below to set the order.",
+      "outputName": "Output name (optional)",
+      "outputNamePlaceholder": "merged.pdf",
+      "outputNameHelp": "Defaults to the first file's name with a “_merged” suffix.",
+      "removeAria": "Remove",
+      "submit": "{count, plural, one {Merge # file} other {Merge # files}}",
+      "loading": "Merging…"
+    },
+    "extract": {
+      "title": "Extract",
+      "description": "Pull selected pages out of a PDF.",
+      "hint": "One PDF.",
+      "pages": "Pages",
+      "pagesPlaceholder": "e.g. 1,3,5-8",
+      "pagesHelp": "Blank = all pages. Syntax:",
+      "output": "Output",
+      "separate": "Split into one file per page (ZIP)",
+      "submit": "Extract",
+      "loading": "Extracting…"
+    },
+    "compress": {
+      "title": "Compress",
+      "description": "Shrink a PDF toward a target size.",
+      "hint": "One or more PDFs (several files → ZIP).",
+      "target": "Target size",
+      "targetPlaceholder": "e.g. 5MB, 800KB",
+      "targetHelp1": "Accepts",
+      "targetHelp2": "or a raw byte count.",
+      "targetError": "Enter a size such as",
+      "submit": "{count, plural, one {Compress # file} other {Compress # files}}",
+      "loading": "Compressing…"
+    },
+    "rotate": {
+      "title": "Rotate",
+      "description": "Rotate pages 90°, 180° or 270°.",
+      "hint": "One or more PDFs (several files → ZIP).",
+      "angle": "Angle",
+      "angleAria": "Rotation angle",
+      "pages": "Pages",
+      "pagesPlaceholder": "e.g. 1,3,5-8 (blank = all)",
+      "pagesHelp": "Blank = every page.",
+      "submit": "{count, plural, one {Rotate # file} other {Rotate # files}}",
+      "loading": "Rotating…"
+    },
+    "arrange": {
+      "title": "Arrange",
+      "description": "Reorder, reverse or duplicate pages.",
+      "hint": "One PDF.",
+      "order": "Page order",
+      "orderPlaceholder": "e.g. 3,1,2",
+      "orderHelp1": "reorders",
+      "orderHelp2": "reverses",
+      "orderHelp3": "repeats duplicate",
+      "submit": "Arrange",
+      "loading": "Arranging…"
+    },
+    "toPdf": {
+      "title": "To PDF",
+      "description": "Convert images and office documents to PDF.",
+      "hint": "Images and office docs. Each input becomes its own PDF (several → ZIP).",
+      "pageSize": "Page size",
+      "sizeFit": "Fit to content",
+      "sizeLetter": "Letter",
+      "sizeHelp": "Image inputs are placed on this page size (office docs keep their own).",
+      "submit": "{count, plural, one {Convert # file} other {Convert # files}}",
+      "loading": "Converting…"
+    },
+    "toImages": {
+      "title": "To Images",
+      "description": "Render PDF pages to PNG or JPG.",
+      "hint": "One PDF (multiple pages → ZIP).",
+      "format": "Format",
+      "dpi": "DPI",
+      "dpiHelp": "Higher = sharper and larger (36–600).",
+      "pages": "Pages",
+      "pagesPlaceholder": "e.g. 1-3 (blank = all)",
+      "submit": "Render images",
+      "loading": "Rendering…"
+    },
+    "toText": {
+      "title": "To Text",
+      "description": "Extract the text content of a PDF.",
+      "hint": "One PDF.",
+      "format": "Format",
+      "formatTxt": "Plain text (.txt)",
+      "pages": "Pages",
+      "pagesPlaceholder": "e.g. 1-3 (blank = all)",
+      "submit": "Extract text",
+      "loading": "Extracting text…"
+    },
+    "protect": {
+      "title": "Protect",
+      "description": "Add password encryption to a PDF.",
+      "hint": "One or more PDFs (several files → ZIP).",
+      "userPassword": "User password",
+      "userPasswordHelp": "Required to open the document.",
+      "userPasswordError": "A user password is required.",
+      "ownerPassword": "Owner password (optional)",
+      "ownerPasswordHelp": "Controls permissions; defaults to the user password.",
+      "submit": "{count, plural, one {Protect # file} other {Protect # files}}",
+      "loading": "Encrypting…"
+    },
+    "unlock": {
+      "title": "Unlock",
+      "description": "Remove a known password from a PDF.",
+      "hint": "One or more protected PDFs (several files → ZIP).",
+      "password": "Password",
+      "passwordHelp": "The current password used to open the PDF(s).",
+      "passwordError": "A password is required.",
+      "submit": "{count, plural, one {Unlock # file} other {Unlock # files}}",
+      "loading": "Unlocking…"
+    },
+    "redact": {
+      "title": "Redact",
+      "description": "Draw boxes over content to permanently black it out.",
+      "hint": "One PDF. Then drag rectangles over the areas to redact.",
+      "dragHint": "Drag on a page to mark a region.",
+      "chooseAnother": "Choose another PDF",
+      "regions": "Regions ({{count}})",
+      "regionsEmpty": "No regions yet. Drag a rectangle over the content you want removed.",
+      "removeRegion": "Remove region",
+      "submit": "Redact & download",
+      "loading": "Redacting…"
+    },
+    "metadata": {
+      "title": "Metadata",
+      "description": "View, edit or strip document info.",
+      "hint": "One PDF.",
+      "readCurrent": "Read current",
+      "reading": "Reading…",
+      "titleField": "Title",
+      "author": "Author",
+      "subject": "Subject",
+      "keywords": "Keywords",
+      "strip": "Strip all metadata (ignores the fields above)",
+      "submitStrip": "Strip metadata",
+      "submitApply": "Apply metadata",
+      "loading": "Updating…"
+    },
+    "watermark": {
+      "title": "Watermark",
+      "description": "Stamp text or an image over every page.",
+      "hint": "One or more PDFs to stamp (several files → ZIP).",
+      "typeAria": "Watermark type",
+      "typeText": "Text",
+      "typeImage": "Image",
+      "text": "Watermark text",
+      "textPlaceholder": "e.g. CONFIDENTIAL",
+      "image": "Watermark image",
+      "opacity": "Opacity",
+      "rotation": "Rotation",
+      "scale": "Scale",
+      "submit": "Apply watermark",
+      "needText": "Enter watermark text.",
+      "needImage": "Choose an image.",
+      "loading": "Stamping…"
+    },
+    "wizard": {
+      "title": "Wizard",
+      "description": "Guided step-by-step build & export.",
+      "step1": "Select",
+      "step2": "Arrange",
+      "step3": "Page settings",
+      "step4": "Compression",
+      "step5": "Export",
+      "selectTitle": "Select files",
+      "selectHint": "PDFs, images and office documents.",
+      "arrangeTitle": "Arrange & page ranges",
+      "arrangeHint": "Drag to reorder. Page ranges apply to PDF inputs only (blank = all).",
+      "rangePlaceholder": "pages e.g. 1-3",
+      "typeImage": "image",
+      "typeDocument": "document",
+      "removeAria": "Remove",
+      "pageSettingsTitle": "Page settings",
+      "imagePageSize": "Page size for image inputs",
+      "sizeFit": "Fit to image",
+      "sizeLetter": "Letter",
+      "imagePageSizeHelp": "Images and office docs are converted to PDF at this size before merging.",
+      "compressionTitle": "Compression",
+      "compressToggle": "Compress the exported PDF toward a target size",
+      "target": "Target size",
+      "targetPlaceholder": "e.g. 5MB",
+      "reviewTitle": "Review & export",
+      "sumFiles": "Files",
+      "sumOrder": "Order",
+      "sumImageSize": "Image page size",
+      "sumCompress": "Compress",
+      "compressNo": "no",
+      "preparing": "Preparing {{current}}/{{total}}: {{name}}",
+      "merging": "Merging…",
+      "compressing": "Compressing…"
+    },
+    "pipeline": {
+      "title": "Pipeline",
+      "description": "Chain operations as a node graph.",
+      "sourceTitle": "Source files",
+      "sourceHint": "These feed the SOURCE node; downstream nodes reference them by name.",
+      "nodes": "Nodes",
+      "nodeCount": "{count, plural, one {# operation node} other {# operation nodes}}",
+      "sourceFiles": "Files ({{count}})",
+      "sourceAddAbove": "Add source files above.",
+      "removeNode": "Remove node",
+      "inputs": "Inputs",
+      "sourceOption": "SOURCE (files)",
+      "fieldPages": "Pages",
+      "fieldMode": "Mode",
+      "modeCombine": "Combine",
+      "modeSeparate": "Separate files",
+      "fieldAngle": "Angle",
+      "fieldOrder": "Order",
+      "fieldTarget": "Target size",
+      "fieldPageSize": "Page size",
+      "sizeFit": "Fit",
+      "fieldUserPassword": "User password",
+      "fieldOwnerPassword": "Owner password",
+      "fieldPassword": "Password",
+      "fieldTitle": "Title",
+      "fieldAuthor": "Author",
+      "fieldSubject": "Subject",
+      "fieldKeywords": "Keywords",
+      "stripMetadata": "Strip all metadata",
+      "fieldText": "Text",
+      "fieldOpacity": "Opacity",
+      "fieldRotation": "Rotation",
+      "fieldScale": "Scale",
+      "fieldFormat": "Format",
+      "fieldDpi": "DPI",
+      "pagesBlank": "blank = all",
+      "addNode": "Add node:",
+      "validate": "Validate",
+      "run": "Run pipeline",
+      "running": "Running…",
+      "valid": "✓ Pipeline is valid.",
+      "jsonTitle": "Pipeline JSON"
+    }
+  }
+}

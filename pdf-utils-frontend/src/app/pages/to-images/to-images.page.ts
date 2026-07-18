@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -11,34 +12,48 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-to-images-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
-      <app-page-header title="To Images" description="Render PDF pages to PNG or JPG." />
+      <app-page-header
+        [title]="'pages.toImages.title' | transloco"
+        [description]="'pages.toImages.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="false"
         accept=".pdf"
-        hint="One PDF (multiple pages → ZIP)."
+        [hint]="'pages.toImages.hint' | transloco"
         (filesChange)="file.set($event.length ? $event[0] : null)"
       />
 
       <div class="card form-grid">
         <div class="field">
-          <label for="ti-format">Format</label>
+          <label for="ti-format">{{ 'pages.toImages.format' | transloco }}</label>
           <select id="ti-format" [value]="format()" (change)="format.set($any($event.target).value)">
             <option value="PNG">PNG</option>
             <option value="JPG">JPG</option>
           </select>
         </div>
         <div class="field">
-          <label for="ti-dpi">DPI</label>
+          <label for="ti-dpi">{{ 'pages.toImages.dpi' | transloco }}</label>
           <input id="ti-dpi" type="number" min="36" max="600" step="1" [formControl]="dpi" />
-          <span class="help">Higher = sharper and larger (36–600).</span>
+          <span class="help">{{ 'pages.toImages.dpiHelp' | transloco }}</span>
         </div>
         <div class="field">
-          <label for="ti-pages">Pages</label>
-          <input id="ti-pages" type="text" [formControl]="pages" placeholder="e.g. 1-3 (blank = all)" />
+          <label for="ti-pages">{{ 'pages.toImages.pages' | transloco }}</label>
+          <input
+            id="ti-pages"
+            type="text"
+            [formControl]="pages"
+            [placeholder]="'pages.toImages.pagesPlaceholder' | transloco"
+          />
         </div>
       </div>
 
@@ -49,13 +64,13 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="!file() || dpi.invalid || state.loading()"
           (click)="submit()"
         >
-          Render images
+          {{ 'pages.toImages.submit' | transloco }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Rendering…"
+        [loadingLabel]="'pages.toImages.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

@@ -1,0 +1,495 @@
+{
+  "common": {
+    "download": "Herunterladen",
+    "downloadZip": "ZIP herunterladen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "startOver": "Von vorn beginnen",
+    "export": "Exportieren",
+    "reExport": "Erneut exportieren",
+    "remove": "Entfernen",
+    "removeFile": "{{name}} entfernen",
+    "clearAll": "Alle entfernen",
+    "show": "Anzeigen",
+    "hide": "Ausblenden",
+    "done": "Fertig",
+    "loading": "Wird geladen",
+    "processing": "Wird verarbeitet…"
+  },
+  "dropzone": {
+    "defaultLabel": "Dateien hierher ziehen oder zum Durchsuchen klicken"
+  },
+  "nav": {
+    "aria": "Vorgänge",
+    "home": "Startseite",
+    "homeTitle": "Zurück zur PDF Conduit-Startseite",
+    "groups": {
+      "organise": "Organisieren",
+      "optimise": "Optimieren",
+      "convert": "Umwandeln",
+      "secure": "Schützen",
+      "edit": "Bearbeiten",
+      "advanced": "Erweitert"
+    }
+  },
+  "op": {
+    "merge": {
+      "label": "Zusammenführen",
+      "description": "Mehrere PDFs (oder Bilder/Office-Dokumente) zu einem zusammenfügen."
+    },
+    "extract": {
+      "label": "Extrahieren",
+      "description": "Ausgewählte Seiten aus einem PDF herauslösen."
+    },
+    "rotate": {
+      "label": "Drehen",
+      "description": "Seiten um 90°, 180° oder 270° drehen."
+    },
+    "arrange": {
+      "label": "Anordnen",
+      "description": "Seiten neu ordnen, umkehren oder duplizieren."
+    },
+    "compress": {
+      "label": "Komprimieren",
+      "description": "Ein PDF auf eine Zielgröße verkleinern."
+    },
+    "to-pdf": {
+      "label": "In PDF",
+      "description": "Bilder und Office-Dokumente in PDF umwandeln."
+    },
+    "to-images": {
+      "label": "In Bilder",
+      "description": "PDF-Seiten als PNG oder JPG rendern."
+    },
+    "to-text": {
+      "label": "In Text",
+      "description": "Den Textinhalt eines PDF extrahieren."
+    },
+    "protect": {
+      "label": "Schützen",
+      "description": "Ein PDF mit einem Passwort verschlüsseln."
+    },
+    "unlock": {
+      "label": "Entsperren",
+      "description": "Ein bekanntes Passwort aus einem PDF entfernen."
+    },
+    "redact": {
+      "label": "Schwärzen",
+      "description": "Bereiche einer Seite dauerhaft schwärzen."
+    },
+    "metadata": {
+      "label": "Metadaten",
+      "description": "Dokumentinfos anzeigen, bearbeiten oder entfernen."
+    },
+    "watermark": {
+      "label": "Wasserzeichen",
+      "description": "Text oder ein Bild über jede Seite stempeln."
+    },
+    "wizard": {
+      "label": "Assistent",
+      "description": "Geführtes Erstellen & Exportieren Schritt für Schritt."
+    },
+    "pipeline": {
+      "label": "Pipeline",
+      "description": "Vorgänge als Knotengraph verketten."
+    }
+  },
+  "header": {
+    "brandHome": "PDF Conduit-Startseite",
+    "quotaFreeLeft": "heute noch kostenlos",
+    "quotaTitleSpent": "Kostenloses Tageslimit erreicht — Pro-Tarife ansehen",
+    "quotaTitleLeft": "Heute noch verbleibende kostenlose Vorgänge — Pro-Tarife ansehen",
+    "serverOnline": "Server online",
+    "serverOffline": "Server offline",
+    "serverChecking": "Server wird geprüft…",
+    "themeToLight": "Zum hellen Design wechseln",
+    "themeToDark": "Zum dunklen Design wechseln",
+    "languageLabel": "Sprache"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Kostenlos · In Ihrem Browser",
+      "title": "Alle PDF-Werkzeuge, die Sie brauchen — in einem aufgeräumten Arbeitsbereich.",
+      "lede": "PDFs in Sekunden zusammenführen, komprimieren, umwandeln, schützen und schwärzen — vollständig im Arbeitsspeicher verarbeitet und niemals auf unseren Servern gespeichert. Kein Konto. Keine Installation.",
+      "ctaStart": "Kostenlos starten",
+      "ctaExplore": "Werkzeuge entdecken",
+      "note": "Dateien verlassen nie den Arbeitsspeicher · Keine Anmeldung nötig · Funktioniert auf jedem Gerät"
+    },
+    "trust": {
+      "aria": "Warum PDF Conduit",
+      "memoryTitle": "Im Arbeitsspeicher verarbeitet",
+      "memoryDesc": "Ihre Dateien werden im RAM verarbeitet und nie auf die Festplatte geschrieben oder gespeichert.",
+      "accountTitle": "Kein Konto nötig",
+      "accountDesc": "Direkt loslegen — keine E-Mail, kein Passwort, keine Tracking-Hürde.",
+      "browserTitle": "Öffnen im Browser",
+      "browserDesc": "Nichts zu installieren. Funktioniert unter Windows, macOS, Linux und mobil."
+    },
+    "tools": {
+      "title": "Werkzeug auswählen und loslegen",
+      "subtitle": "Fünfzehn fokussierte Werkzeuge, jedes erledigt eine Aufgabe richtig gut."
+    },
+    "pro": {
+      "soon": "Demnächst verfügbar",
+      "title": "Mehr Leistung mit PDF Conduit Pro",
+      "subtitle": "Die kostenlosen Werkzeuge bleiben für immer kostenlos. Pro bietet mehr Spielraum für anspruchsvolle Aufgaben.",
+      "freeName": "Kostenlos",
+      "freePrice": "$0",
+      "freePer": "/ für immer",
+      "freeFeat1": "Alle fünfzehn PDF-Werkzeuge",
+      "freeFeat2": "Verarbeitung im Arbeitsspeicher, nichts wird gespeichert",
+      "freeFeat3": "Tägliches Vorgangslimit",
+      "freeFeat4": "Standard-Obergrenze für Dateigröße",
+      "freeFeat5": "Kein Konto erforderlich",
+      "freeCta": "Jetzt nutzen",
+      "proName": "Pro",
+      "proPrice": "TBA",
+      "proPer": "/ Monat",
+      "proFeat1": "<b>Größere Dateien</b> — die kostenlose Größenobergrenze aufheben",
+      "proFeat2": "<b>Höhere Tageslimits</b> für große Stapel",
+      "proFeat3": "<b>Stapel- &amp; API-Zugriff</b> zur Automatisierung von Abläufen",
+      "proFeat4": "<b>Bevorzugte Verarbeitung</b> auch zu Spitzenzeiten",
+      "proFeat5": "Alles aus Kostenlos, natürlich",
+      "proCta": "Benachrichtige mich",
+      "proCtaDone": "Sie stehen auf der Liste ✓",
+      "proNote": "Noch keine Kosten — wir schreiben Ihnen nur, wenn Pro startet.",
+      "notifyTitle": "Sie stehen auf der Liste",
+      "notifyMessage": "Wir informieren Sie, sobald PDF Conduit Pro bereit ist."
+    },
+    "footer": {
+      "aria": "Fußzeile",
+      "tools": "Werkzeuge",
+      "privacy": "Datenschutz",
+      "github": "GitHub",
+      "copy": "Dateien werden im Arbeitsspeicher verarbeitet und nie gespeichert. Kostenlos nutzbar."
+    }
+  },
+  "privacy": {
+    "title": "Datenschutz",
+    "description": "Wie PDF Conduit mit Ihren Dateien umgeht — kurz gesagt: Es behält sie nicht.",
+    "memoryTitle": "Ihre Dateien bleiben im Arbeitsspeicher",
+    "memoryBody": "Jeder Vorgang läuft auf dem Server vollständig im Arbeitsspeicher (RAM). Ihre Uploads werden innerhalb einer einzigen Anfrage dekodiert, verarbeitet und als Download zurückgesendet. Wir schreiben Ihre Dateien nicht auf die Festplatte und speichern sie danach nicht. Sobald die Antwort gesendet ist, werden die Bytes verworfen.",
+    "exceptionTitle": "Die eine vorübergehende Ausnahme",
+    "exceptionBody": "Das Umwandeln von Office- oder Textdokumenten (zum Beispiel .docx, .xlsx, .pptx) erfordert ein headless LibreOffice. Nur für diesen Schritt wird die Datei in einen isolierten temporären Ordner geschrieben, der unmittelbar nach Abschluss der Umwandlung gelöscht wird. Reine PDFs und Bilder berühren die Festplatte nie.",
+    "accountTitle": "Kein Konto, keine Tracking-Hürde",
+    "accountBody": "Sie müssen sich nicht registrieren, anmelden oder uns eine E-Mail-Adresse geben, um die kostenlosen Werkzeuge zu nutzen. Wir verlangen keine persönlichen Daten, um eine Datei zu verarbeiten.",
+    "limitsTitle": "Grenzen der kostenlosen Version",
+    "limitsBody1": "Damit der kostenlose Dienst für alle verfügbar bleibt, unterliegen Anfragen einem täglichen Vorgangskontingent, einer Obergrenze für die Dateigröße pro Datei und einer grundlegenden Ratenbegrenzung. Wenn Sie ein Limit erreichen, sagt es Ihnen die App klar. Höhere Limits, größere Dateien und Stapel-/API-Zugriff sind für einen künftigen kostenpflichtigen Tarif geplant — siehe den",
+    "limitsLink": "Pro-Tarife",
+    "limitsBody2": "-Teaser auf der Startseite.",
+    "questionsTitle": "Fragen",
+    "questionsBody": "PDF Conduit wird ohne Gewähr bereitgestellt. Diese Seite beschreibt unser aktuelles Verhalten und kann mit der Weiterentwicklung des Produkts aktualisiert werden.",
+    "backHome": "Zurück zur Startseite"
+  },
+  "errors": {
+    "generic": {
+      "title": "Etwas ist schiefgelaufen",
+      "detail": "Der Vorgang konnte nicht abgeschlossen werden."
+    },
+    "quota_exceeded": {
+      "title": "Sie haben die kostenlosen Vorgänge für heute aufgebraucht",
+      "detail": "Das kostenlose Tageslimit ist vorerst erreicht.",
+      "hint": "Höhere Tageslimits kommen mit PDF Conduit Pro. Es wird morgen zurückgesetzt — oder sichern Sie sich unten frühzeitigen Zugang."
+    },
+    "rate_limited": {
+      "title": "Einen Moment langsamer",
+      "detail": "Zu viele Anfragen in kurzer Zeit.",
+      "hintRetry": "{seconds, plural, one {Bitte versuchen Sie es in etwa # Sekunde erneut.} other {Bitte versuchen Sie es in etwa # Sekunden erneut.}}",
+      "hintWait": "Bitte warten Sie ein paar Sekunden und versuchen Sie es erneut."
+    },
+    "server_busy": {
+      "title": "Wir sind gerade ausgelastet",
+      "detail": "Der Server verarbeitet gerade sehr viele Anfragen.",
+      "hint": "Bitte versuchen Sie es in Kürze erneut. Bevorzugte Verarbeitung kommt mit Pro."
+    },
+    "processing_timeout": {
+      "title": "Das hat zu lange gedauert",
+      "detail": "Beim Vorgang ist vor Abschluss eine Zeitüberschreitung aufgetreten.",
+      "hint": "Versuchen Sie es mit einer kleineren oder einfacheren Datei oder teilen Sie die Arbeit in Schritte auf."
+    },
+    "too_large": {
+      "title": "Diese Datei überschreitet das kostenlose Größenlimit",
+      "detail": "Der Upload ist größer, als die kostenlose Version erlaubt.",
+      "hint": "Größere Uploads kommen mit PDF Conduit Pro."
+    },
+    "office_disabled": {
+      "title": "Office-Umwandlung nicht verfügbar",
+      "detail": "Das Umwandeln von Office-Dokumenten ist auf diesem Server nicht aktiviert.",
+      "hint": "Sie können weiterhin mit PDFs und Bildern arbeiten."
+    },
+    "operation_failed": {
+      "title": "Diese Datei konnte nicht verarbeitet werden",
+      "detail": "Der Vorgang ist bei dieser Eingabe fehlgeschlagen.",
+      "hint": "Prüfen Sie, ob die Datei ein gültiges, unverschlüsseltes PDF ist, und versuchen Sie es erneut."
+    },
+    "bad_request": {
+      "title": "Bitte prüfen Sie Ihre Eingabe",
+      "detail": "Die Anfrage war ungültig."
+    },
+    "network_error": {
+      "title": "Server nicht erreichbar",
+      "detail": "Die Anfrage hat PDF Conduit nicht erreicht.",
+      "hint": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+    }
+  },
+  "result": {
+    "done": "Fertig",
+    "original": "Original",
+    "result": "Ergebnis",
+    "saved": "Gespart",
+    "target": "Ziel",
+    "targetReached": "erreicht",
+    "targetNotReached": "nicht erreicht",
+    "batchFailures": "Einige Eingaben sind fehlgeschlagen: {{count}}",
+    "seeProPlans": "Pro-Tarife ansehen →",
+    "seeProPlansShort": "Pro-Tarife ansehen",
+    "httpStatus": "· HTTP {{status}}"
+  },
+  "viewer": {
+    "renderingPreview": "Vorschau wird gerendert…",
+    "renderError": "Dieses PDF konnte nicht gerendert werden.",
+    "pageCaption": "Seite {{n}}"
+  },
+  "toast": {
+    "dismiss": "Benachrichtigung schließen"
+  },
+  "pages": {
+    "merge": {
+      "title": "Zusammenführen",
+      "description": "Mehrere PDFs, Bilder oder Office-Dokumente zu einem PDF zusammenfügen.",
+      "hint": "PDFs, Bilder und Office-Dokumente. Ziehen Sie die Liste unten, um die Reihenfolge festzulegen.",
+      "outputName": "Ausgabename (optional)",
+      "outputNamePlaceholder": "zusammengefuehrt.pdf",
+      "outputNameHelp": "Standardmäßig der Name der ersten Datei mit dem Zusatz „_merged“.",
+      "removeAria": "Entfernen",
+      "submit": "{count, plural, one {# Datei zusammenführen} other {# Dateien zusammenführen}}",
+      "loading": "Wird zusammengeführt…"
+    },
+    "extract": {
+      "title": "Extrahieren",
+      "description": "Ausgewählte Seiten aus einem PDF herauslösen.",
+      "hint": "Ein PDF.",
+      "pages": "Seiten",
+      "pagesPlaceholder": "z. B. 1,3,5-8",
+      "pagesHelp": "Leer = alle Seiten. Syntax:",
+      "output": "Ausgabe",
+      "separate": "In eine Datei pro Seite aufteilen (ZIP)",
+      "submit": "Extrahieren",
+      "loading": "Wird extrahiert…"
+    },
+    "compress": {
+      "title": "Komprimieren",
+      "description": "Ein PDF auf eine Zielgröße verkleinern.",
+      "hint": "Ein oder mehrere PDFs (mehrere Dateien → ZIP).",
+      "target": "Zielgröße",
+      "targetPlaceholder": "z. B. 5MB, 800KB",
+      "targetHelp1": "Akzeptiert",
+      "targetHelp2": "oder eine reine Byte-Anzahl.",
+      "targetError": "Geben Sie eine Größe an, etwa",
+      "submit": "{count, plural, one {# Datei komprimieren} other {# Dateien komprimieren}}",
+      "loading": "Wird komprimiert…"
+    },
+    "rotate": {
+      "title": "Drehen",
+      "description": "Seiten um 90°, 180° oder 270° drehen.",
+      "hint": "Ein oder mehrere PDFs (mehrere Dateien → ZIP).",
+      "angle": "Winkel",
+      "angleAria": "Drehwinkel",
+      "pages": "Seiten",
+      "pagesPlaceholder": "z. B. 1,3,5-8 (leer = alle)",
+      "pagesHelp": "Leer = jede Seite.",
+      "submit": "{count, plural, one {# Datei drehen} other {# Dateien drehen}}",
+      "loading": "Wird gedreht…"
+    },
+    "arrange": {
+      "title": "Anordnen",
+      "description": "Seiten neu ordnen, umkehren oder duplizieren.",
+      "hint": "Ein PDF.",
+      "order": "Seitenreihenfolge",
+      "orderPlaceholder": "z. B. 3,1,2",
+      "orderHelp1": "ordnet neu",
+      "orderHelp2": "kehrt um",
+      "orderHelp3": "Wiederholungen duplizieren",
+      "submit": "Anordnen",
+      "loading": "Wird angeordnet…"
+    },
+    "toPdf": {
+      "title": "In PDF",
+      "description": "Bilder und Office-Dokumente in PDF umwandeln.",
+      "hint": "Bilder und Office-Dokumente. Jede Eingabe wird ein eigenes PDF (mehrere → ZIP).",
+      "pageSize": "Seitengröße",
+      "sizeFit": "An Inhalt anpassen",
+      "sizeLetter": "Letter",
+      "sizeHelp": "Bildeingaben werden auf dieser Seitengröße platziert (Office-Dokumente behalten ihre eigene).",
+      "submit": "{count, plural, one {# Datei umwandeln} other {# Dateien umwandeln}}",
+      "loading": "Wird umgewandelt…"
+    },
+    "toImages": {
+      "title": "In Bilder",
+      "description": "PDF-Seiten als PNG oder JPG rendern.",
+      "hint": "Ein PDF (mehrere Seiten → ZIP).",
+      "format": "Format",
+      "dpi": "DPI",
+      "dpiHelp": "Höher = schärfer und größer (36–600).",
+      "pages": "Seiten",
+      "pagesPlaceholder": "z. B. 1-3 (leer = alle)",
+      "submit": "Bilder rendern",
+      "loading": "Wird gerendert…"
+    },
+    "toText": {
+      "title": "In Text",
+      "description": "Den Textinhalt eines PDF extrahieren.",
+      "hint": "Ein PDF.",
+      "format": "Format",
+      "formatTxt": "Reiner Text (.txt)",
+      "pages": "Seiten",
+      "pagesPlaceholder": "z. B. 1-3 (leer = alle)",
+      "submit": "Text extrahieren",
+      "loading": "Text wird extrahiert…"
+    },
+    "protect": {
+      "title": "Schützen",
+      "description": "Ein PDF mit einem Passwort verschlüsseln.",
+      "hint": "Ein oder mehrere PDFs (mehrere Dateien → ZIP).",
+      "userPassword": "Benutzerpasswort",
+      "userPasswordHelp": "Erforderlich, um das Dokument zu öffnen.",
+      "userPasswordError": "Ein Benutzerpasswort ist erforderlich.",
+      "ownerPassword": "Besitzerpasswort (optional)",
+      "ownerPasswordHelp": "Steuert Berechtigungen; standardmäßig das Benutzerpasswort.",
+      "submit": "{count, plural, one {# Datei schützen} other {# Dateien schützen}}",
+      "loading": "Wird verschlüsselt…"
+    },
+    "unlock": {
+      "title": "Entsperren",
+      "description": "Ein bekanntes Passwort aus einem PDF entfernen.",
+      "hint": "Ein oder mehrere geschützte PDFs (mehrere Dateien → ZIP).",
+      "password": "Passwort",
+      "passwordHelp": "Das aktuelle Passwort zum Öffnen des/der PDF(s).",
+      "passwordError": "Ein Passwort ist erforderlich.",
+      "submit": "{count, plural, one {# Datei entsperren} other {# Dateien entsperren}}",
+      "loading": "Wird entsperrt…"
+    },
+    "redact": {
+      "title": "Schwärzen",
+      "description": "Kästen über Inhalte ziehen, um sie dauerhaft zu schwärzen.",
+      "hint": "Ein PDF. Ziehen Sie dann Rechtecke über die zu schwärzenden Bereiche.",
+      "dragHint": "Auf einer Seite ziehen, um einen Bereich zu markieren.",
+      "chooseAnother": "Anderes PDF auswählen",
+      "regions": "Bereiche ({{count}})",
+      "regionsEmpty": "Noch keine Bereiche. Ziehen Sie ein Rechteck über den Inhalt, den Sie entfernen möchten.",
+      "removeRegion": "Bereich entfernen",
+      "submit": "Schwärzen & herunterladen",
+      "loading": "Wird geschwärzt…"
+    },
+    "metadata": {
+      "title": "Metadaten",
+      "description": "Dokumentinfos anzeigen, bearbeiten oder entfernen.",
+      "hint": "Ein PDF.",
+      "readCurrent": "Aktuelle lesen",
+      "reading": "Wird gelesen…",
+      "titleField": "Titel",
+      "author": "Autor",
+      "subject": "Betreff",
+      "keywords": "Schlüsselwörter",
+      "strip": "Alle Metadaten entfernen (ignoriert die Felder oben)",
+      "submitStrip": "Metadaten entfernen",
+      "submitApply": "Metadaten anwenden",
+      "loading": "Wird aktualisiert…"
+    },
+    "watermark": {
+      "title": "Wasserzeichen",
+      "description": "Text oder ein Bild über jede Seite stempeln.",
+      "hint": "Ein oder mehrere PDFs zum Stempeln (mehrere Dateien → ZIP).",
+      "typeAria": "Wasserzeichentyp",
+      "typeText": "Text",
+      "typeImage": "Bild",
+      "text": "Wasserzeichentext",
+      "textPlaceholder": "z. B. VERTRAULICH",
+      "image": "Wasserzeichenbild",
+      "opacity": "Deckkraft",
+      "rotation": "Drehung",
+      "scale": "Skalierung",
+      "submit": "Wasserzeichen anwenden",
+      "needText": "Wasserzeichentext eingeben.",
+      "needImage": "Ein Bild auswählen.",
+      "loading": "Wird gestempelt…"
+    },
+    "wizard": {
+      "title": "Assistent",
+      "description": "Geführtes Erstellen & Exportieren Schritt für Schritt.",
+      "step1": "Auswählen",
+      "step2": "Anordnen",
+      "step3": "Seiteneinstellungen",
+      "step4": "Komprimierung",
+      "step5": "Exportieren",
+      "selectTitle": "Dateien auswählen",
+      "selectHint": "PDFs, Bilder und Office-Dokumente.",
+      "arrangeTitle": "Anordnen & Seitenbereiche",
+      "arrangeHint": "Zum Umsortieren ziehen. Seitenbereiche gelten nur für PDF-Eingaben (leer = alle).",
+      "rangePlaceholder": "Seiten z. B. 1-3",
+      "typeImage": "Bild",
+      "typeDocument": "Dokument",
+      "removeAria": "Entfernen",
+      "pageSettingsTitle": "Seiteneinstellungen",
+      "imagePageSize": "Seitengröße für Bildeingaben",
+      "sizeFit": "An Bild anpassen",
+      "sizeLetter": "Letter",
+      "imagePageSizeHelp": "Bilder und Office-Dokumente werden vor dem Zusammenführen in dieser Größe in PDF umgewandelt.",
+      "compressionTitle": "Komprimierung",
+      "compressToggle": "Das exportierte PDF auf eine Zielgröße komprimieren",
+      "target": "Zielgröße",
+      "targetPlaceholder": "z. B. 5MB",
+      "reviewTitle": "Prüfen & exportieren",
+      "sumFiles": "Dateien",
+      "sumOrder": "Reihenfolge",
+      "sumImageSize": "Bild-Seitengröße",
+      "sumCompress": "Komprimieren",
+      "compressNo": "nein",
+      "preparing": "Wird vorbereitet {{current}}/{{total}}: {{name}}",
+      "merging": "Wird zusammengeführt…",
+      "compressing": "Wird komprimiert…"
+    },
+    "pipeline": {
+      "title": "Pipeline",
+      "description": "Vorgänge als Knotengraph verketten.",
+      "sourceTitle": "Quelldateien",
+      "sourceHint": "Diese speisen den SOURCE-Knoten; nachgelagerte Knoten verweisen per Name auf sie.",
+      "nodes": "Knoten",
+      "nodeCount": "{count, plural, one {# Vorgangsknoten} other {# Vorgangsknoten}}",
+      "sourceFiles": "Dateien ({{count}})",
+      "sourceAddAbove": "Quelldateien oben hinzufügen.",
+      "removeNode": "Knoten entfernen",
+      "inputs": "Eingaben",
+      "sourceOption": "SOURCE (Dateien)",
+      "fieldPages": "Seiten",
+      "fieldMode": "Modus",
+      "modeCombine": "Kombinieren",
+      "modeSeparate": "Getrennte Dateien",
+      "fieldAngle": "Winkel",
+      "fieldOrder": "Reihenfolge",
+      "fieldTarget": "Zielgröße",
+      "fieldPageSize": "Seitengröße",
+      "sizeFit": "Anpassen",
+      "fieldUserPassword": "Benutzerpasswort",
+      "fieldOwnerPassword": "Besitzerpasswort",
+      "fieldPassword": "Passwort",
+      "fieldTitle": "Titel",
+      "fieldAuthor": "Autor",
+      "fieldSubject": "Betreff",
+      "fieldKeywords": "Schlüsselwörter",
+      "stripMetadata": "Alle Metadaten entfernen",
+      "fieldText": "Text",
+      "fieldOpacity": "Deckkraft",
+      "fieldRotation": "Drehung",
+      "fieldScale": "Skalierung",
+      "fieldFormat": "Format",
+      "fieldDpi": "DPI",
+      "pagesBlank": "leer = alle",
+      "addNode": "Knoten hinzufügen:",
+      "validate": "Validieren",
+      "run": "Pipeline ausführen",
+      "running": "Wird ausgeführt…",
+      "valid": "✓ Pipeline ist gültig.",
+      "jsonTitle": "Pipeline-JSON"
+    }
+  }
+}

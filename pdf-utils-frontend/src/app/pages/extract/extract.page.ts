@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -11,42 +12,59 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-extract-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
-      <app-page-header title="Extract" description="Pull selected pages out of a PDF." />
+      <app-page-header
+        [title]="'pages.extract.title' | transloco"
+        [description]="'pages.extract.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="false"
         accept=".pdf"
-        hint="One PDF."
+        [hint]="'pages.extract.hint' | transloco"
         (filesChange)="file.set($event.length ? $event[0] : null)"
       />
 
       <div class="card form-grid">
         <div class="field">
-          <label for="ex-pages">Pages</label>
-          <input id="ex-pages" type="text" [formControl]="pages" placeholder="e.g. 1,3,5-8" />
-          <span class="help">Blank = all pages. Syntax: <code>1</code>, <code>2-5</code>, <code>end-2</code>.</span>
+          <label for="ex-pages">{{ 'pages.extract.pages' | transloco }}</label>
+          <input
+            id="ex-pages"
+            type="text"
+            [formControl]="pages"
+            [placeholder]="'pages.extract.pagesPlaceholder' | transloco"
+          />
+          <span class="help">
+            {{ 'pages.extract.pagesHelp' | transloco }}
+            <code>1</code>, <code>2-5</code>, <code>end-2</code>.
+          </span>
         </div>
         <div class="field">
-          <span class="field-label">Output</span>
+          <span class="field-label">{{ 'pages.extract.output' | transloco }}</span>
           <label class="check">
             <input type="checkbox" [formControl]="separate" />
-            Split into one file per page (ZIP)
+            {{ 'pages.extract.separate' | transloco }}
           </label>
         </div>
       </div>
 
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!file() || state.loading()" (click)="submit()">
-          Extract
+          {{ 'pages.extract.submit' | transloco }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Extracting…"
+        [loadingLabel]="'pages.extract.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

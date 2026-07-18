@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { formatBytes } from '../../core/download.util';
 
@@ -14,14 +15,15 @@ import { formatBytes } from '../../core/download.util';
 @Component({
   selector: 'app-file-drop-zone',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, TranslocoModule],
   templateUrl: './file-drop-zone.component.html',
   styleUrl: './file-drop-zone.component.scss',
 })
 export class FileDropZoneComponent {
   @Input() multiple = true;
   @Input() accept = '';
-  @Input() label = 'Drop files here or click to browse';
+  /** Override the drop-target label; blank falls back to the i18n default. */
+  @Input() label = '';
   @Input() hint = '';
   /** Show the built-in file list under the drop target. Hide it when the host
    *  renders its own list (e.g. a drag-reorder list for merge/arrange). */

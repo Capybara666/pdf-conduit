@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -12,40 +13,43 @@ type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
 @Component({
   selector: 'app-to-pdf-page',
   standalone: true,
-  imports: [FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [TranslocoModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
   template: `
     <section class="op-page">
-      <app-page-header title="To PDF" description="Convert images and office documents to PDF." />
+      <app-page-header
+        [title]="'pages.toPdf.title' | transloco"
+        [description]="'pages.toPdf.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="true"
         accept="image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx,.pdf"
-        hint="Images and office docs. Each input becomes its own PDF (several → ZIP)."
+        [hint]="'pages.toPdf.hint' | transloco"
         (filesChange)="files.set($event)"
       />
 
       <div class="card form-grid">
         <div class="field">
-          <label for="tp-size">Page size</label>
+          <label for="tp-size">{{ 'pages.toPdf.pageSize' | transloco }}</label>
           <select id="tp-size" [value]="pageSize()" (change)="onSize($event)">
-            <option value="FIT">Fit to content</option>
+            <option value="FIT">{{ 'pages.toPdf.sizeFit' | transloco }}</option>
             <option value="A4">A4</option>
             <option value="A3">A3</option>
-            <option value="LETTER">Letter</option>
+            <option value="LETTER">{{ 'pages.toPdf.sizeLetter' | transloco }}</option>
           </select>
-          <span class="help">Image inputs are placed on this page size (office docs keep their own).</span>
+          <span class="help">{{ 'pages.toPdf.sizeHelp' | transloco }}</span>
         </div>
       </div>
 
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
-          Convert {{ files().length }} file{{ files().length === 1 ? '' : 's' }}
+          {{ 'pages.toPdf.submit' | transloco: { count: files().length } }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Converting…"
+        [loadingLabel]="'pages.toPdf.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

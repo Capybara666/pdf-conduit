@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
 import { environment } from '../../environments/environment';
@@ -11,6 +12,9 @@ import {
   OperationInfo,
   RunResult,
 } from './api.models';
+import { errorCopyKeys } from './error-copy';
+import { QuotaService } from './quota.service';
+import { ToastService } from './toast.service';
 import { NodeKindInfo, PipelineModelJson, PipelineValidationError } from './pipeline.models';
 
 /**
@@ -26,6 +30,9 @@ import { NodeKindInfo, PipelineModelJson, PipelineValidationError } from './pipe
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);
+  private readonly quota = inject(QuotaService);
+  private readonly toasts = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
   private readonly base = `${environment.apiBase}/api`;
 
   // ---- Catalog / health -------------------------------------------------
@@ -144,6 +151,7 @@ export class ApiService {
 
   private toRunResult(res: HttpResponse<Blob>): RunResult {
     const headers = res.headers;
+    this.quota.update(headers);
     const blob = res.body ?? new Blob();
     const contentType = headers.get('Content-Type') ?? blob.type ?? 'application/octet-stream';
     const result: RunResult = {
@@ -213,8 +221,12 @@ export class ApiService {
   private toApiError(err: unknown): Observable<never> {
     if (!(err instanceof HttpErrorResponse)) {
       const message = err instanceof Error ? err.message : 'Unexpected error';
-      return throwError(() => new ApiError('unknown', message, 0));
+      return throwError(() => this.finalize(new ApiError('unknown', message, 0)));
     }
+
+    // Quota / rate-limit headers ride along on error responses too.
+    this.quota.update(err.headers);
+    const retryAfter = this.retryAfterFrom(err.headers);
 
     const status = err.status;
     const body = err.error;
@@ -224,8 +236,12 @@ export class ApiService {
       return new Observable<never>((subscriber) => {
         body
           .text()
-          .then((text) => subscriber.error(this.parseError(text, status)))
-          .catch(() => subscriber.error(new ApiError('unknown', err.message, status)));
+          .then((text) => subscriber.error(this.finalize(this.parseError(text, status, retryAfter))))
+          .catch(() =>
+            subscriber.error(
+              this.finalize(new ApiError(this.codeForStatus(status), err.message, status, retryAfter)),
+            ),
+          );
       });
     }
 
@@ -233,25 +249,63 @@ export class ApiService {
     if (body && typeof body === 'object') {
       const code = typeof body.code === 'string' ? body.code : this.codeForStatus(status);
       const message = typeof body.error === 'string' ? body.error : err.message;
-      return throwError(() => new ApiError(code, message, status));
+      return throwError(() => this.finalize(new ApiError(code, message, status, retryAfter)));
     }
 
     if (typeof body === 'string' && body.trim().startsWith('{')) {
-      return throwError(() => this.parseError(body, status));
+      return throwError(() => this.finalize(this.parseError(body, status, retryAfter)));
     }
 
-    return throwError(() => new ApiError(this.codeForStatus(status), err.message, status));
+    return throwError(() =>
+      this.finalize(new ApiError(this.codeForStatus(status), err.message, status, retryAfter)),
+    );
   }
 
-  private parseError(text: string, status: number): ApiError {
+  private parseError(text: string, status: number, retryAfter?: number): ApiError {
     try {
       const json = JSON.parse(text);
       const code = typeof json.code === 'string' ? json.code : this.codeForStatus(status);
       const message = typeof json.error === 'string' ? json.error : `Request failed (${status})`;
-      return new ApiError(code, message, status);
+      return new ApiError(code, message, status, retryAfter);
     } catch {
-      return new ApiError(this.codeForStatus(status), text || `Request failed (${status})`, status);
+      return new ApiError(
+        this.codeForStatus(status),
+        text || `Request failed (${status})`,
+        status,
+        retryAfter,
+      );
     }
+  }
+
+  private retryAfterFrom(headers: HttpHeaders): number | undefined {
+    const raw = headers.get('Retry-After');
+    if (raw == null || raw === '') return undefined;
+    const num = Number(raw);
+    return Number.isFinite(num) && num >= 0 ? num : undefined;
+  }
+
+  /**
+   * Side-effect on the final error: surface global/account conditions (quota,
+   * rate-limit, capacity) as a toast so the nudge shows even when a page has no
+   * visible result panel. Returns the error unchanged for the throwError chain.
+   */
+  private finalize(error: ApiError): ApiError {
+    const copy = errorCopyKeys(error);
+    if (copy.global) {
+      const t = (key?: string, params?: Record<string, unknown>) =>
+        key ? this.transloco.translate(key, params) : undefined;
+      const detail = copy.detailText || t(copy.detailKey);
+      const hint = t(copy.hintKey, copy.hintParams);
+      this.toasts.show({
+        kind: error.code === 'quota_exceeded' ? 'warning' : 'info',
+        title: t(copy.titleKey)!,
+        message: hint ?? detail,
+        action: copy.proLink
+          ? { label: this.transloco.translate('result.seeProPlansShort'), link: ['/'], fragment: 'pro' }
+          : undefined,
+      });
+    }
+    return error;
   }
 
   private codeForStatus(status: number): string {
@@ -261,11 +315,17 @@ export class ApiService {
       case 400:
         return 'bad_request';
       case 413:
-        return 'file_too_large';
+        return 'too_large';
+      case 415:
+        return 'office_disabled';
       case 422:
         return 'operation_failed';
+      case 429:
+        return 'rate_limited';
       case 500:
         return 'internal_error';
+      case 503:
+        return 'server_busy';
       default:
         return 'error';
     }

@@ -1,4 +1,5 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
@@ -66,23 +67,42 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
 
 const SOURCE_ID = 'source';
 
+/** NodeKind → operation id used for i18n label lookup (`op.<id>.label`). */
+const KIND_TO_OP: Record<string, string> = {
+  MERGE: 'merge',
+  IMAGES_TO_PDF: 'to-pdf',
+  EXTRACT: 'extract',
+  COMPRESS: 'compress',
+  ROTATE: 'rotate',
+  ARRANGE: 'arrange',
+  PROTECT: 'protect',
+  UNLOCK: 'unlock',
+  METADATA: 'metadata',
+  WATERMARK: 'watermark',
+  TO_IMAGES: 'to-images',
+  TO_TEXT: 'to-text',
+};
+
 @Component({
   selector: 'app-pipeline-page',
   standalone: true,
-  imports: [FileDropZoneComponent, PageHeaderComponent, SpinnerComponent],
+  imports: [TranslocoModule, FileDropZoneComponent, PageHeaderComponent, SpinnerComponent],
   template: `
     <section class="op-page wide">
-      <app-page-header title="Pipeline" description="Chain operations as a node graph." />
+      <app-page-header
+        [title]="'pages.pipeline.title' | transloco"
+        [description]="'pages.pipeline.description' | transloco"
+      />
 
       <div class="pl-grid">
         <div class="col">
           <!-- Source -->
           <div class="card">
-            <h2 class="card-h">Source files</h2>
+            <h2 class="card-h">{{ 'pages.pipeline.sourceTitle' | transloco }}</h2>
             <app-file-drop-zone
               [multiple]="true"
               accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
-              hint="These feed the SOURCE node; downstream nodes reference them by name."
+              [hint]="'pages.pipeline.sourceHint' | transloco"
               (filesChange)="files.set($event)"
             />
           </div>
@@ -90,32 +110,32 @@ const SOURCE_ID = 'source';
           <!-- Nodes -->
           <div class="card">
             <div class="card-h-row">
-              <h2 class="card-h">Nodes</h2>
-              <span class="hint-note">{{ nodes().length }} operation node(s)</span>
+              <h2 class="card-h">{{ 'pages.pipeline.nodes' | transloco }}</h2>
+              <span class="hint-note">{{ 'pages.pipeline.nodeCount' | transloco: { count: nodes().length } }}</span>
             </div>
 
             <div class="node source-node">
               <div class="node-head">
                 <span class="badge">SOURCE</span>
-                <span class="node-title">Files ({{ files().length }})</span>
+                <span class="node-title">{{ 'pages.pipeline.sourceFiles' | transloco: { count: files().length } }}</span>
               </div>
               @if (files().length) {
                 <p class="hint-note file-names">{{ fileNames() }}</p>
               } @else {
-                <p class="hint-note">Add source files above.</p>
+                <p class="hint-note">{{ 'pages.pipeline.sourceAddAbove' | transloco }}</p>
               }
             </div>
 
             @for (n of nodes(); track n.id; let i = $index) {
               <div class="node">
                 <div class="node-head">
-                  <span class="badge op">{{ labelFor(n.kind) }}</span>
+                  <span class="badge op">{{ nodeLabel(n.kind) }}</span>
                   <span class="node-id">{{ n.id }}</span>
-                  <button type="button" class="icon-btn" (click)="removeNode(n.id)" aria-label="Remove node">✕</button>
+                  <button type="button" class="icon-btn" (click)="removeNode(n.id)" [attr.aria-label]="'pages.pipeline.removeNode' | transloco">✕</button>
                 </div>
 
                 <div class="field">
-                  <span class="field-label">Inputs</span>
+                  <span class="field-label">{{ 'pages.pipeline.inputs' | transloco }}</span>
                   <div class="inputs">
                     @for (opt of upstreamOptions(n); track opt.id) {
                       <label class="check">
@@ -134,79 +154,79 @@ const SOURCE_ID = 'source';
                 @switch (n.kind) {
                   @case ('EXTRACT') {
                     <div class="form-grid">
-                      <div class="field"><label>Pages</label>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldPages' | transloco }}</label>
                         <input type="text" [value]="n.pages" (input)="patch(n,'pages',$any($event.target).value)" placeholder="1,3,5-8" /></div>
-                      <div class="field"><label>Mode</label>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldMode' | transloco }}</label>
                         <select [value]="n.splitMode" (change)="patch(n,'splitMode',$any($event.target).value)">
-                          <option value="COMBINE">Combine</option>
-                          <option value="SEPARATE">Separate files</option>
+                          <option value="COMBINE">{{ 'pages.pipeline.modeCombine' | transloco }}</option>
+                          <option value="SEPARATE">{{ 'pages.pipeline.modeSeparate' | transloco }}</option>
                         </select></div>
                     </div>
                   }
                   @case ('ROTATE') {
                     <div class="form-grid">
-                      <div class="field"><label>Pages</label>
-                        <input type="text" [value]="n.pages" (input)="patch(n,'pages',$any($event.target).value)" placeholder="blank = all" /></div>
-                      <div class="field"><label>Angle</label>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldPages' | transloco }}</label>
+                        <input type="text" [value]="n.pages" (input)="patch(n,'pages',$any($event.target).value)" [placeholder]="'pages.pipeline.pagesBlank' | transloco" /></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldAngle' | transloco }}</label>
                         <select [value]="n.angle" (change)="patch(n,'angle',+$any($event.target).value)">
                           <option [value]="90">90°</option><option [value]="180">180°</option><option [value]="270">270°</option>
                         </select></div>
                     </div>
                   }
                   @case ('ARRANGE') {
-                    <div class="field"><label>Order</label>
+                    <div class="field"><label>{{ 'pages.pipeline.fieldOrder' | transloco }}</label>
                       <input type="text" [value]="n.order" (input)="patch(n,'order',$any($event.target).value)" placeholder="3,1,2" /></div>
                   }
                   @case ('COMPRESS') {
-                    <div class="field"><label>Target size</label>
+                    <div class="field"><label>{{ 'pages.pipeline.fieldTarget' | transloco }}</label>
                       <input type="text" [value]="n.targetSize" (input)="patch(n,'targetSize',$any($event.target).value)" placeholder="5MB" /></div>
                   }
                   @case ('IMAGES_TO_PDF') {
-                    <div class="field"><label>Page size</label>
+                    <div class="field"><label>{{ 'pages.pipeline.fieldPageSize' | transloco }}</label>
                       <select [value]="n.pageSize" (change)="patch(n,'pageSize',$any($event.target).value)">
-                        <option value="FIT">Fit</option><option value="A4">A4</option><option value="A3">A3</option><option value="LETTER">Letter</option>
+                        <option value="FIT">{{ 'pages.pipeline.sizeFit' | transloco }}</option><option value="A4">A4</option><option value="A3">A3</option><option value="LETTER">Letter</option>
                       </select></div>
                   }
                   @case ('PROTECT') {
                     <div class="form-grid">
-                      <div class="field"><label>User password</label>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldUserPassword' | transloco }}</label>
                         <input type="password" [value]="n.password" (input)="patch(n,'password',$any($event.target).value)" /></div>
-                      <div class="field"><label>Owner password</label>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldOwnerPassword' | transloco }}</label>
                         <input type="password" [value]="n.ownerPassword" (input)="patch(n,'ownerPassword',$any($event.target).value)" /></div>
                     </div>
                   }
                   @case ('UNLOCK') {
-                    <div class="field"><label>Password</label>
+                    <div class="field"><label>{{ 'pages.pipeline.fieldPassword' | transloco }}</label>
                       <input type="password" [value]="n.password" (input)="patch(n,'password',$any($event.target).value)" /></div>
                   }
                   @case ('METADATA') {
                     <div class="form-grid">
-                      <div class="field"><label>Title</label><input type="text" [value]="n.metaTitle" (input)="patch(n,'metaTitle',$any($event.target).value)" /></div>
-                      <div class="field"><label>Author</label><input type="text" [value]="n.metaAuthor" (input)="patch(n,'metaAuthor',$any($event.target).value)" /></div>
-                      <div class="field"><label>Subject</label><input type="text" [value]="n.metaSubject" (input)="patch(n,'metaSubject',$any($event.target).value)" /></div>
-                      <div class="field"><label>Keywords</label><input type="text" [value]="n.metaKeywords" (input)="patch(n,'metaKeywords',$any($event.target).value)" /></div>
-                      <div class="field full"><label class="check"><input type="checkbox" [checked]="n.metaStrip" (change)="patch(n,'metaStrip',$any($event.target).checked)" /> Strip all metadata</label></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldTitle' | transloco }}</label><input type="text" [value]="n.metaTitle" (input)="patch(n,'metaTitle',$any($event.target).value)" /></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldAuthor' | transloco }}</label><input type="text" [value]="n.metaAuthor" (input)="patch(n,'metaAuthor',$any($event.target).value)" /></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldSubject' | transloco }}</label><input type="text" [value]="n.metaSubject" (input)="patch(n,'metaSubject',$any($event.target).value)" /></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldKeywords' | transloco }}</label><input type="text" [value]="n.metaKeywords" (input)="patch(n,'metaKeywords',$any($event.target).value)" /></div>
+                      <div class="field full"><label class="check"><input type="checkbox" [checked]="n.metaStrip" (change)="patch(n,'metaStrip',$any($event.target).checked)" /> {{ 'pages.pipeline.stripMetadata' | transloco }}</label></div>
                     </div>
                   }
                   @case ('WATERMARK') {
                     <div class="form-grid">
-                      <div class="field full"><label>Text</label><input type="text" [value]="n.wmText" (input)="patch(n,'wmText',$any($event.target).value)" placeholder="CONFIDENTIAL" /></div>
-                      <div class="field"><label>Opacity</label><input type="number" min="0.05" max="1" step="0.05" [value]="n.wmOpacity" (input)="patch(n,'wmOpacity',+$any($event.target).value)" /></div>
-                      <div class="field"><label>Rotation</label><input type="number" min="0" max="360" step="5" [value]="n.wmRotation" (input)="patch(n,'wmRotation',+$any($event.target).value)" /></div>
-                      <div class="field"><label>Scale</label><input type="number" min="0.1" max="1" step="0.05" [value]="n.wmScale" (input)="patch(n,'wmScale',+$any($event.target).value)" /></div>
+                      <div class="field full"><label>{{ 'pages.pipeline.fieldText' | transloco }}</label><input type="text" [value]="n.wmText" (input)="patch(n,'wmText',$any($event.target).value)" placeholder="CONFIDENTIAL" /></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldOpacity' | transloco }}</label><input type="number" min="0.05" max="1" step="0.05" [value]="n.wmOpacity" (input)="patch(n,'wmOpacity',+$any($event.target).value)" /></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldRotation' | transloco }}</label><input type="number" min="0" max="360" step="5" [value]="n.wmRotation" (input)="patch(n,'wmRotation',+$any($event.target).value)" /></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldScale' | transloco }}</label><input type="number" min="0.1" max="1" step="0.05" [value]="n.wmScale" (input)="patch(n,'wmScale',+$any($event.target).value)" /></div>
                     </div>
                   }
                   @case ('TO_IMAGES') {
                     <div class="form-grid">
-                      <div class="field"><label>Format</label>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldFormat' | transloco }}</label>
                         <select [value]="n.imageFormat" (change)="patch(n,'imageFormat',$any($event.target).value)">
                           <option value="PNG">PNG</option><option value="JPEG">JPG</option>
                         </select></div>
-                      <div class="field"><label>DPI</label><input type="number" min="36" max="600" [value]="n.imageDpi" (input)="patch(n,'imageDpi',+$any($event.target).value)" /></div>
+                      <div class="field"><label>{{ 'pages.pipeline.fieldDpi' | transloco }}</label><input type="number" min="36" max="600" [value]="n.imageDpi" (input)="patch(n,'imageDpi',+$any($event.target).value)" /></div>
                     </div>
                   }
                   @case ('TO_TEXT') {
-                    <div class="field"><label>Format</label>
+                    <div class="field"><label>{{ 'pages.pipeline.fieldFormat' | transloco }}</label>
                       <select [value]="n.textFormat" (change)="patch(n,'textFormat',$any($event.target).value)">
                         <option value="TXT">TXT</option>
                       </select></div>
@@ -216,9 +236,9 @@ const SOURCE_ID = 'source';
             }
 
             <div class="palette">
-              <span class="field-label">Add node:</span>
+              <span class="field-label">{{ 'pages.pipeline.addNode' | transloco }}</span>
               @for (k of kinds(); track k.name) {
-                <button type="button" class="btn" (click)="addNode(k.name)">+ {{ k.label }}</button>
+                <button type="button" class="btn" (click)="addNode(k.name)">+ {{ nodeLabel(k.name) }}</button>
               }
             </div>
           </div>
@@ -228,10 +248,10 @@ const SOURCE_ID = 'source';
         <aside class="col side">
           <div class="card">
             <div class="btn-row">
-              <button type="button" class="btn" [disabled]="busy()" (click)="validate()">Validate</button>
-              <button type="button" class="btn btn-primary" [disabled]="!canRun() || busy()" (click)="run()">Run pipeline</button>
+              <button type="button" class="btn" [disabled]="busy()" (click)="validate()">{{ 'pages.pipeline.validate' | transloco }}</button>
+              <button type="button" class="btn btn-primary" [disabled]="!canRun() || busy()" (click)="run()">{{ 'pages.pipeline.run' | transloco }}</button>
             </div>
-            @if (busy()) { <app-spinner label="Running…" /> }
+            @if (busy()) { <app-spinner [label]="'pages.pipeline.running' | transloco" /> }
 
             @if (validationErrors() !== null) {
               @if (validationErrors()!.length) {
@@ -241,23 +261,23 @@ const SOURCE_ID = 'source';
                   }
                 </ul>
               } @else {
-                <p class="ok-note">✓ Pipeline is valid.</p>
+                <p class="ok-note">{{ 'pages.pipeline.valid' | transloco }}</p>
               }
             }
             @if (error()) { <p class="verr-line">{{ error()!.message }}</p> }
             @if (result()) {
               <div class="done-box">
                 <p class="filename">{{ result()!.filename }}</p>
-                <button type="button" class="btn btn-primary" (click)="download()">Download ZIP</button>
+                <button type="button" class="btn btn-primary" (click)="download()">{{ 'common.downloadZip' | transloco }}</button>
               </div>
             }
           </div>
 
           <div class="card">
             <div class="card-h-row">
-              <h2 class="card-h">Pipeline JSON</h2>
+              <h2 class="card-h">{{ 'pages.pipeline.jsonTitle' | transloco }}</h2>
               <button type="button" class="btn btn-ghost" (click)="showJson.set(!showJson())">
-                {{ showJson() ? 'Hide' : 'Show' }}
+                {{ (showJson() ? 'common.hide' : 'common.show') | transloco }}
               </button>
             </div>
             @if (showJson()) {
@@ -399,6 +419,7 @@ const SOURCE_ID = 'source';
   ],
 })
 export class PipelinePage implements OnInit {
+  private readonly transloco = inject(TranslocoService);
   protected readonly files = signal<File[]>([]);
   protected readonly nodes = signal<BuilderNode[]>([]);
   protected readonly kinds = signal<NodeKindInfo[]>(FALLBACK_KINDS);
@@ -432,11 +453,18 @@ export class PipelinePage implements OnInit {
     return this.kinds().find((k) => k.name === kind)?.label ?? kind;
   }
 
+  /** Translated display label for a node kind (falls back to catalog/name). */
+  nodeLabel(kind: NodeKindName): string {
+    const opId = KIND_TO_OP[kind];
+    if (opId) return this.transloco.translate(`op.${opId}.label`);
+    return this.labelFor(kind);
+  }
+
   /** Nodes that may feed `n`: the source plus every other node (backend detects cycles). */
   upstreamOptions(n: BuilderNode): { id: string; label: string }[] {
-    const opts = [{ id: SOURCE_ID, label: 'SOURCE (files)' }];
+    const opts = [{ id: SOURCE_ID, label: this.transloco.translate('pages.pipeline.sourceOption') }];
     for (const other of this.nodes()) {
-      if (other.id !== n.id) opts.push({ id: other.id, label: `${other.id} · ${this.labelFor(other.kind)}` });
+      if (other.id !== n.id) opts.push({ id: other.id, label: `${other.id} · ${this.nodeLabel(other.kind)}` });
     }
     return opts;
   }

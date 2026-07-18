@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -11,43 +12,57 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-rotate-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
-      <app-page-header title="Rotate" description="Rotate pages 90°, 180° or 270°." />
+      <app-page-header
+        [title]="'pages.rotate.title' | transloco"
+        [description]="'pages.rotate.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="true"
         accept=".pdf"
-        hint="One or more PDFs (several files → ZIP)."
+        [hint]="'pages.rotate.hint' | transloco"
         (filesChange)="files.set($event)"
       />
 
       <div class="card form-grid">
         <div class="field">
-          <span class="field-label">Angle</span>
-          <div class="seg" role="group" aria-label="Rotation angle">
+          <span class="field-label">{{ 'pages.rotate.angle' | transloco }}</span>
+          <div class="seg" role="group" [attr.aria-label]="'pages.rotate.angleAria' | transloco">
             @for (a of angles; track a) {
               <button type="button" [class.active]="angle() === a" (click)="angle.set(a)">{{ a }}°</button>
             }
           </div>
         </div>
         <div class="field">
-          <label for="rt-pages">Pages</label>
-          <input id="rt-pages" type="text" [formControl]="pages" placeholder="e.g. 1,3,5-8 (blank = all)" />
-          <span class="help">Blank = every page.</span>
+          <label for="rt-pages">{{ 'pages.rotate.pages' | transloco }}</label>
+          <input
+            id="rt-pages"
+            type="text"
+            [formControl]="pages"
+            [placeholder]="'pages.rotate.pagesPlaceholder' | transloco"
+          />
+          <span class="help">{{ 'pages.rotate.pagesHelp' | transloco }}</span>
         </div>
       </div>
 
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
-          Rotate {{ files().length }} file{{ files().length === 1 ? '' : 's' }}
+          {{ 'pages.rotate.submit' | transloco: { count: files().length } }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Rotating…"
+        [loadingLabel]="'pages.rotate.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

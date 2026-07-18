@@ -1,6 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -14,33 +15,48 @@ type Mode = 'text' | 'image';
 @Component({
   selector: 'app-watermark-page',
   standalone: true,
-  imports: [DecimalPipe, ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    DecimalPipe,
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
-      <app-page-header title="Watermark" description="Stamp text or an image over every page." />
+      <app-page-header
+        [title]="'pages.watermark.title' | transloco"
+        [description]="'pages.watermark.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="true"
         accept=".pdf"
-        hint="One or more PDFs to stamp (several files → ZIP)."
+        [hint]="'pages.watermark.hint' | transloco"
         (filesChange)="files.set($event)"
       />
 
       <div class="card">
-        <div class="seg" role="group" aria-label="Watermark type" style="margin-bottom:1rem">
-          <button type="button" [class.active]="mode() === 'text'" (click)="mode.set('text')">Text</button>
-          <button type="button" [class.active]="mode() === 'image'" (click)="mode.set('image')">Image</button>
+        <div class="seg" role="group" [attr.aria-label]="'pages.watermark.typeAria' | transloco" style="margin-bottom:1rem">
+          <button type="button" [class.active]="mode() === 'text'" (click)="mode.set('text')">{{ 'pages.watermark.typeText' | transloco }}</button>
+          <button type="button" [class.active]="mode() === 'image'" (click)="mode.set('image')">{{ 'pages.watermark.typeImage' | transloco }}</button>
         </div>
 
         <div class="form-grid">
           @if (mode() === 'text') {
             <div class="field full">
-              <label for="wm-text">Watermark text</label>
-              <input id="wm-text" type="text" [formControl]="text" placeholder="e.g. CONFIDENTIAL" />
+              <label for="wm-text">{{ 'pages.watermark.text' | transloco }}</label>
+              <input
+                id="wm-text"
+                type="text"
+                [formControl]="text"
+                [placeholder]="'pages.watermark.textPlaceholder' | transloco"
+              />
             </div>
           } @else {
             <div class="field full">
-              <label for="wm-image">Watermark image</label>
+              <label for="wm-image">{{ 'pages.watermark.image' | transloco }}</label>
               <input id="wm-image" type="file" accept="image/*" (change)="onImage($event)" />
               @if (image()) {
                 <span class="help">{{ image()!.name }}</span>
@@ -49,7 +65,7 @@ type Mode = 'text' | 'image';
           }
 
           <div class="field">
-            <label for="wm-opacity">Opacity <span class="hint-note">{{ opacity() | number: '1.2-2' }}</span></label>
+            <label for="wm-opacity">{{ 'pages.watermark.opacity' | transloco }} <span class="hint-note">{{ opacity() | number: '1.2-2' }}</span></label>
             <div class="range-row">
               <input id="wm-opacity" type="range" min="0.05" max="1" step="0.05"
                      [value]="opacity()" (input)="opacity.set(+$any($event.target).value)" />
@@ -57,7 +73,7 @@ type Mode = 'text' | 'image';
             </div>
           </div>
           <div class="field">
-            <label for="wm-rotation">Rotation <span class="hint-note">{{ rotation() }}°</span></label>
+            <label for="wm-rotation">{{ 'pages.watermark.rotation' | transloco }} <span class="hint-note">{{ rotation() }}°</span></label>
             <div class="range-row">
               <input id="wm-rotation" type="range" min="0" max="360" step="5"
                      [value]="rotation()" (input)="rotation.set(+$any($event.target).value)" />
@@ -65,7 +81,7 @@ type Mode = 'text' | 'image';
             </div>
           </div>
           <div class="field">
-            <label for="wm-scale">Scale <span class="hint-note">{{ scale() | number: '1.2-2' }}</span></label>
+            <label for="wm-scale">{{ 'pages.watermark.scale' | transloco }} <span class="hint-note">{{ scale() | number: '1.2-2' }}</span></label>
             <div class="range-row">
               <input id="wm-scale" type="range" min="0.1" max="1" step="0.05"
                      [value]="scale()" (input)="scale.set(+$any($event.target).value)" />
@@ -77,16 +93,16 @@ type Mode = 'text' | 'image';
 
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!canSubmit() || state.loading()" (click)="submit()">
-          Apply watermark
+          {{ 'pages.watermark.submit' | transloco }}
         </button>
         @if (files().length && !hasContent()) {
-          <span class="hint-note">{{ mode() === 'text' ? 'Enter watermark text.' : 'Choose an image.' }}</span>
+          <span class="hint-note">{{ (mode() === 'text' ? 'pages.watermark.needText' : 'pages.watermark.needImage') | transloco }}</span>
         }
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Stamping…"
+        [loadingLabel]="'pages.watermark.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

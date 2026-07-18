@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { ApiError } from '../../core/api.models';
@@ -15,6 +16,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    TranslocoModule,
     FileDropZoneComponent,
     PageHeaderComponent,
     ResultPanelComponent,
@@ -22,21 +24,24 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
   ],
   template: `
     <section class="op-page">
-      <app-page-header title="Metadata" description="View, edit or strip document info." />
+      <app-page-header
+        [title]="'pages.metadata.title' | transloco"
+        [description]="'pages.metadata.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="false"
         accept=".pdf"
-        hint="One PDF."
+        [hint]="'pages.metadata.hint' | transloco"
         (filesChange)="onFile($event.length ? $event[0] : null)"
       />
 
       <div class="btn-row">
         <button type="button" class="btn" [disabled]="!file() || reading()" (click)="readCurrent()">
-          Read current
+          {{ 'pages.metadata.readCurrent' | transloco }}
         </button>
         @if (reading()) {
-          <app-spinner label="Reading…" />
+          <app-spinner [label]="'pages.metadata.reading' | transloco" />
         }
         @if (readError()) {
           <span class="err">{{ readError()!.message }}</span>
@@ -45,38 +50,38 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
       <form class="card form-grid" [formGroup]="form">
         <div class="field">
-          <label for="md-title">Title</label>
+          <label for="md-title">{{ 'pages.metadata.titleField' | transloco }}</label>
           <input id="md-title" type="text" formControlName="title" [attr.disabled]="strip() ? '' : null" />
         </div>
         <div class="field">
-          <label for="md-author">Author</label>
+          <label for="md-author">{{ 'pages.metadata.author' | transloco }}</label>
           <input id="md-author" type="text" formControlName="author" [attr.disabled]="strip() ? '' : null" />
         </div>
         <div class="field">
-          <label for="md-subject">Subject</label>
+          <label for="md-subject">{{ 'pages.metadata.subject' | transloco }}</label>
           <input id="md-subject" type="text" formControlName="subject" [attr.disabled]="strip() ? '' : null" />
         </div>
         <div class="field">
-          <label for="md-keywords">Keywords</label>
+          <label for="md-keywords">{{ 'pages.metadata.keywords' | transloco }}</label>
           <input id="md-keywords" type="text" formControlName="keywords" [attr.disabled]="strip() ? '' : null" />
         </div>
         <div class="field full">
           <label class="check">
             <input type="checkbox" [checked]="strip()" (change)="toggleStrip($event)" />
-            Strip all metadata (ignores the fields above)
+            {{ 'pages.metadata.strip' | transloco }}
           </label>
         </div>
       </form>
 
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!file() || state.loading()" (click)="submit()">
-          {{ strip() ? 'Strip metadata' : 'Apply metadata' }}
+          {{ (strip() ? 'pages.metadata.submitStrip' : 'pages.metadata.submitApply') | transloco }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Updating…"
+        [loadingLabel]="'pages.metadata.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

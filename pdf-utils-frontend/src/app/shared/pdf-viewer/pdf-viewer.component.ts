@@ -10,6 +10,8 @@ import {
   signal,
 } from '@angular/core';
 
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+
 import { loadPdf, PDFDocumentProxy } from '../../core/pdfjs';
 import { SpinnerComponent } from '../spinner/spinner.component';
 
@@ -39,10 +41,10 @@ interface PageMeta {
 @Component({
   selector: 'app-pdf-viewer',
   standalone: true,
-  imports: [SpinnerComponent],
+  imports: [SpinnerComponent, TranslocoModule],
   template: `
     @if (loading()) {
-      <div class="loading"><app-spinner label="Rendering preview…" /></div>
+      <div class="loading"><app-spinner [label]="'viewer.renderingPreview' | transloco" /></div>
     }
     @if (errorMsg()) {
       <p class="viewer-error" role="alert">{{ errorMsg() }}</p>
@@ -91,7 +93,7 @@ interface PageMeta {
             }
           </div>
           @if (showPageLabels) {
-            <span class="page-label">Page {{ p.pageNumber }}</span>
+            <span class="page-label">{{ 'viewer.pageCaption' | transloco: { n: p.pageNumber } }}</span>
           }
         </div>
       }
@@ -159,6 +161,7 @@ interface PageMeta {
 export class PdfViewerComponent implements OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly zone = inject(NgZone);
+  private readonly transloco = inject(TranslocoService);
 
   /** Display scale: PDF points → CSS pixels. */
   @Input() scale = 1.25;
@@ -266,7 +269,8 @@ export class PdfViewerComponent implements OnDestroy {
       if (token !== this.renderToken) return;
       await this.paint(doc, first, last, token);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Could not render this PDF.';
+      const msg =
+        e instanceof Error ? e.message : this.transloco.translate('viewer.renderError');
       this.errorMsg.set(msg);
       this.renderError.emit(msg);
     } finally {

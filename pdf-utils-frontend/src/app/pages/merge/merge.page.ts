@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -12,19 +13,25 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-merge-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
       <app-page-header
-        title="Merge"
-        description="Combine several PDFs, images or office documents into one PDF."
+        [title]="'pages.merge.title' | transloco"
+        [description]="'pages.merge.description' | transloco"
       />
 
       <app-file-drop-zone
         [multiple]="true"
         [showList]="false"
         accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
-        hint="PDFs, images and office docs. Drag the list below to set the order."
+        [hint]="'pages.merge.hint' | transloco"
         (filesChange)="onFiles($event)"
       />
 
@@ -42,7 +49,12 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
               <span class="idx">{{ i + 1 }}</span>
               <span class="name" [title]="f.name">{{ f.name }}</span>
               <span class="size">{{ formatBytes(f.size) }}</span>
-              <button type="button" class="icon-btn" (click)="remove(i)" aria-label="Remove">✕</button>
+              <button
+                type="button"
+                class="icon-btn"
+                (click)="remove(i)"
+                [attr.aria-label]="'common.remove' | transloco"
+              >✕</button>
             </li>
           }
         </ul>
@@ -50,9 +62,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 
       <div class="card form-grid">
         <div class="field full">
-          <label for="mg-name">Output name (optional)</label>
-          <input id="mg-name" type="text" [formControl]="outputName" placeholder="merged.pdf" />
-          <span class="help">Defaults to the first file's name with a “_merged” suffix.</span>
+          <label for="mg-name">{{ 'pages.merge.outputName' | transloco }}</label>
+          <input
+            id="mg-name"
+            type="text"
+            [formControl]="outputName"
+            [placeholder]="'pages.merge.outputNamePlaceholder' | transloco"
+          />
+          <span class="help">{{ 'pages.merge.outputNameHelp' | transloco }}</span>
         </div>
       </div>
 
@@ -63,13 +80,13 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="files().length < 1 || state.loading()"
           (click)="submit()"
         >
-          Merge {{ files().length }} file{{ files().length === 1 ? '' : 's' }}
+          {{ 'pages.merge.submit' | transloco: { count: files().length } }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Merging…"
+        [loadingLabel]="'pages.merge.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

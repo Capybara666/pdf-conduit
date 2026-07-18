@@ -1,0 +1,495 @@
+{
+  "common": {
+    "download": "ダウンロード",
+    "downloadZip": "ZIP をダウンロード",
+    "back": "戻る",
+    "next": "次へ",
+    "startOver": "最初からやり直す",
+    "export": "書き出し",
+    "reExport": "再書き出し",
+    "remove": "削除",
+    "removeFile": "{{name}} を削除",
+    "clearAll": "すべてクリア",
+    "show": "表示",
+    "hide": "非表示",
+    "done": "完了",
+    "loading": "読み込み中",
+    "processing": "処理中…"
+  },
+  "dropzone": {
+    "defaultLabel": "ここにファイルをドロップ、またはクリックして選択"
+  },
+  "nav": {
+    "aria": "操作",
+    "home": "ホーム",
+    "homeTitle": "PDF Conduit のホームページに戻る",
+    "groups": {
+      "organise": "整理",
+      "optimise": "最適化",
+      "convert": "変換",
+      "secure": "保護",
+      "edit": "編集",
+      "advanced": "高度な設定"
+    }
+  },
+  "op": {
+    "merge": {
+      "label": "結合",
+      "description": "複数の PDF（または画像・オフィス文書）を 1 つにまとめます。"
+    },
+    "extract": {
+      "label": "抽出",
+      "description": "PDF から選択したページを取り出します。"
+    },
+    "rotate": {
+      "label": "回転",
+      "description": "ページを 90°、180°、270° 回転します。"
+    },
+    "arrange": {
+      "label": "並べ替え",
+      "description": "ページの順序変更・反転・複製を行います。"
+    },
+    "compress": {
+      "label": "圧縮",
+      "description": "PDF を目標サイズに向けて縮小します。"
+    },
+    "to-pdf": {
+      "label": "PDF に変換",
+      "description": "画像やオフィス文書を PDF に変換します。"
+    },
+    "to-images": {
+      "label": "画像に変換",
+      "description": "PDF のページを PNG または JPG に書き出します。"
+    },
+    "to-text": {
+      "label": "テキストに変換",
+      "description": "PDF のテキスト内容を抽出します。"
+    },
+    "protect": {
+      "label": "保護",
+      "description": "PDF にパスワード暗号化を追加します。"
+    },
+    "unlock": {
+      "label": "ロック解除",
+      "description": "既知のパスワードを PDF から削除します。"
+    },
+    "redact": {
+      "label": "墨消し",
+      "description": "ページの領域を完全に黒く塗りつぶします。"
+    },
+    "metadata": {
+      "label": "メタデータ",
+      "description": "文書情報の表示・編集・削除を行います。"
+    },
+    "watermark": {
+      "label": "透かし",
+      "description": "すべてのページにテキストや画像を重ねて押印します。"
+    },
+    "wizard": {
+      "label": "ウィザード",
+      "description": "手順に沿った作成と書き出しをガイドします。"
+    },
+    "pipeline": {
+      "label": "パイプライン",
+      "description": "操作をノードグラフとして連結します。"
+    }
+  },
+  "header": {
+    "brandHome": "PDF Conduit ホーム",
+    "quotaFreeLeft": "本日の無料残り回数",
+    "quotaTitleSpent": "本日の無料上限に達しました — Pro プランをご覧ください",
+    "quotaTitleLeft": "本日残っている無料操作回数 — Pro プランをご覧ください",
+    "serverOnline": "サーバーはオンラインです",
+    "serverOffline": "サーバーはオフラインです",
+    "serverChecking": "サーバーを確認中…",
+    "themeToLight": "ライトテーマに切り替え",
+    "themeToDark": "ダークテーマに切り替え",
+    "languageLabel": "言語"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "無料 · ブラウザ上で完結",
+      "title": "必要な PDF ツールをすべて、1 つの洗練されたワークスペースに。",
+      "lede": "PDF の結合・圧縮・変換・保護・墨消しを数秒で。すべてメモリ上で処理され、当社のサーバーに保存されることはありません。アカウント不要。インストール不要。",
+      "ctaStart": "無料で始める",
+      "ctaExplore": "ツールを見る",
+      "note": "ファイルはメモリから外に出ません · 登録不要 · どんなデバイスでも動作"
+    },
+    "trust": {
+      "aria": "PDF Conduit が選ばれる理由",
+      "memoryTitle": "メモリ上で処理",
+      "memoryDesc": "ファイルは RAM 上で処理され、ディスクに書き込まれることも保存されることもありません。",
+      "accountTitle": "アカウント不要",
+      "accountDesc": "そのまますぐに使えます — メールもパスワードもトラッキングも一切なし。",
+      "browserTitle": "ブラウザで開くだけ",
+      "browserDesc": "インストール不要。Windows、macOS、Linux、モバイルで動作します。"
+    },
+    "tools": {
+      "title": "ツールを選んで始めよう",
+      "subtitle": "15 の専門ツールが、それぞれ 1 つの仕事をしっかりこなします。"
+    },
+    "pro": {
+      "soon": "近日公開",
+      "title": "PDF Conduit Pro でさらにパワフルに",
+      "subtitle": "無料ツールは永遠に無料のまま。Pro は重い作業のための余裕を追加します。",
+      "freeName": "無料",
+      "freePrice": "$0",
+      "freePer": "／ 永久",
+      "freeFeat1": "15 種類すべての PDF ツール",
+      "freeFeat2": "メモリ上で処理、何も保存されません",
+      "freeFeat3": "1 日あたりの操作回数制限",
+      "freeFeat4": "標準のファイルサイズ上限",
+      "freeFeat5": "アカウント不要",
+      "freeCta": "今すぐ使う",
+      "proName": "Pro",
+      "proPrice": "TBA",
+      "proPer": "／ 月",
+      "proFeat1": "<b>大きなファイル</b> — 無料版のサイズ上限を解除",
+      "proFeat2": "大量バッチ向けの<b>より高い 1 日あたりの上限</b>",
+      "proFeat3": "ワークフローを自動化する<b>バッチ &amp; API アクセス</b>",
+      "proFeat4": "混雑時でも<b>優先処理</b>",
+      "proFeat5": "もちろん無料版の機能もすべて含みます",
+      "proCta": "通知を受け取る",
+      "proCtaDone": "リストに登録済み ✓",
+      "proNote": "まだ料金は発生しません — Pro の提供開始時にのみメールでお知らせします。",
+      "notifyTitle": "リストに登録されました",
+      "notifyMessage": "PDF Conduit Pro の準備が整い次第、すぐにお知らせします。"
+    },
+    "footer": {
+      "aria": "フッター",
+      "tools": "ツール",
+      "privacy": "プライバシー",
+      "github": "GitHub",
+      "copy": "ファイルはメモリ上で処理され、保存されることはありません。無料でご利用いただけます。"
+    }
+  },
+  "privacy": {
+    "title": "プライバシー",
+    "description": "PDF Conduit がファイルをどう扱うか — 一言で言えば、保持しません。",
+    "memoryTitle": "ファイルはメモリ上にとどまります",
+    "memoryBody": "すべての操作は、サーバー上で完全にメモリ（RAM）内で実行されます。アップロードされたファイルは、1 回のリクエスト内でデコード・処理され、ダウンロードとしてストリーミングで返されます。ファイルをディスクに書き込むことも、その後保存することもありません。レスポンスが送信されると、データは破棄されます。",
+    "exceptionTitle": "唯一の一時的な例外",
+    "exceptionBody": "オフィス文書やテキスト文書（例：.docx、.xlsx、.pptx）の変換には、ヘッドレスの LibreOffice が必要です。その工程に限り、ファイルは隔離された一時フォルダーに書き込まれ、変換完了後ただちに削除されます。通常の PDF や画像がディスクに触れることは一切ありません。",
+    "accountTitle": "アカウントもトラッキングも不要",
+    "accountBody": "無料ツールを使うのに、登録・ログイン・メールアドレスの提供は必要ありません。ファイルを処理するために個人情報を求めることはありません。",
+    "limitsTitle": "無料枠の制限",
+    "limitsBody1": "無料サービスを誰もが使えるよう維持するため、リクエストには 1 日あたりの操作枠、ファイルごとのサイズ上限、基本的なレート制限が設けられています。制限に達した場合は、アプリがはっきりとお知らせします。より高い上限、より大きなファイル、バッチ／API アクセスは、将来の有料プランで提供予定です。詳しくは",
+    "limitsLink": "Pro プラン",
+    "limitsBody2": "のご案内をホームページでご覧ください。",
+    "questionsTitle": "お問い合わせ",
+    "questionsBody": "PDF Conduit は現状のまま提供されます。本ページは現在の動作を説明したもので、製品の進化に伴い更新されることがあります。",
+    "backHome": "ホームに戻る"
+  },
+  "errors": {
+    "generic": {
+      "title": "問題が発生しました",
+      "detail": "操作を完了できませんでした。"
+    },
+    "quota_exceeded": {
+      "title": "本日の無料操作を使い切りました",
+      "detail": "現在、1 日あたりの無料上限に達しています。",
+      "hint": "より高い 1 日あたりの上限は PDF Conduit Pro で提供予定です。明日にリセットされます — または下記から早期アクセスを取得できます。"
+    },
+    "rate_limited": {
+      "title": "少しペースを落としてください",
+      "detail": "短時間にリクエストが多すぎます。",
+      "hintRetry": "{seconds, plural, other {約 # 秒後にもう一度お試しください。}}",
+      "hintWait": "数秒お待ちいただいてから、もう一度お試しください。"
+    },
+    "server_busy": {
+      "title": "現在、混雑しています",
+      "detail": "サーバーが多くのリクエストを処理しています。",
+      "hint": "しばらくしてからもう一度お試しください。優先処理は Pro で提供予定です。"
+    },
+    "processing_timeout": {
+      "title": "時間がかかりすぎました",
+      "detail": "操作が完了する前にタイムアウトしました。",
+      "hint": "より小さく、よりシンプルなファイルを試すか、作業をステップに分けてください。"
+    },
+    "too_large": {
+      "title": "このファイルは無料版のサイズ上限を超えています",
+      "detail": "アップロードが無料枠で許可されるサイズを超えています。",
+      "hint": "より大きなアップロードは PDF Conduit Pro で提供予定です。"
+    },
+    "office_disabled": {
+      "title": "オフィス変換は利用できません",
+      "detail": "このサーバーではオフィス文書の変換が有効になっていません。",
+      "hint": "PDF や画像であれば引き続き作業できます。"
+    },
+    "operation_failed": {
+      "title": "このファイルを処理できませんでした",
+      "detail": "この入力に対する操作が失敗しました。",
+      "hint": "ファイルが有効で暗号化されていない PDF であることを確認し、もう一度お試しください。"
+    },
+    "bad_request": {
+      "title": "入力内容をご確認ください",
+      "detail": "リクエストが無効でした。"
+    },
+    "network_error": {
+      "title": "サーバーに接続できません",
+      "detail": "リクエストが PDF Conduit に届きませんでした。",
+      "hint": "接続を確認して、もう一度お試しください。"
+    }
+  },
+  "result": {
+    "done": "完了",
+    "original": "元のサイズ",
+    "result": "結果",
+    "saved": "削減",
+    "target": "目標",
+    "targetReached": "達成",
+    "targetNotReached": "未達成",
+    "batchFailures": "一部の入力が失敗しました：{{count}}",
+    "seeProPlans": "Pro プランを見る →",
+    "seeProPlansShort": "Pro プランを見る",
+    "httpStatus": "· HTTP {{status}}"
+  },
+  "viewer": {
+    "renderingPreview": "プレビューを描画中…",
+    "renderError": "この PDF を描画できませんでした。",
+    "pageCaption": "ページ {{n}}"
+  },
+  "toast": {
+    "dismiss": "通知を閉じる"
+  },
+  "pages": {
+    "merge": {
+      "title": "結合",
+      "description": "複数の PDF、画像、オフィス文書を 1 つの PDF にまとめます。",
+      "hint": "PDF、画像、オフィス文書に対応。下のリストをドラッグして順序を設定します。",
+      "outputName": "出力名（任意）",
+      "outputNamePlaceholder": "merged.pdf",
+      "outputNameHelp": "既定では最初のファイル名に「_merged」を付けたものになります。",
+      "removeAria": "削除",
+      "submit": "{count, plural, other {# 個のファイルを結合}}",
+      "loading": "結合中…"
+    },
+    "extract": {
+      "title": "抽出",
+      "description": "PDF から選択したページを取り出します。",
+      "hint": "PDF 1 つ。",
+      "pages": "ページ",
+      "pagesPlaceholder": "例：1,3,5-8",
+      "pagesHelp": "空欄 = すべてのページ。書式：",
+      "output": "出力",
+      "separate": "1 ページごとに 1 ファイルに分割（ZIP）",
+      "submit": "抽出",
+      "loading": "抽出中…"
+    },
+    "compress": {
+      "title": "圧縮",
+      "description": "PDF を目標サイズに向けて縮小します。",
+      "hint": "1 つ以上の PDF（複数ファイル → ZIP）。",
+      "target": "目標サイズ",
+      "targetPlaceholder": "例：5MB、800KB",
+      "targetHelp1": "対応形式：",
+      "targetHelp2": "またはバイト数の直接指定。",
+      "targetError": "次のようなサイズを入力してください：",
+      "submit": "{count, plural, other {# 個のファイルを圧縮}}",
+      "loading": "圧縮中…"
+    },
+    "rotate": {
+      "title": "回転",
+      "description": "ページを 90°、180°、270° 回転します。",
+      "hint": "1 つ以上の PDF（複数ファイル → ZIP）。",
+      "angle": "角度",
+      "angleAria": "回転角度",
+      "pages": "ページ",
+      "pagesPlaceholder": "例：1,3,5-8（空欄 = すべて）",
+      "pagesHelp": "空欄 = すべてのページ。",
+      "submit": "{count, plural, other {# 個のファイルを回転}}",
+      "loading": "回転中…"
+    },
+    "arrange": {
+      "title": "並べ替え",
+      "description": "ページの順序変更・反転・複製を行います。",
+      "hint": "PDF 1 つ。",
+      "order": "ページ順序",
+      "orderPlaceholder": "例：3,1,2",
+      "orderHelp1": "順序変更",
+      "orderHelp2": "反転",
+      "orderHelp3": "繰り返しで複製",
+      "submit": "並べ替え",
+      "loading": "並べ替え中…"
+    },
+    "toPdf": {
+      "title": "PDF に変換",
+      "description": "画像やオフィス文書を PDF に変換します。",
+      "hint": "画像とオフィス文書に対応。各入力がそれぞれ 1 つの PDF になります（複数 → ZIP）。",
+      "pageSize": "ページサイズ",
+      "sizeFit": "内容に合わせる",
+      "sizeLetter": "Letter",
+      "sizeHelp": "画像入力はこのページサイズに配置されます（オフィス文書は独自のサイズを保持します）。",
+      "submit": "{count, plural, other {# 個のファイルを変換}}",
+      "loading": "変換中…"
+    },
+    "toImages": {
+      "title": "画像に変換",
+      "description": "PDF のページを PNG または JPG に書き出します。",
+      "hint": "PDF 1 つ（複数ページ → ZIP）。",
+      "format": "形式",
+      "dpi": "DPI",
+      "dpiHelp": "高いほど鮮明で大きくなります（36〜600）。",
+      "pages": "ページ",
+      "pagesPlaceholder": "例：1-3（空欄 = すべて）",
+      "submit": "画像を書き出す",
+      "loading": "描画中…"
+    },
+    "toText": {
+      "title": "テキストに変換",
+      "description": "PDF のテキスト内容を抽出します。",
+      "hint": "PDF 1 つ。",
+      "format": "形式",
+      "formatTxt": "プレーンテキスト（.txt）",
+      "pages": "ページ",
+      "pagesPlaceholder": "例：1-3（空欄 = すべて）",
+      "submit": "テキストを抽出",
+      "loading": "テキストを抽出中…"
+    },
+    "protect": {
+      "title": "保護",
+      "description": "PDF にパスワード暗号化を追加します。",
+      "hint": "1 つ以上の PDF（複数ファイル → ZIP）。",
+      "userPassword": "ユーザーパスワード",
+      "userPasswordHelp": "文書を開くために必要です。",
+      "userPasswordError": "ユーザーパスワードは必須です。",
+      "ownerPassword": "オーナーパスワード（任意）",
+      "ownerPasswordHelp": "権限を制御します。既定ではユーザーパスワードと同じになります。",
+      "submit": "{count, plural, other {# 個のファイルを保護}}",
+      "loading": "暗号化中…"
+    },
+    "unlock": {
+      "title": "ロック解除",
+      "description": "既知のパスワードを PDF から削除します。",
+      "hint": "1 つ以上の保護された PDF（複数ファイル → ZIP）。",
+      "password": "パスワード",
+      "passwordHelp": "PDF を開くのに現在使用しているパスワード。",
+      "passwordError": "パスワードは必須です。",
+      "submit": "{count, plural, other {# 個のファイルをロック解除}}",
+      "loading": "ロック解除中…"
+    },
+    "redact": {
+      "title": "墨消し",
+      "description": "内容の上にボックスを描いて、完全に黒く塗りつぶします。",
+      "hint": "PDF 1 つ。次に墨消しする領域の上に矩形をドラッグします。",
+      "dragHint": "ページ上でドラッグして領域を指定します。",
+      "chooseAnother": "別の PDF を選択",
+      "regions": "領域（{{count}}）",
+      "regionsEmpty": "まだ領域がありません。削除したい内容の上に矩形をドラッグしてください。",
+      "removeRegion": "領域を削除",
+      "submit": "墨消ししてダウンロード",
+      "loading": "墨消し中…"
+    },
+    "metadata": {
+      "title": "メタデータ",
+      "description": "文書情報の表示・編集・削除を行います。",
+      "hint": "PDF 1 つ。",
+      "readCurrent": "現在の値を読み込む",
+      "reading": "読み込み中…",
+      "titleField": "タイトル",
+      "author": "作成者",
+      "subject": "サブタイトル",
+      "keywords": "キーワード",
+      "strip": "すべてのメタデータを削除（上記のフィールドは無視されます）",
+      "submitStrip": "メタデータを削除",
+      "submitApply": "メタデータを適用",
+      "loading": "更新中…"
+    },
+    "watermark": {
+      "title": "透かし",
+      "description": "すべてのページにテキストや画像を重ねて押印します。",
+      "hint": "押印する 1 つ以上の PDF（複数ファイル → ZIP）。",
+      "typeAria": "透かしの種類",
+      "typeText": "テキスト",
+      "typeImage": "画像",
+      "text": "透かしテキスト",
+      "textPlaceholder": "例：CONFIDENTIAL",
+      "image": "透かし画像",
+      "opacity": "不透明度",
+      "rotation": "回転",
+      "scale": "拡大縮小",
+      "submit": "透かしを適用",
+      "needText": "透かしテキストを入力してください。",
+      "needImage": "画像を選択してください。",
+      "loading": "押印中…"
+    },
+    "wizard": {
+      "title": "ウィザード",
+      "description": "手順に沿った作成と書き出しをガイドします。",
+      "step1": "選択",
+      "step2": "並べ替え",
+      "step3": "ページ設定",
+      "step4": "圧縮",
+      "step5": "書き出し",
+      "selectTitle": "ファイルを選択",
+      "selectHint": "PDF、画像、オフィス文書に対応。",
+      "arrangeTitle": "並べ替えとページ範囲",
+      "arrangeHint": "ドラッグして順序を変更します。ページ範囲は PDF 入力にのみ適用されます（空欄 = すべて）。",
+      "rangePlaceholder": "ページ 例：1-3",
+      "typeImage": "画像",
+      "typeDocument": "文書",
+      "removeAria": "削除",
+      "pageSettingsTitle": "ページ設定",
+      "imagePageSize": "画像入力のページサイズ",
+      "sizeFit": "画像に合わせる",
+      "sizeLetter": "Letter",
+      "imagePageSizeHelp": "画像とオフィス文書は、結合前にこのサイズで PDF に変換されます。",
+      "compressionTitle": "圧縮",
+      "compressToggle": "書き出す PDF を目標サイズに向けて圧縮する",
+      "target": "目標サイズ",
+      "targetPlaceholder": "例：5MB",
+      "reviewTitle": "確認と書き出し",
+      "sumFiles": "ファイル",
+      "sumOrder": "順序",
+      "sumImageSize": "画像ページサイズ",
+      "sumCompress": "圧縮",
+      "compressNo": "なし",
+      "preparing": "準備中 {{current}}/{{total}}：{{name}}",
+      "merging": "結合中…",
+      "compressing": "圧縮中…"
+    },
+    "pipeline": {
+      "title": "パイプライン",
+      "description": "操作をノードグラフとして連結します。",
+      "sourceTitle": "ソースファイル",
+      "sourceHint": "これらは SOURCE ノードに供給され、下流のノードは名前で参照します。",
+      "nodes": "ノード",
+      "nodeCount": "{count, plural, other {# 個の操作ノード}}",
+      "sourceFiles": "ファイル（{{count}}）",
+      "sourceAddAbove": "上でソースファイルを追加してください。",
+      "removeNode": "ノードを削除",
+      "inputs": "入力",
+      "sourceOption": "SOURCE（ファイル）",
+      "fieldPages": "ページ",
+      "fieldMode": "モード",
+      "modeCombine": "結合",
+      "modeSeparate": "ファイルを分割",
+      "fieldAngle": "角度",
+      "fieldOrder": "順序",
+      "fieldTarget": "目標サイズ",
+      "fieldPageSize": "ページサイズ",
+      "sizeFit": "合わせる",
+      "fieldUserPassword": "ユーザーパスワード",
+      "fieldOwnerPassword": "オーナーパスワード",
+      "fieldPassword": "パスワード",
+      "fieldTitle": "タイトル",
+      "fieldAuthor": "作成者",
+      "fieldSubject": "サブタイトル",
+      "fieldKeywords": "キーワード",
+      "stripMetadata": "すべてのメタデータを削除",
+      "fieldText": "テキスト",
+      "fieldOpacity": "不透明度",
+      "fieldRotation": "回転",
+      "fieldScale": "拡大縮小",
+      "fieldFormat": "形式",
+      "fieldDpi": "DPI",
+      "pagesBlank": "空欄 = すべて",
+      "addNode": "ノードを追加：",
+      "validate": "検証",
+      "run": "パイプラインを実行",
+      "running": "実行中…",
+      "valid": "✓ パイプラインは有効です。",
+      "jsonTitle": "パイプライン JSON"
+    }
+  }
+}

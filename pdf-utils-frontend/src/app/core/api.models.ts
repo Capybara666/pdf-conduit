@@ -49,14 +49,34 @@ export interface MetadataDto {
 }
 
 /**
+ * Rate-limit / daily-quota snapshot parsed from response headers
+ * (`X-RateLimit-*`, `X-Quota-*`). Every field is optional — the backend may
+ * not send all of them on every response.
+ */
+export interface QuotaSnapshot {
+  /** Requests allowed in the current rate-limit window. */
+  rateLimit?: number;
+  /** Requests remaining in the current rate-limit window. */
+  rateRemaining?: number;
+  /** Free operations allowed per day. */
+  quotaLimit?: number;
+  /** Free operations remaining today. */
+  quotaRemaining?: number;
+  /** Epoch seconds at which the daily quota resets. */
+  quotaReset?: number;
+}
+
+/**
  * A typed error surfaced from the API. Mirrors the backend JSON body
- * `{ code, error }`; `status` is the HTTP status code.
+ * `{ code, error }`; `status` is the HTTP status code. `retryAfter` carries the
+ * `Retry-After` header (seconds) when the backend returns 429/503.
  */
 export class ApiError extends Error {
   constructor(
     public readonly code: string,
     message: string,
     public readonly status: number,
+    public readonly retryAfter?: number,
   ) {
     super(message);
     this.name = 'ApiError';

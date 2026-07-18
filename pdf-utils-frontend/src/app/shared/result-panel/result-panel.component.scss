@@ -45,6 +45,25 @@
   margin: 0 0 0.5rem;
 }
 
+.hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.pro-link {
+  display: inline-block;
+  margin: 0 0 0.6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .meta {
   margin: 0;
   font-size: 0.85rem;

@@ -1,0 +1,495 @@
+{
+  "common": {
+    "download": "Downloaden",
+    "downloadZip": "ZIP downloaden",
+    "back": "Terug",
+    "next": "Volgende",
+    "startOver": "Opnieuw beginnen",
+    "export": "Exporteren",
+    "reExport": "Opnieuw exporteren",
+    "remove": "Verwijderen",
+    "removeFile": "{{name}} verwijderen",
+    "clearAll": "Alles wissen",
+    "show": "Tonen",
+    "hide": "Verbergen",
+    "done": "Klaar",
+    "loading": "Laden",
+    "processing": "Bezig…"
+  },
+  "dropzone": {
+    "defaultLabel": "Sleep bestanden hierheen of klik om te bladeren"
+  },
+  "nav": {
+    "aria": "Bewerkingen",
+    "home": "Start",
+    "homeTitle": "Terug naar de startpagina van PDF Conduit",
+    "groups": {
+      "organise": "Ordenen",
+      "optimise": "Optimaliseren",
+      "convert": "Converteren",
+      "secure": "Beveiligen",
+      "edit": "Bewerken",
+      "advanced": "Geavanceerd"
+    }
+  },
+  "op": {
+    "merge": {
+      "label": "Samenvoegen",
+      "description": "Voeg meerdere PDF's (of afbeeldingen/officedocumenten) samen tot één."
+    },
+    "extract": {
+      "label": "Extraheren",
+      "description": "Haal geselecteerde pagina's uit een PDF."
+    },
+    "rotate": {
+      "label": "Draaien",
+      "description": "Draai pagina's 90°, 180° of 270°."
+    },
+    "arrange": {
+      "label": "Schikken",
+      "description": "Herschik, keer om of dupliceer pagina's."
+    },
+    "compress": {
+      "label": "Comprimeren",
+      "description": "Verklein een PDF naar een doelgrootte."
+    },
+    "to-pdf": {
+      "label": "Naar PDF",
+      "description": "Converteer afbeeldingen en officedocumenten naar PDF."
+    },
+    "to-images": {
+      "label": "Naar afbeeldingen",
+      "description": "Zet PDF-pagina's om naar PNG of JPG."
+    },
+    "to-text": {
+      "label": "Naar tekst",
+      "description": "Extraheer de tekstinhoud van een PDF."
+    },
+    "protect": {
+      "label": "Beveiligen",
+      "description": "Voeg wachtwoordversleuteling toe aan een PDF."
+    },
+    "unlock": {
+      "label": "Ontgrendelen",
+      "description": "Verwijder een bekend wachtwoord uit een PDF."
+    },
+    "redact": {
+      "label": "Redigeren",
+      "description": "Maak delen van een pagina permanent onleesbaar."
+    },
+    "metadata": {
+      "label": "Metadata",
+      "description": "Bekijk, bewerk of verwijder documentgegevens."
+    },
+    "watermark": {
+      "label": "Watermerk",
+      "description": "Plaats tekst of een afbeelding over elke pagina."
+    },
+    "wizard": {
+      "label": "Wizard",
+      "description": "Begeleide, stapsgewijze opbouw en export."
+    },
+    "pipeline": {
+      "label": "Pijplijn",
+      "description": "Koppel bewerkingen als een knooppuntgraaf."
+    }
+  },
+  "header": {
+    "brandHome": "PDF Conduit-startpagina",
+    "quotaFreeLeft": "vandaag nog gratis over",
+    "quotaTitleSpent": "Dagelijkse gratis limiet bereikt — bekijk Pro-abonnementen",
+    "quotaTitleLeft": "Gratis bewerkingen vandaag nog over — bekijk Pro-abonnementen",
+    "serverOnline": "Server online",
+    "serverOffline": "Server offline",
+    "serverChecking": "Server controleren…",
+    "themeToLight": "Overschakelen naar licht thema",
+    "themeToDark": "Overschakelen naar donker thema",
+    "languageLabel": "Taal"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Gratis · In je browser",
+      "title": "Elke PDF-tool die je nodig hebt, in één overzichtelijke werkruimte.",
+      "lede": "Voeg samen, comprimeer, converteer, beveilig en redigeer PDF's in seconden — volledig in het geheugen verwerkt en nooit opgeslagen op onze servers. Geen account. Geen installaties.",
+      "ctaStart": "Gratis beginnen",
+      "ctaExplore": "Verken de tools",
+      "note": "Bestanden verlaten het geheugen nooit · Geen registratie nodig · Werkt op elk apparaat"
+    },
+    "trust": {
+      "aria": "Waarom PDF Conduit",
+      "memoryTitle": "In het geheugen verwerkt",
+      "memoryDesc": "Je bestanden worden in het RAM verwerkt en nooit naar schijf geschreven of opgeslagen.",
+      "accountTitle": "Geen account nodig",
+      "accountDesc": "Meteen aan de slag — geen e-mail, geen wachtwoord, geen trackingmuur.",
+      "browserTitle": "Open in je browser",
+      "browserDesc": "Niets te installeren. Werkt op Windows, macOS, Linux en mobiel."
+    },
+    "tools": {
+      "title": "Kies een tool en ga aan de slag",
+      "subtitle": "Vijftien gerichte tools, elk perfect voor één taak."
+    },
+    "pro": {
+      "soon": "Binnenkort beschikbaar",
+      "title": "Meer kracht met PDF Conduit Pro",
+      "subtitle": "De gratis tools blijven voor altijd gratis. Pro biedt extra ruimte voor zwaar werk.",
+      "freeName": "Gratis",
+      "freePrice": "$0",
+      "freePer": "/ voor altijd",
+      "freeFeat1": "Alle vijftien PDF-tools",
+      "freeFeat2": "Verwerking in het geheugen, niets opgeslagen",
+      "freeFeat3": "Dagelijkse bewerkingslimiet",
+      "freeFeat4": "Standaard limiet voor bestandsgrootte",
+      "freeFeat5": "Geen account vereist",
+      "freeCta": "Nu gebruiken",
+      "proName": "Pro",
+      "proPrice": "TBA",
+      "proPer": "/ maand",
+      "proFeat1": "<b>Grotere bestanden</b> — verhoog de gratis groottelimiet",
+      "proFeat2": "<b>Hogere daglimieten</b> voor grote batches",
+      "proFeat3": "<b>Batch- &amp; API-toegang</b> om workflows te automatiseren",
+      "proFeat4": "<b>Prioriteitsverwerking</b> zelfs tijdens piekmomenten",
+      "proFeat5": "Uiteraard alles uit Gratis",
+      "proCta": "Houd me op de hoogte",
+      "proCtaDone": "Je staat op de lijst ✓",
+      "proNote": "Nog geen kosten — we e-mailen je pas wanneer Pro wordt gelanceerd.",
+      "notifyTitle": "Je staat op de lijst",
+      "notifyMessage": "We laten het je weten zodra PDF Conduit Pro klaar is."
+    },
+    "footer": {
+      "aria": "Voettekst",
+      "tools": "Tools",
+      "privacy": "Privacy",
+      "github": "GitHub",
+      "copy": "Bestanden worden in het geheugen verwerkt en nooit opgeslagen. Gratis te gebruiken."
+    }
+  },
+  "privacy": {
+    "title": "Privacy",
+    "description": "Hoe PDF Conduit met je bestanden omgaat — kort gezegd: het bewaart ze niet.",
+    "memoryTitle": "Je bestanden blijven in het geheugen",
+    "memoryBody": "Elke bewerking draait volledig in het geheugen (RAM) op de server. Je uploads worden gedecodeerd, verwerkt en binnen één verzoek als download teruggestuurd. We schrijven je bestanden niet naar schijf en bewaren ze daarna niet. Zodra de reactie is verzonden, worden de bytes weggegooid.",
+    "exceptionTitle": "De enige tijdelijke uitzondering",
+    "exceptionBody": "Het converteren van office- of tekstdocumenten (bijvoorbeeld .docx, .xlsx, .pptx) vereist een headless LibreOffice. Alleen voor die stap wordt het bestand naar een geïsoleerde tijdelijke map geschreven die onmiddellijk na de conversie wordt verwijderd. Gewone PDF's en afbeeldingen raken de schijf nooit aan.",
+    "accountTitle": "Geen account, geen trackingmuur",
+    "accountBody": "Je hoeft je niet te registreren, in te loggen of ons een e-mailadres te geven om de gratis tools te gebruiken. We vragen geen persoonlijke gegevens om een bestand te verwerken.",
+    "limitsTitle": "Limieten van de gratis versie",
+    "limitsBody1": "Om de gratis dienst voor iedereen beschikbaar te houden, gelden voor verzoeken een dagelijkse bewerkingslimiet, een limiet voor de bestandsgrootte en basissnelheidsbeperking. Wanneer je een limiet bereikt, laat de app dat duidelijk weten. Hogere limieten, grotere bestanden en batch-/API-toegang zijn gepland voor een toekomstige betaalde versie — zie de",
+    "limitsLink": "Pro-abonnementen",
+    "limitsBody2": "teaser op de startpagina.",
+    "questionsTitle": "Vragen",
+    "questionsBody": "PDF Conduit wordt aangeboden zoals het is. Deze pagina beschrijft ons huidige gedrag en kan worden bijgewerkt naarmate het product evolueert.",
+    "backHome": "Terug naar start"
+  },
+  "errors": {
+    "generic": {
+      "title": "Er is iets misgegaan",
+      "detail": "De bewerking kon niet worden voltooid."
+    },
+    "quota_exceeded": {
+      "title": "Je hebt de gratis bewerkingen van vandaag opgebruikt",
+      "detail": "De gratis daglimiet is voorlopig bereikt.",
+      "hint": "Hogere daglimieten komen eraan met PDF Conduit Pro. Morgen wordt de limiet gereset — of krijg hieronder vroege toegang."
+    },
+    "rate_limited": {
+      "title": "Rustig aan",
+      "detail": "Te veel verzoeken in korte tijd.",
+      "hintRetry": "{seconds, plural, one {Probeer het over ongeveer # seconde opnieuw.} other {Probeer het over ongeveer # seconden opnieuw.}}",
+      "hintWait": "Wacht een paar seconden en probeer het opnieuw."
+    },
+    "server_busy": {
+      "title": "We zitten momenteel aan onze capaciteit",
+      "detail": "De server verwerkt veel verzoeken.",
+      "hint": "Probeer het zo meteen opnieuw. Prioriteitsverwerking komt eraan met Pro."
+    },
+    "processing_timeout": {
+      "title": "Dat duurde te lang",
+      "detail": "De time-out van de bewerking verstreek voordat deze klaar was.",
+      "hint": "Probeer een kleiner of eenvoudiger bestand, of splits het werk op in stappen."
+    },
+    "too_large": {
+      "title": "Dit bestand overschrijdt de gratis groottelimiet",
+      "detail": "De upload is groter dan de gratis versie toestaat.",
+      "hint": "Grotere uploads komen eraan met PDF Conduit Pro."
+    },
+    "office_disabled": {
+      "title": "Officeconversie is niet beschikbaar",
+      "detail": "Het converteren van officedocumenten is niet ingeschakeld op deze server.",
+      "hint": "Je kunt nog steeds met PDF's en afbeeldingen werken."
+    },
+    "operation_failed": {
+      "title": "Dat bestand kon niet worden verwerkt",
+      "detail": "De bewerking is mislukt op deze invoer.",
+      "hint": "Controleer of het bestand een geldige, niet-versleutelde PDF is en probeer het opnieuw."
+    },
+    "bad_request": {
+      "title": "Controleer je invoer",
+      "detail": "Het verzoek was niet geldig."
+    },
+    "network_error": {
+      "title": "Kan de server niet bereiken",
+      "detail": "Het verzoek heeft PDF Conduit niet bereikt.",
+      "hint": "Controleer je verbinding en probeer het opnieuw."
+    }
+  },
+  "result": {
+    "done": "Klaar",
+    "original": "Origineel",
+    "result": "Resultaat",
+    "saved": "Bespaard",
+    "target": "Doel",
+    "targetReached": "bereikt",
+    "targetNotReached": "niet bereikt",
+    "batchFailures": "Enkele invoerbestanden zijn mislukt: {{count}}",
+    "seeProPlans": "Bekijk Pro-abonnementen →",
+    "seeProPlansShort": "Bekijk Pro-abonnementen",
+    "httpStatus": "· HTTP {{status}}"
+  },
+  "viewer": {
+    "renderingPreview": "Voorbeeld weergeven…",
+    "renderError": "Kan deze PDF niet weergeven.",
+    "pageCaption": "Pagina {{n}}"
+  },
+  "toast": {
+    "dismiss": "Melding sluiten"
+  },
+  "pages": {
+    "merge": {
+      "title": "Samenvoegen",
+      "description": "Voeg meerdere PDF's, afbeeldingen of officedocumenten samen tot één PDF.",
+      "hint": "PDF's, afbeeldingen en officedocumenten. Sleep de lijst hieronder om de volgorde te bepalen.",
+      "outputName": "Uitvoernaam (optioneel)",
+      "outputNamePlaceholder": "samengevoegd.pdf",
+      "outputNameHelp": "Standaard de naam van het eerste bestand met het achtervoegsel “_merged”.",
+      "removeAria": "Verwijderen",
+      "submit": "{count, plural, one {# bestand samenvoegen} other {# bestanden samenvoegen}}",
+      "loading": "Samenvoegen…"
+    },
+    "extract": {
+      "title": "Extraheren",
+      "description": "Haal geselecteerde pagina's uit een PDF.",
+      "hint": "Eén PDF.",
+      "pages": "Pagina's",
+      "pagesPlaceholder": "bijv. 1,3,5-8",
+      "pagesHelp": "Leeg = alle pagina's. Syntaxis:",
+      "output": "Uitvoer",
+      "separate": "Splitsen in één bestand per pagina (ZIP)",
+      "submit": "Extraheren",
+      "loading": "Extraheren…"
+    },
+    "compress": {
+      "title": "Comprimeren",
+      "description": "Verklein een PDF naar een doelgrootte.",
+      "hint": "Eén of meer PDF's (meerdere bestanden → ZIP).",
+      "target": "Doelgrootte",
+      "targetPlaceholder": "bijv. 5MB, 800KB",
+      "targetHelp1": "Accepteert",
+      "targetHelp2": "of een ruw aantal bytes.",
+      "targetError": "Voer een grootte in zoals",
+      "submit": "{count, plural, one {# bestand comprimeren} other {# bestanden comprimeren}}",
+      "loading": "Comprimeren…"
+    },
+    "rotate": {
+      "title": "Draaien",
+      "description": "Draai pagina's 90°, 180° of 270°.",
+      "hint": "Eén of meer PDF's (meerdere bestanden → ZIP).",
+      "angle": "Hoek",
+      "angleAria": "Rotatiehoek",
+      "pages": "Pagina's",
+      "pagesPlaceholder": "bijv. 1,3,5-8 (leeg = alle)",
+      "pagesHelp": "Leeg = elke pagina.",
+      "submit": "{count, plural, one {# bestand draaien} other {# bestanden draaien}}",
+      "loading": "Draaien…"
+    },
+    "arrange": {
+      "title": "Schikken",
+      "description": "Herschik, keer om of dupliceer pagina's.",
+      "hint": "Eén PDF.",
+      "order": "Paginavolgorde",
+      "orderPlaceholder": "bijv. 3,1,2",
+      "orderHelp1": "herschikt",
+      "orderHelp2": "keert om",
+      "orderHelp3": "herhalingen dupliceren",
+      "submit": "Schikken",
+      "loading": "Schikken…"
+    },
+    "toPdf": {
+      "title": "Naar PDF",
+      "description": "Converteer afbeeldingen en officedocumenten naar PDF.",
+      "hint": "Afbeeldingen en officedocumenten. Elke invoer wordt een eigen PDF (meerdere → ZIP).",
+      "pageSize": "Paginaformaat",
+      "sizeFit": "Aanpassen aan inhoud",
+      "sizeLetter": "Letter",
+      "sizeHelp": "Afbeeldingsinvoer wordt op dit paginaformaat geplaatst (officedocumenten behouden hun eigen formaat).",
+      "submit": "{count, plural, one {# bestand converteren} other {# bestanden converteren}}",
+      "loading": "Converteren…"
+    },
+    "toImages": {
+      "title": "Naar afbeeldingen",
+      "description": "Zet PDF-pagina's om naar PNG of JPG.",
+      "hint": "Eén PDF (meerdere pagina's → ZIP).",
+      "format": "Formaat",
+      "dpi": "DPI",
+      "dpiHelp": "Hoger = scherper en groter (36–600).",
+      "pages": "Pagina's",
+      "pagesPlaceholder": "bijv. 1-3 (leeg = alle)",
+      "submit": "Afbeeldingen weergeven",
+      "loading": "Weergeven…"
+    },
+    "toText": {
+      "title": "Naar tekst",
+      "description": "Extraheer de tekstinhoud van een PDF.",
+      "hint": "Eén PDF.",
+      "format": "Formaat",
+      "formatTxt": "Platte tekst (.txt)",
+      "pages": "Pagina's",
+      "pagesPlaceholder": "bijv. 1-3 (leeg = alle)",
+      "submit": "Tekst extraheren",
+      "loading": "Tekst extraheren…"
+    },
+    "protect": {
+      "title": "Beveiligen",
+      "description": "Voeg wachtwoordversleuteling toe aan een PDF.",
+      "hint": "Eén of meer PDF's (meerdere bestanden → ZIP).",
+      "userPassword": "Gebruikerswachtwoord",
+      "userPasswordHelp": "Vereist om het document te openen.",
+      "userPasswordError": "Een gebruikerswachtwoord is vereist.",
+      "ownerPassword": "Eigenaarswachtwoord (optioneel)",
+      "ownerPasswordHelp": "Regelt de rechten; standaard gelijk aan het gebruikerswachtwoord.",
+      "submit": "{count, plural, one {# bestand beveiligen} other {# bestanden beveiligen}}",
+      "loading": "Versleutelen…"
+    },
+    "unlock": {
+      "title": "Ontgrendelen",
+      "description": "Verwijder een bekend wachtwoord uit een PDF.",
+      "hint": "Eén of meer beveiligde PDF's (meerdere bestanden → ZIP).",
+      "password": "Wachtwoord",
+      "passwordHelp": "Het huidige wachtwoord om de PDF('s) te openen.",
+      "passwordError": "Een wachtwoord is vereist.",
+      "submit": "{count, plural, one {# bestand ontgrendelen} other {# bestanden ontgrendelen}}",
+      "loading": "Ontgrendelen…"
+    },
+    "redact": {
+      "title": "Redigeren",
+      "description": "Teken vakken over inhoud om deze permanent onleesbaar te maken.",
+      "hint": "Eén PDF. Sleep vervolgens rechthoeken over de te redigeren gebieden.",
+      "dragHint": "Sleep over een pagina om een gebied te markeren.",
+      "chooseAnother": "Kies een andere PDF",
+      "regions": "Gebieden ({{count}})",
+      "regionsEmpty": "Nog geen gebieden. Sleep een rechthoek over de inhoud die je wilt verwijderen.",
+      "removeRegion": "Gebied verwijderen",
+      "submit": "Redigeren & downloaden",
+      "loading": "Redigeren…"
+    },
+    "metadata": {
+      "title": "Metadata",
+      "description": "Bekijk, bewerk of verwijder documentgegevens.",
+      "hint": "Eén PDF.",
+      "readCurrent": "Huidige lezen",
+      "reading": "Lezen…",
+      "titleField": "Titel",
+      "author": "Auteur",
+      "subject": "Onderwerp",
+      "keywords": "Trefwoorden",
+      "strip": "Alle metadata verwijderen (negeert de bovenstaande velden)",
+      "submitStrip": "Metadata verwijderen",
+      "submitApply": "Metadata toepassen",
+      "loading": "Bijwerken…"
+    },
+    "watermark": {
+      "title": "Watermerk",
+      "description": "Plaats tekst of een afbeelding over elke pagina.",
+      "hint": "Eén of meer PDF's om te stempelen (meerdere bestanden → ZIP).",
+      "typeAria": "Type watermerk",
+      "typeText": "Tekst",
+      "typeImage": "Afbeelding",
+      "text": "Watermerktekst",
+      "textPlaceholder": "bijv. VERTROUWELIJK",
+      "image": "Watermerkafbeelding",
+      "opacity": "Ondoorzichtigheid",
+      "rotation": "Rotatie",
+      "scale": "Schaal",
+      "submit": "Watermerk toepassen",
+      "needText": "Voer watermerktekst in.",
+      "needImage": "Kies een afbeelding.",
+      "loading": "Stempelen…"
+    },
+    "wizard": {
+      "title": "Wizard",
+      "description": "Begeleide, stapsgewijze opbouw en export.",
+      "step1": "Selecteren",
+      "step2": "Schikken",
+      "step3": "Pagina-instellingen",
+      "step4": "Compressie",
+      "step5": "Exporteren",
+      "selectTitle": "Bestanden selecteren",
+      "selectHint": "PDF's, afbeeldingen en officedocumenten.",
+      "arrangeTitle": "Schikken & paginabereiken",
+      "arrangeHint": "Sleep om de volgorde te wijzigen. Paginabereiken gelden alleen voor PDF-invoer (leeg = alle).",
+      "rangePlaceholder": "pagina's bijv. 1-3",
+      "typeImage": "afbeelding",
+      "typeDocument": "document",
+      "removeAria": "Verwijderen",
+      "pageSettingsTitle": "Pagina-instellingen",
+      "imagePageSize": "Paginaformaat voor afbeeldingsinvoer",
+      "sizeFit": "Aanpassen aan afbeelding",
+      "sizeLetter": "Letter",
+      "imagePageSizeHelp": "Afbeeldingen en officedocumenten worden vóór het samenvoegen op dit formaat naar PDF geconverteerd.",
+      "compressionTitle": "Compressie",
+      "compressToggle": "Comprimeer de geëxporteerde PDF naar een doelgrootte",
+      "target": "Doelgrootte",
+      "targetPlaceholder": "bijv. 5MB",
+      "reviewTitle": "Controleren & exporteren",
+      "sumFiles": "Bestanden",
+      "sumOrder": "Volgorde",
+      "sumImageSize": "Paginaformaat afbeelding",
+      "sumCompress": "Comprimeren",
+      "compressNo": "nee",
+      "preparing": "Voorbereiden {{current}}/{{total}}: {{name}}",
+      "merging": "Samenvoegen…",
+      "compressing": "Comprimeren…"
+    },
+    "pipeline": {
+      "title": "Pijplijn",
+      "description": "Koppel bewerkingen als een knooppuntgraaf.",
+      "sourceTitle": "Bronbestanden",
+      "sourceHint": "Deze voeden het SOURCE-knooppunt; downstream-knooppunten verwijzen ernaar op naam.",
+      "nodes": "Knooppunten",
+      "nodeCount": "{count, plural, one {# bewerkingsknooppunt} other {# bewerkingsknooppunten}}",
+      "sourceFiles": "Bestanden ({{count}})",
+      "sourceAddAbove": "Voeg hierboven bronbestanden toe.",
+      "removeNode": "Knooppunt verwijderen",
+      "inputs": "Invoer",
+      "sourceOption": "SOURCE (bestanden)",
+      "fieldPages": "Pagina's",
+      "fieldMode": "Modus",
+      "modeCombine": "Combineren",
+      "modeSeparate": "Aparte bestanden",
+      "fieldAngle": "Hoek",
+      "fieldOrder": "Volgorde",
+      "fieldTarget": "Doelgrootte",
+      "fieldPageSize": "Paginaformaat",
+      "sizeFit": "Aanpassen",
+      "fieldUserPassword": "Gebruikerswachtwoord",
+      "fieldOwnerPassword": "Eigenaarswachtwoord",
+      "fieldPassword": "Wachtwoord",
+      "fieldTitle": "Titel",
+      "fieldAuthor": "Auteur",
+      "fieldSubject": "Onderwerp",
+      "fieldKeywords": "Trefwoorden",
+      "stripMetadata": "Alle metadata verwijderen",
+      "fieldText": "Tekst",
+      "fieldOpacity": "Ondoorzichtigheid",
+      "fieldRotation": "Rotatie",
+      "fieldScale": "Schaal",
+      "fieldFormat": "Formaat",
+      "fieldDpi": "DPI",
+      "pagesBlank": "leeg = alle",
+      "addNode": "Knooppunt toevoegen:",
+      "validate": "Valideren",
+      "run": "Pijplijn uitvoeren",
+      "running": "Uitvoeren…",
+      "valid": "✓ Pijplijn is geldig.",
+      "jsonTitle": "Pijplijn-JSON"
+    }
+  }
+}

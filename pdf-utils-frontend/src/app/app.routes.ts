@@ -6,7 +6,17 @@ import { Routes } from '@angular/router';
  * core/operations.ts.
  */
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'merge' },
+  {
+    path: '',
+    pathMatch: 'full',
+    title: 'PDF Conduit — Free online PDF tools',
+    loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
+  },
+  {
+    path: 'privacy',
+    title: 'Privacy · PDF Conduit',
+    loadComponent: () => import('./pages/privacy/privacy.page').then((m) => m.PrivacyPage),
+  },
   {
     path: 'merge',
     title: 'Merge · PDF Conduit',
@@ -82,5 +92,5 @@ export const routes: Routes = [
     title: 'Pipeline · PDF Conduit',
     loadComponent: () => import('./pages/pipeline/pipeline.page').then((m) => m.PipelinePage),
   },
-  { path: '**', redirectTo: 'merge' },
+  { path: '**', redirectTo: '' },
 ];

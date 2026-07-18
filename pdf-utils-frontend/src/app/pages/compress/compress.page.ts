@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -11,25 +12,43 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-compress-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
-      <app-page-header title="Compress" description="Shrink a PDF toward a target size." />
+      <app-page-header
+        [title]="'pages.compress.title' | transloco"
+        [description]="'pages.compress.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="true"
         accept=".pdf"
-        hint="One or more PDFs (several files → ZIP)."
+        [hint]="'pages.compress.hint' | transloco"
         (filesChange)="files.set($event)"
       />
 
       <div class="card form-grid">
         <div class="field">
-          <label for="cp-target">Target size</label>
-          <input id="cp-target" type="text" [formControl]="targetSize" placeholder="e.g. 5MB, 800KB" />
-          <span class="help">Accepts <code>KB</code>/<code>MB</code> or a raw byte count.</span>
+          <label for="cp-target">{{ 'pages.compress.target' | transloco }}</label>
+          <input
+            id="cp-target"
+            type="text"
+            [formControl]="targetSize"
+            [placeholder]="'pages.compress.targetPlaceholder' | transloco"
+          />
+          <span class="help">
+            {{ 'pages.compress.targetHelp1' | transloco }}
+            <code>KB</code>/<code>MB</code>
+            {{ 'pages.compress.targetHelp2' | transloco }}
+          </span>
           @if (targetSize.invalid && targetSize.touched) {
-            <span class="err">Enter a size such as <code>5MB</code>.</span>
+            <span class="err">{{ 'pages.compress.targetError' | transloco }} <code>5MB</code>.</span>
           }
         </div>
       </div>
@@ -41,13 +60,13 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="!files().length || targetSize.invalid || state.loading()"
           (click)="submit()"
         >
-          Compress {{ files().length }} file{{ files().length === 1 ? '' : 's' }}
+          {{ 'pages.compress.submit' | transloco: { count: files().length } }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Compressing…"
+        [loadingLabel]="'pages.compress.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

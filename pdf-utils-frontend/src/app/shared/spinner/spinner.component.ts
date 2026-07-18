@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 /**
  * Small accessible loading spinner with an optional label. Pure CSS, no assets.
@@ -6,8 +7,9 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-spinner',
   standalone: true,
+  imports: [TranslocoModule],
   template: `
-    <div class="spinner" role="status" [attr.aria-label]="label || 'Loading'">
+    <div class="spinner" role="status" [attr.aria-label]="label || ('common.loading' | transloco)">
       <span class="ring" aria-hidden="true"></span>
       @if (label) {
         <span class="label">{{ label }}</span>

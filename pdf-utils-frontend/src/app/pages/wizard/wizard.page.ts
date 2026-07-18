@@ -1,4 +1,5 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiError, RunResult } from '../../core/api.models';
@@ -16,7 +17,14 @@ interface WizardFile {
   pages: string;
 }
 
-const STEPS = ['Select', 'Arrange', 'Page settings', 'Compression', 'Export'];
+/** i18n keys for the five wizard steps (select → arrange → … → export). */
+const STEP_KEYS = [
+  'pages.wizard.step1',
+  'pages.wizard.step2',
+  'pages.wizard.step3',
+  'pages.wizard.step4',
+  'pages.wizard.step5',
+];
 
 /**
  * Guided build-and-export flow mirroring the desktop wizard. It composes the
@@ -28,16 +36,19 @@ const STEPS = ['Select', 'Arrange', 'Page settings', 'Compression', 'Export'];
 @Component({
   selector: 'app-wizard-page',
   standalone: true,
-  imports: [FileDropZoneComponent, PageHeaderComponent, SpinnerComponent],
+  imports: [TranslocoModule, FileDropZoneComponent, PageHeaderComponent, SpinnerComponent],
   template: `
     <section class="op-page">
-      <app-page-header title="Wizard" description="Guided step-by-step build & export." />
+      <app-page-header
+        [title]="'pages.wizard.title' | transloco"
+        [description]="'pages.wizard.description' | transloco"
+      />
 
       <ol class="stepper">
         @for (s of steps; track s; let i = $index) {
           <li [class.active]="i === step()" [class.done]="i < step()">
             <span class="dot">{{ i < step() ? '✓' : i + 1 }}</span>
-            <span class="lbl">{{ s }}</span>
+            <span class="lbl">{{ s | transloco }}</span>
           </li>
         }
       </ol>
@@ -45,19 +56,19 @@ const STEPS = ['Select', 'Arrange', 'Page settings', 'Compression', 'Export'];
       <div class="card">
         <!-- Step 1: select -->
         @if (step() === 0) {
-          <h2 class="step-h">Select files</h2>
+          <h2 class="step-h">{{ 'pages.wizard.selectTitle' | transloco }}</h2>
           <app-file-drop-zone
             [multiple]="true"
             accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
-            hint="PDFs, images and office documents."
+            [hint]="'pages.wizard.selectHint' | transloco"
             (filesChange)="onFiles($event)"
           />
         }
 
         <!-- Step 2: arrange + page ranges -->
         @if (step() === 1) {
-          <h2 class="step-h">Arrange &amp; page ranges</h2>
-          <p class="hint-note">Drag to reorder. Page ranges apply to PDF inputs only (blank = all).</p>
+          <h2 class="step-h">{{ 'pages.wizard.arrangeTitle' | transloco }}</h2>
+          <p class="hint-note">{{ 'pages.wizard.arrangeHint' | transloco }}</p>
           <ul class="reorder-list">
             @for (it of items(); track it.file; let i = $index) {
               <li
@@ -76,12 +87,12 @@ const STEPS = ['Select', 'Arrange', 'Page settings', 'Compression', 'Export'];
                     type="text"
                     [value]="it.pages"
                     (input)="setPages(i, $any($event.target).value)"
-                    placeholder="pages e.g. 1-3"
+                    [placeholder]="'pages.wizard.rangePlaceholder' | transloco"
                   />
                 } @else {
-                  <span class="hint-note">{{ isImage(it.file) ? 'image' : 'document' }}</span>
+                  <span class="hint-note">{{ (isImage(it.file) ? 'pages.wizard.typeImage' : 'pages.wizard.typeDocument') | transloco }}</span>
                 }
-                <button type="button" class="icon-btn" (click)="remove(i)" aria-label="Remove">✕</button>
+                <button type="button" class="icon-btn" (click)="remove(i)" [attr.aria-label]="'common.remove' | transloco">✕</button>
               </li>
             }
           </ul>
@@ -89,33 +100,33 @@ const STEPS = ['Select', 'Arrange', 'Page settings', 'Compression', 'Export'];
 
         <!-- Step 3: page settings -->
         @if (step() === 2) {
-          <h2 class="step-h">Page settings</h2>
+          <h2 class="step-h">{{ 'pages.wizard.pageSettingsTitle' | transloco }}</h2>
           <div class="form-grid">
             <div class="field">
-              <label for="wz-size">Page size for image inputs</label>
+              <label for="wz-size">{{ 'pages.wizard.imagePageSize' | transloco }}</label>
               <select id="wz-size" [value]="pageSize()" (change)="pageSize.set($any($event.target).value)">
-                <option value="FIT">Fit to image</option>
+                <option value="FIT">{{ 'pages.wizard.sizeFit' | transloco }}</option>
                 <option value="A4">A4</option>
                 <option value="A3">A3</option>
-                <option value="LETTER">Letter</option>
+                <option value="LETTER">{{ 'pages.wizard.sizeLetter' | transloco }}</option>
               </select>
-              <span class="help">Images and office docs are converted to PDF at this size before merging.</span>
+              <span class="help">{{ 'pages.wizard.imagePageSizeHelp' | transloco }}</span>
             </div>
           </div>
         }
 
         <!-- Step 4: compression -->
         @if (step() === 3) {
-          <h2 class="step-h">Compression</h2>
+          <h2 class="step-h">{{ 'pages.wizard.compressionTitle' | transloco }}</h2>
           <label class="check" style="margin-bottom:0.75rem">
             <input type="checkbox" [checked]="compress()" (change)="compress.set($any($event.target).checked)" />
-            Compress the exported PDF toward a target size
+            {{ 'pages.wizard.compressToggle' | transloco }}
           </label>
           @if (compress()) {
             <div class="form-grid">
               <div class="field">
-                <label for="wz-target">Target size</label>
-                <input id="wz-target" type="text" [value]="targetSize()" (input)="targetSize.set($any($event.target).value)" placeholder="e.g. 5MB" />
+                <label for="wz-target">{{ 'pages.wizard.target' | transloco }}</label>
+                <input id="wz-target" type="text" [value]="targetSize()" (input)="targetSize.set($any($event.target).value)" [placeholder]="'pages.wizard.targetPlaceholder' | transloco" />
               </div>
             </div>
           }
@@ -123,12 +134,12 @@ const STEPS = ['Select', 'Arrange', 'Page settings', 'Compression', 'Export'];
 
         <!-- Step 5: export -->
         @if (step() === 4) {
-          <h2 class="step-h">Review &amp; export</h2>
+          <h2 class="step-h">{{ 'pages.wizard.reviewTitle' | transloco }}</h2>
           <ul class="summary">
-            <li><span>Files</span><b>{{ items().length }}</b></li>
-            <li><span>Order</span><b>{{ orderNames() }}</b></li>
-            <li><span>Image page size</span><b>{{ pageSize() }}</b></li>
-            <li><span>Compress</span><b>{{ compress() ? targetSize() : 'no' }}</b></li>
+            <li><span>{{ 'pages.wizard.sumFiles' | transloco }}</span><b>{{ items().length }}</b></li>
+            <li><span>{{ 'pages.wizard.sumOrder' | transloco }}</span><b>{{ orderNames() }}</b></li>
+            <li><span>{{ 'pages.wizard.sumImageSize' | transloco }}</span><b>{{ pageSize() }}</b></li>
+            <li><span>{{ 'pages.wizard.sumCompress' | transloco }}</span><b>{{ compress() ? targetSize() : ('pages.wizard.compressNo' | transloco) }}</b></li>
           </ul>
 
           @if (busy()) {
@@ -140,22 +151,22 @@ const STEPS = ['Select', 'Arrange', 'Page settings', 'Compression', 'Export'];
           @if (result()) {
             <div class="done-box">
               <p class="filename">{{ result()!.filename }} ({{ formatBytes(result()!.blob.size) }})</p>
-              <button type="button" class="btn btn-primary" (click)="download()">Download</button>
+              <button type="button" class="btn btn-primary" (click)="download()">{{ 'common.download' | transloco }}</button>
             </div>
           }
         }
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn" [disabled]="step() === 0 || busy()" (click)="back()">Back</button>
+        <button type="button" class="btn" [disabled]="step() === 0 || busy()" (click)="back()">{{ 'common.back' | transloco }}</button>
         @if (step() < steps.length - 1) {
-          <button type="button" class="btn btn-primary" [disabled]="!canNext()" (click)="next()">Next</button>
+          <button type="button" class="btn btn-primary" [disabled]="!canNext()" (click)="next()">{{ 'common.next' | transloco }}</button>
         } @else {
           <button type="button" class="btn btn-primary" [disabled]="!items().length || busy()" (click)="runExport()">
-            {{ result() ? 'Re-export' : 'Export' }}
+            {{ (result() ? 'common.reExport' : 'common.export') | transloco }}
           </button>
         }
-        <button type="button" class="btn btn-ghost" [disabled]="busy()" (click)="restart()">Start over</button>
+        <button type="button" class="btn btn-ghost" [disabled]="busy()" (click)="restart()">{{ 'common.startOver' | transloco }}</button>
       </div>
     </section>
   `,
@@ -246,7 +257,8 @@ const STEPS = ['Select', 'Arrange', 'Page settings', 'Compression', 'Export'];
   ],
 })
 export class WizardPage {
-  protected readonly steps = STEPS;
+  private readonly transloco = inject(TranslocoService);
+  protected readonly steps = STEP_KEYS;
   protected readonly formatBytes = formatBytes;
 
   protected readonly step = signal(0);
@@ -337,15 +349,21 @@ export class WizardPage {
       const parts: File[] = [];
       for (let i = 0; i < items.length; i++) {
         const it = items[i];
-        this.progress.set(`Preparing ${i + 1}/${items.length}: ${it.file.name}`);
+        this.progress.set(
+          this.transloco.translate('pages.wizard.preparing', {
+            current: i + 1,
+            total: items.length,
+            name: it.file.name,
+          }),
+        );
         parts.push(await this.toPdfPart(it));
       }
 
-      this.progress.set('Merging…');
+      this.progress.set(this.transloco.translate('pages.wizard.merging'));
       let out = await firstValueFrom(this.api.merge(this.formData('files', parts)));
 
       if (this.compress() && this.targetSize().trim()) {
-        this.progress.set('Compressing…');
+        this.progress.set(this.transloco.translate('pages.wizard.compressing'));
         const fd = new FormData();
         fd.append('files', this.asFile(out), out.filename);
         fd.append('targetSize', this.targetSize().trim());

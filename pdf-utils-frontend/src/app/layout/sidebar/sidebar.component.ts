@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { NAV_GROUPS, NAV_ITEMS, NavItem } from '../../core/operations';
 
@@ -10,7 +11,7 @@ import { NAV_GROUPS, NAV_ITEMS, NavItem } from '../../core/operations';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, TranslocoModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })

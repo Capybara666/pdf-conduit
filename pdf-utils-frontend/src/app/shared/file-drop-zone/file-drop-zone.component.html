@@ -23,7 +23,7 @@
         stroke-linejoin="round"
       />
     </svg>
-    <span class="label">{{ label }}</span>
+    <span class="label">{{ label || ('dropzone.defaultLabel' | transloco) }}</span>
     @if (hint) {
       <span class="hint">{{ hint }}</span>
     }
@@ -40,7 +40,7 @@
           type="button"
           class="remove"
           (click)="remove($index)"
-          [attr.aria-label]="'Remove ' + file.name"
+          [attr.aria-label]="'common.removeFile' | transloco: { name: file.name }"
         >
           ✕
         </button>

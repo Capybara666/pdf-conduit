@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -11,25 +12,34 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-unlock-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
-      <app-page-header title="Unlock" description="Remove a known password from a PDF." />
+      <app-page-header
+        [title]="'pages.unlock.title' | transloco"
+        [description]="'pages.unlock.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="true"
         accept=".pdf"
-        hint="One or more protected PDFs (several files → ZIP)."
+        [hint]="'pages.unlock.hint' | transloco"
         (filesChange)="files.set($event)"
       />
 
       <div class="card form-grid">
         <div class="field">
-          <label for="ul-pass">Password</label>
+          <label for="ul-pass">{{ 'pages.unlock.password' | transloco }}</label>
           <input id="ul-pass" type="password" [formControl]="password" autocomplete="off" />
-          <span class="help">The current password used to open the PDF(s).</span>
+          <span class="help">{{ 'pages.unlock.passwordHelp' | transloco }}</span>
           @if (password.invalid && password.touched) {
-            <span class="err">A password is required.</span>
+            <span class="err">{{ 'pages.unlock.passwordError' | transloco }}</span>
           }
         </div>
       </div>
@@ -41,13 +51,13 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="!files().length || password.invalid || state.loading()"
           (click)="submit()"
         >
-          Unlock {{ files().length }} file{{ files().length === 1 ? '' : 's' }}
+          {{ 'pages.unlock.submit' | transloco: { count: files().length } }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Unlocking…"
+        [loadingLabel]="'pages.unlock.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

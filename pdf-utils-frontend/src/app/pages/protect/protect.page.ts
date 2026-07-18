@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -11,31 +12,40 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-protect-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
-      <app-page-header title="Protect" description="Add password encryption to a PDF." />
+      <app-page-header
+        [title]="'pages.protect.title' | transloco"
+        [description]="'pages.protect.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="true"
         accept=".pdf"
-        hint="One or more PDFs (several files → ZIP)."
+        [hint]="'pages.protect.hint' | transloco"
         (filesChange)="files.set($event)"
       />
 
       <form class="card form-grid" [formGroup]="form">
         <div class="field">
-          <label for="pr-user">User password</label>
+          <label for="pr-user">{{ 'pages.protect.userPassword' | transloco }}</label>
           <input id="pr-user" type="password" formControlName="userPassword" autocomplete="new-password" />
-          <span class="help">Required to open the document.</span>
+          <span class="help">{{ 'pages.protect.userPasswordHelp' | transloco }}</span>
           @if (form.controls.userPassword.invalid && form.controls.userPassword.touched) {
-            <span class="err">A user password is required.</span>
+            <span class="err">{{ 'pages.protect.userPasswordError' | transloco }}</span>
           }
         </div>
         <div class="field">
-          <label for="pr-owner">Owner password (optional)</label>
+          <label for="pr-owner">{{ 'pages.protect.ownerPassword' | transloco }}</label>
           <input id="pr-owner" type="password" formControlName="ownerPassword" autocomplete="new-password" />
-          <span class="help">Controls permissions; defaults to the user password.</span>
+          <span class="help">{{ 'pages.protect.ownerPasswordHelp' | transloco }}</span>
         </div>
       </form>
 
@@ -46,13 +56,13 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="!files().length || form.invalid || state.loading()"
           (click)="submit()"
         >
-          Protect {{ files().length }} file{{ files().length === 1 ? '' : 's' }}
+          {{ 'pages.protect.submit' | transloco: { count: files().length } }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Encrypting…"
+        [loadingLabel]="'pages.protect.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

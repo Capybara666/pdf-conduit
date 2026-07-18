@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
@@ -11,24 +12,40 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-arrange-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageHeaderComponent,
+    ResultPanelComponent,
+  ],
   template: `
     <section class="op-page">
-      <app-page-header title="Arrange" description="Reorder, reverse or duplicate pages." />
+      <app-page-header
+        [title]="'pages.arrange.title' | transloco"
+        [description]="'pages.arrange.description' | transloco"
+      />
 
       <app-file-drop-zone
         [multiple]="false"
         accept=".pdf"
-        hint="One PDF."
+        [hint]="'pages.arrange.hint' | transloco"
         (filesChange)="file.set($event.length ? $event[0] : null)"
       />
 
       <div class="card form-grid">
         <div class="field full">
-          <label for="ar-order">Page order</label>
-          <input id="ar-order" type="text" [formControl]="order" placeholder="e.g. 3,1,2" />
+          <label for="ar-order">{{ 'pages.arrange.order' | transloco }}</label>
+          <input
+            id="ar-order"
+            type="text"
+            [formControl]="order"
+            [placeholder]="'pages.arrange.orderPlaceholder' | transloco"
+          />
           <span class="help">
-            <code>3,1,2</code> reorders · <code>5-1</code> reverses · repeats duplicate (<code>1,1,2</code>).
+            <code>3,1,2</code> {{ 'pages.arrange.orderHelp1' | transloco }} ·
+            <code>5-1</code> {{ 'pages.arrange.orderHelp2' | transloco }} ·
+            {{ 'pages.arrange.orderHelp3' | transloco }} (<code>1,1,2</code>).
           </span>
         </div>
       </div>
@@ -40,13 +57,13 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="!file() || !order.value.trim() || state.loading()"
           (click)="submit()"
         >
-          Arrange
+          {{ 'pages.arrange.submit' | transloco }}
         </button>
       </div>
 
       <app-result-panel
         [loading]="state.loading()"
-        loadingLabel="Arranging…"
+        [loadingLabel]="'pages.arrange.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
       />

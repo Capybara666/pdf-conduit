@@ -1,8 +1,19 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { ApiError, RunResult } from '../../core/api.models';
 import { downloadRunResult, formatBytes } from '../../core/download.util';
+import { errorCopyKeys } from '../../core/error-copy';
 import { SpinnerComponent } from '../spinner/spinner.component';
+
+/** Resolved, translated error copy for display in the panel. */
+interface ResolvedCopy {
+  title: string;
+  detail: string;
+  hint?: string;
+  proLink?: boolean;
+}
 
 /**
  * Presentational panel for the outcome of an operation: a loading state, a
@@ -12,17 +23,31 @@ import { SpinnerComponent } from '../spinner/spinner.component';
 @Component({
   selector: 'app-result-panel',
   standalone: true,
-  imports: [SpinnerComponent],
+  imports: [SpinnerComponent, RouterLink, TranslocoModule],
   templateUrl: './result-panel.component.html',
   styleUrl: './result-panel.component.scss',
 })
 export class ResultPanelComponent {
+  private readonly transloco = inject(TranslocoService);
+
   @Input() loading = false;
-  @Input() loadingLabel = 'Processing…';
+  @Input() loadingLabel = '';
   @Input() error: ApiError | null = null;
   @Input() result: RunResult | null = null;
 
   protected readonly formatBytes = formatBytes;
+
+  /** Friendly, code-aware, translated presentation copy for the current error. */
+  get copy(): ResolvedCopy | null {
+    if (!this.error) return null;
+    const keys = errorCopyKeys(this.error);
+    return {
+      title: this.transloco.translate(keys.titleKey),
+      detail: keys.detailText || (keys.detailKey ? this.transloco.translate(keys.detailKey) : ''),
+      hint: keys.hintKey ? this.transloco.translate(keys.hintKey, keys.hintParams) : undefined,
+      proLink: keys.proLink,
+    };
+  }
 
   download(): void {
     if (this.result) {

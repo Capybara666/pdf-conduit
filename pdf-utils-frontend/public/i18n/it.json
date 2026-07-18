@@ -1,0 +1,495 @@
+{
+  "common": {
+    "download": "Scarica",
+    "downloadZip": "Scarica ZIP",
+    "back": "Indietro",
+    "next": "Avanti",
+    "startOver": "Ricomincia",
+    "export": "Esporta",
+    "reExport": "Riesporta",
+    "remove": "Rimuovi",
+    "removeFile": "Rimuovi {{name}}",
+    "clearAll": "Cancella tutto",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "done": "Fatto",
+    "loading": "Caricamento",
+    "processing": "Elaborazione…"
+  },
+  "dropzone": {
+    "defaultLabel": "Trascina i file qui o clicca per sfogliare"
+  },
+  "nav": {
+    "aria": "Operazioni",
+    "home": "Home",
+    "homeTitle": "Torna alla pagina iniziale di PDF Conduit",
+    "groups": {
+      "organise": "Organizza",
+      "optimise": "Ottimizza",
+      "convert": "Converti",
+      "secure": "Proteggi",
+      "edit": "Modifica",
+      "advanced": "Avanzate"
+    }
+  },
+  "op": {
+    "merge": {
+      "label": "Unisci",
+      "description": "Combina più PDF (o immagini/documenti office) in uno solo."
+    },
+    "extract": {
+      "label": "Estrai",
+      "description": "Estrai le pagine selezionate da un PDF."
+    },
+    "rotate": {
+      "label": "Ruota",
+      "description": "Ruota le pagine di 90°, 180° o 270°."
+    },
+    "arrange": {
+      "label": "Riordina",
+      "description": "Riordina, inverti o duplica le pagine."
+    },
+    "compress": {
+      "label": "Comprimi",
+      "description": "Riduci un PDF verso una dimensione desiderata."
+    },
+    "to-pdf": {
+      "label": "In PDF",
+      "description": "Converti immagini e documenti office in PDF."
+    },
+    "to-images": {
+      "label": "In immagini",
+      "description": "Converti le pagine PDF in PNG o JPG."
+    },
+    "to-text": {
+      "label": "In testo",
+      "description": "Estrai il contenuto testuale di un PDF."
+    },
+    "protect": {
+      "label": "Proteggi",
+      "description": "Aggiungi la crittografia con password a un PDF."
+    },
+    "unlock": {
+      "label": "Sblocca",
+      "description": "Rimuovi una password nota da un PDF."
+    },
+    "redact": {
+      "label": "Oscura",
+      "description": "Oscura in modo permanente aree di una pagina."
+    },
+    "metadata": {
+      "label": "Metadati",
+      "description": "Visualizza, modifica o rimuovi le info del documento."
+    },
+    "watermark": {
+      "label": "Filigrana",
+      "description": "Applica testo o un'immagine su ogni pagina."
+    },
+    "wizard": {
+      "label": "Procedura guidata",
+      "description": "Creazione ed esportazione guidata passo dopo passo."
+    },
+    "pipeline": {
+      "label": "Pipeline",
+      "description": "Concatena le operazioni come un grafo di nodi."
+    }
+  },
+  "header": {
+    "brandHome": "Home di PDF Conduit",
+    "quotaFreeLeft": "gratuite rimaste oggi",
+    "quotaTitleSpent": "Limite gratuito giornaliero raggiunto — vedi i piani Pro",
+    "quotaTitleLeft": "Operazioni gratuite rimaste oggi — vedi i piani Pro",
+    "serverOnline": "Server online",
+    "serverOffline": "Server offline",
+    "serverChecking": "Verifica del server…",
+    "themeToLight": "Passa al tema chiaro",
+    "themeToDark": "Passa al tema scuro",
+    "languageLabel": "Lingua"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Gratis · Nel tuo browser",
+      "title": "Ogni strumento PDF di cui hai bisogno, in un unico spazio di lavoro ordinato.",
+      "lede": "Unisci, comprimi, converti, proteggi e oscura i PDF in pochi secondi — elaborati interamente in memoria e mai salvati sui nostri server. Nessun account. Nessuna installazione.",
+      "ctaStart": "Inizia gratis",
+      "ctaExplore": "Esplora gli strumenti",
+      "note": "I file non lasciano mai la memoria · Nessuna registrazione richiesta · Funziona su qualsiasi dispositivo"
+    },
+    "trust": {
+      "aria": "Perché PDF Conduit",
+      "memoryTitle": "Elaborato in memoria",
+      "memoryDesc": "I tuoi file vengono gestiti nella RAM e mai scritti su disco o salvati.",
+      "accountTitle": "Nessun account necessario",
+      "accountDesc": "Vai dritto al punto — niente email, niente password, nessun muro di tracciamento.",
+      "browserTitle": "Aprilo nel tuo browser",
+      "browserDesc": "Niente da installare. Funziona su Windows, macOS, Linux e dispositivi mobili."
+    },
+    "tools": {
+      "title": "Scegli uno strumento e via",
+      "subtitle": "Quindici strumenti mirati, ciascuno che svolge bene un solo compito."
+    },
+    "pro": {
+      "soon": "Presto disponibile",
+      "title": "Più potenza con PDF Conduit Pro",
+      "subtitle": "Gli strumenti gratuiti restano gratuiti, per sempre. Pro aggiunge margine per i lavori più impegnativi.",
+      "freeName": "Gratis",
+      "freePrice": "$0",
+      "freePer": "/ per sempre",
+      "freeFeat1": "Tutti i quindici strumenti PDF",
+      "freeFeat2": "Elaborazione in memoria, niente viene salvato",
+      "freeFeat3": "Limite giornaliero di operazioni",
+      "freeFeat4": "Limite standard sulla dimensione dei file",
+      "freeFeat5": "Nessun account richiesto",
+      "freeCta": "Usalo ora",
+      "proName": "Pro",
+      "proPrice": "TBA",
+      "proPer": "/ mese",
+      "proFeat1": "<b>File più grandi</b> — rimuovi il limite di dimensione gratuito",
+      "proFeat2": "<b>Limiti giornalieri più alti</b> per grandi lotti",
+      "proFeat3": "<b>Accesso batch &amp; API</b> per automatizzare i flussi di lavoro",
+      "proFeat4": "<b>Elaborazione prioritaria</b> anche nei momenti di punta",
+      "proFeat5": "Tutto ciò che c'è in Gratis, ovviamente",
+      "proCta": "Avvisami",
+      "proCtaDone": "Sei nella lista ✓",
+      "proNote": "Nessun addebito per ora — ti invieremo un'email solo quando Pro sarà disponibile.",
+      "notifyTitle": "Sei nella lista",
+      "notifyMessage": "Ti avviseremo non appena PDF Conduit Pro sarà pronto."
+    },
+    "footer": {
+      "aria": "Piè di pagina",
+      "tools": "Strumenti",
+      "privacy": "Privacy",
+      "github": "GitHub",
+      "copy": "I file vengono elaborati in memoria e mai salvati. Uso gratuito."
+    }
+  },
+  "privacy": {
+    "title": "Privacy",
+    "description": "Come PDF Conduit gestisce i tuoi file — in breve: non li conserva.",
+    "memoryTitle": "I tuoi file restano in memoria",
+    "memoryBody": "Ogni operazione viene eseguita sul server interamente in memoria (RAM). I tuoi caricamenti vengono decodificati, elaborati e restituiti come download all'interno di una singola richiesta. Non scriviamo i tuoi file su disco e non li conserviamo in seguito. Una volta inviata la risposta, i byte vengono eliminati.",
+    "exceptionTitle": "L'unica eccezione temporanea",
+    "exceptionBody": "La conversione di documenti office o di testo (ad esempio .docx, .xlsx, .pptx) richiede un LibreOffice headless. Solo per quel passaggio, il file viene scritto in una cartella temporanea isolata che viene eliminata immediatamente al termine della conversione. I PDF e le immagini semplici non toccano mai il disco.",
+    "accountTitle": "Nessun account, nessun muro di tracciamento",
+    "accountBody": "Non è necessario registrarsi, accedere o fornirci un indirizzo email per usare gli strumenti gratuiti. Non richiediamo informazioni personali per elaborare un file.",
+    "limitsTitle": "Limiti del piano gratuito",
+    "limitsBody1": "Per mantenere il servizio gratuito disponibile a tutti, le richieste sono soggette a una quota giornaliera di operazioni, a un limite di dimensione per file e a una limitazione di frequenza di base. Quando raggiungi un limite, l'app te lo comunica chiaramente. Limiti più alti, file più grandi e accesso batch/API sono previsti per un futuro piano a pagamento — vedi l'anteprima",
+    "limitsLink": "piani Pro",
+    "limitsBody2": "nella pagina iniziale.",
+    "questionsTitle": "Domande",
+    "questionsBody": "PDF Conduit è fornito così com'è. Questa pagina descrive il nostro comportamento attuale e potrà essere aggiornata man mano che il prodotto evolve.",
+    "backHome": "Torna alla home"
+  },
+  "errors": {
+    "generic": {
+      "title": "Qualcosa è andato storto",
+      "detail": "Non è stato possibile completare l'operazione."
+    },
+    "quota_exceeded": {
+      "title": "Hai esaurito le operazioni gratuite di oggi",
+      "detail": "Il limite gratuito giornaliero è stato raggiunto per ora.",
+      "hint": "Limiti giornalieri più alti arriveranno con PDF Conduit Pro. Si azzera domani — oppure ottieni l'accesso anticipato qui sotto."
+    },
+    "rate_limited": {
+      "title": "Rallenta un momento",
+      "detail": "Troppe richieste in poco tempo.",
+      "hintRetry": "{seconds, plural, one {Riprova tra circa # secondo.} other {Riprova tra circa # secondi.}}",
+      "hintWait": "Attendi qualche secondo e riprova."
+    },
+    "server_busy": {
+      "title": "Siamo al massimo della capacità in questo momento",
+      "detail": "Il server sta gestendo molte richieste.",
+      "hint": "Riprova a breve. L'elaborazione prioritaria arriverà con Pro."
+    },
+    "processing_timeout": {
+      "title": "Ci è voluto troppo tempo",
+      "detail": "L'operazione è scaduta prima di terminare.",
+      "hint": "Prova un file più piccolo o più semplice, oppure suddividi il lavoro in passaggi."
+    },
+    "too_large": {
+      "title": "Questo file supera il limite di dimensione gratuito",
+      "detail": "Il caricamento è più grande di quanto consenta il piano gratuito.",
+      "hint": "Caricamenti più grandi arriveranno con PDF Conduit Pro."
+    },
+    "office_disabled": {
+      "title": "La conversione office non è disponibile",
+      "detail": "La conversione dei documenti office non è abilitata su questo server.",
+      "hint": "Puoi comunque lavorare con PDF e immagini."
+    },
+    "operation_failed": {
+      "title": "Non è stato possibile elaborare questo file",
+      "detail": "L'operazione non è riuscita su questo input.",
+      "hint": "Verifica che il file sia un PDF valido e non crittografato e riprova."
+    },
+    "bad_request": {
+      "title": "Controlla i dati inseriti",
+      "detail": "La richiesta non era valida."
+    },
+    "network_error": {
+      "title": "Impossibile raggiungere il server",
+      "detail": "La richiesta non ha raggiunto PDF Conduit.",
+      "hint": "Controlla la connessione e riprova."
+    }
+  },
+  "result": {
+    "done": "Fatto",
+    "original": "Originale",
+    "result": "Risultato",
+    "saved": "Risparmiato",
+    "target": "Obiettivo",
+    "targetReached": "raggiunto",
+    "targetNotReached": "non raggiunto",
+    "batchFailures": "Alcuni input non sono riusciti: {{count}}",
+    "seeProPlans": "Vedi i piani Pro →",
+    "seeProPlansShort": "Vedi i piani Pro",
+    "httpStatus": "· HTTP {{status}}"
+  },
+  "viewer": {
+    "renderingPreview": "Generazione anteprima…",
+    "renderError": "Impossibile visualizzare questo PDF.",
+    "pageCaption": "Pagina {{n}}"
+  },
+  "toast": {
+    "dismiss": "Chiudi notifica"
+  },
+  "pages": {
+    "merge": {
+      "title": "Unisci",
+      "description": "Combina più PDF, immagini o documenti office in un unico PDF.",
+      "hint": "PDF, immagini e documenti office. Trascina l'elenco qui sotto per impostare l'ordine.",
+      "outputName": "Nome del file di output (facoltativo)",
+      "outputNamePlaceholder": "unito.pdf",
+      "outputNameHelp": "Per impostazione predefinita usa il nome del primo file con il suffisso “_merged”.",
+      "removeAria": "Rimuovi",
+      "submit": "{count, plural, one {Unisci # file} other {Unisci # file}}",
+      "loading": "Unione in corso…"
+    },
+    "extract": {
+      "title": "Estrai",
+      "description": "Estrai le pagine selezionate da un PDF.",
+      "hint": "Un solo PDF.",
+      "pages": "Pagine",
+      "pagesPlaceholder": "es. 1,3,5-8",
+      "pagesHelp": "Vuoto = tutte le pagine. Sintassi:",
+      "output": "Output",
+      "separate": "Dividi in un file per pagina (ZIP)",
+      "submit": "Estrai",
+      "loading": "Estrazione in corso…"
+    },
+    "compress": {
+      "title": "Comprimi",
+      "description": "Riduci un PDF verso una dimensione desiderata.",
+      "hint": "Uno o più PDF (più file → ZIP).",
+      "target": "Dimensione desiderata",
+      "targetPlaceholder": "es. 5MB, 800KB",
+      "targetHelp1": "Accetta",
+      "targetHelp2": "o un numero di byte grezzo.",
+      "targetError": "Inserisci una dimensione come",
+      "submit": "{count, plural, one {Comprimi # file} other {Comprimi # file}}",
+      "loading": "Compressione in corso…"
+    },
+    "rotate": {
+      "title": "Ruota",
+      "description": "Ruota le pagine di 90°, 180° o 270°.",
+      "hint": "Uno o più PDF (più file → ZIP).",
+      "angle": "Angolo",
+      "angleAria": "Angolo di rotazione",
+      "pages": "Pagine",
+      "pagesPlaceholder": "es. 1,3,5-8 (vuoto = tutte)",
+      "pagesHelp": "Vuoto = ogni pagina.",
+      "submit": "{count, plural, one {Ruota # file} other {Ruota # file}}",
+      "loading": "Rotazione in corso…"
+    },
+    "arrange": {
+      "title": "Riordina",
+      "description": "Riordina, inverti o duplica le pagine.",
+      "hint": "Un solo PDF.",
+      "order": "Ordine delle pagine",
+      "orderPlaceholder": "es. 3,1,2",
+      "orderHelp1": "riordina",
+      "orderHelp2": "inverte",
+      "orderHelp3": "le ripetizioni duplicano",
+      "submit": "Riordina",
+      "loading": "Riordino in corso…"
+    },
+    "toPdf": {
+      "title": "In PDF",
+      "description": "Converti immagini e documenti office in PDF.",
+      "hint": "Immagini e documenti office. Ogni input diventa un proprio PDF (più file → ZIP).",
+      "pageSize": "Dimensione pagina",
+      "sizeFit": "Adatta al contenuto",
+      "sizeLetter": "Letter",
+      "sizeHelp": "Le immagini in input vengono posizionate su questa dimensione di pagina (i documenti office mantengono la propria).",
+      "submit": "{count, plural, one {Converti # file} other {Converti # file}}",
+      "loading": "Conversione in corso…"
+    },
+    "toImages": {
+      "title": "In immagini",
+      "description": "Converti le pagine PDF in PNG o JPG.",
+      "hint": "Un solo PDF (più pagine → ZIP).",
+      "format": "Formato",
+      "dpi": "DPI",
+      "dpiHelp": "Più alto = più nitido e più grande (36–600).",
+      "pages": "Pagine",
+      "pagesPlaceholder": "es. 1-3 (vuoto = tutte)",
+      "submit": "Genera immagini",
+      "loading": "Generazione in corso…"
+    },
+    "toText": {
+      "title": "In testo",
+      "description": "Estrai il contenuto testuale di un PDF.",
+      "hint": "Un solo PDF.",
+      "format": "Formato",
+      "formatTxt": "Testo semplice (.txt)",
+      "pages": "Pagine",
+      "pagesPlaceholder": "es. 1-3 (vuoto = tutte)",
+      "submit": "Estrai testo",
+      "loading": "Estrazione del testo…"
+    },
+    "protect": {
+      "title": "Proteggi",
+      "description": "Aggiungi la crittografia con password a un PDF.",
+      "hint": "Uno o più PDF (più file → ZIP).",
+      "userPassword": "Password utente",
+      "userPasswordHelp": "Necessaria per aprire il documento.",
+      "userPasswordError": "È necessaria una password utente.",
+      "ownerPassword": "Password proprietario (facoltativa)",
+      "ownerPasswordHelp": "Controlla i permessi; per impostazione predefinita coincide con la password utente.",
+      "submit": "{count, plural, one {Proteggi # file} other {Proteggi # file}}",
+      "loading": "Crittografia in corso…"
+    },
+    "unlock": {
+      "title": "Sblocca",
+      "description": "Rimuovi una password nota da un PDF.",
+      "hint": "Uno o più PDF protetti (più file → ZIP).",
+      "password": "Password",
+      "passwordHelp": "La password attuale usata per aprire il/i PDF.",
+      "passwordError": "È necessaria una password.",
+      "submit": "{count, plural, one {Sblocca # file} other {Sblocca # file}}",
+      "loading": "Sblocco in corso…"
+    },
+    "redact": {
+      "title": "Oscura",
+      "description": "Disegna riquadri sul contenuto per oscurarlo in modo permanente.",
+      "hint": "Un solo PDF. Poi trascina i rettangoli sulle aree da oscurare.",
+      "dragHint": "Trascina su una pagina per contrassegnare un'area.",
+      "chooseAnother": "Scegli un altro PDF",
+      "regions": "Aree ({{count}})",
+      "regionsEmpty": "Ancora nessuna area. Trascina un rettangolo sul contenuto che vuoi rimuovere.",
+      "removeRegion": "Rimuovi area",
+      "submit": "Oscura e scarica",
+      "loading": "Oscuramento in corso…"
+    },
+    "metadata": {
+      "title": "Metadati",
+      "description": "Visualizza, modifica o rimuovi le info del documento.",
+      "hint": "Un solo PDF.",
+      "readCurrent": "Leggi attuali",
+      "reading": "Lettura in corso…",
+      "titleField": "Titolo",
+      "author": "Autore",
+      "subject": "Oggetto",
+      "keywords": "Parole chiave",
+      "strip": "Rimuovi tutti i metadati (ignora i campi qui sopra)",
+      "submitStrip": "Rimuovi metadati",
+      "submitApply": "Applica metadati",
+      "loading": "Aggiornamento in corso…"
+    },
+    "watermark": {
+      "title": "Filigrana",
+      "description": "Applica testo o un'immagine su ogni pagina.",
+      "hint": "Uno o più PDF da timbrare (più file → ZIP).",
+      "typeAria": "Tipo di filigrana",
+      "typeText": "Testo",
+      "typeImage": "Immagine",
+      "text": "Testo della filigrana",
+      "textPlaceholder": "es. RISERVATO",
+      "image": "Immagine della filigrana",
+      "opacity": "Opacità",
+      "rotation": "Rotazione",
+      "scale": "Scala",
+      "submit": "Applica filigrana",
+      "needText": "Inserisci il testo della filigrana.",
+      "needImage": "Scegli un'immagine.",
+      "loading": "Applicazione in corso…"
+    },
+    "wizard": {
+      "title": "Procedura guidata",
+      "description": "Creazione ed esportazione guidata passo dopo passo.",
+      "step1": "Seleziona",
+      "step2": "Riordina",
+      "step3": "Impostazioni pagina",
+      "step4": "Compressione",
+      "step5": "Esporta",
+      "selectTitle": "Seleziona i file",
+      "selectHint": "PDF, immagini e documenti office.",
+      "arrangeTitle": "Riordino e intervalli di pagine",
+      "arrangeHint": "Trascina per riordinare. Gli intervalli di pagine si applicano solo agli input PDF (vuoto = tutte).",
+      "rangePlaceholder": "pagine es. 1-3",
+      "typeImage": "immagine",
+      "typeDocument": "documento",
+      "removeAria": "Rimuovi",
+      "pageSettingsTitle": "Impostazioni pagina",
+      "imagePageSize": "Dimensione pagina per gli input immagine",
+      "sizeFit": "Adatta all'immagine",
+      "sizeLetter": "Letter",
+      "imagePageSizeHelp": "Le immagini e i documenti office vengono convertiti in PDF con questa dimensione prima dell'unione.",
+      "compressionTitle": "Compressione",
+      "compressToggle": "Comprimi il PDF esportato verso una dimensione desiderata",
+      "target": "Dimensione desiderata",
+      "targetPlaceholder": "es. 5MB",
+      "reviewTitle": "Rivedi ed esporta",
+      "sumFiles": "File",
+      "sumOrder": "Ordine",
+      "sumImageSize": "Dimensione pagina immagine",
+      "sumCompress": "Comprimi",
+      "compressNo": "no",
+      "preparing": "Preparazione {{current}}/{{total}}: {{name}}",
+      "merging": "Unione in corso…",
+      "compressing": "Compressione in corso…"
+    },
+    "pipeline": {
+      "title": "Pipeline",
+      "description": "Concatena le operazioni come un grafo di nodi.",
+      "sourceTitle": "File di origine",
+      "sourceHint": "Questi alimentano il nodo SOURCE; i nodi successivi vi fanno riferimento per nome.",
+      "nodes": "Nodi",
+      "nodeCount": "{count, plural, one {# nodo operazione} other {# nodi operazione}}",
+      "sourceFiles": "File ({{count}})",
+      "sourceAddAbove": "Aggiungi i file di origine sopra.",
+      "removeNode": "Rimuovi nodo",
+      "inputs": "Input",
+      "sourceOption": "SOURCE (file)",
+      "fieldPages": "Pagine",
+      "fieldMode": "Modalità",
+      "modeCombine": "Combina",
+      "modeSeparate": "File separati",
+      "fieldAngle": "Angolo",
+      "fieldOrder": "Ordine",
+      "fieldTarget": "Dimensione desiderata",
+      "fieldPageSize": "Dimensione pagina",
+      "sizeFit": "Adatta",
+      "fieldUserPassword": "Password utente",
+      "fieldOwnerPassword": "Password proprietario",
+      "fieldPassword": "Password",
+      "fieldTitle": "Titolo",
+      "fieldAuthor": "Autore",
+      "fieldSubject": "Oggetto",
+      "fieldKeywords": "Parole chiave",
+      "stripMetadata": "Rimuovi tutti i metadati",
+      "fieldText": "Testo",
+      "fieldOpacity": "Opacità",
+      "fieldRotation": "Rotazione",
+      "fieldScale": "Scala",
+      "fieldFormat": "Formato",
+      "fieldDpi": "DPI",
+      "pagesBlank": "vuoto = tutte",
+      "addNode": "Aggiungi nodo:",
+      "validate": "Convalida",
+      "run": "Esegui pipeline",
+      "running": "Esecuzione in corso…",
+      "valid": "✓ La pipeline è valida.",
+      "jsonTitle": "JSON della pipeline"
+    }
+  }
+}
