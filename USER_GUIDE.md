@@ -159,6 +159,12 @@ result is streamed straight back for download. The one exception is converting
 available to the server (the Docker image bundles it, so nothing extra is
 required there); pure PDF and image flows need nothing beyond the browser.
 
+The public web app is a **free** version, so a **fair-use limit** applies — a
+header chip shows how many free operations you have left today, and very large
+or very frequent uploads may be rate-limited (a toast explains when this
+happens). The interface is available in **14 languages**, switchable from the
+picker in the header.
+
 ## Command line (CLI)
 
 Running the app with arguments invokes the CLI (the launcher is `pdf-conduit`):

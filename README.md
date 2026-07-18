@@ -95,60 +95,86 @@ pdf-conduit pipeline my-pipeline.json   # run a pipeline saved from the GUI
 - **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).
 - **Sizes:** `500KB`, `5MB`, `1.5MB`.
 
-## Web version
+## Web app / SaaS
 
-The web version is a **two-tier app** covering every desktop operation:
+PDF Conduit also runs as a **free, public web app** — the same operations in the
+browser, with no install. It's the on-ramp to future paid tiers: the UI shows a
+**"Pro coming soon"** teaser, but everything available today is free.
 
-- **`pdf-utils-frontend`** — an **Angular 18** single-page app (its own npm
-  build, *not* part of the Maven reactor). All operations plus the Wizard, the
-  visual Pipeline builder, and in-browser Redaction (pdf.js box-drawing).
+### The stack
+
+Two containers, built from source (wired by `docker-compose.yml`):
+
+- **`pdf-utils-frontend`** — an **Angular 18** single-page app served by nginx
+  (its own npm build, *not* part of the Maven reactor). All operations plus the
+  Wizard, the visual Pipeline builder, and in-browser Redaction (pdf.js
+  box-drawing), a landing page, a header **quota chip** ("N free left today"),
+  and a **14-language** UI (en, pl, es, zh, de, fr, it, pt, nl, uk, ru, tr, ja,
+  ko) switchable live from the header. nginx serves the SPA and reverse-proxies
+  `/api` to the backend, so the browser talks to a single origin.
 - **`pdf-utils-web`** — a **stateless, in-memory Spring Boot REST API** (no
   browser UI of its own). It reuses `pdf-utils-core`, so behaviour matches the
-  desktop app, and processes uploads entirely in memory — nothing is written to
-  disk. The one exception is **office/text-document conversion** (`.docx`,
-  `.xlsx`, …), which LibreOffice performs in an isolated, immediately-deleted
-  per-request temp dir.
+  desktop app.
+- **Caddy (prod only)** — an optional TLS edge added by `docker-compose.prod.yml`
+  that terminates HTTPS with **automatic Let's Encrypt certificates**.
 
-**Run in dev** (two terminals):
+### Privacy
+
+Uploads are processed **entirely in memory** and never written to disk — the
+result is streamed straight back for download. The **sole exception** is
+office/text-document conversion (`.docx`, `.xlsx`, …), which LibreOffice performs
+in an isolated, immediately-deleted per-request temp dir.
+
+### Free-tier protection
+
+Because it's a public, free instance, the backend is hardened against abuse and
+out-of-memory floods (all configurable, env-overridable — see `.env.example`):
+
+- **Per-IP rate limiting** and a **per-IP daily quota** of free operations
+  (`429 rate_limited` / `quota_exceeded`, with `X-RateLimit-*`, `X-Quota-*` and
+  `Retry-After` headers).
+- **Free-tier size/count caps** per file and per request (`413 too_large` /
+  `file_too_large`).
+- **Resource guards** — a heavy-op concurrency semaphore, an in-flight-bytes
+  ceiling, per-operation processing timeouts, a LibreOffice concurrency/timeout
+  guard, and a PDF page-count "bomb" guard (`503 server_busy` /
+  `processing_timeout`).
+
+Friendly toasts surface these limits in the UI.
+
+### Run it locally
+
+**Dev** (two terminals — hot reload):
 
 ```bash
 scripts/run-web.sh        # backend REST API  → http://localhost:8080/api
 scripts/run-frontend.sh   # Angular dev server → http://localhost:4200
 ```
 
-The frontend dev server proxies `/api` to the backend on `:8080`, so open
-**http://localhost:4200**. (Equivalents: `mvn -pl pdf-utils-web -am
-spring-boot:run` and `cd pdf-utils-frontend && npm start`.)
+Open **http://localhost:4200** (the dev server proxies `/api` to `:8080`).
+Equivalents: `mvn -pl pdf-utils-web -am spring-boot:run` and
+`cd pdf-utils-frontend && npm start`.
 
-**Run with Docker** (production; two containers — nginx-served SPA + backend,
-with a headless LibreOffice bundled so office-doc conversion works out of the
-box; images are built from source, not pre-published):
+**Docker** (two containers, LibreOffice bundled so office conversion works out of
+the box):
 
 ```bash
+# Dev / no TLS — frontend published on FRONTEND_PORT (default 4200)
 docker compose up --build      # then open http://localhost:4200
+
+# Prod — behind the Caddy TLS edge (HTTPS via Let's Encrypt)
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
-nginx serves the SPA and reverse-proxies `/api` to the `backend` service, so the
-browser talks to a single origin (no CORS needed in this topology). Only the
-frontend publishes a host port; the backend is internal.
+### Deploy & configure
 
-**Configuration** (environment variables; see `.env.example`, copy to `.env`):
-
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `FRONTEND_PORT` | `4200` | Host port the frontend (nginx) is published on |
-| `SERVER_PORT` | `8080` | Backend HTTP port (internal in compose) |
-| `PDFCONDUIT_WEB_OFFICE_ENABLED` | `true` | Enable office-doc conversion (the sole disk touch); `false` rejects office uploads with a 415 |
-| `PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS` | `http://localhost:4200` | Origins allowed to call `/api` (only relevant for the dev split-origin setup) |
-| `PDFCONDUIT_WEB_SOFFICE_PATH` | auto-detect | Explicit path to `soffice` |
-| `PDFCONDUIT_WEB_MAX_FILE_SIZE` | `100MB` | Max size per uploaded file |
-| `PDFCONDUIT_WEB_MAX_REQUEST_SIZE` | `200MB` | Max total request size |
-| `PDFCONDUIT_WEB_MAX_FILES` | `50` | Max files per request |
-
-As with the desktop app, converting **office/text documents** to PDF needs
-LibreOffice (the `soffice` command) on the host — it is bundled in the Docker
-image, so `docker compose up` needs no extra setup. Pure PDF and image flows
-are fully in-memory and work without it.
+- **VPS walkthrough:** [`deploy/README.md`](deploy/README.md) is the authoritative,
+  step-by-step guide — DNS, the Caddy TLS edge, container hardening, and tuning.
+- **Configuration:** copy `.env.example` → `.env`; it documents every knob
+  (`FRONTEND_PORT`, `PDFCONDUIT_WEB_OFFICE_ENABLED`, CORS origins, upload caps,
+  and the `pdfconduit.web.{ratelimit,quota,concurrency,processing,pdf,office}.*`
+  abuse-protection settings). For prod, set `DOMAIN`, `ACME_EMAIL`, and
+  `PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS` to your real origin.
 
 ## Releases (native packages)
 
