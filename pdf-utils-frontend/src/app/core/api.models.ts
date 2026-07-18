@@ -1,9 +1,23 @@
 /**
  * Shared types for the PDF Conduit REST API (v2, base `/api`).
  * See docs/web/DESIGN.md §3 for the multipart contract.
+ *
+ * DTOs that directly mirror backend response schemas are re-exported from the
+ * generated `api.gen.ts` (`npm run gen:api`, kept honest by the CI drift gate),
+ * so the wire contract lives in one place. FE-only view models (RunResult,
+ * CompressionInfo, QuotaSnapshot) and the `ApiError` runtime class stay
+ * hand-declared. Where the OpenAPI schema widens a field (all-optional, enums
+ * as bare `string`) we re-narrow it back to the shape the app relies on.
  */
+import type { components } from './api.gen';
 
-/** Health payload from `GET /api/health`. */
+type Schemas = components['schemas'];
+
+/**
+ * Health payload from `GET /api/health`. Hand-declared: the `/health` endpoint
+ * is served on the internal management port and carries no schema in the public
+ * OpenAPI document, so there is nothing to re-export.
+ */
 export interface HealthStatus {
   status: string; // "UP"
 }
@@ -11,13 +25,14 @@ export interface HealthStatus {
 /** Whether an operation collapses many inputs to one (REDUCE) or maps 1:1 (MAP). */
 export type Cardinality = 'MAP' | 'REDUCE';
 
-/** Catalog entry from `GET /api/operations`. */
-export interface OperationInfo {
-  id: string;
-  label: string;
-  cardinality: Cardinality;
-  multiOutput?: boolean;
-}
+/**
+ * Catalog entry from `GET /api/operations`. Mirrors the backend `OperationInfo`
+ * schema; `cardinality` is re-narrowed from `string` to the {@link Cardinality}
+ * union.
+ */
+export type OperationInfo = Omit<Schemas['OperationInfo'], 'cardinality'> & {
+  cardinality?: Cardinality;
+};
 
 /**
  * A successful binary download from a run: the raw bytes plus the filename
@@ -40,13 +55,8 @@ export interface CompressionInfo {
   targetReached?: boolean;
 }
 
-/** Document metadata from `POST /api/metadata/read`. */
-export interface MetadataDto {
-  title?: string;
-  author?: string;
-  subject?: string;
-  keywords?: string;
-}
+/** Document metadata from `POST /api/metadata/read`. Mirrors backend `MetadataDto`. */
+export type MetadataDto = Schemas['MetadataDto'];
 
 /** GDPR risk level for a scanned document (mirrors the backend `RiskLevel`). */
 export type PiiRisk = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
@@ -54,46 +64,37 @@ export type PiiRisk = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
 /**
  * A redaction rectangle in displayed-page PDF points: top-left origin (x right,
  * y down), page rotation already applied, 0-based `pageIndex`. Mirrors the
- * backend `RedactRegionDto` and the viewer's `RegionRect` — the scan returns
- * findings' regions in this exact space so they feed straight into `/api/redact`.
+ * backend `Region` schema (`RedactRegionDto`) and the viewer's `RegionRect` —
+ * the scan returns findings' regions in this exact space so they feed straight
+ * into `/api/redact`. The schema marks every field optional; here they are
+ * required — the app treats a region as a fully-populated rectangle.
  */
-export interface RedactRegion {
-  pageIndex: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+export type RedactRegion = Required<Schemas['Region']>;
 
-/** A single distinct piece of personal data found (masked — never the raw value). */
-export interface PiiFinding {
-  /** `PiiType` enum name, e.g. `EMAIL`, `IBAN`, `PESEL`. */
-  type: string;
-  /** `PiiCategory` enum name, e.g. `CONTACT`, `FINANCIAL`, `SPECIAL_CATEGORY`. */
-  category: string;
-  /** 1-based page of the first occurrence. */
-  page: number;
-  /** A redacted, recognisable sample that never reveals the full value. */
-  maskedSample: string;
-  /** How many times this exact value occurred across the document. */
-  occurrences: number;
-  /**
-   * Bounding boxes for every occurrence of this value (redact-ready points).
-   * Concrete value findings (email/phone/IBAN/…) carry regions; SPECIAL_CATEGORY
-   * keyword flags come back with an empty array.
-   */
+/**
+ * A single distinct piece of personal data found (masked — never the raw
+ * value). Mirrors backend `Finding`; `regions` is re-typed to the required
+ * {@link RedactRegion}.
+ *
+ * `type` is a `PiiType` enum name (`EMAIL`, `IBAN`, `PESEL`, …); `category` a
+ * `PiiCategory` name (`CONTACT`, `FINANCIAL`, `SPECIAL_CATEGORY`, …); `page` is
+ * 1-based; `regions` holds one box per occurrence (concrete-value findings carry
+ * them, `SPECIAL_CATEGORY` keyword flags come back empty).
+ */
+export type PiiFinding = Omit<Required<Schemas['Finding']>, 'regions'> & {
   regions: RedactRegion[];
-}
+};
 
-/** GDPR / PII scan report from `POST /api/gdpr-scan` (JSON, not a download). */
-export interface PiiReport {
-  totalFindings: number;
+/**
+ * GDPR / PII scan report from `POST /api/gdpr-scan` (JSON, not a download).
+ * Mirrors backend `PiiReportDto`; `risk` is re-narrowed to {@link PiiRisk},
+ * `findings` to {@link PiiFinding}, and `findings` is required so the report is
+ * always a complete list. `countsByCategory` is keyed by `PiiCategory` name.
+ */
+export type PiiReport = Omit<Required<Schemas['PiiReportDto']>, 'risk' | 'findings'> & {
   risk: PiiRisk;
-  pagesScanned: number;
-  /** Distinct-finding count keyed by `PiiCategory` enum name. */
-  countsByCategory: Record<string, number>;
   findings: PiiFinding[];
-}
+};
 
 /**
  * Rate-limit / daily-quota snapshot parsed from response headers

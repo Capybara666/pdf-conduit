@@ -4,7 +4,13 @@
  * load-bearing — they must match `PipelineModel` / `PipelineNode` / `Connection`
  * exactly. Field defaults mirror `PipelineNode`; we only emit the fields a node
  * kind actually uses, and the backend fills the rest with its own defaults.
+ *
+ * DTOs returned by the API (`NodeKindInfo`, `PipelineValidationError`) are
+ * re-exported from the generated `api.gen.ts` so their wire contract lives in
+ * one place; the client-only editing model (`CanvasNode`, wire-node
+ * (de)serialisers) stays hand-declared below.
  */
+import type { components } from './api.gen';
 
 /** Enum names must match `com.pdfconduit.core.pipeline.NodeKind`. */
 export type NodeKindName =
@@ -74,26 +80,16 @@ export interface PipelineModelJson {
 
 /**
  * Entry from `GET /api/pipeline/kinds` (best-effort; we fall back if absent).
- * Field names mirror the backend `NodeKindInfo` record wire shape exactly
- * (`name`, `label`, `isSource`, `isReduce`, `isExport`) — Jackson serialises the
- * record components verbatim, so these are load-bearing.
+ * Mirrors the backend `NodeKindInfo` schema; `name` is re-narrowed from the
+ * schema's bare `string` to the {@link NodeKindName} union the palette relies
+ * on (the enum names — `isSource`/`isReduce`/`isExport` — serialise verbatim).
  */
-export interface NodeKindInfo {
+export type NodeKindInfo = Omit<components['schemas']['NodeKindInfo'], 'name'> & {
   name: NodeKindName;
-  label: string;
-  /** The file-source node (filtered out of the palette; added by its own chip). */
-  isSource: boolean;
-  /** Collapses a bundle into one output (Merge). MAP ops are 1:1 (`false`). */
-  isReduce: boolean;
-  /** Terminal export whose output is not a PDF (To Images / To Text). */
-  isExport: boolean;
-}
+};
 
-/** Validation error from `POST /api/pipeline/validate`. */
-export interface PipelineValidationError {
-  nodeId?: string;
-  message: string;
-}
+/** Validation error from `POST /api/pipeline/validate`. Mirrors `ValidationErrorDto`. */
+export type PipelineValidationError = components['schemas']['ValidationErrorDto'];
 
 /* ---------------------------------------------------------------------------
  * Client-only editing model for the free-form canvas builder.

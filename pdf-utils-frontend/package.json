@@ -10,7 +10,8 @@
     "build": "ng build",
     "prewatch": "npm run copy-pdf-worker",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "gen:api": "openapi-typescript ../pdf-utils-web/target/openapi.json -o src/app/core/api.gen.ts"
   },
   "private": true,
   "dependencies": {
@@ -40,6 +41,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "openapi-typescript": "^7.13.0",
     "typescript": "~5.5.2"
   }
 }

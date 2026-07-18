@@ -54,6 +54,36 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  contract:
+    name: API contract (OpenAPI → TS)
+    runs-on: ubuntu-latest
+    # Regenerate the frontend's typed API contract from the backend's OpenAPI
+    # spec and fail if the committed api.gen.ts has drifted from it.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: pdf-utils-frontend/package-lock.json
+      - name: Generate OpenAPI spec (writes pdf-utils-web/target/openapi.json)
+        run: mvn -B -ntp -q -pl pdf-utils-web -am test
+      - name: Regenerate + diff TS types
+        working-directory: pdf-utils-frontend
+        run: |
+          npm ci
+          npm run gen:api
+          git diff --exit-code src/app/core/api.gen.ts
+      - name: Build frontend against generated types
+        working-directory: pdf-utils-frontend
+        run: npm run build
+
   compose:
     name: Compose config
     runs-on: ubuntu-latest
