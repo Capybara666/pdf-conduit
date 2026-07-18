@@ -4,9 +4,9 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { downloadRunResult } from '../../core/download.util';
-import { OP_ICONS } from '../../core/operations';
 import { NodeKindInfo, NodeKindName, PipelineValidationError } from '../../core/pipeline.models';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { OpIconComponent } from '../../shared/op-icon/op-icon.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { PipelineCanvasComponent } from './canvas/pipeline-canvas.component';
 import { PipelineInspectorComponent } from './canvas/pipeline-inspector.component';
@@ -32,8 +32,9 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
   { name: 'TO_TEXT', label: 'To Text', isSource: false, isReduce: false, isExport: true },
 ];
 
-/** NodeKind → operation id used for i18n label lookup (`op.<id>.label`). */
+/** NodeKind → operation id used for i18n label lookup (`op.<id>.label`) + glyph. */
 const KIND_TO_OP: Record<string, string> = {
+  SOURCE: 'source',
   MERGE: 'merge',
   IMAGES_TO_PDF: 'to-pdf',
   EXTRACT: 'extract',
@@ -61,6 +62,7 @@ const KIND_TO_OP: Record<string, string> = {
   imports: [
     TranslocoModule,
     PageHeaderComponent,
+    OpIconComponent,
     SpinnerComponent,
     PipelineCanvasComponent,
     PipelineInspectorComponent,
@@ -79,19 +81,9 @@ const KIND_TO_OP: Record<string, string> = {
       <div class="card">
         <div class="palette">
           <span class="field-label">{{ 'pipeline.canvas.addNode' | transloco }}</span>
-          <button type="button" class="btn chip" (click)="cv.addNode('SOURCE')">
-            <svg class="chip-ico" viewBox="0 0 24 24" aria-hidden="true">
-              <path [attr.d]="nodeIcon('SOURCE')" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            {{ 'pipeline.canvas.source' | transloco }}
-          </button>
+          <button type="button" class="btn chip" (click)="cv.addNode('SOURCE')"><app-op-icon class="chip-ico" name="source" />{{ 'pipeline.canvas.source' | transloco }}</button>
           @for (k of kinds(); track k.name) {
-            <button type="button" class="btn chip" (click)="cv.addNode(k.name)">
-              <svg class="chip-ico" viewBox="0 0 24 24" aria-hidden="true">
-                <path [attr.d]="nodeIcon(k.name)" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              {{ nodeLabel(k.name) }}
-            </button>
+            <button type="button" class="btn chip" (click)="cv.addNode(k.name)"><app-op-icon class="chip-ico" [name]="iconFor(k.name)" />{{ nodeLabel(k.name) }}</button>
           }
           <span class="tb-spacer"></span>
           <button type="button" class="btn btn-ghost" (click)="save()" [disabled]="!cv.nodes().length">{{ 'pipeline.canvas.save' | transloco }}</button>
@@ -188,9 +180,9 @@ const KIND_TO_OP: Record<string, string> = {
         font-size: 0.82rem;
       }
       .chip-ico {
-        width: 15px;
-        height: 15px;
-        flex: none;
+        width: 0.95rem;
+        height: 0.95rem;
+        flex-shrink: 0;
       }
       .tb-spacer {
         flex: 1;
@@ -275,17 +267,16 @@ export class PipelinePage implements OnInit, AfterViewInit {
     }
   }
 
+  /** Glyph registry key for a node kind's palette chip. */
+  iconFor(kind: NodeKindName): string {
+    return KIND_TO_OP[kind] ?? 'source';
+  }
+
   /** Translated display label for a node kind. */
   nodeLabel(kind: NodeKindName): string {
     const opId = KIND_TO_OP[kind];
     if (opId) return this.transloco.translate(`op.${opId}.label`);
     return this.kinds().find((k) => k.name === kind)?.label ?? kind;
-  }
-
-  /** Canonical line-art glyph (SVG path `d`) for a node kind, from the shared registry. */
-  nodeIcon(kind: NodeKindName): string {
-    const opId = kind === 'SOURCE' ? 'source' : KIND_TO_OP[kind];
-    return OP_ICONS[opId] ?? '';
   }
 
   validate(cv: PipelineCanvasComponent): void {

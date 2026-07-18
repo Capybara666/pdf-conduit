@@ -122,16 +122,7 @@
       @for (item of basicPrimary; track item.id) {
         <a class="feature-card" [routerLink]="['/', item.id]">
           <span class="fc-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path
-                [attr.d]="item.icon"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <app-op-icon [markup]="item.icon" />
           </span>
           <span class="fc-title">{{ 'op.' + item.id + '.label' | transloco }}</span>
           <span class="fc-desc">{{ 'op.' + item.id + '.description' | transloco }}</span>
@@ -141,16 +132,7 @@
         @for (item of basicMore; track item.id) {
           <a class="feature-card" [routerLink]="['/', item.id]">
             <span class="fc-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path
-                  [attr.d]="item.icon"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+              <app-op-icon [markup]="item.icon" />
             </span>
             <span class="fc-title">{{ 'op.' + item.id + '.label' | transloco }}</span>
             <span class="fc-desc">{{ 'op.' + item.id + '.description' | transloco }}</span>
@@ -182,16 +164,7 @@
         @for (a of advanced; track a.item.id) {
           <a class="feature-card" [routerLink]="['/', a.item.id]">
             <span class="fc-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path
-                  [attr.d]="a.item.icon"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+              <app-op-icon [markup]="a.item.icon" />
             </span>
             <span class="fc-title">{{ 'op.' + a.item.id + '.label' | transloco }}</span>
             <span class="fc-desc">{{ a.descKey | transloco }}</span>

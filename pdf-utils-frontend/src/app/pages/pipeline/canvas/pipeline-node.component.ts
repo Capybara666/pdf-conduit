@@ -1,12 +1,16 @@
 import { Component, ElementRef, EventEmitter, Input, Output, inject } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
-import { OP_ICONS } from '../../../core/operations';
 import { CanvasNode } from '../../../core/pipeline.models';
+import { OpIconComponent } from '../../../shared/op-icon/op-icon.component';
 import { CARD_W, PORT_TOP } from './pipeline-geometry';
 
-/** NodeKind → operation id, used for both the `op.<id>.label` i18n lookup and the canonical icon registry. */
+/**
+ * NodeKind → operation id, used both for the `op.<id>.label` i18n lookup and to
+ * resolve the glyph from `OP_ICONS`. SOURCE maps to the dedicated `source` key.
+ */
 const KIND_TO_OP: Record<string, string> = {
+  SOURCE: 'source',
   MERGE: 'merge',
   IMAGES_TO_PDF: 'to-pdf',
   EXTRACT: 'extract',
@@ -32,7 +36,7 @@ const KIND_TO_OP: Record<string, string> = {
 @Component({
   selector: 'app-pipeline-node',
   standalone: true,
-  imports: [TranslocoModule],
+  imports: [TranslocoModule, OpIconComponent],
   template: `
     <div
       class="pl-node"
@@ -43,16 +47,7 @@ const KIND_TO_OP: Record<string, string> = {
       (pointerdown)="onSelect($event)"
     >
       <div class="pl-node-head" (pointerdown)="onHeadDown($event)">
-        <svg class="pl-ico" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            [attr.d]="icon()"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <app-op-icon class="pl-ico" aria-hidden="true" [name]="iconName()" />
         <span class="pl-title">{{ title() }}</span>
         <button
           type="button"
@@ -101,9 +96,6 @@ const KIND_TO_OP: Record<string, string> = {
         box-shadow: var(--shadow);
         user-select: none;
         touch-action: none;
-        transition:
-          border-color var(--dur-fast, 120ms) var(--ease-standard, ease),
-          box-shadow var(--dur-fast, 120ms) var(--ease-standard, ease);
       }
       .pl-node.selected {
         border-color: var(--accent);
@@ -123,10 +115,10 @@ const KIND_TO_OP: Record<string, string> = {
         cursor: grabbing;
       }
       .pl-ico {
-        flex: none;
-        width: 16px;
-        height: 16px;
-        color: var(--text);
+        width: 1.05rem;
+        height: 1.05rem;
+        flex-shrink: 0;
+        color: var(--text-muted);
       }
       .pl-title {
         flex: 1;
@@ -167,10 +159,6 @@ const KIND_TO_OP: Record<string, string> = {
         border: 2px solid var(--border-strong);
         transform: translate(-50%, -50%);
         z-index: 2;
-        transition:
-          border-color var(--dur-fast, 120ms) var(--ease-standard, ease),
-          background-color var(--dur-fast, 120ms) var(--ease-standard, ease),
-          box-shadow var(--dur-fast, 120ms) var(--ease-standard, ease);
       }
       .pl-port-in {
         left: 0;
@@ -227,9 +215,9 @@ export class PipelineNodeComponent {
 
   private dragOff: { dx: number; dy: number } | null = null;
 
-  icon(): string {
-    const opId = this.node.kind === 'SOURCE' ? 'source' : KIND_TO_OP[this.node.kind];
-    return OP_ICONS[opId] ?? '';
+  /** Registry key for the node's glyph (`op.<id>` / `source`). */
+  iconName(): string {
+    return KIND_TO_OP[this.node.kind] ?? 'source';
   }
 
   title(): string {

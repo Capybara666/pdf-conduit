@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 
 import { NAV_ITEMS, NavItem } from '../../core/operations';
 import { ToastService } from '../../core/toast.service';
+import { OpIconComponent } from '../../shared/op-icon/op-icon.component';
 
 /**
  * Public landing page — the "advertisement" for PDF Conduit. Hero + value prop,
@@ -18,7 +19,7 @@ import { ToastService } from '../../core/toast.service';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [RouterLink, TranslocoModule],
+  imports: [RouterLink, TranslocoModule, OpIconComponent],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
 })

@@ -35,16 +35,7 @@
               routerLinkActive="active"
               [title]="'op.' + item.id + '.description' | transloco"
             >
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  [attr.d]="item.icon"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+              <app-op-icon class="icon" [markup]="item.icon" />
               <span class="text">{{ 'op.' + item.id + '.label' | transloco }}</span>
             </a>
           </li>

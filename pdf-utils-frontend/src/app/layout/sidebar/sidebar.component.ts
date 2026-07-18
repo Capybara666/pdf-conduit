@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { NAV_GROUPS, NAV_ITEMS, NavItem } from '../../core/operations';
+import { OpIconComponent } from '../../shared/op-icon/op-icon.component';
 
 /**
  * Left navigation. Lists every operation (grouped) plus Wizard and Pipeline;
@@ -11,7 +12,7 @@ import { NAV_GROUPS, NAV_ITEMS, NavItem } from '../../core/operations';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslocoModule],
+  imports: [RouterLink, RouterLinkActive, TranslocoModule, OpIconComponent],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
