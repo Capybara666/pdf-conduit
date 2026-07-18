@@ -712,7 +712,20 @@
         "occurrences": "Recuento"
       },
       "redactCta": "Ocultar los datos detectados",
-      "redactHint": "Revisa las áreas resaltadas y aplícalas: es gratis."
+      "redactHint": "Revisa las áreas resaltadas y aplícalas: es gratis.",
+      "hintMulti": "Uno o varios PDF, imágenes o documentos de oficina.",
+      "submitBatch": "Analizar {{count}} archivos",
+      "highestRiskLabel": "riesgo máximo",
+      "batchSummary": "{count, plural, one {# dato personal en {files} archivos.} other {# datos personales en {files} archivos.}}",
+      "byCategoryAll": "Por categoría (todos los archivos)",
+      "perFile": "Por archivo",
+      "fileFindings": "{count, plural, one {# hallazgo en {pages} páginas} other {# hallazgos en {pages} páginas}}",
+      "fileClean": "Sin datos personales",
+      "autoRedactCta": "Censurar automáticamente todo lo detectado",
+      "autoRedactAllCta": "Censurar todos los archivos",
+      "autoRedactFile": "Censurar",
+      "autoRedactHint": "Con un clic se tacha cada valor detectado y se descarga el archivo, gratis. Tu archivo nunca se almacena.",
+      "autoRedactLoading": "Censurando…"
     },
     "crop": {
       "title": "Recortar",

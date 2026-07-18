@@ -712,7 +712,20 @@
         "occurrences": "Nombre"
       },
       "redactCta": "Caviarder les données détectées",
-      "redactHint": "Vérifiez les zones surlignées, puis appliquez — c'est gratuit."
+      "redactHint": "Vérifiez les zones surlignées, puis appliquez — c'est gratuit.",
+      "hintMulti": "Un ou plusieurs PDF, images ou documents bureautiques.",
+      "submitBatch": "Analyser {{count}} fichiers",
+      "highestRiskLabel": "risque le plus élevé",
+      "batchSummary": "{count, plural, one {# donnée personnelle dans {files} fichiers.} other {# données personnelles dans {files} fichiers.}}",
+      "byCategoryAll": "Par catégorie (tous les fichiers)",
+      "perFile": "Par fichier",
+      "fileFindings": "{count, plural, one {# résultat sur {pages} pages} other {# résultats sur {pages} pages}}",
+      "fileClean": "Aucune donnée personnelle",
+      "autoRedactCta": "Caviarder automatiquement tout ce qui est détecté",
+      "autoRedactAllCta": "Caviarder tous les fichiers",
+      "autoRedactFile": "Caviarder",
+      "autoRedactHint": "Un clic masque chaque valeur détectée et télécharge le fichier, gratuitement. Votre fichier n'est jamais conservé.",
+      "autoRedactLoading": "Caviardage…"
     },
     "crop": {
       "title": "Rogner",

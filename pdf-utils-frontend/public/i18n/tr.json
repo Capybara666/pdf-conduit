@@ -712,7 +712,20 @@
         "occurrences": "Sayı"
       },
       "redactCta": "Algılanan verileri karart",
-      "redactHint": "Vurgulanan alanları gözden geçirip uygulayın — ücretsiz."
+      "redactHint": "Vurgulanan alanları gözden geçirip uygulayın — ücretsiz.",
+      "hintMulti": "Bir veya daha fazla PDF, görsel ya da ofis belgesi.",
+      "submitBatch": "{{count}} dosyayı tara",
+      "highestRiskLabel": "en yüksek risk",
+      "batchSummary": "{count, plural, one {{files} dosyada # kişisel veri.} other {{files} dosyada # kişisel veri.}}",
+      "byCategoryAll": "Kategoriye göre (tüm dosyalar)",
+      "perFile": "Dosya başına",
+      "fileFindings": "{count, plural, one {{pages} sayfada # sonuç} other {{pages} sayfada # sonuç}}",
+      "fileClean": "Kişisel veri yok",
+      "autoRedactCta": "Algılanan her şeyi otomatik karart",
+      "autoRedactAllCta": "Tüm dosyaları otomatik karart",
+      "autoRedactFile": "Otomatik karart",
+      "autoRedactHint": "Tek tıkla algılanan her değer karartılır ve dosya indirilir — ücretsiz. Dosyanız asla saklanmaz.",
+      "autoRedactLoading": "Karartılıyor…"
     },
     "crop": {
       "title": "Kırp",

@@ -47,7 +47,9 @@ public final class Endpoints {
         "/api/redact",
         "/api/nup",
         "/api/sign",
+        "/api/auto-redact",
         "/api/gdpr-scan",
+        "/api/gdpr-scan-batch",
         "/api/pipeline/run",
         "/api/render");
 
@@ -67,7 +69,9 @@ public final class Endpoints {
         "/api/redact",
         "/api/nup",
         "/api/sign",
+        "/api/auto-redact",
         "/api/gdpr-scan",
+        "/api/gdpr-scan-batch",
         "/api/to-images",
         "/api/to-text",
         "/api/pipeline/run");

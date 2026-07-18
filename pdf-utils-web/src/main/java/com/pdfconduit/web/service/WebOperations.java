@@ -1,5 +1,8 @@
 package com.pdfconduit.web.service;
 
+import com.pdfconduit.core.analyze.PiiCategory;
+import com.pdfconduit.core.analyze.PiiFinding;
+import com.pdfconduit.core.analyze.PiiRegion;
 import com.pdfconduit.core.analyze.PiiScanResult;
 import com.pdfconduit.core.analyze.PiiScanner;
 import com.pdfconduit.core.convert.DocumentConverter;
@@ -50,6 +53,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The bridge from HTTP to {@code pdf-utils-core}, entirely in memory: one method per operation
@@ -430,6 +434,54 @@ public class WebOperations {
      */
     public PiiScanResult scanPii(NamedBytes in) throws PdfOperationException {
         return PiiScanner.scanBytes(toPdf(in));
+    }
+
+    /**
+     * Batch GDPR scan: scan every input for personal data, preserving order. Each file is routed to
+     * PDF and page-count-guarded via {@link #scanPii} before the offline {@link PiiScanner} runs.
+     * Nothing is stored; the whole batch is scanned in memory and the aggregate report is built by
+     * the caller from the per-file results.
+     */
+    public List<PiiScanResult> scanPiiBatch(List<NamedBytes> inputs) throws PdfOperationException {
+        List<PiiScanResult> out = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) out.add(scanPii(in));
+        return out;
+    }
+
+    // ---------------------------------------------------------------- AUTO-REDACT
+
+    /**
+     * One-click auto-redaction driven by the PII scan: scan the input offline, collect every
+     * concrete-value finding's on-page regions (optionally limited to {@code categories}) and feed
+     * them straight into {@link PdfRedactor} — the finding regions already live in the redactor's
+     * coordinate space, so this is a coordinate-compatible, nearly-free hand-off. The value is
+     * permanently rasterised away (see {@link PdfRedactor}), not merely covered. Special-category
+     * keyword flags carry no regions, so they are never "redacted" (nothing to black out).
+     *
+     * @param categories when non-empty, only findings in these GDPR categories are redacted;
+     *                   empty/{@code null} ⇒ redact every detected value.
+     */
+    public NamedBytes autoRedact(NamedBytes in, Set<PiiCategory> categories)
+            throws PdfOperationException {
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            guardRender(lp, PdfRedactor.DEFAULT_DPI);
+            PiiScanResult scan = PiiScanner.scanBytes(pdf);
+            List<RedactRegion> regions = new ArrayList<>();
+            for (PiiFinding f : scan.findings()) {
+                if (categories != null && !categories.isEmpty() && !categories.contains(f.category())) {
+                    continue;
+                }
+                for (PiiRegion r : f.regions()) {
+                    regions.add(new RedactRegion(r.page(), r.x(), r.y(), r.width(), r.height()));
+                }
+            }
+            byte[] out = PdfRedactor.executeBytes(pdf, regions, 0);
+            return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     // ------------------------------------------------------------------ RENDER

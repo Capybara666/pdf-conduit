@@ -712,7 +712,20 @@
         "occurrences": "Conteggio"
       },
       "redactCta": "Oscura i dati rilevati",
-      "redactHint": "Controlla le aree evidenziate, poi applica: è gratis."
+      "redactHint": "Controlla le aree evidenziate, poi applica: è gratis.",
+      "hintMulti": "Uno o più PDF, immagini o documenti d'ufficio.",
+      "submitBatch": "Analizza {{count}} file",
+      "highestRiskLabel": "rischio massimo",
+      "batchSummary": "{count, plural, one {# dato personale in {files} file.} other {# dati personali in {files} file.}}",
+      "byCategoryAll": "Per categoria (tutti i file)",
+      "perFile": "Per file",
+      "fileFindings": "{count, plural, one {# risultato in {pages} pagine} other {# risultati in {pages} pagine}}",
+      "fileClean": "Nessun dato personale",
+      "autoRedactCta": "Oscura automaticamente tutto ciò che è rilevato",
+      "autoRedactAllCta": "Oscura tutti i file",
+      "autoRedactFile": "Oscura",
+      "autoRedactHint": "Un clic oscura ogni valore rilevato e scarica il file, gratis. Il tuo file non viene mai memorizzato.",
+      "autoRedactLoading": "Oscuramento…"
     },
     "crop": {
       "title": "Ritaglia",

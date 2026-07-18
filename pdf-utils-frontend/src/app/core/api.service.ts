@@ -6,6 +6,7 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   ApiError,
+  BatchPiiReport,
   CompressionInfo,
   HealthStatus,
   MetadataDto,
@@ -81,6 +82,19 @@ export class ApiService {
   /** `POST /api/gdpr-scan` → GDPR / PII scan report JSON. */
   gdprScan(formData: FormData): Observable<PiiReport> {
     return this.analyze<PiiReport>('gdpr-scan', formData);
+  }
+
+  /** `POST /api/gdpr-scan-batch` → aggregated multi-file GDPR audit JSON. */
+  gdprScanBatch(formData: FormData): Observable<BatchPiiReport> {
+    return this.analyze<BatchPiiReport>('gdpr-scan-batch', formData);
+  }
+
+  /**
+   * `POST /api/auto-redact` → the input PDF with every detected PII value permanently blacked out
+   * (a binary download). One-click, free; no manual box drawing.
+   */
+  autoRedact(formData: FormData): Observable<RunResult> {
+    return this.runOperation('auto-redact', formData);
   }
 
   // ---- Generic binary operation ----------------------------------------

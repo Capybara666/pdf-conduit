@@ -97,6 +97,25 @@ export type PiiReport = Omit<Required<Schemas['PiiReportDto']>, 'risk' | 'findin
 };
 
 /**
+ * One file's entry in a batch GDPR audit: its name plus its full {@link PiiReport}.
+ * Mirrors backend `FileReport`; `report` re-narrowed to {@link PiiReport}.
+ */
+export type BatchFileReport = Omit<Required<Schemas['FileReport']>, 'report'> & {
+  report: PiiReport;
+};
+
+/**
+ * Aggregated GDPR compliance audit from `POST /api/gdpr-scan-batch` (JSON, not a download).
+ * Mirrors backend `BatchPiiReportDto`; `highestRisk` is re-narrowed to {@link PiiRisk} and `files`
+ * to the required {@link BatchFileReport}. `countsByCategory` is keyed by `PiiCategory` name, summed
+ * across every scanned file.
+ */
+export type BatchPiiReport = Omit<Required<Schemas['BatchPiiReportDto']>, 'highestRisk' | 'files'> & {
+  highestRisk: PiiRisk;
+  files: BatchFileReport[];
+};
+
+/**
  * Rate-limit / daily-quota snapshot parsed from response headers
  * (`X-RateLimit-*`, `X-Quota-*`). Every field is optional — the backend may
  * not send all of them on every response.

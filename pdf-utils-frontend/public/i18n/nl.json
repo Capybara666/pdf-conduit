@@ -712,7 +712,20 @@
         "occurrences": "Aantal"
       },
       "redactCta": "Gedetecteerde gegevens redigeren",
-      "redactHint": "Controleer de gemarkeerde gebieden en pas toe — het is gratis."
+      "redactHint": "Controleer de gemarkeerde gebieden en pas toe — het is gratis.",
+      "hintMulti": "Een of meer PDF's, afbeeldingen of office-documenten.",
+      "submitBatch": "{{count}} bestanden scannen",
+      "highestRiskLabel": "hoogste risico",
+      "batchSummary": "{count, plural, one {# persoonsgegeven in {files} bestanden.} other {# persoonsgegevens in {files} bestanden.}}",
+      "byCategoryAll": "Per categorie (alle bestanden)",
+      "perFile": "Per bestand",
+      "fileFindings": "{count, plural, one {# resultaat op {pages} pagina's} other {# resultaten op {pages} pagina's}}",
+      "fileClean": "Geen persoonsgegevens",
+      "autoRedactCta": "Alles wat is gedetecteerd automatisch zwart maken",
+      "autoRedactAllCta": "Alle bestanden automatisch zwart maken",
+      "autoRedactFile": "Automatisch zwart maken",
+      "autoRedactHint": "Eén klik maakt elke gedetecteerde waarde zwart en downloadt het bestand — gratis. Uw bestand wordt nooit opgeslagen.",
+      "autoRedactLoading": "Bezig met zwart maken…"
     },
     "crop": {
       "title": "Bijsnijden",

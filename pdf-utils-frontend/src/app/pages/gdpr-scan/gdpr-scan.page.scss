@@ -268,6 +268,87 @@ table.findings {
   font-size: 0.85rem;
 }
 
+/* ---- Batch per-file breakdown ---- */
+.btn-sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-left: 5px solid var(--risk, var(--border));
+
+  &.risk-none {
+    --risk: var(--success);
+  }
+  &.risk-low {
+    --risk: var(--accent);
+  }
+  &.risk-medium {
+    --risk: var(--warning);
+  }
+  &.risk-high {
+    --risk: var(--danger);
+  }
+}
+
+.file-main {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  flex: 1;
+
+  .file-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--risk, var(--border));
+    flex: none;
+  }
+  .file-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .file-risk {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--risk, var(--text-muted));
+    flex: none;
+  }
+}
+
+.file-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+
+  .file-count {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+
+    &.clean {
+      color: var(--success);
+    }
+  }
+}
+
 .report {
   display: flex;
   flex-direction: column;

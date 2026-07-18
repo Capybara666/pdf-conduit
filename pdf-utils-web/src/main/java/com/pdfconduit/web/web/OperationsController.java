@@ -399,6 +399,42 @@ public class OperationsController {
         }
     }
 
+    // -------------------------------------------------------------- AUTO-REDACT
+
+    /**
+     * One-click auto-redaction driven by the PII scan (free): scan the upload offline, then black
+     * out every detected value's regions — no manual box drawing. An optional {@code categories}
+     * filter (comma-separated {@code PiiCategory} names, e.g. {@code FINANCIAL,NATIONAL_ID}) limits
+     * which categories are redacted; blank ⇒ redact everything detected. Streams back the redacted
+     * PDF. Nothing is stored; the whole flow runs in memory under the load guard.
+     */
+    @PostMapping(value = "/auto-redact", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> autoRedact(@RequestParam("file") MultipartFile file,
+                                             @RequestParam(required = false) String categories)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        java.util.Set<com.pdfconduit.core.analyze.PiiCategory> cats = parseCategories(categories);
+        NamedBytes in = uploads.read(file);
+        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.autoRedact(in, cats));
+        return Responses.file(result, MediaType.APPLICATION_PDF);
+    }
+
+    /** Lenient parse of a comma-separated GDPR category filter; unknown names are ignored. */
+    private static java.util.Set<com.pdfconduit.core.analyze.PiiCategory> parseCategories(String categories) {
+        if (categories == null || categories.isBlank()) return java.util.Set.of();
+        var out = java.util.EnumSet.noneOf(com.pdfconduit.core.analyze.PiiCategory.class);
+        for (String token : categories.split(",")) {
+            String t = token.trim();
+            if (t.isEmpty()) continue;
+            try {
+                out.add(com.pdfconduit.core.analyze.PiiCategory.valueOf(
+                    t.toUpperCase(java.util.Locale.ROOT).replace('-', '_')));
+            } catch (IllegalArgumentException ignored) {
+                // Unknown category name → skip it (lenient); an all-unknown filter redacts nothing.
+            }
+        }
+        return out;
+    }
+
     // ----------------------------------------------------------------- TO-IMAGES
 
     @PostMapping(value = "/to-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

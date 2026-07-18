@@ -712,7 +712,20 @@
         "occurrences": "次数"
       },
       "redactCta": "涂黑检测到的数据",
-      "redactHint": "查看高亮区域后应用即可，完全免费。"
+      "redactHint": "查看高亮区域后应用即可，完全免费。",
+      "hintMulti": "一个或多个 PDF、图片或办公文档。",
+      "submitBatch": "扫描 {{count}} 个文件",
+      "highestRiskLabel": "最高风险",
+      "batchSummary": "{count, plural, other {在 {files} 个文件中发现 # 项个人数据。}}",
+      "byCategoryAll": "按类别（全部文件）",
+      "perFile": "按文件",
+      "fileFindings": "{count, plural, other {在 {pages} 页中发现 # 项}}",
+      "fileClean": "无个人数据",
+      "autoRedactCta": "自动涂黑所有检测到的内容",
+      "autoRedactAllCta": "自动涂黑所有文件",
+      "autoRedactFile": "自动涂黑",
+      "autoRedactHint": "一键涂黑每个检测到的值并下载文件——免费。您的文件绝不会被存储。",
+      "autoRedactLoading": "正在涂黑…"
     },
     "crop": {
       "title": "裁剪",

@@ -712,7 +712,20 @@
         "occurrences": "횟수"
       },
       "redactCta": "감지된 데이터 마스킹",
-      "redactHint": "강조된 영역을 확인한 후 적용하세요 — 무료입니다."
+      "redactHint": "강조된 영역을 확인한 후 적용하세요 — 무료입니다.",
+      "hintMulti": "하나 이상의 PDF, 이미지 또는 오피스 문서.",
+      "submitBatch": "파일 {{count}}개 스캔",
+      "highestRiskLabel": "최고 위험",
+      "batchSummary": "{count, plural, other {{files}개 파일에서 개인정보 #건.}}",
+      "byCategoryAll": "카테고리별(전체 파일)",
+      "perFile": "파일별",
+      "fileFindings": "{count, plural, other {{pages}개 페이지에서 #건 발견}}",
+      "fileClean": "개인정보 없음",
+      "autoRedactCta": "감지된 모든 항목 자동 마스킹",
+      "autoRedactAllCta": "모든 파일 자동 마스킹",
+      "autoRedactFile": "자동 마스킹",
+      "autoRedactHint": "클릭 한 번으로 감지된 모든 값을 검게 가리고 파일을 다운로드합니다. 무료이며 파일은 저장되지 않습니다.",
+      "autoRedactLoading": "마스킹 중…"
     },
     "crop": {
       "title": "자르기",

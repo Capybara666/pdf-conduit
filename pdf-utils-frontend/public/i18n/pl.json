@@ -712,7 +712,20 @@
         "occurrences": "Liczba"
       },
       "redactCta": "Zredaguj wykryte dane",
-      "redactHint": "Sprawdź zaznaczone obszary i zastosuj — za darmo."
+      "redactHint": "Sprawdź zaznaczone obszary i zastosuj — za darmo.",
+      "hintMulti": "Jeden lub więcej plików PDF, obrazów lub dokumentów biurowych.",
+      "submitBatch": "Skanuj {{count}} plików",
+      "highestRiskLabel": "najwyższe ryzyko",
+      "batchSummary": "{count, plural, one {# element danych osobowych w {files} plikach.} few {# elementy danych osobowych w {files} plikach.} many {# elementów danych osobowych w {files} plikach.} other {# elementu danych osobowych w {files} plikach.}}",
+      "byCategoryAll": "Według kategorii (wszystkie pliki)",
+      "perFile": "Na plik",
+      "fileFindings": "{count, plural, one {# wynik na {pages} stronach} few {# wyniki na {pages} stronach} many {# wyników na {pages} stronach} other {# wyniku na {pages} stronach}}",
+      "fileClean": "Brak danych osobowych",
+      "autoRedactCta": "Automatycznie zamaż wszystko, co wykryto",
+      "autoRedactAllCta": "Automatycznie zamaż wszystkie pliki",
+      "autoRedactFile": "Zamaż automatycznie",
+      "autoRedactHint": "Jedno kliknięcie zaczernia każdą wykrytą wartość i pobiera plik — za darmo. Twój plik nigdy nie jest przechowywany.",
+      "autoRedactLoading": "Zamazywanie…"
     },
     "crop": {
       "title": "Przytnij",

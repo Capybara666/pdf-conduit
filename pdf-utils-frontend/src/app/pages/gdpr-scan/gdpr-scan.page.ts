@@ -3,8 +3,9 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 
-import { ApiError, PiiReport, RedactRegion } from '../../core/api.models';
+import { ApiError, BatchPiiReport, PiiReport, RedactRegion } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
+import { downloadRunResult } from '../../core/download.util';
 import { errorCopyKeys } from '../../core/error-copy';
 import { RedactHandoffService } from '../../core/redact-handoff.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
@@ -28,11 +29,20 @@ interface CategoryView {
   high: boolean;
 }
 
+/** A per-file row in the batch audit: file object, its report, and whether it has redactable data. */
+interface FileRow {
+  file: File;
+  report: PiiReport;
+  redactable: boolean;
+}
+
 /**
- * GDPR / PII scanner report page. Upload a PDF (or image / office doc), scan it
- * entirely in memory on the server, and present a privacy-first report: an
- * overall risk badge, per-category cards, and a masked findings table. Nothing
- * is stored; only masked samples ever leave the server.
+ * GDPR / PII scanner report page. Upload one PDF (or image / office doc) for a full report, or
+ * several files for an aggregated compliance audit — scanned entirely in memory on the server.
+ * The report is privacy-first: an overall risk badge, per-category cards, and a masked findings
+ * table. From here you can hand off to the manual Redact tool (pre-seeded boxes) or run a free
+ * one-click auto-redaction that blacks out every detected value. Nothing is stored; only masked
+ * samples ever leave the server.
  */
 @Component({
   selector: 'app-gdpr-scan-page',
@@ -52,24 +62,40 @@ export class GdprScanPage {
   private readonly handoff = inject(RedactHandoffService);
   private readonly router = inject(Router);
 
-  protected readonly file = signal<File | null>(null);
+  protected readonly files = signal<File[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal<ApiError | null>(null);
   protected readonly report = signal<PiiReport | null>(null);
+  protected readonly batch = signal<BatchPiiReport | null>(null);
 
-  /** Active category filter for the findings table (null = show all). */
+  /** Active category filter for the single-file findings table (null = show all). */
   protected readonly filter = signal<string | null>(null);
 
-  /** Lower-cased risk (`none`/`low`/`medium`/`high`) for styling + copy keys. */
+  /**
+   * Auto-redaction in flight: the filename currently being redacted (single files use their own
+   * name), or `'*'` while a "redact all" sweep runs. Null when idle.
+   */
+  protected readonly redacting = signal<string | null>(null);
+
+  /** Lower-cased single-file risk (`none`/`low`/`medium`/`high`) for styling + copy keys. */
   protected readonly riskKey = computed(() => (this.report()?.risk ?? 'NONE').toLowerCase());
 
-  /** All six categories with their counts, high-risk first (0-count cards still shown). */
-  protected readonly categories = computed<CategoryView[]>(() => {
-    const counts = this.report()?.countsByCategory ?? {};
-    return CATEGORY_ORDER.map((c) => ({ key: c.key, high: c.high, count: counts[c.key] ?? 0 }));
-  });
+  /** Lower-cased aggregate (highest) risk across the batch. */
+  protected readonly batchRiskKey = computed(() =>
+    (this.batch()?.highestRisk ?? 'NONE').toLowerCase(),
+  );
 
-  /** Distinct category keys actually present, high-risk first — for the filter chips. */
+  /** All six categories with the single-file counts, high-risk first (0-count cards still shown). */
+  protected readonly categories = computed<CategoryView[]>(() =>
+    this.toCategoryViews(this.report()?.countsByCategory ?? {}),
+  );
+
+  /** All six categories with the aggregate batch counts, high-risk first. */
+  protected readonly batchCategories = computed<CategoryView[]>(() =>
+    this.toCategoryViews(this.batch()?.countsByCategory ?? {}),
+  );
+
+  /** Distinct category keys actually present in the single-file report — for the filter chips. */
   protected readonly presentCategories = computed<string[]>(() =>
     this.categories()
       .filter((c) => c.count > 0)
@@ -77,14 +103,29 @@ export class GdprScanPage {
   );
 
   /**
-   * True when at least one finding carries redact regions — the free
-   * "Redact detected data" CTA only appears then (keyword flags have none).
+   * True when at least one finding carries redact regions — the free redact CTAs only appear then
+   * (special-category keyword flags have no regions to black out).
    */
   protected readonly hasRedactable = computed(() =>
     (this.report()?.findings ?? []).some((f) => f.regions?.length),
   );
 
-  /** Findings honouring the active category filter. */
+  /** Per-file rows for the batch view, pairing each uploaded file with its report (order preserved). */
+  protected readonly fileRows = computed<FileRow[]>(() => {
+    const b = this.batch();
+    if (!b) return [];
+    const uploaded = this.files();
+    return b.files.map((entry, i) => ({
+      file: uploaded[i] ?? new File([], entry.filename),
+      report: entry.report,
+      redactable: (entry.report.findings ?? []).some((f) => f.regions?.length),
+    }));
+  });
+
+  /** True when any file in the batch has redactable data (drives the "redact all" button). */
+  protected readonly batchHasRedactable = computed(() => this.fileRows().some((r) => r.redactable));
+
+  /** Findings honouring the active category filter (single-file view). */
   protected readonly visibleFindings = computed(() => {
     const r = this.report();
     if (!r) return [];
@@ -92,33 +133,43 @@ export class GdprScanPage {
     return f ? r.findings.filter((x) => x.category === f) : r.findings;
   });
 
-  onFile(f: File | null): void {
-    this.file.set(f);
+  onFiles(files: File[]): void {
+    this.files.set(files);
     this.error.set(null);
     this.report.set(null);
+    this.batch.set(null);
     this.filter.set(null);
   }
 
   scan(): void {
-    const f = this.file();
-    if (!f || this.loading()) return;
+    const files = this.files();
+    if (!files.length || this.loading()) return;
     this.loading.set(true);
     this.error.set(null);
     this.report.set(null);
+    this.batch.set(null);
     this.filter.set(null);
 
     const fd = new FormData();
-    fd.append('file', f, f.name);
-    this.api.gdprScan(fd).subscribe({
-      next: (report) => {
-        this.report.set(report);
-        this.loading.set(false);
-      },
-      error: (e) => {
-        this.error.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
-        this.loading.set(false);
-      },
-    });
+    if (files.length === 1) {
+      fd.append('file', files[0], files[0].name);
+      this.api.gdprScan(fd).subscribe({
+        next: (report) => {
+          this.report.set(report);
+          this.loading.set(false);
+        },
+        error: (e) => this.fail(e),
+      });
+    } else {
+      for (const f of files) fd.append('files', f, f.name);
+      this.api.gdprScanBatch(fd).subscribe({
+        next: (batch) => {
+          this.batch.set(batch);
+          this.loading.set(false);
+        },
+        error: (e) => this.fail(e),
+      });
+    }
   }
 
   setFilter(key: string | null): void {
@@ -126,18 +177,77 @@ export class GdprScanPage {
   }
 
   /**
-   * Free redaction handoff: gather every finding's regions (already in the
-   * redact viewer's point space), stash them with the scanned file, then open
-   * the redact page — which pre-draws the boxes over the detected text.
+   * Free manual redaction handoff (single file): gather every finding's regions (already in the
+   * redact viewer's point space), stash them with the scanned file, then open the redact page —
+   * which pre-draws the boxes for review before applying.
    */
   redactDetected(): void {
-    const f = this.file();
+    const f = this.files()[0];
     const r = this.report();
     if (!f || !r) return;
     const regions = this.dedupe(r.findings.flatMap((x) => x.regions ?? []));
     if (!regions.length) return;
     this.handoff.set(f, regions);
     this.router.navigate(['/', 'redact']);
+  }
+
+  /** Free one-click auto-redaction of a single file: black out every detected value and download. */
+  autoRedact(file: File): void {
+    if (this.redacting()) return;
+    this.redacting.set(file.name);
+    this.error.set(null);
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    this.api.autoRedact(fd).subscribe({
+      next: (result) => {
+        downloadRunResult(result);
+        this.redacting.set(null);
+      },
+      error: (e) => {
+        this.redacting.set(null);
+        this.error.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
+      },
+    });
+  }
+
+  /** Bulk auto-redact every batch file that carries detected data, one download each (sequential). */
+  autoRedactAll(): void {
+    if (this.redacting()) return;
+    const targets = this.fileRows().filter((r) => r.redactable);
+    if (!targets.length) return;
+    this.redacting.set('*');
+    this.error.set(null);
+    this.redactNext(targets, 0);
+  }
+
+  /** Sequentially POST each target to /api/auto-redact so downloads don't stampede in parallel. */
+  private redactNext(targets: FileRow[], i: number): void {
+    if (i >= targets.length) {
+      this.redacting.set(null);
+      return;
+    }
+    const fd = new FormData();
+    fd.append('file', targets[i].file, targets[i].file.name);
+    this.api.autoRedact(fd).subscribe({
+      next: (result) => {
+        downloadRunResult(result);
+        this.redactNext(targets, i + 1);
+      },
+      error: (e) => {
+        this.redacting.set(null);
+        this.error.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
+      },
+    });
+  }
+
+  private fail(e: unknown): void {
+    this.error.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
+    this.loading.set(false);
+  }
+
+  /** Map a `{category: count}` object to the fixed six-category view list, high-risk first. */
+  private toCategoryViews(counts: Record<string, number>): CategoryView[] {
+    return CATEGORY_ORDER.map((c) => ({ key: c.key, high: c.high, count: counts[c.key] ?? 0 }));
   }
 
   /** Drop exact-duplicate boxes (same page + rounded rect) to avoid stacked overlays. */

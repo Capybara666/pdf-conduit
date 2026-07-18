@@ -712,7 +712,20 @@
         "occurrences": "Anzahl"
       },
       "redactCta": "Erkannte Daten schwärzen",
-      "redactHint": "Prüfen Sie die markierten Bereiche und wenden Sie die Schwärzung an – kostenlos."
+      "redactHint": "Prüfen Sie die markierten Bereiche und wenden Sie die Schwärzung an – kostenlos.",
+      "hintMulti": "Ein oder mehrere PDFs, Bilder oder Office-Dokumente.",
+      "submitBatch": "{{count}} Dateien scannen",
+      "highestRiskLabel": "höchstes Risiko",
+      "batchSummary": "{count, plural, one {# personenbezogenes Datum in {files} Dateien.} other {# personenbezogene Daten in {files} Dateien.}}",
+      "byCategoryAll": "Nach Kategorie (alle Dateien)",
+      "perFile": "Pro Datei",
+      "fileFindings": "{count, plural, one {# Fund auf {pages} Seiten} other {# Funde auf {pages} Seiten}}",
+      "fileClean": "Keine personenbezogenen Daten",
+      "autoRedactCta": "Alles Erkannte automatisch schwärzen",
+      "autoRedactAllCta": "Alle Dateien automatisch schwärzen",
+      "autoRedactFile": "Automatisch schwärzen",
+      "autoRedactHint": "Ein Klick schwärzt jeden erkannten Wert und lädt die Datei herunter – kostenlos. Ihre Datei wird nie gespeichert.",
+      "autoRedactLoading": "Wird geschwärzt…"
     },
     "crop": {
       "title": "Zuschneiden",

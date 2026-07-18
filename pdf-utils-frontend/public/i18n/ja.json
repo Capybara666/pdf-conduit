@@ -712,7 +712,20 @@
         "occurrences": "件数"
       },
       "redactCta": "検出したデータを黒塗り",
-      "redactHint": "ハイライトされた箇所を確認して適用してください（無料）。"
+      "redactHint": "ハイライトされた箇所を確認して適用してください（無料）。",
+      "hintMulti": "1つ以上のPDF、画像、またはオフィス文書。",
+      "submitBatch": "{{count}} 件のファイルをスキャン",
+      "highestRiskLabel": "最高リスク",
+      "batchSummary": "{count, plural, other {{files} 件のファイルで個人データ # 件。}}",
+      "byCategoryAll": "カテゴリ別（全ファイル）",
+      "perFile": "ファイルごと",
+      "fileFindings": "{count, plural, other {{pages} ページで # 件検出}}",
+      "fileClean": "個人データなし",
+      "autoRedactCta": "検出項目をすべて自動で墨消し",
+      "autoRedactAllCta": "すべてのファイルを自動で墨消し",
+      "autoRedactFile": "自動墨消し",
+      "autoRedactHint": "ワンクリックで検出された値をすべて黒塗りし、ファイルをダウンロードします（無料）。ファイルが保存されることはありません。",
+      "autoRedactLoading": "墨消し中…"
     },
     "crop": {
       "title": "トリミング",

@@ -712,7 +712,20 @@
         "occurrences": "Count"
       },
       "redactCta": "Redact detected data",
-      "redactHint": "Review the highlighted areas, then apply — it's free."
+      "redactHint": "Review the highlighted areas, then apply — it's free.",
+      "hintMulti": "One or more PDFs, images or office documents.",
+      "submitBatch": "Scan {{count}} files",
+      "highestRiskLabel": "highest risk",
+      "batchSummary": "{count, plural, one {# piece of personal data across {files} files.} other {# pieces of personal data across {files} files.}}",
+      "byCategoryAll": "By category (all files)",
+      "perFile": "Per file",
+      "fileFindings": "{count, plural, one {# finding across {pages} pages} other {# findings across {pages} pages}}",
+      "fileClean": "No personal data",
+      "autoRedactCta": "Auto-redact everything detected",
+      "autoRedactAllCta": "Auto-redact all files",
+      "autoRedactFile": "Auto-redact",
+      "autoRedactHint": "One click blacks out every detected value and downloads the file — free. Your file is never stored.",
+      "autoRedactLoading": "Redacting…"
     },
     "crop": {
       "title": "Crop",

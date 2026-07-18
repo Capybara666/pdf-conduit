@@ -17,15 +17,20 @@
   </p>
 
   <app-file-drop-zone
-    [multiple]="false"
+    [multiple]="true"
     accept=".pdf"
-    [hint]="t('pages.gdprScan.hint')"
-    (filesChange)="onFile($event.length ? $event[0] : null)"
+    [hint]="t('pages.gdprScan.hintMulti')"
+    (filesChange)="onFiles($event)"
   />
 
   <div class="btn-row">
-    <button type="button" class="btn btn-primary" [disabled]="!file() || loading()" (click)="scan()">
-      {{ t('pages.gdprScan.submit') }}
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="!files().length || loading()"
+      (click)="scan()"
+    >
+      {{ files().length > 1 ? t('pages.gdprScan.submitBatch', { count: files().length }) : t('pages.gdprScan.submit') }}
     </button>
     @if (loading()) {
       <app-spinner [label]="t('pages.gdprScan.loading')" />
@@ -44,7 +49,7 @@
     </div>
   }
 
-  <!-- Report -->
+  <!-- Single-file report -->
   @if (report(); as r) {
     <div class="report">
       <!-- Risk badge + plain-language summary -->
@@ -141,15 +146,115 @@
         </div>
       }
 
-      <!-- Free redaction handoff — only when findings carry redactable regions. -->
+      <!-- Free redaction — only when findings carry redactable regions. -->
       @if (hasRedactable()) {
         <div class="cta-row">
-          <button type="button" class="btn btn-primary" (click)="redactDetected()">
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="redacting() !== null"
+            (click)="autoRedact(files()[0])"
+          >
+            {{ t('pages.gdprScan.autoRedactCta') }}
+          </button>
+          <button type="button" class="btn" [disabled]="redacting() !== null" (click)="redactDetected()">
             {{ t('pages.gdprScan.redactCta') }}
           </button>
-          <span class="cta-hint" role="note">{{ t('pages.gdprScan.redactHint') }}</span>
+          @if (redacting()) {
+            <app-spinner [label]="t('pages.gdprScan.autoRedactLoading')" />
+          }
         </div>
+        <p class="cta-hint" role="note">{{ t('pages.gdprScan.autoRedactHint') }}</p>
       }
+    </div>
+  }
+
+  <!-- Multi-file batch audit -->
+  @if (batch(); as b) {
+    <div class="report">
+      <!-- Aggregate roll-up -->
+      <div class="risk-card card" [ngClass]="'risk-' + batchRiskKey()">
+        <div class="risk-badge" [attr.aria-label]="t('pages.gdprScan.riskBadgeAria', { level: t('pages.gdprScan.risk.' + batchRiskKey()) })">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="lvl">{{ t('pages.gdprScan.risk.' + batchRiskKey()) }}</span>
+          <span class="sub">{{ t('pages.gdprScan.highestRiskLabel') }}</span>
+        </div>
+        <div class="risk-copy">
+          <p class="summary">
+            {{ t('pages.gdprScan.batchSummary', { files: b.fileCount, count: b.totalFindings }) }}
+          </p>
+          <p class="risk-explain">{{ t('pages.gdprScan.risk.' + batchRiskKey() + 'Explain') }}</p>
+        </div>
+      </div>
+
+      <!-- Aggregate per-category cards -->
+      <h2 class="section-title">{{ t('pages.gdprScan.byCategoryAll') }}</h2>
+      <div class="cat-grid">
+        @for (c of batchCategories(); track c.key) {
+          <div class="cat-card" [ngClass]="{ high: c.high, empty: c.count === 0, hit: c.count > 0 }">
+            <span class="cat-count">{{ c.count }}</span>
+            <span class="cat-name">{{ t('pii.category.' + c.key) }}</span>
+            @if (c.high) {
+              <span class="cat-tag">{{ t('pages.gdprScan.higherRisk') }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Bulk auto-redact -->
+      @if (batchHasRedactable()) {
+        <div class="cta-row">
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="redacting() !== null"
+            (click)="autoRedactAll()"
+          >
+            {{ t('pages.gdprScan.autoRedactAllCta') }}
+          </button>
+          @if (redacting() === '*') {
+            <app-spinner [label]="t('pages.gdprScan.autoRedactLoading')" />
+          }
+        </div>
+        <p class="cta-hint" role="note">{{ t('pages.gdprScan.autoRedactHint') }}</p>
+      }
+
+      <!-- Per-file breakdown -->
+      <h2 class="section-title">{{ t('pages.gdprScan.perFile') }}</h2>
+      <div class="file-list">
+        @for (row of fileRows(); track $index) {
+          <div class="file-row card" [ngClass]="'risk-' + row.report.risk.toLowerCase()">
+            <div class="file-main">
+              <span class="file-dot" aria-hidden="true"></span>
+              <span class="file-name" [title]="row.file.name">{{ row.file.name }}</span>
+              <span class="file-risk">{{ t('pages.gdprScan.risk.' + row.report.risk.toLowerCase()) }}</span>
+            </div>
+            <div class="file-meta">
+              @if (row.report.totalFindings > 0) {
+                <span class="file-count">{{
+                  t('pages.gdprScan.fileFindings', { count: row.report.totalFindings, pages: row.report.pagesScanned })
+                }}</span>
+              } @else {
+                <span class="file-count clean">{{ t('pages.gdprScan.fileClean') }}</span>
+              }
+              @if (row.redactable) {
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  [disabled]="redacting() !== null"
+                  (click)="autoRedact(row.file)"
+                >
+                  {{
+                    redacting() === row.file.name
+                      ? t('pages.gdprScan.autoRedactLoading')
+                      : t('pages.gdprScan.autoRedactFile')
+                  }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
     </div>
   }
 </section>
