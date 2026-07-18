@@ -340,7 +340,8 @@
     "extract": {
       "title": "Extraheren",
       "description": "Haal geselecteerde pagina's uit een PDF.",
-      "hint": "Eén PDF.",
+      "hint": "PDF-bestanden — meerdere bestanden komen terug als ZIP.",
+      "batchNote": "{{count}} bestanden geselecteerd — het paginabereik geldt voor elk; de resultaten komen terug als ZIP.",
       "pages": "Pagina's",
       "pagesPlaceholder": "bijv. 1,3,5-8",
       "pagesHelp": "Leeg = alle pagina's. Syntaxis:",

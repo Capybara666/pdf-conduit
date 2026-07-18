@@ -340,7 +340,8 @@
     "extract": {
       "title": "抽出",
       "description": "PDF から選択したページを取り出します。",
-      "hint": "PDF 1 つ。",
+      "hint": "PDF ファイル — 複数のファイルは ZIP で返されます。",
+      "batchNote": "{{count}} 個のファイルを選択中 — ページ範囲は各ファイルに適用され、結果は ZIP で返されます。",
       "pages": "ページ",
       "pagesPlaceholder": "例：1,3,5-8",
       "pagesHelp": "空欄 = すべてのページ。書式：",

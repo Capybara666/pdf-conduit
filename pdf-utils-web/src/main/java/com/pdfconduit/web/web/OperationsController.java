@@ -84,18 +84,21 @@ public class OperationsController {
     // ------------------------------------------------------------------ EXTRACT
 
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> extract(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<byte[]> extract(@RequestParam("files") List<MultipartFile> files,
                                           @RequestParam(required = false) String pages,
                                           @RequestParam(defaultValue = "false") boolean separate)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        NamedBytes in = uploads.read(file);
-        long bytes = in.data().length;
+        guardCount(files, maxFiles);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        long bytes = totalBytes(inputs);
         if (separate) {
-            return Responses.zip(loadGuard.execute(bytes, () -> ops.extractSeparate(in, pages)),
+            // Per-page split is inherently multi-output, so it always zips (even for a single file).
+            return Responses.zip(loadGuard.execute(bytes, () -> ops.extractSeparate(inputs, pages)),
                 "extract_results.zip");
         }
-        return Responses.file(loadGuard.execute(bytes, () -> ops.extractCombine(in, pages)),
-            MediaType.APPLICATION_PDF);
+        // Combine: one PDF per input — a single file streams, several files zip.
+        List<NamedBytes> results = loadGuard.execute(bytes, () -> ops.extractCombine(inputs, pages));
+        return Responses.batch("extract", results, MediaType.APPLICATION_PDF);
     }
 
     // ----------------------------------------------------------------- COMPRESS

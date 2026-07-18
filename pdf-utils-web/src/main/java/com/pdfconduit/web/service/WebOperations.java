@@ -116,6 +116,29 @@ public class WebOperations {
         }
     }
 
+    /**
+     * Batch combine-extract: apply {@code pagesExpr} to every input, one combined PDF per input,
+     * order preserved. Each output is named from its source file, so distinct sources stay distinct.
+     */
+    public List<NamedBytes> extractCombine(List<NamedBytes> inputs, String pagesExpr)
+            throws PdfOperationException, InvalidPageRangeException {
+        List<NamedBytes> out = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) out.add(extractCombine(in, pagesExpr));
+        return out;
+    }
+
+    /**
+     * Batch separate-extract: apply {@code pagesExpr} to every input, one PDF per selected page,
+     * all inputs' pages concatenated (order preserved). Per-page names carry each source's filename
+     * ({@link #nameMulti}); any residual collision is de-duplicated when zipped.
+     */
+    public List<NamedBytes> extractSeparate(List<NamedBytes> inputs, String pagesExpr)
+            throws PdfOperationException, InvalidPageRangeException {
+        List<NamedBytes> out = new ArrayList<>();
+        for (NamedBytes in : inputs) out.addAll(extractSeparate(in, pagesExpr));
+        return out;
+    }
+
     // --------------------------------------------------------------- COMPRESS
 
     /** Compress a single input to (at most) {@code targetBytes}; full metrics returned. */

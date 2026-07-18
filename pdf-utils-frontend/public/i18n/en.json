@@ -340,7 +340,8 @@
     "extract": {
       "title": "Extract",
       "description": "Pull selected pages out of a PDF.",
-      "hint": "One PDF.",
+      "hint": "PDF files — several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected — the page range applies to each; results come back as a ZIP.",
       "pages": "Pages",
       "pagesPlaceholder": "e.g. 1,3,5-8",
       "pagesHelp": "Blank = all pages. Syntax:",

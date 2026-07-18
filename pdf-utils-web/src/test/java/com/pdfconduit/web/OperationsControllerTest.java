@@ -49,6 +49,15 @@ class OperationsControllerTest {
         return new MockMultipartFile(field, name, "application/pdf", bytes);
     }
 
+    private static int zipEntryCount(byte[] zip) throws java.io.IOException {
+        int n = 0;
+        try (java.util.zip.ZipInputStream in =
+                 new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(zip))) {
+            while (in.getNextEntry() != null) n++;
+        }
+        return n;
+    }
+
     // --------------------------------------------------------------- info
 
     @Test
@@ -115,7 +124,7 @@ class OperationsControllerTest {
     void extract_combine_returnsSelectedPages() throws Exception {
         byte[] a = TestPdfs.blank(5);
         MvcResult result = mvc().perform(multipart("/api/extract")
-                .file(pdf("file", "a.pdf", a))
+                .file(pdf("files", "a.pdf", a))
                 .param("pages", "1,3"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_PDF))
@@ -127,12 +136,29 @@ class OperationsControllerTest {
     void extract_separate_returnsZip() throws Exception {
         byte[] a = TestPdfs.blank(3);
         mvc().perform(multipart("/api/extract")
-                .file(pdf("file", "a.pdf", a))
+                .file(pdf("files", "a.pdf", a))
                 .param("separate", "true"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
             .andExpect(header().string("Content-Disposition",
                 org.hamcrest.Matchers.containsString("extract_results.zip")));
+    }
+
+    @Test
+    void extract_combine_multipleFiles_returnsZip() throws Exception {
+        byte[] a = TestPdfs.blank(5);
+        byte[] b = TestPdfs.blank(4);
+        MvcResult result = mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", a))
+                .file(pdf("files", "b.pdf", b))
+                .param("pages", "1,3"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andExpect(header().string("Content-Disposition",
+                org.hamcrest.Matchers.containsString("extract_results.zip")))
+            .andReturn();
+        // Two source files → one combined PDF per file in the archive.
+        assertThat(zipEntryCount(result.getResponse().getContentAsByteArray())).isEqualTo(2);
     }
 
     // ------------------------------------------------------------- metadata
@@ -431,7 +457,7 @@ class OperationsControllerTest {
     void extract_invalidPageRange_returns400() throws Exception {
         byte[] a = TestPdfs.blank(2);
         mvc().perform(multipart("/api/extract")
-                .file(pdf("file", "a.pdf", a))
+                .file(pdf("files", "a.pdf", a))
                 .param("pages", "5-9"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("invalid_page_range"));
@@ -441,7 +467,7 @@ class OperationsControllerTest {
     void extract_corruptPdf_returns422() throws Exception {
         byte[] notAPdf = "this is definitely not a pdf".getBytes();
         mvc().perform(multipart("/api/extract")
-                .file(pdf("file", "broken.pdf", notAPdf)))
+                .file(pdf("files", "broken.pdf", notAPdf)))
             .andExpect(status().isUnprocessableEntity())
             .andExpect(jsonPath("$.code").value("operation_failed"));
     }

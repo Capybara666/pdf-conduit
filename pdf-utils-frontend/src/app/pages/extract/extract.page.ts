@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -29,19 +29,21 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
 
       <app-file-drop-zone
-        [multiple]="false"
+        [multiple]="true"
         accept=".pdf"
         [hint]="'pages.extract.hint' | transloco"
-        (filesChange)="file.set($event.length ? $event[0] : null)"
+        (filesChange)="files.set($event)"
       />
 
-      @if (file()) {
+      @if (singleFile()) {
         <app-page-grid
           mode="select"
-          [file]="file()"
+          [file]="singleFile()"
           [range]="pages.value"
           (rangeChange)="pages.setValue($event)"
         />
+      } @else if (files().length > 1) {
+        <p class="help">{{ 'pages.extract.batchNote' | transloco: { count: files().length } }}</p>
       }
 
       <div class="card form-grid">
@@ -68,7 +70,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn btn-primary" [disabled]="!file() || state.loading()" (click)="submit()">
+        <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
           {{ 'pages.extract.submit' | transloco }}
         </button>
       </div>
@@ -84,7 +86,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
   `,
 })
 export class ExtractPage {
-  protected readonly file = signal<File | null>(null);
+  protected readonly files = signal<File[]>([]);
+  /** The lone file when exactly one is selected — drives the visual page-select grid. */
+  protected readonly singleFile = computed(() => (this.files().length === 1 ? this.files()[0] : null));
   protected readonly pages = new FormControl('', { nonNullable: true });
   protected readonly separate = new FormControl(false, { nonNullable: true });
   protected readonly state = new OperationState();
@@ -92,10 +96,10 @@ export class ExtractPage {
   constructor(private readonly api: ApiService) {}
 
   submit(): void {
-    const f = this.file();
-    if (!f) return;
+    const fs = this.files();
+    if (!fs.length) return;
     const fd = new FormData();
-    fd.append('file', f, f.name);
+    for (const f of fs) fd.append('files', f, f.name);
     const p = this.pages.value.trim();
     if (p) fd.append('pages', p);
     fd.append('separate', String(this.separate.value));

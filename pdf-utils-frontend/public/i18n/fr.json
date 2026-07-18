@@ -340,7 +340,8 @@
     "extract": {
       "title": "Extraire",
       "description": "Extrayez des pages sélectionnées d'un PDF.",
-      "hint": "Un seul PDF.",
+      "hint": "Fichiers PDF — plusieurs fichiers sont renvoyés dans un ZIP.",
+      "batchNote": "{{count}} fichiers sélectionnés — la plage de pages s'applique à chacun ; les résultats sont renvoyés dans un ZIP.",
       "pages": "Pages",
       "pagesPlaceholder": "ex. 1,3,5-8",
       "pagesHelp": "Vide = toutes les pages. Syntaxe :",

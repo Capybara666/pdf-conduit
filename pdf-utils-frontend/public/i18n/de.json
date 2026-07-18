@@ -340,7 +340,8 @@
     "extract": {
       "title": "Extrahieren",
       "description": "Ausgewählte Seiten aus einem PDF herauslösen.",
-      "hint": "Ein PDF.",
+      "hint": "PDF-Dateien – mehrere Dateien werden als ZIP zurückgegeben.",
+      "batchNote": "{{count}} Dateien ausgewählt – der Seitenbereich gilt für jede; die Ergebnisse werden als ZIP zurückgegeben.",
       "pages": "Seiten",
       "pagesPlaceholder": "z. B. 1,3,5-8",
       "pagesHelp": "Leer = alle Seiten. Syntax:",

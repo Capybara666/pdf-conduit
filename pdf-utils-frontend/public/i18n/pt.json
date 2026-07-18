@@ -340,7 +340,8 @@
     "extract": {
       "title": "Extrair",
       "description": "Retire páginas selecionadas de um PDF.",
-      "hint": "Um PDF.",
+      "hint": "Ficheiros PDF — vários ficheiros são devolvidos como ZIP.",
+      "batchNote": "{{count}} ficheiros selecionados — o intervalo de páginas aplica-se a cada um; os resultados são devolvidos como ZIP.",
       "pages": "Páginas",
       "pagesPlaceholder": "ex.: 1,3,5-8",
       "pagesHelp": "Em branco = todas as páginas. Sintaxe:",

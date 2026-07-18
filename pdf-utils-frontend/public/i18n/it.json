@@ -340,7 +340,8 @@
     "extract": {
       "title": "Estrai",
       "description": "Estrai le pagine selezionate da un PDF.",
-      "hint": "Un solo PDF.",
+      "hint": "File PDF: più file vengono restituiti come ZIP.",
+      "batchNote": "{{count}} file selezionati: l'intervallo di pagine si applica a ciascuno; i risultati vengono restituiti come ZIP.",
       "pages": "Pagine",
       "pagesPlaceholder": "es. 1,3,5-8",
       "pagesHelp": "Vuoto = tutte le pagine. Sintassi:",

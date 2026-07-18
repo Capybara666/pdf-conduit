@@ -340,7 +340,8 @@
     "extract": {
       "title": "추출",
       "description": "PDF에서 선택한 페이지를 뽑아냅니다.",
-      "hint": "PDF 한 개.",
+      "hint": "PDF 파일 — 여러 파일은 ZIP으로 반환됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨 — 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
       "pages": "페이지",
       "pagesPlaceholder": "예: 1,3,5-8",
       "pagesHelp": "비워 두면 = 모든 페이지. 문법:",

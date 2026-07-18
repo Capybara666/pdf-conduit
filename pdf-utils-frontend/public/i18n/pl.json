@@ -340,7 +340,8 @@
     "extract": {
       "title": "Wyodrębnij",
       "description": "Wyciągnij wybrane strony z pliku PDF.",
-      "hint": "Jeden plik PDF.",
+      "hint": "Pliki PDF — kilka plików wraca jako ZIP.",
+      "batchNote": "Wybrano plików: {{count}} — zakres stron dotyczy każdego; wyniki wracają jako ZIP.",
       "pages": "Strony",
       "pagesPlaceholder": "np. 1,3,5-8",
       "pagesHelp": "Puste = wszystkie strony. Składnia:",

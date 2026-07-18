@@ -30,7 +30,7 @@ class MaxPagesTest {
     @Test
     void pdfOverPageCap_returns422() throws Exception {
         byte[] a = TestPdfs.blank(5);
-        MockMultipartFile file = new MockMultipartFile("file", "a.pdf", "application/pdf", a);
+        MockMultipartFile file = new MockMultipartFile("files", "a.pdf", "application/pdf", a);
 
         mvc.perform(multipart("/api/extract").file(file))
             .andExpect(status().isUnprocessableEntity())

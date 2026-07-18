@@ -340,7 +340,8 @@
     "extract": {
       "title": "Ayıkla",
       "description": "Seçili sayfaları bir PDF'ten çıkarın.",
-      "hint": "Bir PDF.",
+      "hint": "PDF dosyaları — birden fazla dosya ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi — sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
       "pages": "Sayfalar",
       "pagesPlaceholder": "örn. 1,3,5-8",
       "pagesHelp": "Boş = tüm sayfalar. Söz dizimi:",
