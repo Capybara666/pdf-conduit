@@ -161,7 +161,9 @@
     },
     "tools": {
       "title": "Bir araç seçin ve başlayın",
-      "subtitle": "Odaklı araçlar, her biri tek bir işi iyi yapıyor."
+      "subtitle": "PDF'lerle çalışmak için ihtiyacınız olan her şey — varsayılan olarak gizli.",
+      "showMore": "Tüm araçları göster",
+      "showLess": "Daha az göster"
     },
     "pro": {
       "soon": "Yakında",
@@ -203,12 +205,20 @@
       "step1Title": "Bir araç seçin",
       "step1Desc": "İhtiyacınız olanı seçin — birleştirme, sıkıştırma, dönüştürme, koruma ve daha fazlası.",
       "step2Title": "Dosyanızı ekleyin",
-      "step2Desc": "Sürükleyin ya da göz atın. Dosyanız anında işlenir ve sunucularımızda asla saklanmaz.",
+      "step2Desc": "Sürükleyin ya da göz atın. Dosyalarınız sunucularımızda asla saklanmaz.",
       "step3Title": "Sonucunuzu indirin",
-      "step3Desc": "Tamamlanan PDF'nizi hemen alın. Ayrıldığınızda geride hiçbir şey kalmaz.",
+      "step3Desc": "Başlatın; dosyanız hemen işlenir — tamamlanan PDF'niz saniyeler içinde indirmeye hazır olur. Ayrıldığınızda geride hiçbir şey kalmaz.",
       "wizardTitle": "PDF Conduit'te yeni misiniz?",
       "wizardDesc": "Rehberli Sihirbaz seçme, düzenleme ve dışa aktarma adımlarında size adım adım eşlik etsin.",
-      "wizardCta": "Rehberli Sihirbazı başlat"
+      "wizardCta": "Rehberli Sihirbazı başlat",
+      "privacyLink": "Dosyalarınızı nasıl gizli tuttuğumuzu görün →"
+    },
+    "advanced": {
+      "title": "Gelişmiş araçlar",
+      "subtitle": "Daha fazlasına hazır mısınız? Çok adımlı akışlar oluşturun ya da bir belgeyi kişisel veriler açısından tarayın.",
+      "wizardDesc": "Burada yeni misiniz? Rehberli sihirbaz adım adım size yol göstersin.",
+      "pipelineDesc": "Birden fazla işlemi görsel bir düğüm grafiğiyle tek ve tekrarlanabilir bir akışta birleştirin.",
+      "gdprDesc": "Bir PDF'yi kişisel veriler (GDPR / PII) açısından tarayın, ardından doğrudan karartmaya geçin."
     }
   },
   "onboarding": {

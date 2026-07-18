@@ -109,7 +109,7 @@ export const NAV_ITEMS: NavItem[] = [
     id: 'gdpr-scan',
     label: 'GDPR Scan',
     description: 'Scan a PDF for personal data (GDPR / PII).',
-    group: 'secure',
+    group: 'advanced',
     icon: 'M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z M9 11.5l2 2 4-4.5',
   },
 

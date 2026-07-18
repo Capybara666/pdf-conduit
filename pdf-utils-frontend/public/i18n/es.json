@@ -161,7 +161,9 @@
     },
     "tools": {
       "title": "Elige una herramienta y adelante",
-      "subtitle": "Herramientas específicas, cada una hace bien su tarea."
+      "subtitle": "Todo lo que necesitas para trabajar con PDF, privado por defecto.",
+      "showMore": "Mostrar todas las herramientas",
+      "showLess": "Mostrar menos"
     },
     "pro": {
       "soon": "Próximamente",
@@ -203,12 +205,20 @@
       "step1Title": "Elige una herramienta",
       "step1Desc": "Elige lo que necesitas: combinar, comprimir, convertir, proteger y mucho más.",
       "step2Title": "Añade tu archivo",
-      "step2Desc": "Arrástralo o búscalo. Tu archivo se procesa al instante y nunca se almacena en nuestros servidores.",
+      "step2Desc": "Arrástralo o búscalo. Tus archivos nunca se almacenan en nuestros servidores.",
       "step3Title": "Descarga tu resultado",
-      "step3Desc": "Obtén tu PDF terminado al momento. Cuando te vas, no queda nada.",
+      "step3Desc": "Pulsa y tu archivo se procesa al instante: tu PDF terminado estará listo para descargar en segundos. Cuando te vas, no queda nada.",
       "wizardTitle": "¿Nuevo en PDF Conduit?",
       "wizardDesc": "Deja que el Asistente guiado te acompañe paso a paso al seleccionar, organizar y exportar.",
-      "wizardCta": "Iniciar el Asistente guiado"
+      "wizardCta": "Iniciar el Asistente guiado",
+      "privacyLink": "Descubre cómo protegemos tus archivos →"
+    },
+    "advanced": {
+      "title": "Herramientas avanzadas",
+      "subtitle": "¿Quieres más? Crea flujos de varios pasos o revisa un documento en busca de datos personales.",
+      "wizardDesc": "¿Es tu primera vez? Deja que el Asistente guiado te lleve paso a paso.",
+      "pipelineDesc": "Encadena varias operaciones en un flujo repetible con un gráfico visual de nodos.",
+      "gdprDesc": "Analiza un PDF en busca de datos personales (RGPD / PII) y pasa directamente a redactarlos."
     }
   },
   "onboarding": {

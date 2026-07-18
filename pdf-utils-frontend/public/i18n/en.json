@@ -161,7 +161,9 @@
     },
     "tools": {
       "title": "Pick a tool and go",
-      "subtitle": "Focused tools, each doing one job well."
+      "subtitle": "Everything you need to work with PDFs — private by default.",
+      "showMore": "Show all tools",
+      "showLess": "Show fewer tools"
     },
     "pro": {
       "soon": "Coming soon",
@@ -203,12 +205,20 @@
       "step1Title": "Pick a tool",
       "step1Desc": "Choose what you need — merge, compress, convert, protect and more.",
       "step2Title": "Add your file",
-      "step2Desc": "Drag it in or browse. Your file is processed instantly and never stored on our servers.",
+      "step2Desc": "Drag it in or browse to it. Your files are never stored on our servers.",
       "step3Title": "Download your result",
-      "step3Desc": "Get your finished PDF right away. When you leave, nothing is left behind.",
+      "step3Desc": "Hit go and your file is processed straight away — your finished PDF is ready to download in seconds. When you leave, nothing is left behind.",
       "wizardTitle": "New to PDF Conduit?",
       "wizardDesc": "Let the guided Wizard walk you through selecting, arranging and exporting — one step at a time.",
-      "wizardCta": "Start the guided Wizard"
+      "wizardCta": "Start the guided Wizard",
+      "privacyLink": "See how we keep your files private →"
+    },
+    "advanced": {
+      "title": "Advanced tools",
+      "subtitle": "Ready for more? Build multi-step flows or check a document for personal data.",
+      "wizardDesc": "New here? Let the guided Wizard walk you through it, one simple step at a time.",
+      "pipelineDesc": "Chain several operations into one repeatable flow with a visual node graph.",
+      "gdprDesc": "Scan a PDF for personal data (GDPR / PII), then jump straight to redacting it."
     }
   },
   "onboarding": {

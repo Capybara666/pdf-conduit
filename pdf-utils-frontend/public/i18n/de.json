@@ -161,7 +161,9 @@
     },
     "tools": {
       "title": "Werkzeug auswählen und loslegen",
-      "subtitle": "Fokussierte Werkzeuge, jedes erledigt eine Aufgabe richtig gut."
+      "subtitle": "Alles, was Sie für PDFs brauchen – standardmäßig privat.",
+      "showMore": "Alle Werkzeuge anzeigen",
+      "showLess": "Weniger anzeigen"
     },
     "pro": {
       "soon": "Demnächst verfügbar",
@@ -203,12 +205,20 @@
       "step1Title": "Werkzeug wählen",
       "step1Desc": "Wählen Sie, was Sie brauchen – zusammenführen, komprimieren, umwandeln, schützen und mehr.",
       "step2Title": "Datei hinzufügen",
-      "step2Desc": "Ziehen Sie sie hinein oder wählen Sie sie aus. Ihre Datei wird sofort verarbeitet und niemals auf unseren Servern gespeichert.",
+      "step2Desc": "Ziehen Sie sie hinein oder wählen Sie sie aus. Ihre Dateien werden niemals auf unseren Servern gespeichert.",
       "step3Title": "Ergebnis herunterladen",
-      "step3Desc": "Erhalten Sie Ihr fertiges PDF sofort. Wenn Sie gehen, bleibt nichts zurück.",
+      "step3Desc": "Auf Los wird Ihre Datei sofort verarbeitet – Ihr fertiges PDF steht in Sekunden zum Download bereit. Wenn Sie gehen, bleibt nichts zurück.",
       "wizardTitle": "Neu bei PDF Conduit?",
       "wizardDesc": "Lassen Sie sich vom geführten Assistenten Schritt für Schritt durch Auswählen, Anordnen und Exportieren führen.",
-      "wizardCta": "Geführten Assistenten starten"
+      "wizardCta": "Geführten Assistenten starten",
+      "privacyLink": "So schützen wir Ihre Dateien →"
+    },
+    "advanced": {
+      "title": "Erweiterte Werkzeuge",
+      "subtitle": "Bereit für mehr? Erstellen Sie mehrstufige Abläufe oder prüfen Sie ein Dokument auf personenbezogene Daten.",
+      "wizardDesc": "Neu hier? Der geführte Assistent begleitet Sie Schritt für Schritt.",
+      "pipelineDesc": "Verketten Sie mehrere Operationen zu einem wiederholbaren Ablauf mit einem visuellen Knotengraphen.",
+      "gdprDesc": "Durchsuchen Sie ein PDF nach personenbezogenen Daten (DSGVO / PII) und schwärzen Sie sie direkt danach."
     }
   },
   "onboarding": {

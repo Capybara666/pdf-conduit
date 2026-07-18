@@ -28,20 +28,29 @@ export class HomePage implements OnInit, OnDestroy {
   private readonly transloco = inject(TranslocoService);
   private sub?: Subscription;
 
-  /** Primary tools surfaced as large feature cards (curated order). */
-  protected readonly featured: NavItem[] = pick([
+  /** Core, most-common tools shown as tiles in the first row. */
+  protected readonly basicPrimary: NavItem[] = pick([
     'merge',
     'compress',
     'to-pdf',
     'protect',
     'redact',
-    'wizard',
   ]);
 
-  /** Every remaining tool, for the "and much more" grid. */
-  protected readonly moreTools: NavItem[] = NAV_ITEMS.filter(
-    (i) => !this.featured.some((f) => f.id === i.id),
+  /** Remaining everyday tools, revealed by the "show more" affordance. */
+  protected readonly basicMore: NavItem[] = NAV_ITEMS.filter(
+    (i) => i.group !== 'advanced' && !this.basicPrimary.some((p) => p.id === i.id),
   );
+
+  /** The three advanced surfaces, each with its own encouraging blurb. */
+  protected readonly advanced: { item: NavItem; descKey: string }[] = [
+    { item: pick(['wizard'])[0], descKey: 'home.advanced.wizardDesc' },
+    { item: pick(['pipeline'])[0], descKey: 'home.advanced.pipelineDesc' },
+    { item: pick(['gdpr-scan'])[0], descKey: 'home.advanced.gdprDesc' },
+  ];
+
+  /** Whether the extra everyday tools are expanded. */
+  protected readonly toolsExpanded = signal(false);
 
   /** Whether the "Notify me" pro CTA has been clicked (shows confirmation). */
   protected readonly notified = signal(false);

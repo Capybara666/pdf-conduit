@@ -161,7 +161,9 @@
     },
     "tools": {
       "title": "Wybierz narzędzie i działaj",
-      "subtitle": "Wyspecjalizowane narzędzia, każde robi jedną rzecz dobrze."
+      "subtitle": "Wszystko, czego potrzebujesz do pracy z PDF — domyślnie prywatnie.",
+      "showMore": "Pokaż wszystkie narzędzia",
+      "showLess": "Pokaż mniej"
     },
     "pro": {
       "soon": "Wkrótce",
@@ -203,12 +205,20 @@
       "step1Title": "Wybierz narzędzie",
       "step1Desc": "Wybierz to, czego potrzebujesz — scalanie, kompresję, konwersję, zabezpieczanie i więcej.",
       "step2Title": "Dodaj plik",
-      "step2Desc": "Przeciągnij go lub wskaż. Twój plik jest przetwarzany natychmiast i nigdy nie jest przechowywany na naszych serwerach.",
+      "step2Desc": "Przeciągnij go lub wskaż. Twoje pliki nigdy nie są przechowywane na naszych serwerach.",
       "step3Title": "Pobierz wynik",
-      "step3Desc": "Odbierz gotowy plik PDF od razu. Gdy wychodzisz, nic nie pozostaje.",
+      "step3Desc": "Uruchom, a Twój plik zostanie przetworzony od razu — gotowy PDF pobierzesz w kilka sekund. Gdy wychodzisz, nic nie pozostaje.",
       "wizardTitle": "Pierwszy raz w PDF Conduit?",
       "wizardDesc": "Pozwól, aby Kreator przeprowadził Cię krok po kroku przez wybór, uporządkowanie i eksport.",
-      "wizardCta": "Uruchom Kreatora"
+      "wizardCta": "Uruchom Kreatora",
+      "privacyLink": "Zobacz, jak chronimy Twoje pliki →"
+    },
+    "advanced": {
+      "title": "Narzędzia zaawansowane",
+      "subtitle": "Chcesz więcej? Twórz wieloetapowe procesy lub sprawdź dokument pod kątem danych osobowych.",
+      "wizardDesc": "Pierwszy raz tutaj? Pozwól, aby kreator przeprowadził Cię krok po kroku.",
+      "pipelineDesc": "Połącz kilka operacji w jeden powtarzalny proces za pomocą wizualnego grafu węzłów.",
+      "gdprDesc": "Przeskanuj plik PDF pod kątem danych osobowych (RODO / PII), a potem od razu je zredaguj."
     }
   },
   "onboarding": {

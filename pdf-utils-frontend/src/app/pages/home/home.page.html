@@ -98,6 +98,10 @@
       </li>
     </ol>
 
+    <p class="how-privacy">
+      <a routerLink="/privacy">{{ 'home.how.privacyLink' | transloco }}</a>
+    </p>
+
     <div class="how-wizard">
       <div class="how-wizard-copy">
         <h3 class="how-wizard-title">{{ 'home.how.wizardTitle' | transloco }}</h3>
@@ -114,8 +118,8 @@
       <p>{{ 'home.tools.subtitle' | transloco }}</p>
     </div>
 
-    <div class="feature-grid">
-      @for (item of featured; track item.id) {
+    <div class="feature-grid basic-grid">
+      @for (item of basicPrimary; track item.id) {
         <a class="feature-card" [routerLink]="['/', item.id]">
           <span class="fc-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24">
@@ -133,24 +137,67 @@
           <span class="fc-desc">{{ 'op.' + item.id + '.description' | transloco }}</span>
         </a>
       }
+      @if (toolsExpanded()) {
+        @for (item of basicMore; track item.id) {
+          <a class="feature-card" [routerLink]="['/', item.id]">
+            <span class="fc-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path
+                  [attr.d]="item.icon"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span class="fc-title">{{ 'op.' + item.id + '.label' | transloco }}</span>
+            <span class="fc-desc">{{ 'op.' + item.id + '.description' | transloco }}</span>
+          </a>
+        }
+      }
     </div>
 
-    <div class="more-tools">
-      @for (item of moreTools; track item.id) {
-        <a class="chip" [routerLink]="['/', item.id]" [title]="'op.' + item.id + '.description' | transloco">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              [attr.d]="item.icon"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <span>{{ 'op.' + item.id + '.label' | transloco }}</span>
-        </a>
-      }
+    @if (basicMore.length) {
+      <div class="tools-more-row">
+        <button
+          type="button"
+          class="btn tools-toggle"
+          [attr.aria-expanded]="toolsExpanded()"
+          (click)="toolsExpanded.set(!toolsExpanded())"
+        >
+          {{ (toolsExpanded() ? 'home.tools.showLess' : 'home.tools.showMore') | transloco }}
+        </button>
+      </div>
+    }
+
+    <div class="advanced-block">
+      <div class="section-head">
+        <h3 id="advanced-title">{{ 'home.advanced.title' | transloco }}</h3>
+        <p>{{ 'home.advanced.subtitle' | transloco }}</p>
+      </div>
+
+      <div class="feature-grid advanced-grid">
+        @for (a of advanced; track a.item.id) {
+          <a class="feature-card" [routerLink]="['/', a.item.id]">
+            <span class="fc-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path
+                  [attr.d]="a.item.icon"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span class="fc-title">{{ 'op.' + a.item.id + '.label' | transloco }}</span>
+            <span class="fc-desc">{{ a.descKey | transloco }}</span>
+          </a>
+        }
+      </div>
     </div>
   </section>
 

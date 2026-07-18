@@ -161,7 +161,9 @@
     },
     "tools": {
       "title": "选一款工具，即刻开始",
-      "subtitle": "专注的工具，每一款都把一件事做好。"
+      "subtitle": "处理 PDF 所需的一切，默认保护隐私。",
+      "showMore": "显示全部工具",
+      "showLess": "收起"
     },
     "pro": {
       "soon": "即将推出",
@@ -203,12 +205,20 @@
       "step1Title": "选择工具",
       "step1Desc": "选择您需要的功能 — 合并、压缩、转换、加密等等。",
       "step2Title": "添加文件",
-      "step2Desc": "拖入或浏览选择。您的文件会被即时处理，绝不会保存在我们的服务器上。",
+      "step2Desc": "拖入或浏览选择。您的文件绝不会保存在我们的服务器上。",
       "step3Title": "下载结果",
-      "step3Desc": "立即获得处理好的 PDF。离开后不会留下任何痕迹。",
+      "step3Desc": "点击开始，文件即时处理，几秒内即可下载处理好的 PDF。离开后不会留下任何痕迹。",
       "wizardTitle": "第一次使用 PDF Conduit？",
       "wizardDesc": "让向导带您一步步完成选择、排列和导出。",
-      "wizardCta": "启动向导"
+      "wizardCta": "启动向导",
+      "privacyLink": "了解我们如何保护您的文件 →"
+    },
+    "advanced": {
+      "title": "高级工具",
+      "subtitle": "想要更进一步？搭建多步骤流程，或检查文档中的个人数据。",
+      "wizardDesc": "初次使用？让向导带您一步步完成。",
+      "pipelineDesc": "用可视化节点图把多个操作串联成可重复的流程。",
+      "gdprDesc": "扫描 PDF 中的个人数据（GDPR / PII），然后直接进行涂黑处理。"
     }
   },
   "onboarding": {

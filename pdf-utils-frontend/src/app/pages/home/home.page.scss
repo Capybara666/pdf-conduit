@@ -215,6 +215,22 @@
   color: var(--text-muted);
 }
 
+.how-privacy {
+  margin: 0 0 1.25rem;
+  text-align: center;
+  font-size: 0.9rem;
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 .how-wizard {
   display: flex;
   flex-wrap: wrap;
@@ -302,38 +318,35 @@
   color: var(--text-muted);
 }
 
-.more-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  justify-content: center;
-  margin-top: 1.5rem;
+/* Core tools: aim to fit the primary handful on one row, wrap gracefully. */
+.basic-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 }
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.45rem 0.85rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
-  text-decoration: none;
-  font-size: 0.88rem;
+.tools-more-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
 
-  svg {
-    width: 1.05rem;
-    height: 1.05rem;
-    color: var(--text-muted);
+.tools-toggle {
+  cursor: pointer;
+}
+
+/* Advanced group sits below the everyday tools. */
+.advanced-block {
+  margin-top: 2.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+
+  .section-head h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1.4rem;
   }
-  &:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    svg {
-      color: var(--accent);
-    }
-  }
+}
+
+.advanced-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 /* ===================== Pro teaser ===================== */

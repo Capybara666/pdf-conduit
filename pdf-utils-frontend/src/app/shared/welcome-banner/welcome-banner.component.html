@@ -7,10 +7,19 @@
     <p class="welcome-message">{{ 'onboarding.welcome.message' | transloco }}</p>
 
     <div class="welcome-actions">
-      <a class="btn btn-primary" routerLink="/wizard">
+      <a
+        class="btn btn-primary"
+        routerLink="/wizard"
+        (click)="onboarding.dismiss()"
+      >
         {{ 'onboarding.welcome.cta' | transloco }}
       </a>
-      <a class="btn" routerLink="/" fragment="tools">
+      <a
+        class="btn"
+        routerLink="/"
+        fragment="tools"
+        (click)="onboarding.dismiss()"
+      >
         {{ 'onboarding.welcome.secondary' | transloco }}
       </a>
     </div>

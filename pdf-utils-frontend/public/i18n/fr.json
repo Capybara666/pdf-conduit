@@ -161,7 +161,9 @@
     },
     "tools": {
       "title": "Choisissez un outil et lancez-vous",
-      "subtitle": "Des outils ciblés, chacun faisant bien une seule tâche."
+      "subtitle": "Tout ce qu'il vous faut pour vos PDF, privé par défaut.",
+      "showMore": "Afficher tous les outils",
+      "showLess": "Afficher moins"
     },
     "pro": {
       "soon": "Bientôt disponible",
@@ -203,12 +205,20 @@
       "step1Title": "Choisissez un outil",
       "step1Desc": "Choisissez ce dont vous avez besoin : fusionner, compresser, convertir, protéger et bien plus.",
       "step2Title": "Ajoutez votre fichier",
-      "step2Desc": "Glissez-le ou parcourez vos fichiers. Votre fichier est traité instantanément et jamais stocké sur nos serveurs.",
+      "step2Desc": "Glissez-le ou parcourez vos fichiers. Vos fichiers ne sont jamais stockés sur nos serveurs.",
       "step3Title": "Téléchargez votre résultat",
-      "step3Desc": "Récupérez votre PDF terminé sans attendre. Quand vous partez, rien ne subsiste.",
+      "step3Desc": "Lancez et votre fichier est traité aussitôt : votre PDF terminé est prêt à télécharger en quelques secondes. Quand vous partez, rien ne subsiste.",
       "wizardTitle": "Nouveau sur PDF Conduit ?",
       "wizardDesc": "Laissez l'Assistant guidé vous accompagner pas à pas pour sélectionner, organiser et exporter.",
-      "wizardCta": "Lancer l'Assistant guidé"
+      "wizardCta": "Lancer l'Assistant guidé",
+      "privacyLink": "Découvrez comment nous protégeons vos fichiers →"
+    },
+    "advanced": {
+      "title": "Outils avancés",
+      "subtitle": "Envie d'aller plus loin ? Créez des flux en plusieurs étapes ou analysez un document à la recherche de données personnelles.",
+      "wizardDesc": "Nouveau ici ? Laissez l'assistant guidé vous accompagner, étape par étape.",
+      "pipelineDesc": "Enchaînez plusieurs opérations en un flux réutilisable grâce à un graphe de nœuds visuel.",
+      "gdprDesc": "Analysez un PDF à la recherche de données personnelles (RGPD / PII), puis passez directement au caviardage."
     }
   },
   "onboarding": {

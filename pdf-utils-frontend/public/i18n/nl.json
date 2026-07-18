@@ -161,7 +161,9 @@
     },
     "tools": {
       "title": "Kies een tool en ga aan de slag",
-      "subtitle": "Gerichte tools, elk perfect voor één taak."
+      "subtitle": "Alles wat u nodig hebt voor PDF's, standaard privé.",
+      "showMore": "Alle tools tonen",
+      "showLess": "Minder tonen"
     },
     "pro": {
       "soon": "Binnenkort beschikbaar",
@@ -203,12 +205,20 @@
       "step1Title": "Kies een tool",
       "step1Desc": "Kies wat u nodig hebt — samenvoegen, comprimeren, converteren, beveiligen en meer.",
       "step2Title": "Voeg uw bestand toe",
-      "step2Desc": "Sleep het erin of blader. Uw bestand wordt direct verwerkt en nooit opgeslagen op onze servers.",
+      "step2Desc": "Sleep het erin of blader. Uw bestanden worden nooit opgeslagen op onze servers.",
       "step3Title": "Download uw resultaat",
-      "step3Desc": "Ontvang uw voltooide PDF meteen. Wanneer u weggaat, blijft er niets achter.",
+      "step3Desc": "Start en uw bestand wordt meteen verwerkt: uw voltooide PDF staat binnen enkele seconden klaar om te downloaden. Wanneer u weggaat, blijft er niets achter.",
       "wizardTitle": "Nieuw bij PDF Conduit?",
       "wizardDesc": "Laat de begeleide Wizard u stap voor stap door het selecteren, ordenen en exporteren leiden.",
-      "wizardCta": "Begeleide Wizard starten"
+      "wizardCta": "Begeleide Wizard starten",
+      "privacyLink": "Ontdek hoe wij uw bestanden privé houden →"
+    },
+    "advanced": {
+      "title": "Geavanceerde tools",
+      "subtitle": "Klaar voor meer? Bouw stappenflows of controleer een document op persoonsgegevens.",
+      "wizardDesc": "Nieuw hier? Laat de wizard u stap voor stap begeleiden.",
+      "pipelineDesc": "Koppel meerdere bewerkingen aan elkaar tot één herbruikbare flow met een visuele knooppuntgraaf.",
+      "gdprDesc": "Scan een PDF op persoonsgegevens (AVG / PII) en ga daarna direct naar redigeren."
     }
   },
   "onboarding": {
