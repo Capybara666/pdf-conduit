@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OWASP dependency-check suppression file.
+
+  Add <suppress> entries here to silence known false positives or accepted
+  risks surfaced by the `security-scan` Maven profile:
+
+      mvn -Psecurity-scan verify
+
+  Example:
+    <suppress>
+      <notes>False positive: CVE does not apply to our usage.</notes>
+      <cve>CVE-0000-00000</cve>
+    </suppress>
+
+  Kept intentionally empty so the profile configuration resolves cleanly.
+-->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+</suppressions>

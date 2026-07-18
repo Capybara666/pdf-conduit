@@ -86,4 +86,56 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <!--
+          Opt-in CVE scanning via OWASP dependency-check (S11).
+
+          Deliberately NOT part of the default build: the first run downloads
+          the full NVD vulnerability database, which is slow and best served by
+          an NVD API key. Run explicitly with:
+
+              mvn -Psecurity-scan verify
+
+          Reports (HTML + JSON) land in each module's target/ directory; the
+          aggregate report is under the root target/. Findings at or above the
+          configured CVSS threshold fail the build. Accepted risks / false
+          positives are suppressed via owasp-suppressions.xml at repo root.
+        -->
+        <profile>
+            <id>security-scan</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>10.0.4</version>
+                        <configuration>
+                            <!-- Fail the build on High/Critical CVEs. -->
+                            <failBuildOnCVSS>7</failBuildOnCVSS>
+                            <formats>
+                                <format>HTML</format>
+                                <format>JSON</format>
+                            </formats>
+                            <suppressionFiles>
+                                <suppressionFile>${maven.multiModuleProjectDirectory}/owasp-suppressions.xml</suppressionFile>
+                            </suppressionFiles>
+                            <!-- Skip test-scope deps; they don't ship. -->
+                            <skipTestScope>true</skipTestScope>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>owasp-cve-check</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <!-- aggregate scans all reactor modules in one report -->
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
