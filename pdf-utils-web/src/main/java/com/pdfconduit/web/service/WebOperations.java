@@ -28,6 +28,8 @@ import com.pdfconduit.core.service.OperationType;
 import com.pdfconduit.core.util.PageOrderParser;
 import com.pdfconduit.core.util.PageRangeParser;
 import com.pdfconduit.core.util.PdfLoader;
+import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.guard.OfficeGuard;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.stereotype.Service;
 
@@ -49,11 +51,20 @@ import java.util.List;
 @Service
 public class WebOperations {
 
+    private final OfficeGuard officeGuard;
+    private final int maxPages;
+
+    public WebOperations(OfficeGuard officeGuard, WebProperties props) {
+        this.officeGuard = officeGuard;
+        this.maxPages = props.pdf().maxPages();
+    }
+
     // ------------------------------------------------------------------ MERGE
 
     /** Merge many inputs (pdf/image/office) into one PDF. */
     public NamedBytes merge(List<NamedBytes> inputs) throws PdfOperationException {
-        return MemoryOperations.runReduce(OperationType.MERGE, data(inputs), names(inputs),
+        // Convert + guard each input up front (office gated, page-count capped), then merge PDFs.
+        return MemoryOperations.runReduce(OperationType.MERGE, pdfData(inputs), names(inputs),
             PdfMerger::executeBytes);
     }
 
@@ -85,7 +96,7 @@ public class WebOperations {
     /** Batch-compress every input to (at most) {@code targetBytes}. */
     public List<NamedBytes> compressBatch(List<NamedBytes> inputs, long targetBytes)
             throws PdfOperationException {
-        return MemoryOperations.runBatch(OperationType.COMPRESS, data(inputs), names(inputs),
+        return MemoryOperations.runBatch(OperationType.COMPRESS, pdfData(inputs), names(inputs),
             pdf -> PdfCompressor.compressBytes(pdf, targetBytes).bytes());
     }
 
@@ -121,7 +132,14 @@ public class WebOperations {
             throws PdfOperationException {
         List<NamedBytes> out = new ArrayList<>(inputs.size());
         for (NamedBytes in : inputs) {
-            byte[] pdf = DocumentConverter.ensurePdfBytes(in.data(), in.filename(), imageSize);
+            byte[] pdf;
+            try {
+                pdf = officeGuard.run(in.filename(),
+                    () -> DocumentConverter.ensurePdfBytes(in.data(), in.filename(), imageSize));
+            } catch (IOException e) {
+                throw new PdfOperationException("Cannot convert input: " + e.getMessage(), e);
+            }
+            guardPageCount(pdf);
             out.add(new NamedBytes(
                 MemoryOperations.outputName(OperationType.IMAGES_TO_PDF, in.filename()), pdf));
         }
@@ -132,7 +150,7 @@ public class WebOperations {
 
     public List<NamedBytes> protect(List<NamedBytes> inputs, String userPassword, String ownerPassword)
             throws PdfOperationException {
-        return MemoryOperations.runBatch(OperationType.PROTECT, data(inputs), names(inputs),
+        return MemoryOperations.runBatch(OperationType.PROTECT, pdfData(inputs), names(inputs),
             pdf -> PdfProtector.executeBytes(pdf, userPassword, ownerPassword));
     }
 
@@ -140,6 +158,7 @@ public class WebOperations {
 
     public List<NamedBytes> unlock(List<NamedBytes> inputs, String password)
             throws PdfOperationException {
+        // Unlock operates on the raw (still-encrypted) upload; office/page guards don't apply here.
         return MemoryOperations.runBatch(OperationType.UNLOCK, data(inputs), names(inputs),
             pdf -> PdfUnlocker.executeBytes(pdf, password));
     }
@@ -163,7 +182,7 @@ public class WebOperations {
     public List<NamedBytes> watermark(List<NamedBytes> inputs, String text, byte[] image,
                                       double opacity, double rotation, double scale)
             throws PdfOperationException {
-        return MemoryOperations.runBatch(OperationType.WATERMARK, data(inputs), names(inputs),
+        return MemoryOperations.runBatch(OperationType.WATERMARK, pdfData(inputs), names(inputs),
             pdf -> PdfWatermarker.executeBytes(pdf, text, image, opacity, rotation, scale));
     }
 
@@ -210,8 +229,35 @@ public class WebOperations {
 
     // --------------------------------------------------------------- internals
 
-    private static byte[] toPdf(NamedBytes in) throws PdfOperationException {
-        return MemoryOperations.toPdfBytes(in.data(), in.filename());
+    /**
+     * Routes an upload to PDF bytes (office conversion gated by {@link OfficeGuard}) and enforces
+     * the PDF page-count ceiling. The single chokepoint every single-file operation flows through.
+     */
+    private byte[] toPdf(NamedBytes in) throws PdfOperationException {
+        byte[] pdf;
+        try {
+            pdf = officeGuard.run(in.filename(),
+                () -> MemoryOperations.toPdfBytes(in.data(), in.filename()));
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read input: " + e.getMessage(), e);
+        }
+        guardPageCount(pdf);
+        return pdf;
+    }
+
+    /** Converts + guards a batch of uploads to PDF bytes, preserving order (names kept by caller). */
+    private List<byte[]> pdfData(List<NamedBytes> inputs) throws PdfOperationException {
+        List<byte[]> out = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) out.add(toPdf(in));
+        return out;
+    }
+
+    /** PDF-bomb guard: reject a PDF whose page count exceeds the configured ceiling (→ 422). */
+    private void guardPageCount(byte[] pdf) throws PdfOperationException {
+        if (maxPages <= 0) return;
+        if (pageCount(pdf) > maxPages) {
+            throw new PdfOperationException("PDF exceeds the maximum page count (" + maxPages + ").");
+        }
     }
 
     private PageRange range(String expr, byte[] pdf)

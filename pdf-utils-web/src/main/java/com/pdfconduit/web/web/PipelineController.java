@@ -1,6 +1,7 @@
 package com.pdfconduit.web.web;
 
 import com.pdfconduit.core.convert.DocumentConverter;
+import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.pipeline.NodeKind;
 import com.pdfconduit.core.pipeline.PipelineException;
@@ -11,6 +12,7 @@ import com.pdfconduit.core.pipeline.PipelineValidator;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.dto.NodeKindInfo;
 import com.pdfconduit.web.dto.ValidationErrorDto;
+import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.support.PipelineJson;
 import com.pdfconduit.web.support.Responses;
 import com.pdfconduit.web.support.Uploads;
@@ -43,9 +45,11 @@ import java.util.Map;
 public class PipelineController {
 
     private final Uploads uploads;
+    private final LoadGuard loadGuard;
 
-    public PipelineController(Uploads uploads) {
+    public PipelineController(Uploads uploads, LoadGuard loadGuard) {
         this.uploads = uploads;
+        this.loadGuard = loadGuard;
     }
 
     /**
@@ -58,15 +62,17 @@ public class PipelineController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/run")
     public ResponseEntity<byte[]> run(@RequestParam("pipeline") String pipeline,
                                       @RequestParam(value = "files", required = false) List<MultipartFile> files)
-            throws IOException, PdfOperationException, PipelineException {
+            throws IOException, PdfOperationException, PipelineException, InvalidPageRangeException {
         PipelineModel model = PipelineJson.parse(pipeline);
 
         // Index uploads by basename (Uploads.read gates office uploads when office is disabled).
         Map<String, NamedBytes> byName = new HashMap<>();
+        long uploadBytes = 0;
         if (files != null) {
             for (MultipartFile f : files) {
                 NamedBytes nb = uploads.read(f);
                 byName.put(nb.filename(), nb);
+                uploadBytes += nb.data().length;
             }
         }
 
@@ -87,8 +93,10 @@ public class PipelineController {
             resolved.put(n.id, bytes);
         }
 
-        Map<String, List<NamedBytes>> terminals = PipelineExecutor.runInMemory(
-            model, node -> resolved.getOrDefault(node.id, List.of()), null);
+        // Heavy work: bound concurrency / in-flight bytes / runtime via the load guard.
+        Map<String, List<NamedBytes>> terminals = loadGuard.execute(uploadBytes,
+            () -> PipelineExecutor.runInMemory(
+                model, node -> resolved.getOrDefault(node.id, List.of()), null));
 
         List<NamedBytes> all = new ArrayList<>();
         for (List<NamedBytes> nodeOutputs : terminals.values()) all.addAll(nodeOutputs);

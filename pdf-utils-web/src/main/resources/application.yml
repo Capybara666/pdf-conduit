@@ -5,14 +5,17 @@
 server:
   port: ${SERVER_PORT:8080}
   tomcat:
-    max-swallow-size: -1
+    # Cap how many bytes of a rejected (oversize) upload Tomcat will swallow, so an
+    # over-limit request isn't fully read into the server before being refused.
+    max-swallow-size: ${PDFCONDUIT_WEB_MAX_SWALLOW_SIZE:2MB}
 
 spring:
   application:
     name: pdf-conduit-web
   servlet:
     multipart:
-      # Per-file and per-request upload limits. Raise for larger PDFs.
+      # Absolute per-file and per-request upload ceilings (hard cap). The free-tier
+      # per-file cap (pdfconduit.web.quota.free-max-file-size) is stricter still.
       max-file-size: ${PDFCONDUIT_WEB_MAX_FILE_SIZE:100MB}
       max-request-size: ${PDFCONDUIT_WEB_MAX_REQUEST_SIZE:200MB}
 
@@ -21,15 +24,41 @@ pdfconduit:
     # Optional explicit path to a LibreOffice `soffice` binary (office-doc conversion).
     # Leave blank to auto-detect. Absence only affects office inputs (.docx/.xlsx/...).
     soffice-path: ${PDFCONDUIT_WEB_SOFFICE_PATH:}
-    # Guardrail: reject requests with more than this many uploaded files.
+    # Hard guardrail: reject requests with more than this many uploaded files.
     max-files-per-request: ${PDFCONDUIT_WEB_MAX_FILES:50}
     # Office/document conversion is the sole disk exception (needs a per-request temp dir +
     # LibreOffice). Disable to reject office uploads (.docx/.xlsx/...) with a clear 415.
     office:
       enabled: ${PDFCONDUIT_WEB_OFFICE_ENABLED:true}
+      # Cap concurrent LibreOffice conversions (each is heavy); excess → 503.
+      max-concurrent: ${PDFCONDUIT_WEB_OFFICE_MAX_CONCURRENT:2}
+      timeout-seconds: ${PDFCONDUIT_WEB_OFFICE_TIMEOUT_SECONDS:90}
     # CORS: origins allowed to call /api/** (the Angular frontend). Comma-separated via env.
     cors:
       allowed-origins: ${PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS:http://localhost:4200}
+    # Per-IP token-bucket rate limiting (bucket4j). GENERAL bucket on all metered endpoints;
+    # HEAVY bucket additionally on expensive endpoints (compress/merge/to-images/...).
+    ratelimit:
+      enabled: ${PDFCONDUIT_WEB_RATELIMIT_ENABLED:true}
+      requests-per-minute: ${PDFCONDUIT_WEB_RATELIMIT_REQUESTS_PER_MINUTE:40}
+      heavy-per-minute: ${PDFCONDUIT_WEB_RATELIMIT_HEAVY_PER_MINUTE:10}
+      burst: ${PDFCONDUIT_WEB_RATELIMIT_BURST:15}
+    # Free-tier daily quota + per-file caps (per IP). Stricter than the multipart hard cap.
+    quota:
+      enabled: ${PDFCONDUIT_WEB_QUOTA_ENABLED:true}
+      daily-operations: ${PDFCONDUIT_WEB_QUOTA_DAILY_OPERATIONS:60}
+      free-max-file-size: ${PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILE_SIZE:25MB}
+      free-max-files: ${PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILES:15}
+    # Anti-OOM: bound concurrent heavy ops and total in-flight bytes; excess → 503.
+    concurrency:
+      max-heavy-ops: ${PDFCONDUIT_WEB_CONCURRENCY_MAX_HEAVY_OPS:4}
+      max-in-flight-bytes: ${PDFCONDUIT_WEB_CONCURRENCY_MAX_IN_FLIGHT_BYTES:536870912}
+    # Per-operation processing timeout (heavy work runs on a bounded executor).
+    processing:
+      timeout-seconds: ${PDFCONDUIT_WEB_PROCESSING_TIMEOUT_SECONDS:60}
+    # PDF-bomb guard: reject PDFs whose page count exceeds this ceiling.
+    pdf:
+      max-pages: ${PDFCONDUIT_WEB_PDF_MAX_PAGES:3000}
 
 logging:
   level:

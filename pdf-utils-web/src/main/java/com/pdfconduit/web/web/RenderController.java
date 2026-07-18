@@ -2,6 +2,9 @@ package com.pdfconduit.web.web;
 
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.pipeline.PipelineException;
+import com.pdfconduit.core.service.NamedBytes;
+import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Uploads;
 import org.springframework.http.MediaType;
@@ -25,18 +28,22 @@ public class RenderController {
 
     private final WebOperations ops;
     private final Uploads uploads;
+    private final LoadGuard loadGuard;
 
-    public RenderController(WebOperations ops, Uploads uploads) {
+    public RenderController(WebOperations ops, Uploads uploads, LoadGuard loadGuard) {
         this.ops = ops;
         this.uploads = uploads;
+        this.loadGuard = loadGuard;
     }
 
     @PostMapping(value = "/render", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> render(@RequestParam("file") MultipartFile file,
                                          @RequestParam int page,
                                          @RequestParam(required = false) Integer dpi)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
-        byte[] png = ops.renderPage(uploads.read(file), page, dpi != null ? dpi : 120);
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        NamedBytes in = uploads.read(file);
+        int resolvedDpi = dpi != null ? dpi : 120;
+        byte[] png = loadGuard.execute(in.data().length, () -> ops.renderPage(in, page, resolvedDpi));
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).contentLength(png.length).body(png);
     }
 }

@@ -1,0 +1,11 @@
+# Test defaults: the abuse guards are DISABLED here so the broad end-to-end suites
+# (OperationsControllerTest, OfficeDisabledTest) can fire many requests from one IP
+# without tripping limits. Individual limit tests re-enable + tighten the relevant knob
+# via @SpringBootTest(properties=...), keeping production defaults (application.yml) intact.
+
+pdfconduit:
+  web:
+    ratelimit:
+      enabled: false
+    quota:
+      enabled: false

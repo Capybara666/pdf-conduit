@@ -57,6 +57,21 @@ public class GlobalExceptionHandler {
             "The upload exceeds the configured size limit.");
     }
 
+    @ExceptionHandler(TooLargeException.class)
+    public ResponseEntity<ApiError> onFreeTierTooLarge(TooLargeException e) {
+        return body(HttpStatus.PAYLOAD_TOO_LARGE, "too_large", e.getMessage());
+    }
+
+    @ExceptionHandler(ServerBusyException.class)
+    public ResponseEntity<ApiError> onServerBusy(ServerBusyException e) {
+        return body(HttpStatus.SERVICE_UNAVAILABLE, "server_busy", e.getMessage());
+    }
+
+    @ExceptionHandler(ProcessingTimeoutException.class)
+    public ResponseEntity<ApiError> onProcessingTimeout(ProcessingTimeoutException e) {
+        return body(HttpStatus.SERVICE_UNAVAILABLE, "processing_timeout", e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> onUnexpected(Exception e) {
         log.error("Unexpected error handling request", e);

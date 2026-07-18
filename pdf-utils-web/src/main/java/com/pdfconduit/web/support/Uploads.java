@@ -6,6 +6,7 @@ import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OfficeDisabledException;
+import com.pdfconduit.web.guard.OfficeGuard;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,9 +28,11 @@ import java.util.List;
 public class Uploads {
 
     private final boolean officeEnabled;
+    private final OfficeGuard officeGuard;
 
-    public Uploads(WebProperties props) {
+    public Uploads(WebProperties props, OfficeGuard officeGuard) {
         this.officeEnabled = props.officeEnabled();
+        this.officeGuard = officeGuard;
     }
 
     /** Reads a part into {@link NamedBytes}, rejecting office uploads when office is disabled. */
@@ -46,16 +49,20 @@ public class Uploads {
         return out;
     }
 
-    /** Reads a part and routes it to PDF bytes (image/office converted). */
+    /** Reads a part and routes it to PDF bytes (image/office converted; office conversions gated). */
     public byte[] toPdf(MultipartFile file) throws IOException, PdfOperationException {
-        NamedBytes raw = read(file);
-        return MemoryOperations.toPdfBytes(raw.data(), raw.filename());
+        return toPdf(read(file));
     }
 
-    /** Routes an already-read upload to PDF bytes (image/office converted). */
+    /** Routes an already-read upload to PDF bytes (image/office converted; office conversions gated). */
     public byte[] toPdf(NamedBytes raw) throws PdfOperationException {
         guardOffice(raw.filename());
-        return MemoryOperations.toPdfBytes(raw.data(), raw.filename());
+        try {
+            return officeGuard.run(raw.filename(),
+                () -> MemoryOperations.toPdfBytes(raw.data(), raw.filename()));
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot convert upload: " + e.getMessage(), e);
+        }
     }
 
     /** Rejects an office/document upload when office conversion is disabled. */

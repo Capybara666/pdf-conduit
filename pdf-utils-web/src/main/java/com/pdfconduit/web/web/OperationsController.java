@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.pipeline.PipelineException;
 import com.pdfconduit.core.model.CompressBytesResult;
 import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageSize;
@@ -14,6 +15,7 @@ import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OperationType;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.RedactRegionDto;
+import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Params;
 import com.pdfconduit.web.support.Responses;
@@ -35,6 +37,7 @@ import java.util.List;
 
 import static com.pdfconduit.web.web.ControllerSupport.ensurePdf;
 import static com.pdfconduit.web.web.ControllerSupport.guardCount;
+import static com.pdfconduit.web.web.ControllerSupport.totalBytes;
 
 /**
  * The PDF operation endpoints — stateless and fully in-memory. Every request reads the
@@ -54,12 +57,15 @@ public class OperationsController {
     private final Uploads uploads;
     private final int maxFiles;
     private final ObjectMapper json;
+    private final LoadGuard loadGuard;
 
-    public OperationsController(WebOperations ops, Uploads uploads, WebProperties props, ObjectMapper json) {
+    public OperationsController(WebOperations ops, Uploads uploads, WebProperties props,
+                               ObjectMapper json, LoadGuard loadGuard) {
         this.ops = ops;
         this.uploads = uploads;
         this.maxFiles = props.maxFilesPerRequest();
         this.json = json;
+        this.loadGuard = loadGuard;
     }
 
     // -------------------------------------------------------------------- MERGE
@@ -67,9 +73,10 @@ public class OperationsController {
     @PostMapping(value = "/merge", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> merge(@RequestParam("files") List<MultipartFile> files,
                                         @RequestParam(required = false) String outputName)
-            throws IOException, PdfOperationException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
-        NamedBytes merged = ops.merge(uploads.readAll(files));
+        List<NamedBytes> inputs = uploads.readAll(files);
+        NamedBytes merged = loadGuard.execute(totalBytes(inputs), () -> ops.merge(inputs));
         String name = (outputName == null || outputName.isBlank()) ? merged.filename() : ensurePdf(outputName);
         return Responses.file(merged.data(), name, MediaType.APPLICATION_PDF);
     }
@@ -80,7 +87,7 @@ public class OperationsController {
     public ResponseEntity<byte[]> extract(@RequestParam("file") MultipartFile file,
                                           @RequestParam(required = false) String pages,
                                           @RequestParam(defaultValue = "false") boolean separate)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         NamedBytes in = uploads.read(file);
         if (separate) {
             return Responses.zip(ops.extractSeparate(in, pages), "extract_results.zip");
@@ -93,13 +100,14 @@ public class OperationsController {
     @PostMapping(value = "/compress", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> compress(@RequestParam("files") List<MultipartFile> files,
                                            @RequestParam String targetSize)
-            throws IOException, PdfOperationException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         long target = Params.parseSize(targetSize);
         List<NamedBytes> inputs = uploads.readAll(files);
+        long bytes = totalBytes(inputs);
         if (inputs.size() == 1) {
             NamedBytes in = inputs.get(0);
-            CompressBytesResult r = ops.compress(in, target);
+            CompressBytesResult r = loadGuard.execute(bytes, () -> ops.compress(in, target));
             String name = MemoryOperations.outputName(OperationType.COMPRESS, in.filename());
             return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
@@ -111,7 +119,8 @@ public class OperationsController {
                 .contentLength(r.bytes().length)
                 .body(r.bytes());
         }
-        return Responses.zip(ops.compressBatch(inputs, target), "compress_results.zip");
+        List<NamedBytes> results = loadGuard.execute(bytes, () -> ops.compressBatch(inputs, target));
+        return Responses.zip(results, "compress_results.zip");
     }
 
     // ------------------------------------------------------------------- ROTATE
@@ -120,7 +129,7 @@ public class OperationsController {
     public ResponseEntity<byte[]> rotate(@RequestParam("files") List<MultipartFile> files,
                                          @RequestParam int angle,
                                          @RequestParam(required = false) String pages)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         return Responses.batch("rotate", ops.rotate(uploads.readAll(files), pages, angle),
             MediaType.APPLICATION_PDF);
@@ -131,7 +140,7 @@ public class OperationsController {
     @PostMapping(value = "/arrange", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> arrange(@RequestParam("file") MultipartFile file,
                                           @RequestParam String order)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         Params.require(order, "order");
         return Responses.file(ops.arrange(uploads.read(file), order), MediaType.APPLICATION_PDF);
     }
@@ -141,11 +150,12 @@ public class OperationsController {
     @PostMapping(value = "/to-pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> toPdf(@RequestParam("files") List<MultipartFile> files,
                                         @RequestParam(required = false) String pageSize)
-            throws IOException, PdfOperationException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         PageSize size = Params.pageSize(pageSize, PageSize.FIT);
-        return Responses.batch("to-pdf", ops.toPdf(uploads.readAll(files), size),
-            MediaType.APPLICATION_PDF);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs), () -> ops.toPdf(inputs, size));
+        return Responses.batch("to-pdf", results, MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------ PROTECT
@@ -182,7 +192,7 @@ public class OperationsController {
                                             @RequestParam(required = false) Double opacity,
                                             @RequestParam(required = false) Double rotation,
                                             @RequestParam(required = false) Double scale)
-            throws IOException, PdfOperationException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         boolean hasText = text != null && !text.isBlank();
         boolean hasImage = image != null && !image.isEmpty();
@@ -190,12 +200,14 @@ public class OperationsController {
             throw new IllegalArgumentException("Provide either watermark text or an image, not both.");
         }
         byte[] imageBytes = hasImage ? image.getBytes() : null;
-        return Responses.batch("watermark",
-            ops.watermark(uploads.readAll(files), hasText ? text : null, imageBytes,
+        List<NamedBytes> inputs = uploads.readAll(files);
+        long bytes = totalBytes(inputs) + (imageBytes != null ? imageBytes.length : 0);
+        List<NamedBytes> results = loadGuard.execute(bytes,
+            () -> ops.watermark(inputs, hasText ? text : null, imageBytes,
                 opacity != null ? opacity : 0.3,
                 rotation != null ? rotation : 45,
-                scale != null ? scale : 0.5),
-            MediaType.APPLICATION_PDF);
+                scale != null ? scale : 0.5));
+        return Responses.batch("watermark", results, MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------- REDACT
@@ -204,10 +216,12 @@ public class OperationsController {
     public ResponseEntity<byte[]> redact(@RequestParam("file") MultipartFile file,
                                          @RequestParam String regions,
                                          @RequestParam(required = false) Integer dpi)
-            throws IOException, PdfOperationException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         List<RedactRegion> parsed = parseRegions(regions);
-        return Responses.file(ops.redact(uploads.read(file), parsed, dpi != null ? dpi : 0),
-            MediaType.APPLICATION_PDF);
+        NamedBytes in = uploads.read(file);
+        int resolvedDpi = dpi != null ? dpi : 0;
+        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.redact(in, parsed, resolvedDpi));
+        return Responses.file(result, MediaType.APPLICATION_PDF);
     }
 
     private List<RedactRegion> parseRegions(String regions) {
@@ -227,10 +241,12 @@ public class OperationsController {
                                            @RequestParam(required = false) String format,
                                            @RequestParam(required = false) Integer dpi,
                                            @RequestParam(required = false) String pages)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         ImageFormat fmt = Params.imageFormat(format, ImageFormat.PNG);
-        List<NamedBytes> images = ops.toImages(uploads.read(file), fmt,
-            dpi != null ? dpi : 150, pages, 0.8f);
+        NamedBytes in = uploads.read(file);
+        int resolvedDpi = dpi != null ? dpi : 150;
+        List<NamedBytes> images = loadGuard.execute(in.data().length,
+            () -> ops.toImages(in, fmt, resolvedDpi, pages, 0.8f));
         if (images.size() == 1) {
             MediaType type = fmt == ImageFormat.PNG ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
             return Responses.file(images.get(0), type);
@@ -244,7 +260,7 @@ public class OperationsController {
     public ResponseEntity<byte[]> toText(@RequestParam("file") MultipartFile file,
                                          @RequestParam(required = false) String format,
                                          @RequestParam(required = false) String pages)
-            throws IOException, PdfOperationException, InvalidPageRangeException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         TextFormat fmt = Params.textFormat(format, TextFormat.TXT);
         NamedBytes out = ops.toText(uploads.read(file), fmt, pages);
         MediaType type = fmt == TextFormat.TXT
