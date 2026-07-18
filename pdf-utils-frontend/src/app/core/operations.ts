@@ -89,17 +89,52 @@ export const OP_ICONS: Record<string, string> = {
 
   // --- Existing single-path glyphs, wrapped into the uniform format ---
   'to-pdf': g('<path d="M4 4h16v16H4z M8 8h8 M8 12h8 M8 16h5"/>'),
-  'to-images': g('<path d="M3 5h18v14H3z M7 10a1.5 1.5 0 1 0 0-.01 M6 17l4-4 3 3 3-3 4 4"/>'),
-  'to-text': g('<path d="M6 3h12v18H6z M9 8h6 M9 12h6 M9 16h4"/>'),
-  protect: g('<path d="M6 10V8a6 6 0 0 1 12 0v2 M5 10h14v10H5z M12 14v3"/>'),
-  unlock: g('<path d="M6 10V8a6 6 0 0 1 11-3 M5 10h14v10H5z M12 14v3"/>'),
-  redact: g('<path d="M4 5h16v14H4z M7 9h6v4H7z M15 10h3 M15 14h2"/>'),
-  'gdpr-scan': g('<path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z M9 11.5l2 2 4-4.5"/>'),
+  'to-images': g(
+    '<path d="M4 6 H20 V18 H4 Z"/>' +
+      '<circle cx="8.5" cy="10" r="1.4"/>' +
+      '<path d="M5 17 L9 13 L12 16 L15 13 L19 17"/>',
+  ),
+  'to-text': g(
+    '<path d="M5 3 H14 L17 6 V21 H5 Z"/>' +
+      '<path d="M14 3 V6 H17"/>' +
+      '<path d="M8 10 H14"/>' +
+      '<path d="M8 13 H14"/>' +
+      '<path d="M8 16 H12"/>',
+  ),
+  protect: g(
+    '<path d="M8 10.5 V7 a4 4 0 0 1 8 0 V10.5"/>' +
+      '<path d="M5.5 10.5 H18.5 V21 H5.5 Z"/>' +
+      '<circle cx="12" cy="15.2" r="1.3"/>' +
+      '<path d="M12 16.5 V18.6"/>',
+  ),
+  unlock: g(
+    '<path d="M8 10.5 V6.5 a4 4 0 0 1 7.7 -1.5"/>' +
+      '<path d="M5.5 10.5 H18.5 V21 H5.5 Z"/>' +
+      '<circle cx="12" cy="15.2" r="1.3"/>' +
+      '<path d="M12 16.5 V18.6"/>',
+  ),
+  redact: g(
+    '<path d="M5 3 H14 L17 6 V21 H5 Z"/>' +
+      '<path d="M14 3 V6 H17"/>' +
+      '<path d="M8 10 H14"/>' +
+      '<path d="M7.5 12.4 H14.5 V14.8 H7.5 Z" fill="currentColor"/>' +
+      '<path d="M8 17.4 H11.5"/>',
+  ),
+  'gdpr-scan': g(
+    '<path d="M12 3 L19 6 V11 C19 15.5 16 18.6 12 20.2 C8 18.6 5 15.5 5 11 V6 Z"/>' +
+      '<path d="M8.8 11.6 L11 13.8 L15.2 9.2"/>',
+  ),
   metadata: g('<path d="M12 8a2 2 0 1 0 0-.01 M4 6h16v12H4z M8 14h8 M8 17h5"/>'),
   wizard: g(
-    '<path d="M5 3l1.5 3L10 7 6.5 8 5 11 3.5 8 0 7 3.5 6z M17 9l1 2 2 1-2 1-1 2-1-2-2-1 2-1z M14 15h6v6h-6z"/>',
+    '<path d="M12 3.2 L14.05 9.1 L20.2 9.25 L15.25 12.95 L17.05 18.9 L12 15.35 L6.95 18.9 L8.75 12.95 L3.8 9.25 L9.95 9.1 Z"/>',
   ),
-  pipeline: g('<path d="M4 6a2 2 0 1 0 0-.01 M20 18a2 2 0 1 0 0-.01 M6 6h6a4 4 0 0 1 4 4v4 M14 14h4"/>'),
+  pipeline: g(
+    '<circle cx="4.5" cy="6" r="1.7" fill="currentColor" stroke="none"/>' +
+      '<circle cx="4.5" cy="18" r="1.7" fill="currentColor" stroke="none"/>' +
+      '<circle cx="19.5" cy="12" r="1.7" fill="currentColor" stroke="none"/>' +
+      '<path d="M6.2 6 C11.5 6 12 12 17.8 12"/>' +
+      '<path d="M6.2 18 C11.5 18 12 12 17.8 12"/>',
+  ),
 
   // Pipeline SOURCE node (not an operation) — a plain page glyph.
   source: g('<path d="M6 2h9l5 5v15H6z M15 2v5h5"/>'),
