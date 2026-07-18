@@ -11,21 +11,70 @@
   <meta name="theme-color" content="#2f6fed">
   <meta name="color-scheme" content="light dark">
 
+  <!-- Canonical. Replace https://pdfconduit.app with the real domain at deploy time. -->
+  <link rel="canonical" href="https://pdfconduit.app/">
+
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="PDF Conduit">
+  <meta property="og:url" content="https://pdfconduit.app/">
   <meta property="og:title" content="PDF Conduit — Free online PDF tools">
   <meta property="og:description"
         content="Merge, compress, convert, protect and redact PDFs for free — right in your browser. Files are processed in memory and never stored.">
+  <meta property="og:image" content="https://pdfconduit.app/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="PDF Conduit — free online PDF tools, processed in memory">
 
   <!-- Twitter card -->
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PDF Conduit — Free online PDF tools">
   <meta name="twitter:description"
         content="Merge, compress, convert, protect and redact PDFs for free. Processed in memory, never stored. No account needed.">
+  <meta name="twitter:image" content="https://pdfconduit.app/og-image.png">
+  <meta name="twitter:image:alt" content="PDF Conduit — free online PDF tools, processed in memory">
 
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Structured data: describes the free, browser-based tool for search engines. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["WebApplication", "SoftwareApplication"],
+    "name": "PDF Conduit",
+    "url": "https://pdfconduit.app/",
+    "description": "Free online PDF tools — merge, split, compress, convert, rotate, arrange, protect, unlock, watermark, redact and extract text or images from PDFs. Files are processed in memory in your browser session and never stored. No account needed.",
+    "applicationCategory": "BusinessApplication",
+    "applicationSubCategory": "PDF tools",
+    "operatingSystem": "Any (web browser)",
+    "browserRequirements": "Requires a modern web browser with JavaScript enabled",
+    "inLanguage": ["en", "de", "es", "fr", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "zh"],
+    "isAccessibleForFree": true,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Merge PDFs",
+      "Split / extract pages",
+      "Compress PDF",
+      "Rotate pages",
+      "Arrange / reorder pages",
+      "Convert images and documents to PDF",
+      "Password-protect PDF",
+      "Unlock / remove PDF password",
+      "Edit PDF metadata",
+      "Add watermark",
+      "Redact PDF",
+      "PDF to images",
+      "PDF to text"
+    ]
+  }
+  </script>
 </head>
 <body>
   <app-root></app-root>

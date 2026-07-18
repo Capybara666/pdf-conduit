@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Replace the placeholder host (https://pdfconduit.app) with the real domain at deploy time. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://pdfconduit.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://pdfconduit.app/merge</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/extract</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/compress</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/rotate</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/arrange</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/to-pdf</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/protect</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/unlock</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/metadata</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/watermark</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/redact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/to-images</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/to-text</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pdfconduit.app/wizard</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pdfconduit.app/pipeline</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pdfconduit.app/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

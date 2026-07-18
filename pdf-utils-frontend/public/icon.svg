@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PDF Conduit">
+  <!-- Full-bleed background so the icon works as `purpose: any maskable`
+       (the OS applies its own shape mask; the glyph stays inside the safe zone). -->
+  <rect width="512" height="512" fill="#2f6fed"/>
+  <path d="M160 96h128l80 80v240H160z" fill="none" stroke="#ffffff" stroke-width="28.8" stroke-linejoin="round"/>
+  <path d="M288 96v80h80" fill="none" stroke="#ffffff" stroke-width="28.8" stroke-linejoin="round"/>
+  <path d="M208 256h96M208 304h96M208 352h64" fill="none" stroke="#ffffff" stroke-width="28.8" stroke-linecap="round"/>
+</svg>

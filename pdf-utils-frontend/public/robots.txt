@@ -1,0 +1,7 @@
+# PDF Conduit — free online PDF tools
+# Public tool: allow all crawlers.
+User-agent: *
+Allow: /
+
+# NOTE: replace the placeholder host below with the real domain at deploy time.
+Sitemap: https://pdfconduit.app/sitemap.xml

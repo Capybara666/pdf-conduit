@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -22,13 +22,21 @@ const BRAND = 'PDF Conduit';
 @Injectable({ providedIn: 'root' })
 export class TranslatedTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   private readonly transloco = inject(TranslocoService);
 
   /** Live subscription to the active route's translated title. */
   private titleSub?: Subscription;
+  /** Live subscription to the active route's translated meta description. */
+  private descSub?: Subscription;
 
   override updateTitle(snapshot: RouterStateSnapshot): void {
-    const key = this.titleKeyFor(snapshot);
+    this.updateTitleTag(snapshot);
+    this.updateDescription(snapshot);
+  }
+
+  private updateTitleTag(snapshot: RouterStateSnapshot): void {
+    const key = this.dataKeyFor(snapshot, 'titleKey');
     this.titleSub?.unsubscribe();
 
     if (!key) {
@@ -43,12 +51,35 @@ export class TranslatedTitleStrategy extends TitleStrategy {
       );
   }
 
-  /** Walk to the deepest activated route that declares a `titleKey`. */
-  private titleKeyFor(snapshot: RouterStateSnapshot): string | undefined {
+  /**
+   * Optional per-route `<meta name="description">`. A route may declare a
+   * Transloco `data.descKey`; when present its localized value replaces the
+   * document description and re-applies on language change. Routes without a
+   * `descKey` keep the static default baked into `index.html`, and a key that
+   * has no translation (Transloco echoes the key back) is ignored — so this is
+   * safe to ship before any route or `meta.*` dictionary entry exists.
+   */
+  private updateDescription(snapshot: RouterStateSnapshot): void {
+    const key = this.dataKeyFor(snapshot, 'descKey');
+    this.descSub?.unsubscribe();
+    if (!key) return;
+
+    this.descSub = this.transloco.selectTranslate(key).subscribe((desc) => {
+      if (desc && desc !== key) {
+        this.meta.updateTag({ name: 'description', content: desc });
+      }
+    });
+  }
+
+  /** Walk to the deepest activated route that declares the given data key. */
+  private dataKeyFor(
+    snapshot: RouterStateSnapshot,
+    dataName: string,
+  ): string | undefined {
     let route = snapshot.root;
     let key: string | undefined;
     while (route) {
-      const routeKey = route.data?.['titleKey'];
+      const routeKey = route.data?.[dataName];
       if (typeof routeKey === 'string' && routeKey) {
         key = routeKey;
       }
