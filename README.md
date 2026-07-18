@@ -107,10 +107,12 @@ Two containers, built from source (wired by `docker-compose.yml`):
 
 - **`pdf-utils-frontend`** — an **Angular 18** single-page app served by nginx
   (its own npm build, *not* part of the Maven reactor). All operations plus the
-  Wizard, the visual Pipeline builder, and in-browser Redaction (pdf.js
-  box-drawing), a landing page, a header **quota chip** ("N free left today"),
-  and a **14-language** UI (en, pl, es, zh, de, fr, it, pt, nl, uk, ru, tr, ja,
-  ko) switchable live from the header. nginx serves the SPA and reverse-proxies
+  Wizard, the visual Pipeline builder, in-browser Redaction (pdf.js
+  box-drawing), and a **GDPR/PII scanner** (see below), a landing page, a header
+  **quota chip** ("N free left today"), a **six-theme** picker (Daylight,
+  Graphite, Nord, Dracula, Solarized, Sunset — parity with the desktop), and a
+  **14-language** UI (en, pl, es, zh, de, fr, it, pt, nl, uk, ru, tr, ja, ko)
+  switchable live from the header. nginx serves the SPA and reverse-proxies
   `/api` to the backend, so the browser talks to a single origin.
 - **`pdf-utils-web`** — a **stateless, in-memory Spring Boot REST API** (no
   browser UI of its own). It reuses `pdf-utils-core`, so behaviour matches the
@@ -124,6 +126,17 @@ Uploads are processed **entirely in memory** and never written to disk — the
 result is streamed straight back for download. The **sole exception** is
 office/text-document conversion (`.docx`, `.xlsx`, …), which LibreOffice performs
 in an isolated, immediately-deleted per-request temp dir.
+
+### GDPR / PII scanner
+
+A privacy-first tool that checks a PDF for **personal data** without it ever
+leaving the server's memory. It flags emails, phone numbers, IP addresses,
+bank **IBANs** and payment **card** numbers (checksum-validated), national IDs,
+and special-category ("health-ish") keywords, then reports a **risk level** with
+masked samples per category. Detected concrete values come back with their
+positions, so the report offers a **one-click "Redact detected data"** hand-off
+that opens the Redaction tool with black boxes already drawn over the findings —
+free, no upload leaves your browser session.
 
 ### Free-tier protection
 

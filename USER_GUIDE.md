@@ -153,6 +153,14 @@ back as a single `.zip`.
 **draw boxes** over what to hide; the marked areas are permanently burned out of
 the result.
 
+**GDPR / PII scanner.** A privacy tool that checks a PDF for **personal data** —
+emails, phone numbers, IP addresses, bank **IBANs** and payment **card** numbers,
+national IDs, and health-related keywords — and reports a **risk level** with
+masked samples, all processed in memory and never stored. When it finds concrete
+values, one click on **"Redact detected data"** opens the Redaction tool with
+boxes already drawn over each finding, so you can black them out and download a
+clean copy for free.
+
 Your uploads are processed **in memory** and never stored on the server — the
 result is streamed straight back for download. The one exception is converting
 **Office/text documents** (`.docx`, `.xlsx`, …), which needs LibreOffice
@@ -162,8 +170,9 @@ required there); pure PDF and image flows need nothing beyond the browser.
 The public web app is a **free** version, so a **fair-use limit** applies — a
 header chip shows how many free operations you have left today, and very large
 or very frequent uploads may be rate-limited (a toast explains when this
-happens). The interface is available in **14 languages**, switchable from the
-picker in the header.
+happens). The interface is available in **14 languages** and the same **six
+themes** as the desktop app (Daylight, Graphite, Nord, Dracula, Solarized,
+Sunset), both switchable from the pickers in the header.
 
 ## Command line (CLI)
 
