@@ -44,6 +44,16 @@ public final class PdfCompressor {
         new Step(0.33f, 0.40f)
     );
 
+    /**
+     * A hook invoked once, during the lossless pass, with the freshly-parsed document's page count,
+     * so a caller (the web backend's PDF-bomb ceiling) can enforce its page-count guard without
+     * opening the PDF a second time just to count pages. May throw to abort compression.
+     */
+    @FunctionalInterface
+    public interface PageCountGuard {
+        void check(int pageCount) throws PdfOperationException;
+    }
+
     private PdfCompressor() {}
 
     public static CompressResult execute(CompressOptions opts) throws PdfOperationException {
@@ -111,12 +121,25 @@ public final class PdfCompressor {
      */
     public static CompressBytesResult compressBytes(byte[] input, long targetSizeBytes)
             throws PdfOperationException {
+        return compressBytes(input, targetSizeBytes, null);
+    }
+
+    /**
+     * As {@link #compressBytes(byte[], long)}, but the lossless pass — which already parses
+     * {@code input} — hands its page count to {@code pageCountGuard} (may be {@code null}) before
+     * doing any work, letting a caller enforce a page-count ceiling without a separate parse. The
+     * compression algorithm and its "never larger than the input" guarantee are unchanged.
+     */
+    public static CompressBytesResult compressBytes(byte[] input, long targetSizeBytes,
+                                                    PageCountGuard pageCountGuard)
+            throws PdfOperationException {
         long originalSize = input.length;
         try {
             // 1) Lossless pass: re-save with object-stream compression.
             byte[] lossless;
             boolean hasImages;
             try (PDDocument doc = PdfLoader.load(input)) {
+                if (pageCountGuard != null) pageCountGuard.check(doc.getNumberOfPages());
                 hasImages = hasImages(doc);
                 lossless = PdfLoader.toBytes(doc);
             }

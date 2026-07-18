@@ -27,6 +27,7 @@ import com.pdfconduit.core.operations.PdfWatermarker;
 import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OperationType;
+import com.pdfconduit.core.util.LoadedPdf;
 import com.pdfconduit.core.util.PageOrderParser;
 import com.pdfconduit.core.util.PageRangeParser;
 import com.pdfconduit.core.util.PdfLoader;
@@ -92,24 +93,36 @@ public class WebOperations {
     /** Extract {@code pagesExpr} (blank ⇒ all) combined into one PDF. */
     public NamedBytes extractCombine(NamedBytes in, String pagesExpr)
             throws PdfOperationException, InvalidPageRangeException {
-        byte[] pdf = toPdf(in);
-        byte[] out = PdfSplitter.combineBytes(pdf, range(pagesExpr, pdf));
-        return new NamedBytes(MemoryOperations.outputName(OperationType.EXTRACT, in.filename()), out);
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            byte[] out = PdfSplitter.combineBytes(pdf, range(pagesExpr, lp));
+            return new NamedBytes(MemoryOperations.outputName(OperationType.EXTRACT, in.filename()), out);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     /** Extract {@code pagesExpr} (blank ⇒ all) as one PDF per page. */
     public List<NamedBytes> extractSeparate(NamedBytes in, String pagesExpr)
             throws PdfOperationException, InvalidPageRangeException {
-        byte[] pdf = toPdf(in);
-        List<byte[]> pages = PdfSplitter.separateBytes(pdf, range(pagesExpr, pdf));
-        return nameMulti(OperationType.EXTRACT, in.filename(), pages, "pdf");
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            List<byte[]> pages = PdfSplitter.separateBytes(pdf, range(pagesExpr, lp));
+            return nameMulti(OperationType.EXTRACT, in.filename(), pages, "pdf");
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     // --------------------------------------------------------------- COMPRESS
 
     /** Compress a single input to (at most) {@code targetBytes}; full metrics returned. */
     public CompressBytesResult compress(NamedBytes in, long targetBytes) throws PdfOperationException {
-        return PdfCompressor.compressBytes(toPdf(in), targetBytes);
+        // Single-parse: skip the separate page-count-guard parse and fold the guard into the
+        // document the compressor's lossless pass already opens (see PdfCompressor.PageCountGuard).
+        return PdfCompressor.compressBytes(routeToPdf(in), targetBytes, this::guardPageCountValue);
     }
 
     /** Batch-compress every input to (at most) {@code targetBytes}. */
@@ -138,10 +151,15 @@ public class WebOperations {
     /** Reorder a single input's pages per {@code order} (e.g. {@code 3,1,2}). */
     public NamedBytes arrange(NamedBytes in, String order)
             throws PdfOperationException, InvalidPageRangeException {
-        byte[] pdf = toPdf(in);
-        List<Integer> pageOrder = PageOrderParser.parse(order, pageCount(pdf));
-        byte[] out = PdfArranger.executeBytes(pdf, pageOrder);
-        return new NamedBytes(MemoryOperations.outputName(OperationType.ARRANGE, in.filename()), out);
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            List<Integer> pageOrder = PageOrderParser.parse(order, lp.pageCount());
+            byte[] out = PdfArranger.executeBytes(pdf, pageOrder);
+            return new NamedBytes(MemoryOperations.outputName(OperationType.ARRANGE, in.filename()), out);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     // ------------------------------------------------------------------ TO-PDF
@@ -191,14 +209,26 @@ public class WebOperations {
 
     /** Read a PDF's document-info metadata (input may be office/image → converted first). */
     public PdfMetadata readMetadata(NamedBytes in) throws PdfOperationException {
-        return PdfMetadataEditor.readBytes(toPdf(in));
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            return PdfMetadataEditor.readBytes(pdf);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     /** Edit (or strip) a PDF's metadata; null field = unchanged, empty = cleared. */
     public NamedBytes editMetadata(NamedBytes in, String title, String author, String subject,
                                    String keywords, boolean strip) throws PdfOperationException {
-        byte[] out = PdfMetadataEditor.executeBytes(toPdf(in), title, author, subject, keywords, strip);
-        return new NamedBytes(MemoryOperations.outputName(OperationType.METADATA, in.filename()), out);
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            byte[] out = PdfMetadataEditor.executeBytes(pdf, title, author, subject, keywords, strip);
+            return new NamedBytes(MemoryOperations.outputName(OperationType.METADATA, in.filename()), out);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     /** Batch-edit (or strip) every input's metadata, preserving order. */
@@ -223,11 +253,16 @@ public class WebOperations {
 
     public NamedBytes redact(NamedBytes in, List<RedactRegion> regions, int dpi)
             throws PdfOperationException {
-        byte[] pdf = toPdf(in);
-        // dpi <= 0 means "core default" (PdfRedactor.DEFAULT_DPI); guard against the effective value.
-        guardRender(pdf, dpi > 0 ? dpi : PdfRedactor.DEFAULT_DPI);
-        byte[] out = PdfRedactor.executeBytes(pdf, regions, dpi);
-        return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            // dpi <= 0 means "core default" (PdfRedactor.DEFAULT_DPI); guard against the effective value.
+            guardRender(lp, dpi > 0 ? dpi : PdfRedactor.DEFAULT_DPI);
+            byte[] out = PdfRedactor.executeBytes(pdf, regions, dpi);
+            return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     // --------------------------------------------------------------- TO-IMAGES
@@ -236,11 +271,16 @@ public class WebOperations {
     public List<NamedBytes> toImages(NamedBytes in, ImageFormat format, int dpi, String pagesExpr,
                                      float jpegQuality)
             throws PdfOperationException, InvalidPageRangeException {
-        byte[] pdf = toPdf(in);
-        guardRender(pdf, dpi);
-        List<byte[]> images = PdfToImageConverter.executeBytes(pdf, format, dpi,
-            range(pagesExpr, pdf), jpegQuality);
-        return nameMulti(OperationType.PDF_TO_IMAGES, in.filename(), images, format.extension());
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            guardRender(lp, dpi);
+            List<byte[]> images = PdfToImageConverter.executeBytes(pdf, format, dpi,
+                range(pagesExpr, lp), jpegQuality);
+            return nameMulti(OperationType.PDF_TO_IMAGES, in.filename(), images, format.extension());
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -265,10 +305,15 @@ public class WebOperations {
         if (format == TextFormat.DOCX && !officeEnabled) {
             throw new OfficeDisabledException(in.filename());
         }
-        byte[] pdf = toPdf(in);
-        byte[] out = PdfTextExporter.toTextBytes(pdf, format, range(pagesExpr, pdf));
-        String name = stem(in.filename()) + OperationType.PDF_TO_TEXT.suffix() + "." + format.extension();
-        return new NamedBytes(name, out);
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            byte[] out = PdfTextExporter.toTextBytes(pdf, format, range(pagesExpr, lp));
+            String name = stem(in.filename()) + OperationType.PDF_TO_TEXT.suffix() + "." + format.extension();
+            return new NamedBytes(name, out);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     /** Batch-export every input to text/docx, preserving order. */
@@ -295,11 +340,16 @@ public class WebOperations {
     /** Render a single 0-based page of the input to a PNG (for pdf.js fallback / thumbnails). */
     public byte[] renderPage(NamedBytes in, int pageIndex, int dpi)
             throws PdfOperationException, InvalidPageRangeException {
-        byte[] pdf = toPdf(in);
-        guardRender(pdf, dpi);
-        PageRange page = PageRangeParser.parse(String.valueOf(pageIndex + 1), pageCount(pdf));
-        List<byte[]> images = PdfToImageConverter.executeBytes(pdf, ImageFormat.PNG, dpi, page, 1f);
-        return images.get(0);
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            guardRender(lp, dpi);
+            PageRange page = PageRangeParser.parse(String.valueOf(pageIndex + 1), lp.pageCount());
+            List<byte[]> images = PdfToImageConverter.executeBytes(pdf, ImageFormat.PNG, dpi, page, 1f);
+            return images.get(0);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     // --------------------------------------------------------------- internals
@@ -309,15 +359,23 @@ public class WebOperations {
      * the PDF page-count ceiling. The single chokepoint every single-file operation flows through.
      */
     private byte[] toPdf(NamedBytes in) throws PdfOperationException {
-        byte[] pdf;
+        byte[] pdf = routeToPdf(in);
+        guardPageCount(pdf);
+        return pdf;
+    }
+
+    /**
+     * Routes an upload to PDF bytes (office conversion gated by {@link OfficeGuard}) <em>without</em>
+     * the page-count guard, so a single-file caller can open the routed bytes once (as a
+     * {@link LoadedPdf}) and run every read-only guard/range check off that one parse.
+     */
+    private byte[] routeToPdf(NamedBytes in) throws PdfOperationException {
         try {
-            pdf = officeGuard.run(in.filename(),
+            return officeGuard.run(in.filename(),
                 () -> MemoryOperations.toPdfBytes(in.data(), in.filename()));
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read input: " + e.getMessage(), e);
         }
-        guardPageCount(pdf);
-        return pdf;
     }
 
     /** Converts + guards a batch of uploads to PDF bytes, preserving order (names kept by caller). */
@@ -334,32 +392,42 @@ public class WebOperations {
      * so a huge {@code dpi} or an enormous page cannot OOM the JVM. {@code dpi} is the effective
      * (already-defaulted, positive) value.
      */
-    private void guardRender(byte[] pdf, int dpi) throws PdfOperationException {
+    private void guardRender(LoadedPdf lp, int dpi) throws PdfOperationException {
         if (maxDpi > 0 && dpi > maxDpi) {
             throw new IllegalArgumentException(
                 "Requested DPI " + dpi + " exceeds the maximum allowed (" + maxDpi + ").");
         }
         if (maxOutputPixels <= 0) return;
-        try (PDDocument doc = PdfLoader.load(pdf)) {
-            for (PDPage page : doc.getPages()) {
-                PDRectangle box = page.getCropBox();
-                double widthPx = box.getWidth() / 72.0 * dpi;
-                double heightPx = box.getHeight() / 72.0 * dpi;
-                if (widthPx * heightPx > maxOutputPixels) {
-                    throw new PdfOperationException(
-                        "Rendering this document at " + dpi + " DPI would exceed the output-size "
-                        + "limit; choose a lower DPI.");
-                }
+        for (PDPage page : lp.document().getPages()) {
+            PDRectangle box = page.getCropBox();
+            double widthPx = box.getWidth() / 72.0 * dpi;
+            double heightPx = box.getHeight() / 72.0 * dpi;
+            if (widthPx * heightPx > maxOutputPixels) {
+                throw new PdfOperationException(
+                    "Rendering this document at " + dpi + " DPI would exceed the output-size "
+                    + "limit; choose a lower DPI.");
             }
-        } catch (IOException e) {
-            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
         }
     }
 
     /** PDF-bomb guard: reject a PDF whose page count exceeds the configured ceiling (→ 422). */
     private void guardPageCount(byte[] pdf) throws PdfOperationException {
         if (maxPages <= 0) return;
-        if (pageCount(pdf) > maxPages) {
+        guardPageCountValue(pageCount(pdf));
+    }
+
+    /** As {@link #guardPageCount(byte[])} but off an already-open handle — no re-parse. */
+    private void guardPageCount(LoadedPdf lp) throws PdfOperationException {
+        guardPageCountValue(lp.pageCount());
+    }
+
+    /**
+     * The page-count ceiling check on an already-known page count. Also the
+     * {@link PdfCompressor.PageCountGuard} for compress, so its lossless-pass parse doubles as the
+     * guard parse (no separate page-count parse).
+     */
+    private void guardPageCountValue(int pageCount) throws PdfOperationException {
+        if (maxPages > 0 && pageCount > maxPages) {
             throw new PdfOperationException("PDF exceeds the maximum page count (" + maxPages + ").");
         }
     }
@@ -368,6 +436,13 @@ public class WebOperations {
             throws PdfOperationException, InvalidPageRangeException {
         if (expr == null || expr.isBlank()) return PageRange.ALL;
         return PageRangeParser.parse(expr, pageCount(pdf));
+    }
+
+    /** As {@link #range(String, byte[])} but off an already-open handle — no re-parse. */
+    private PageRange range(String expr, LoadedPdf lp)
+            throws PdfOperationException, InvalidPageRangeException {
+        if (expr == null || expr.isBlank()) return PageRange.ALL;
+        return PageRangeParser.parse(expr, lp.pageCount());
     }
 
     private int pageCount(byte[] pdf) throws PdfOperationException {
