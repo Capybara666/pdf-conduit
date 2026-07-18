@@ -450,7 +450,7 @@ const STEP_KEYS = [
         font-size: 0.8rem;
         color: var(--text-muted);
       }
-      @media (max-width: 560px) {
+      @media (max-width: 480px) {
         .file-meta .name {
           max-width: 40vw;
         }

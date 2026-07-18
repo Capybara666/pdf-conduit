@@ -73,6 +73,9 @@ const KIND_TO_OP: Record<string, string> = {
         [description]="'pages.pipeline.description' | transloco"
       />
 
+      <!-- Small-viewport advisory: the node canvas is pointer-oriented and reads best on a wider screen. -->
+      <p class="hint-note mobile-hint">{{ 'pipeline.mobileHint' | transloco }}</p>
+
       <!-- Palette + toolbar -->
       <div class="card">
         <div class="palette">
@@ -212,12 +215,19 @@ const KIND_TO_OP: Record<string, string> = {
         margin: 0 0 0.5rem;
         word-break: break-all;
       }
-      @media (max-width: 900px) {
+      /* Advisory note is desktop-hidden; only surfaces on small viewports. */
+      .mobile-hint {
+        display: none;
+      }
+      @media (max-width: 768px) {
         .pl-grid {
           grid-template-columns: 1fr;
         }
         .side {
           position: static;
+        }
+        .mobile-hint {
+          display: block;
         }
       }
     `,

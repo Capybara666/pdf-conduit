@@ -1,5 +1,20 @@
 /* Global styles — theme tokens (light/dark), reset, base typography. */
 
+/* Responsive breakpoint tokens + helper mixin. Used by the mobile media
+   queries in this file so they stay internally consistent. NOTE: component
+   files that use inline `styles` (Angular) cannot import/consume this SCSS
+   mixin — those keep raw pixel literals. */
+$bp-sm: 480px;
+$bp-md: 640px;
+$bp-lg: 768px;
+$bp-rail: 820px;
+
+@mixin respond-to($bp) {
+  @media (max-width: $bp) {
+    @content;
+  }
+}
+
 :root {
   --header-height: 56px;
   --sidebar-width: 220px;
@@ -172,6 +187,11 @@
 html,
 body {
   height: 100%;
+  /* Global horizontal-overflow guard: no descendant can scroll the whole
+     page sideways on mobile. The off-canvas sidebar/drawer is position:fixed,
+     so it is taken out of flow and is unaffected by this clip. */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -229,6 +249,15 @@ button {
 
 .op-page.wide {
   max-width: 1200px;
+}
+
+/* Reusable scroll wrapper for wide content blocks (tables, code, wide grids)
+   so they scroll internally instead of pushing the page sideways. Safe at all
+   widths. */
+.scroll-x {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .op-head h1 {
@@ -393,8 +422,12 @@ input[type='range'] {
 
 .seg {
   display: inline-flex;
+  flex-wrap: wrap;
   border: 1px solid var(--border-strong);
   border-radius: calc(var(--radius) - 5px);
+  /* overflow:hidden keeps the outer corners rounded. Wrapped flex rows stay
+     inside the box (it grows in height), so wrapping is not clipped and the
+     single-row desktop appearance is unchanged. */
   overflow: hidden;
 }
 
@@ -478,4 +511,32 @@ input[type='range'] {
 .icon-btn:hover {
   color: var(--danger);
   background: var(--surface);
+}
+
+/* ---------------------------------------------------------------------------
+ * Mobile refinements. Gated behind $bp-md via respond-to() so desktop
+ * rendering is byte-for-byte unchanged.
+ * ------------------------------------------------------------------------- */
+@include respond-to($bp-md) {
+  /* C — comfortable tap targets (current paddings render ~37px). */
+  .btn,
+  .seg button {
+    min-height: 44px;
+  }
+
+  .icon-btn {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  /* D — drop the op-page side padding on phones; .content already pads the
+     sides, so the extra ~1.5rem each side just eats width at 375px. */
+  .op-page {
+    padding: 1.25rem 0 3rem;
+  }
+
+  /* F — never show two cramped columns on phones. */
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
 }

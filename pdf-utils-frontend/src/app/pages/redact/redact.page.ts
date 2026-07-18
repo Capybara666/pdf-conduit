@@ -154,6 +154,20 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           position: static;
         }
       }
+      @media (max-width: 640px) {
+        /* Container-only cap so the collapsed viewer column doesn't dominate the
+           phone screen; the viewer still scrolls inside it, so canvas size and
+           pointer→PDF-point mapping are unchanged. */
+        .viewer-col {
+          max-height: 60vh;
+        }
+        .viewer-col .btn-row {
+          flex-wrap: wrap;
+        }
+        .fname {
+          max-width: 100%;
+        }
+      }
     `,
   ],
 })
