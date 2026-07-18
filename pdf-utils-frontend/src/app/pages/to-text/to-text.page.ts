@@ -27,10 +27,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
 
       <app-file-drop-zone
-        [multiple]="false"
+        [multiple]="true"
         accept=".pdf"
         [hint]="'pages.toText.hint' | transloco"
-        (filesChange)="file.set($event.length ? $event[0] : null)"
+        (filesChange)="files.set($event)"
       />
 
       <div class="card form-grid">
@@ -38,6 +38,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           <label for="tt-format">{{ 'pages.toText.format' | transloco }}</label>
           <select id="tt-format" [value]="format()" (change)="format.set($any($event.target).value)">
             <option value="TXT">{{ 'pages.toText.formatTxt' | transloco }}</option>
+            <option value="DOCX">{{ 'pages.toText.formatDocx' | transloco }}</option>
           </select>
         </div>
         <div class="field">
@@ -52,7 +53,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn btn-primary" [disabled]="!file() || state.loading()" (click)="submit()">
+        <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
           {{ 'pages.toText.submit' | transloco }}
         </button>
       </div>
@@ -67,18 +68,18 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
   `,
 })
 export class ToTextPage {
-  protected readonly file = signal<File | null>(null);
-  protected readonly format = signal<'TXT'>('TXT');
+  protected readonly files = signal<File[]>([]);
+  protected readonly format = signal<'TXT' | 'DOCX'>('TXT');
   protected readonly pages = new FormControl('', { nonNullable: true });
   protected readonly state = new OperationState();
 
   constructor(private readonly api: ApiService) {}
 
   submit(): void {
-    const f = this.file();
-    if (!f) return;
+    const files = this.files();
+    if (!files.length) return;
     const fd = new FormData();
-    fd.append('file', f, f.name);
+    for (const f of files) fd.append('files', f, f.name);
     fd.append('format', this.format());
     const p = this.pages.value.trim();
     if (p) fd.append('pages', p);

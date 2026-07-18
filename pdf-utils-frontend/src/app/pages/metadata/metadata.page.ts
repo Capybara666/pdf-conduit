@@ -31,14 +31,23 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
       />
 
       <app-file-drop-zone
-        [multiple]="false"
+        [multiple]="true"
         accept=".pdf"
         [hint]="'pages.metadata.hint' | transloco"
-        (filesChange)="onFile($event.length ? $event[0] : null)"
+        (filesChange)="onFiles($event)"
       />
 
+      @if (files().length > 1) {
+        <p class="hint-note">{{ 'pages.metadata.batchNote' | transloco }}</p>
+      }
+
       <div class="btn-row">
-        <button type="button" class="btn" [disabled]="!file() || reading()" (click)="readCurrent()">
+        <button
+          type="button"
+          class="btn"
+          [disabled]="files().length !== 1 || reading()"
+          (click)="readCurrent()"
+        >
           {{ 'pages.metadata.readCurrent' | transloco }}
         </button>
         @if (reading()) {
@@ -75,7 +84,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
       </form>
 
       <div class="btn-row">
-        <button type="button" class="btn btn-primary" [disabled]="!file() || state.loading()" (click)="submit()">
+        <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
           {{ (strip() ? 'pages.metadata.submitStrip' : 'pages.metadata.submitApply') | transloco }}
         </button>
       </div>
@@ -90,7 +99,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
   `,
 })
 export class MetadataPage {
-  protected readonly file = signal<File | null>(null);
+  protected readonly files = signal<File[]>([]);
   protected readonly reading = signal(false);
   protected readonly readError = signal<ApiError | null>(null);
   protected readonly strip = signal(false);
@@ -111,14 +120,16 @@ export class MetadataPage {
     return e ? this.transloco.translate(errorCopyKeys(e).titleKey) : '';
   }
 
-  onFile(f: File | null): void {
-    this.file.set(f);
+  onFiles(files: File[]): void {
+    this.files.set(files);
     this.readError.set(null);
     this.clearFields();
-    // Auto-prefill the moment a PDF is added (mirrors the desktop app). "Read
-    // current" stays as a manual refresh; a silent failure just leaves the
-    // fields blank + editable rather than shouting about a protected/damaged file.
-    if (f) this.read(f, true);
+    // Auto-prefill the moment a single PDF is added (mirrors the desktop app).
+    // The read/preview only makes sense for one file, so with 0 or >1 selected
+    // we leave the fields blank + editable. "Read current" stays as a manual
+    // refresh; a silent failure just leaves the fields blank rather than
+    // shouting about a protected/damaged file.
+    if (files.length === 1) this.read(files[0], true);
   }
 
   toggleStrip(ev: Event): void {
@@ -126,8 +137,8 @@ export class MetadataPage {
   }
 
   readCurrent(): void {
-    const f = this.file();
-    if (f) this.read(f, false);
+    const list = this.files();
+    if (list.length === 1) this.read(list[0], false);
   }
 
   private read(f: File, silent: boolean): void {
@@ -159,10 +170,10 @@ export class MetadataPage {
   }
 
   submit(): void {
-    const f = this.file();
-    if (!f) return;
+    const list = this.files();
+    if (!list.length) return;
     const fd = new FormData();
-    fd.append('file', f, f.name);
+    for (const f of list) fd.append('files', f, f.name);
     if (this.strip()) {
       fd.append('strip', 'true');
     } else {

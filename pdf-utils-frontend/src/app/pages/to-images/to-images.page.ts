@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -13,6 +14,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
   selector: 'app-to-images-page',
   standalone: true,
   imports: [
+    DecimalPipe,
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
@@ -27,10 +29,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
 
       <app-file-drop-zone
-        [multiple]="false"
+        [multiple]="true"
         accept=".pdf"
         [hint]="'pages.toImages.hint' | transloco"
-        (filesChange)="file.set($event.length ? $event[0] : null)"
+        (filesChange)="files.set($event)"
       />
 
       <div class="card form-grid">
@@ -46,6 +48,17 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           <input id="ti-dpi" type="number" min="36" max="600" step="1" [formControl]="dpi" />
           <span class="help">{{ 'pages.toImages.dpiHelp' | transloco }}</span>
         </div>
+        @if (format() === 'JPG') {
+          <div class="field">
+            <label for="ti-quality">{{ 'pages.toImages.quality' | transloco }} <span class="hint-note">{{ quality() | number: '1.2-2' }}</span></label>
+            <div class="range-row">
+              <input id="ti-quality" type="range" min="0.05" max="1" step="0.05"
+                     [value]="quality()" (input)="quality.set(+$any($event.target).value)" />
+              <output>{{ quality() | number: '1.2-2' }}</output>
+            </div>
+            <span class="help">{{ 'pages.toImages.qualityHelp' | transloco }}</span>
+          </div>
+        }
         <div class="field">
           <label for="ti-pages">{{ 'pages.toImages.pages' | transloco }}</label>
           <input
@@ -61,7 +74,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         <button
           type="button"
           class="btn btn-primary"
-          [disabled]="!file() || dpi.invalid || state.loading()"
+          [disabled]="!files().length || dpi.invalid || state.loading()"
           (click)="submit()"
         >
           {{ 'pages.toImages.submit' | transloco }}
@@ -78,8 +91,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
   `,
 })
 export class ToImagesPage {
-  protected readonly file = signal<File | null>(null);
+  protected readonly files = signal<File[]>([]);
   protected readonly format = signal<'PNG' | 'JPG'>('PNG');
+  protected readonly quality = signal(0.8);
   protected readonly dpi = new FormControl(150, {
     nonNullable: true,
     validators: [Validators.required, Validators.min(36), Validators.max(600)],
@@ -90,12 +104,12 @@ export class ToImagesPage {
   constructor(private readonly api: ApiService) {}
 
   submit(): void {
-    const f = this.file();
-    if (!f || this.dpi.invalid) return;
+    if (!this.files().length || this.dpi.invalid) return;
     const fd = new FormData();
-    fd.append('file', f, f.name);
+    for (const f of this.files()) fd.append('files', f, f.name);
     fd.append('format', this.format());
     fd.append('dpi', String(this.dpi.value));
+    if (this.format() === 'JPG') fd.append('quality', String(this.quality()));
     const p = this.pages.value.trim();
     if (p) fd.append('pages', p);
     this.state.run(this.api.toImages(fd));
