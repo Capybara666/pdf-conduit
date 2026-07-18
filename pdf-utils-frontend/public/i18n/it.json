@@ -362,7 +362,10 @@
       "targetHelp2": "o un numero di byte grezzo.",
       "targetError": "Inserisci una dimensione come",
       "submit": "{count, plural, one {Comprimi # file} other {Comprimi # file}}",
-      "loading": "Compressione in corso…"
+      "loading": "Compressione in corso…",
+      "noopWarning": "Obiettivo ≥ dimensione file — nessuna riduzione",
+      "blankWarning": "Inserisci una dimensione obiettivo per comprimere.",
+      "allNoopWarning": "L'obiettivo è pari o superiore a ogni file — niente da ridurre."
     },
     "rotate": {
       "title": "Ruota",

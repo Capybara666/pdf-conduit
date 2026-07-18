@@ -362,7 +362,10 @@
       "targetHelp2": "or a raw byte count.",
       "targetError": "Enter a size such as",
       "submit": "{count, plural, one {Compress # file} other {Compress # files}}",
-      "loading": "Compressing…"
+      "loading": "Compressing…",
+      "noopWarning": "Target ≥ file size — won't shrink",
+      "blankWarning": "Enter a target size to compress.",
+      "allNoopWarning": "Target is at or above every file's size — nothing to shrink."
     },
     "rotate": {
       "title": "Rotate",

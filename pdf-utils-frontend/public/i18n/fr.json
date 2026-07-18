@@ -362,7 +362,10 @@
       "targetHelp2": "ou un nombre d'octets brut.",
       "targetError": "Saisissez une taille telle que",
       "submit": "{count, plural, one {Compresser # fichier} other {Compresser # fichiers}}",
-      "loading": "Compression en cours…"
+      "loading": "Compression en cours…",
+      "noopWarning": "Cible ≥ taille du fichier — pas de réduction",
+      "blankWarning": "Saisissez une taille cible pour compresser.",
+      "allNoopWarning": "La cible est ≥ à la taille de chaque fichier — rien à réduire."
     },
     "rotate": {
       "title": "Pivoter",

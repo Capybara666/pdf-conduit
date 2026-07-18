@@ -362,7 +362,10 @@
       "targetHelp2": "of een ruw aantal bytes.",
       "targetError": "Voer een grootte in zoals",
       "submit": "{count, plural, one {# bestand comprimeren} other {# bestanden comprimeren}}",
-      "loading": "Comprimeren…"
+      "loading": "Comprimeren…",
+      "noopWarning": "Doel ≥ bestandsgrootte — wordt niet kleiner",
+      "blankWarning": "Voer een doelgrootte in om te comprimeren.",
+      "allNoopWarning": "Doel is gelijk aan of groter dan elk bestand — niets te verkleinen."
     },
     "rotate": {
       "title": "Draaien",

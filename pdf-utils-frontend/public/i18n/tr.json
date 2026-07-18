@@ -362,7 +362,10 @@
       "targetHelp2": "veya ham bayt sayısı.",
       "targetError": "Şu şekilde bir boyut girin:",
       "submit": "{count, plural, one {# dosyayı sıkıştır} other {# dosyayı sıkıştır}}",
-      "loading": "Sıkıştırılıyor…"
+      "loading": "Sıkıştırılıyor…",
+      "noopWarning": "Hedef ≥ dosya boyutu — küçülmez",
+      "blankWarning": "Sıkıştırmak için bir hedef boyut girin.",
+      "allNoopWarning": "Hedef her dosyanın boyutuna eşit veya daha büyük — küçültülecek bir şey yok."
     },
     "rotate": {
       "title": "Döndür",

@@ -362,7 +362,10 @@
       "targetHelp2": "또는 원시 바이트 수.",
       "targetError": "다음과 같은 크기를 입력하세요:",
       "submit": "{count, plural, other {파일 # 개 압축}}",
-      "loading": "압축 중…"
+      "loading": "압축 중…",
+      "noopWarning": "목표 ≥ 파일 크기 — 줄어들지 않음",
+      "blankWarning": "압축할 목표 크기를 입력하세요.",
+      "allNoopWarning": "목표가 모든 파일 크기 이상입니다 — 줄일 것이 없습니다."
     },
     "rotate": {
       "title": "회전",

@@ -362,7 +362,10 @@
       "targetHelp2": "或原始字节数。",
       "targetError": "请输入大小，例如",
       "submit": "{count, plural, other {压缩 # 个文件}}",
-      "loading": "压缩中…"
+      "loading": "压缩中…",
+      "noopWarning": "目标 ≥ 文件大小 — 不会缩小",
+      "blankWarning": "请输入用于压缩的目标大小。",
+      "allNoopWarning": "目标不小于每个文件的大小 — 无需压缩。"
     },
     "rotate": {
       "title": "旋转",

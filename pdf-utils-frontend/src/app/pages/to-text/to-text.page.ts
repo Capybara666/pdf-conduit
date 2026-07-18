@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -16,6 +17,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    PageGridComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -35,6 +37,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 
       @if (files().length > 1) {
         <p class="help">{{ 'pages.toText.batchNote' | transloco: { count: files().length } }}</p>
+      }
+      @if (singleFile()) {
+        <app-page-grid
+          mode="select"
+          [file]="singleFile()"
+          [range]="pages.value"
+          (rangeChange)="pages.setValue($event)"
+        />
       }
 
       <div class="card form-grid">
@@ -74,6 +84,8 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 })
 export class ToTextPage {
   protected readonly files = signal<File[]>([]);
+  /** The lone file when exactly one is selected — drives the visual page-select grid. */
+  protected readonly singleFile = computed(() => (this.files().length === 1 ? this.files()[0] : null));
   protected readonly format = signal<'TXT' | 'DOCX'>('TXT');
   protected readonly pages = new FormControl('', { nonNullable: true });
   protected readonly state = new OperationState();

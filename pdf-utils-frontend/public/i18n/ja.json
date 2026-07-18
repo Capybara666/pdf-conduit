@@ -362,7 +362,10 @@
       "targetHelp2": "またはバイト数の直接指定。",
       "targetError": "次のようなサイズを入力してください：",
       "submit": "{count, plural, other {# 個のファイルを圧縮}}",
-      "loading": "圧縮中…"
+      "loading": "圧縮中…",
+      "noopWarning": "目標 ≥ ファイルサイズ — 縮小されません",
+      "blankWarning": "圧縮する目標サイズを入力してください。",
+      "allNoopWarning": "目標がすべてのファイルのサイズ以上です — 縮小するものがありません。"
     },
     "rotate": {
       "title": "回転",

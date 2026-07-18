@@ -362,7 +362,10 @@
       "targetHelp2": "o un recuento de bytes sin procesar.",
       "targetError": "Introduce un tamaño como",
       "submit": "{count, plural, one {Comprimir # archivo} other {Comprimir # archivos}}",
-      "loading": "Comprimiendo…"
+      "loading": "Comprimiendo…",
+      "noopWarning": "Objetivo ≥ tamaño del archivo — no se reducirá",
+      "blankWarning": "Introduce un tamaño objetivo para comprimir.",
+      "allNoopWarning": "El objetivo es igual o mayor que cada archivo — no hay nada que reducir."
     },
     "rotate": {
       "title": "Rotar",

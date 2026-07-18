@@ -1,11 +1,12 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -18,6 +19,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    PageGridComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -38,6 +40,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       <p class="hint-note" role="note">{{ 'pages.toImages.privacyLine' | transloco }}</p>
       @if (files().length > 1) {
         <p class="help">{{ 'pages.toImages.batchNote' | transloco: { count: files().length } }}</p>
+      }
+      @if (singleFile()) {
+        <app-page-grid
+          mode="select"
+          [file]="singleFile()"
+          [range]="pages.value"
+          (rangeChange)="pages.setValue($event)"
+        />
       }
 
       <div class="card form-grid">
@@ -101,6 +111,8 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 })
 export class ToImagesPage {
   protected readonly files = signal<File[]>([]);
+  /** The lone file when exactly one is selected — drives the visual page-select grid. */
+  protected readonly singleFile = computed(() => (this.files().length === 1 ? this.files()[0] : null));
   protected readonly format = signal<'PNG' | 'JPG'>('PNG');
   protected readonly quality = signal(0.8);
   protected readonly dpi = new FormControl(150, {

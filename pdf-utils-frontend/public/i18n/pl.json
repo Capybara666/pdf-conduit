@@ -362,7 +362,10 @@
       "targetHelp2": "lub liczbę bajtów.",
       "targetError": "Wpisz rozmiar, na przykład",
       "submit": "{count, plural, one {Kompresuj # plik} few {Kompresuj # pliki} many {Kompresuj # plików} other {Kompresuj # pliku}}",
-      "loading": "Kompresowanie…"
+      "loading": "Kompresowanie…",
+      "noopWarning": "Cel ≥ rozmiar pliku — bez zmniejszenia",
+      "blankWarning": "Podaj docelowy rozmiar, aby skompresować.",
+      "allNoopWarning": "Cel jest równy lub większy od każdego pliku — nie ma czego zmniejszać."
     },
     "rotate": {
       "title": "Obróć",

@@ -362,7 +362,10 @@
       "targetHelp2": "oder eine reine Byte-Anzahl.",
       "targetError": "Geben Sie eine Größe an, etwa",
       "submit": "{count, plural, one {# Datei komprimieren} other {# Dateien komprimieren}}",
-      "loading": "Wird komprimiert…"
+      "loading": "Wird komprimiert…",
+      "noopWarning": "Ziel ≥ Dateigröße — keine Verkleinerung",
+      "blankWarning": "Zielgröße zum Komprimieren eingeben.",
+      "allNoopWarning": "Ziel ist ≥ Größe jeder Datei — nichts zu verkleinern."
     },
     "rotate": {
       "title": "Drehen",
