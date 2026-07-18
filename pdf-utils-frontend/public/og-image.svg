@@ -6,13 +6,17 @@
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <!-- Document glyph, same motif as the favicon -->
-  <g transform="translate(96 175) scale(14)" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M10 6h8l5 5v15H10z"/>
-    <path d="M18 6v5h5"/>
-    <path d="M13 16h6M13 19h6M13 22h4"/>
+  <!-- Nodegraph mark, same motif as the favicon (24-grid, scaled 14x) -->
+  <g transform="translate(150 148) scale(14)" fill="none" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 3H14l4 4v14H6z"/>
+    <path d="M14 3v4h4"/>
+    <path d="M10.4 10.7l2.4 2.2" stroke-width="1.3"/>
+    <path d="M10.4 16.3l2.4-2.2" stroke-width="1.3"/>
+    <circle cx="9" cy="10" r="1.5" fill="#ffffff" stroke="none"/>
+    <circle cx="9" cy="17" r="1.5" fill="#ffffff" stroke="none"/>
+    <circle cx="14.2" cy="13.5" r="1.5" fill="#ffffff" stroke="none"/>
   </g>
   <text x="470" y="270" font-family="'DejaVu Sans', Arial, sans-serif" font-size="92" font-weight="bold" fill="#ffffff">PDF Conduit</text>
   <text x="472" y="345" font-family="'DejaVu Sans', Arial, sans-serif" font-size="42" fill="#e6efff">Free online PDF tools</text>
-  <text x="472" y="410" font-family="'DejaVu Sans', Arial, sans-serif" font-size="34" fill="#c7dbff">Processed in memory &#183; never stored &#183; no account</text>
+  <text x="472" y="406" font-family="'DejaVu Sans', Arial, sans-serif" font-size="28" fill="#c7dbff">Processed in memory &#183; never stored &#183; no account</text>
 </svg>

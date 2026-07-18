@@ -2,7 +2,14 @@
   <!-- Full-bleed background so the icon works as `purpose: any maskable`
        (the OS applies its own shape mask; the glyph stays inside the safe zone). -->
   <rect width="512" height="512" fill="#2f6fed"/>
-  <path d="M160 96h128l80 80v240H160z" fill="none" stroke="#ffffff" stroke-width="28.8" stroke-linejoin="round"/>
-  <path d="M288 96v80h80" fill="none" stroke="#ffffff" stroke-width="28.8" stroke-linejoin="round"/>
-  <path d="M208 256h96M208 304h96M208 352h64" fill="none" stroke="#ffffff" stroke-width="28.8" stroke-linecap="round"/>
+  <!-- Nodegraph mark on a 24-grid, scaled ~13.3x and centred (spans 96..416 → 62.5%, well inside the maskable safe zone). -->
+  <g transform="translate(96 96) scale(13.3333)" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 3H14l4 4v14H6z"/>
+    <path d="M14 3v4h4"/>
+    <path d="M10.4 10.7l2.4 2.2" stroke-width="1.45"/>
+    <path d="M10.4 16.3l2.4-2.2" stroke-width="1.45"/>
+    <circle cx="9" cy="10" r="1.5" fill="#ffffff" stroke="none"/>
+    <circle cx="9" cy="17" r="1.5" fill="#ffffff" stroke="none"/>
+    <circle cx="14.2" cy="13.5" r="1.5" fill="#ffffff" stroke="none"/>
+  </g>
 </svg>

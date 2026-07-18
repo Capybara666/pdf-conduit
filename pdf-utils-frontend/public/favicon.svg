@@ -1,6 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="PDF Conduit">
   <rect width="32" height="32" rx="7" fill="#2f6fed"/>
-  <path d="M10 6h8l5 5v15H10z" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"/>
-  <path d="M18 6v5h5" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"/>
-  <path d="M13 16h6M13 19h6M13 22h4" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Nodegraph mark: page-with-fold overlaid with a 3-node graph (24-grid, centred in the tile) -->
+  <g transform="translate(4 4)" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 3H14l4 4v14H6z"/>
+    <path d="M14 3v4h4"/>
+    <path d="M10.4 10.7l2.4 2.2" stroke-width="1.4"/>
+    <path d="M10.4 16.3l2.4-2.2" stroke-width="1.4"/>
+    <circle cx="9" cy="10" r="1.5" fill="#ffffff" stroke="none"/>
+    <circle cx="9" cy="17" r="1.5" fill="#ffffff" stroke="none"/>
+    <circle cx="14.2" cy="13.5" r="1.5" fill="#ffffff" stroke="none"/>
+  </g>
 </svg>
