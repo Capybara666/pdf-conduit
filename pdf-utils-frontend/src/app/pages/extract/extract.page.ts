@@ -5,6 +5,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -16,6 +17,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    PageGridComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -32,6 +34,15 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         [hint]="'pages.extract.hint' | transloco"
         (filesChange)="file.set($event.length ? $event[0] : null)"
       />
+
+      @if (file()) {
+        <app-page-grid
+          mode="select"
+          [file]="file()"
+          [range]="pages.value"
+          (rangeChange)="pages.setValue($event)"
+        />
+      }
 
       <div class="card form-grid">
         <div class="field">

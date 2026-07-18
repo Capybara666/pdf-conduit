@@ -5,6 +5,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -16,6 +17,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    PageGridComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -53,6 +55,16 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           <span class="help">{{ 'pages.rotate.pagesHelp' | transloco }}</span>
         </div>
       </div>
+
+      @if (files().length) {
+        <p class="help pg-hint">{{ 'pageGrid.appliesToAll' | transloco }}</p>
+        <app-page-grid
+          mode="select"
+          [file]="files()[0]"
+          [range]="pages.value"
+          (rangeChange)="pages.setValue($event)"
+        />
+      }
 
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
