@@ -62,19 +62,21 @@
       <p class="warn">{{ 'result.batchFailures' | transloco: { count: result.batchFailures } }}</p>
     }
 
-    @if (previewImageUrl(); as url) {
-      <button type="button" class="preview" (click)="openExpand()" [attr.aria-label]="'result.expandPreview' | transloco">
-        <img class="preview-img" [src]="url" alt="" />
-        <span class="preview-hint">{{ 'result.expandPreview' | transloco }}</span>
-      </button>
-    } @else if (previewPdfThumb()) {
-      <button type="button" class="preview" (click)="openExpand()" [attr.aria-label]="'result.expandPreview' | transloco">
-        <img class="preview-img pdf" [src]="previewPdfThumb()" alt="" />
-        <span class="preview-hint">{{ 'result.expandPreview' | transloco }}</span>
-      </button>
-    }
+    <div class="output" [class.no-preview]="!hasPreview()">
+      @if (previewImageUrl(); as url) {
+        <button type="button" class="preview" (click)="openExpand()" [attr.aria-label]="'result.expandPreview' | transloco">
+          <img class="preview-img" [src]="url" alt="" />
+          <span class="preview-hint">{{ 'result.expandPreview' | transloco }}</span>
+        </button>
+      } @else if (previewPdfThumb()) {
+        <button type="button" class="preview" (click)="openExpand()" [attr.aria-label]="'result.expandPreview' | transloco">
+          <img class="preview-img pdf" [src]="previewPdfThumb()" alt="" />
+          <span class="preview-hint">{{ 'result.expandPreview' | transloco }}</span>
+        </button>
+      }
 
-    <button type="button" class="download" (click)="download()">{{ 'common.download' | transloco }}</button>
+      <button type="button" class="download" (click)="download()">{{ 'common.download' | transloco }}</button>
+    </div>
   </div>
 }
 

@@ -128,18 +128,44 @@
   font-size: 0.9rem;
 }
 
+// Grouped output block: the first-page preview (when previewable) sits on top
+// as the hero, with its Download action directly below — a clear, intentional
+// vertical relationship rather than the two floating side-by-side. When there
+// is no preview (ZIP / text / batch results) the frame is dropped and only the
+// download button remains.
+.output {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 0.25rem;
+
+  &:not(.no-preview) {
+    padding: 1.1rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 2px);
+  }
+}
+
 .download {
   appearance: none;
   border: none;
   background: var(--accent);
   color: var(--accent-contrast);
   font-weight: 600;
-  padding: 0.6rem 1.25rem;
+  min-height: 2.75rem;
+  padding: 0.6rem 1.75rem;
   border-radius: calc(var(--radius) - 4px);
   cursor: pointer;
 
   &:hover {
     background: var(--accent-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
@@ -171,8 +197,8 @@
 // First-page output preview (click to expand).
 .preview {
   appearance: none;
-  display: inline-block;
-  margin: 0 0 0.85rem;
+  display: block;
+  margin: 0;
   padding: 0;
   border: none;
   background: none;
@@ -259,4 +285,20 @@
   max-width: 100%;
   height: auto;
   margin: 0 auto;
+}
+
+// Mobile: stack cleanly, full-width primary action with a comfortable tap
+// target, no horizontal overflow.
+@media (max-width: 640px) {
+  .panel {
+    padding: 0.85rem 1rem;
+  }
+
+  .output:not(.no-preview) {
+    padding: 0.9rem;
+  }
+
+  .download {
+    width: 100%;
+  }
 }
