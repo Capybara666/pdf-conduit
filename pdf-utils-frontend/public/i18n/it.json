@@ -492,5 +492,62 @@
       "valid": "✓ La pipeline è valida.",
       "jsonTitle": "JSON della pipeline"
     }
+  },
+  "pageGrid": {
+    "loading": "Caricamento delle pagine…",
+    "toolbar": "Strumenti di selezione pagine",
+    "selectAll": "Tutte",
+    "none": "Nessuna",
+    "invert": "Inverti",
+    "odd": "Dispari",
+    "even": "Pari",
+    "ofCount": "{{n}} di {{m}} selezionate",
+    "count": "{{n}} pagine",
+    "reset": "Reimposta",
+    "reverse": "Inverti ordine",
+    "pageLabel": "Pagina {{n}}",
+    "moveLeft": "Sposta a sinistra",
+    "moveRight": "Sposta a destra",
+    "duplicate": "Duplica pagina",
+    "remove": "Rimuovi pagina",
+    "tooManyPages": "Questo PDF ha {{pages}} pagine (oltre {{max}}). Usa il campo di testo qui sotto per inserire le pagine.",
+    "renderFailed": "Impossibile generare le anteprime delle pagine.",
+    "appliesToAll": "Questa selezione di pagine si applica a tutti i file caricati."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "Origine",
+      "sourceTitle": "File di origine",
+      "sourceFiles": "File inclusi",
+      "addNode": "Aggiungi nodo",
+      "inspector": "Ispettore",
+      "inspectorEmpty": "Seleziona un nodo per modificarne le impostazioni.",
+      "noParams": "Questo nodo non ha impostazioni.",
+      "uploadFirst": "Carica dei file per alimentare questa origine.",
+      "help": "Trascina dalla porta destra di un nodo alla porta sinistra di un altro per collegarli. Seleziona un nodo e premi Canc per rimuoverlo.",
+      "save": "Salva",
+      "load": "Carica",
+      "clear": "Svuota",
+      "loadError": "Impossibile caricare quel file di pipeline.",
+      "removeNode": "Rimuovi nodo",
+      "removeConnection": "Rimuovi connessione",
+      "inPort": "Porta di ingresso",
+      "outPort": "Porta di uscita (trascina per collegare)",
+      "summary": {
+        "noFiles": "Nessun file",
+        "pages": "Pagine: {{pages}}",
+        "all": "tutte",
+        "separate": "separati",
+        "order": "Ordine: {{order}}",
+        "natural": "naturale",
+        "target": "Obiettivo: {{size}}",
+        "pageSize": "Dimensione pagina: {{size}}",
+        "merge": "Combina in uno",
+        "hasPassword": "Password impostata",
+        "noPassword": "Nessuna password",
+        "metaStrip": "Rimuovi metadati",
+        "metaEdit": "Modifica metadati"
+      }
+    }
   }
 }

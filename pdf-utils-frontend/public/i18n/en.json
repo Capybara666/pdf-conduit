@@ -492,5 +492,62 @@
       "valid": "✓ Pipeline is valid.",
       "jsonTitle": "Pipeline JSON"
     }
+  },
+  "pageGrid": {
+    "loading": "Loading pages…",
+    "toolbar": "Page selection tools",
+    "selectAll": "All",
+    "none": "None",
+    "invert": "Invert",
+    "odd": "Odd",
+    "even": "Even",
+    "ofCount": "{{n}} of {{m}} selected",
+    "count": "{{n}} pages",
+    "reset": "Reset",
+    "reverse": "Reverse",
+    "pageLabel": "Page {{n}}",
+    "moveLeft": "Move left",
+    "moveRight": "Move right",
+    "duplicate": "Duplicate page",
+    "remove": "Remove page",
+    "tooManyPages": "This PDF has {{pages}} pages (over {{max}}). Use the text field below to enter pages.",
+    "renderFailed": "Could not render page thumbnails.",
+    "appliesToAll": "This page selection applies to all uploaded files."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "Source",
+      "sourceTitle": "Source files",
+      "sourceFiles": "Included files",
+      "addNode": "Add node",
+      "inspector": "Inspector",
+      "inspectorEmpty": "Select a node to edit its settings.",
+      "noParams": "This node has no settings.",
+      "uploadFirst": "Upload files to feed this source.",
+      "help": "Drag from a node's right port to another node's left port to connect. Select a node and press Delete to remove it.",
+      "save": "Save",
+      "load": "Load",
+      "clear": "Clear",
+      "loadError": "Could not load that pipeline file.",
+      "removeNode": "Remove node",
+      "removeConnection": "Remove connection",
+      "inPort": "Input port",
+      "outPort": "Output port (drag to connect)",
+      "summary": {
+        "noFiles": "No files",
+        "pages": "Pages: {{pages}}",
+        "all": "all",
+        "separate": "separate",
+        "order": "Order: {{order}}",
+        "natural": "natural",
+        "target": "Target: {{size}}",
+        "pageSize": "Page size: {{size}}",
+        "merge": "Combine into one",
+        "hasPassword": "Password set",
+        "noPassword": "No password",
+        "metaStrip": "Strip metadata",
+        "metaEdit": "Edit metadata"
+      }
+    }
   }
 }

@@ -492,5 +492,62 @@
       "valid": "✓ Pipeline ist gültig.",
       "jsonTitle": "Pipeline-JSON"
     }
+  },
+  "pageGrid": {
+    "loading": "Seiten werden geladen…",
+    "toolbar": "Werkzeuge zur Seitenauswahl",
+    "selectAll": "Alle",
+    "none": "Keine",
+    "invert": "Invertieren",
+    "odd": "Ungerade",
+    "even": "Gerade",
+    "ofCount": "{{n}} von {{m}} ausgewählt",
+    "count": "{{n}} Seiten",
+    "reset": "Zurücksetzen",
+    "reverse": "Umkehren",
+    "pageLabel": "Seite {{n}}",
+    "moveLeft": "Nach links verschieben",
+    "moveRight": "Nach rechts verschieben",
+    "duplicate": "Seite duplizieren",
+    "remove": "Seite entfernen",
+    "tooManyPages": "Dieses PDF hat {{pages}} Seiten (über {{max}}). Verwenden Sie das Textfeld unten, um Seiten einzugeben.",
+    "renderFailed": "Seitenvorschauen konnten nicht gerendert werden.",
+    "appliesToAll": "Diese Seitenauswahl gilt für alle hochgeladenen Dateien."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "Quelle",
+      "sourceTitle": "Quelldateien",
+      "sourceFiles": "Enthaltene Dateien",
+      "addNode": "Knoten hinzufügen",
+      "inspector": "Inspektor",
+      "inspectorEmpty": "Wählen Sie einen Knoten, um seine Einstellungen zu bearbeiten.",
+      "noParams": "Dieser Knoten hat keine Einstellungen.",
+      "uploadFirst": "Laden Sie Dateien hoch, um diese Quelle zu speisen.",
+      "help": "Ziehen Sie vom rechten Port eines Knotens zum linken Port eines anderen, um sie zu verbinden. Wählen Sie einen Knoten und drücken Sie Entf, um ihn zu entfernen.",
+      "save": "Speichern",
+      "load": "Laden",
+      "clear": "Leeren",
+      "loadError": "Diese Pipeline-Datei konnte nicht geladen werden.",
+      "removeNode": "Knoten entfernen",
+      "removeConnection": "Verbindung entfernen",
+      "inPort": "Eingangsport",
+      "outPort": "Ausgangsport (zum Verbinden ziehen)",
+      "summary": {
+        "noFiles": "Keine Dateien",
+        "pages": "Seiten: {{pages}}",
+        "all": "alle",
+        "separate": "getrennt",
+        "order": "Reihenfolge: {{order}}",
+        "natural": "natürlich",
+        "target": "Ziel: {{size}}",
+        "pageSize": "Seitengröße: {{size}}",
+        "merge": "Zu einem zusammenführen",
+        "hasPassword": "Passwort gesetzt",
+        "noPassword": "Kein Passwort",
+        "metaStrip": "Metadaten entfernen",
+        "metaEdit": "Metadaten bearbeiten"
+      }
+    }
   }
 }

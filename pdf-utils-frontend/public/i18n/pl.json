@@ -492,5 +492,62 @@
       "valid": "✓ Potok jest prawidłowy.",
       "jsonTitle": "JSON potoku"
     }
+  },
+  "pageGrid": {
+    "loading": "Ładowanie stron…",
+    "toolbar": "Narzędzia wyboru stron",
+    "selectAll": "Wszystkie",
+    "none": "Żadne",
+    "invert": "Odwróć",
+    "odd": "Nieparzyste",
+    "even": "Parzyste",
+    "ofCount": "Wybrano {{n}} z {{m}}",
+    "count": "{{n}} stron",
+    "reset": "Resetuj",
+    "reverse": "Odwróć kolejność",
+    "pageLabel": "Strona {{n}}",
+    "moveLeft": "Przesuń w lewo",
+    "moveRight": "Przesuń w prawo",
+    "duplicate": "Powiel stronę",
+    "remove": "Usuń stronę",
+    "tooManyPages": "Ten plik PDF ma {{pages}} stron (ponad {{max}}). Użyj pola tekstowego poniżej, aby wpisać strony.",
+    "renderFailed": "Nie udało się wygenerować miniatur stron.",
+    "appliesToAll": "Ten wybór stron dotyczy wszystkich przesłanych plików."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "Źródło",
+      "sourceTitle": "Pliki źródłowe",
+      "sourceFiles": "Dołączone pliki",
+      "addNode": "Dodaj węzeł",
+      "inspector": "Inspektor",
+      "inspectorEmpty": "Wybierz węzeł, aby edytować jego ustawienia.",
+      "noParams": "Ten węzeł nie ma ustawień.",
+      "uploadFirst": "Prześlij pliki, aby zasilić to źródło.",
+      "help": "Przeciągnij z prawego portu węzła do lewego portu innego, aby je połączyć. Zaznacz węzeł i naciśnij Delete, aby go usunąć.",
+      "save": "Zapisz",
+      "load": "Wczytaj",
+      "clear": "Wyczyść",
+      "loadError": "Nie udało się wczytać tego pliku potoku.",
+      "removeNode": "Usuń węzeł",
+      "removeConnection": "Usuń połączenie",
+      "inPort": "Port wejściowy",
+      "outPort": "Port wyjściowy (przeciągnij, aby połączyć)",
+      "summary": {
+        "noFiles": "Brak plików",
+        "pages": "Strony: {{pages}}",
+        "all": "wszystkie",
+        "separate": "osobno",
+        "order": "Kolejność: {{order}}",
+        "natural": "naturalna",
+        "target": "Cel: {{size}}",
+        "pageSize": "Rozmiar strony: {{size}}",
+        "merge": "Połącz w jeden",
+        "hasPassword": "Hasło ustawione",
+        "noPassword": "Brak hasła",
+        "metaStrip": "Usuń metadane",
+        "metaEdit": "Edytuj metadane"
+      }
+    }
   }
 }

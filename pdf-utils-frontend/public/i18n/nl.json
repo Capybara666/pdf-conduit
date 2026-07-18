@@ -492,5 +492,62 @@
       "valid": "✓ Pijplijn is geldig.",
       "jsonTitle": "Pijplijn-JSON"
     }
+  },
+  "pageGrid": {
+    "loading": "Pagina's laden…",
+    "toolbar": "Hulpmiddelen voor paginaselectie",
+    "selectAll": "Alle",
+    "none": "Geen",
+    "invert": "Omkeren",
+    "odd": "Oneven",
+    "even": "Even",
+    "ofCount": "{{n}} van {{m}} geselecteerd",
+    "count": "{{n}} pagina's",
+    "reset": "Herstellen",
+    "reverse": "Volgorde omkeren",
+    "pageLabel": "Pagina {{n}}",
+    "moveLeft": "Naar links verplaatsen",
+    "moveRight": "Naar rechts verplaatsen",
+    "duplicate": "Pagina dupliceren",
+    "remove": "Pagina verwijderen",
+    "tooManyPages": "Deze PDF heeft {{pages}} pagina's (meer dan {{max}}). Gebruik het tekstveld hieronder om pagina's in te voeren.",
+    "renderFailed": "Kan geen paginaminiaturen genereren.",
+    "appliesToAll": "Deze paginaselectie geldt voor alle geüploade bestanden."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "Bron",
+      "sourceTitle": "Bronbestanden",
+      "sourceFiles": "Opgenomen bestanden",
+      "addNode": "Knooppunt toevoegen",
+      "inspector": "Inspecteur",
+      "inspectorEmpty": "Selecteer een knooppunt om de instellingen te bewerken.",
+      "noParams": "Dit knooppunt heeft geen instellingen.",
+      "uploadFirst": "Upload bestanden om deze bron te voeden.",
+      "help": "Sleep van de rechterpoort van een knooppunt naar de linkerpoort van een ander om ze te verbinden. Selecteer een knooppunt en druk op Delete om het te verwijderen.",
+      "save": "Opslaan",
+      "load": "Laden",
+      "clear": "Leegmaken",
+      "loadError": "Kan dat pijplijnbestand niet laden.",
+      "removeNode": "Knooppunt verwijderen",
+      "removeConnection": "Verbinding verwijderen",
+      "inPort": "Invoerpoort",
+      "outPort": "Uitvoerpoort (sleep om te verbinden)",
+      "summary": {
+        "noFiles": "Geen bestanden",
+        "pages": "Pagina's: {{pages}}",
+        "all": "alle",
+        "separate": "gescheiden",
+        "order": "Volgorde: {{order}}",
+        "natural": "natuurlijk",
+        "target": "Doel: {{size}}",
+        "pageSize": "Paginaformaat: {{size}}",
+        "merge": "Samenvoegen tot één",
+        "hasPassword": "Wachtwoord ingesteld",
+        "noPassword": "Geen wachtwoord",
+        "metaStrip": "Metadata verwijderen",
+        "metaEdit": "Metadata bewerken"
+      }
+    }
   }
 }

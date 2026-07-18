@@ -492,5 +492,62 @@
       "valid": "✓ El flujo es válido.",
       "jsonTitle": "JSON del flujo"
     }
+  },
+  "pageGrid": {
+    "loading": "Cargando páginas…",
+    "toolbar": "Herramientas de selección de páginas",
+    "selectAll": "Todas",
+    "none": "Ninguna",
+    "invert": "Invertir",
+    "odd": "Impares",
+    "even": "Pares",
+    "ofCount": "{{n}} de {{m}} seleccionadas",
+    "count": "{{n}} páginas",
+    "reset": "Restablecer",
+    "reverse": "Invertir orden",
+    "pageLabel": "Página {{n}}",
+    "moveLeft": "Mover a la izquierda",
+    "moveRight": "Mover a la derecha",
+    "duplicate": "Duplicar página",
+    "remove": "Quitar página",
+    "tooManyPages": "Este PDF tiene {{pages}} páginas (más de {{max}}). Usa el campo de texto de abajo para introducir páginas.",
+    "renderFailed": "No se pudieron generar las miniaturas de las páginas.",
+    "appliesToAll": "Esta selección de páginas se aplica a todos los archivos subidos."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "Origen",
+      "sourceTitle": "Archivos de origen",
+      "sourceFiles": "Archivos incluidos",
+      "addNode": "Añadir nodo",
+      "inspector": "Inspector",
+      "inspectorEmpty": "Selecciona un nodo para editar sus ajustes.",
+      "noParams": "Este nodo no tiene ajustes.",
+      "uploadFirst": "Sube archivos para alimentar este origen.",
+      "help": "Arrastra desde el puerto derecho de un nodo hasta el puerto izquierdo de otro para conectarlos. Selecciona un nodo y pulsa Supr para eliminarlo.",
+      "save": "Guardar",
+      "load": "Cargar",
+      "clear": "Vaciar",
+      "loadError": "No se pudo cargar ese archivo de flujo.",
+      "removeNode": "Quitar nodo",
+      "removeConnection": "Quitar conexión",
+      "inPort": "Puerto de entrada",
+      "outPort": "Puerto de salida (arrastra para conectar)",
+      "summary": {
+        "noFiles": "Sin archivos",
+        "pages": "Páginas: {{pages}}",
+        "all": "todas",
+        "separate": "separados",
+        "order": "Orden: {{order}}",
+        "natural": "natural",
+        "target": "Objetivo: {{size}}",
+        "pageSize": "Tamaño de página: {{size}}",
+        "merge": "Combinar en uno",
+        "hasPassword": "Contraseña definida",
+        "noPassword": "Sin contraseña",
+        "metaStrip": "Eliminar metadatos",
+        "metaEdit": "Editar metadatos"
+      }
+    }
   }
 }

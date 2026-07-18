@@ -492,5 +492,62 @@
       "valid": "✓ İş akışı geçerli.",
       "jsonTitle": "İş akışı JSON"
     }
+  },
+  "pageGrid": {
+    "loading": "Sayfalar yükleniyor…",
+    "toolbar": "Sayfa seçme araçları",
+    "selectAll": "Tümü",
+    "none": "Hiçbiri",
+    "invert": "Ters çevir",
+    "odd": "Tek",
+    "even": "Çift",
+    "ofCount": "{{m}} sayfadan {{n}} tanesi seçildi",
+    "count": "{{n}} sayfa",
+    "reset": "Sıfırla",
+    "reverse": "Sırayı tersine çevir",
+    "pageLabel": "Sayfa {{n}}",
+    "moveLeft": "Sola taşı",
+    "moveRight": "Sağa taşı",
+    "duplicate": "Sayfayı çoğalt",
+    "remove": "Sayfayı kaldır",
+    "tooManyPages": "Bu PDF {{pages}} sayfa içeriyor ({{max}} üzerinde). Sayfaları girmek için aşağıdaki metin alanını kullanın.",
+    "renderFailed": "Sayfa küçük resimleri oluşturulamadı.",
+    "appliesToAll": "Bu sayfa seçimi yüklenen tüm dosyalara uygulanır."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "Kaynak",
+      "sourceTitle": "Kaynak dosyalar",
+      "sourceFiles": "Dahil edilen dosyalar",
+      "addNode": "Düğüm ekle",
+      "inspector": "İnceleyici",
+      "inspectorEmpty": "Ayarlarını düzenlemek için bir düğüm seçin.",
+      "noParams": "Bu düğümün ayarı yok.",
+      "uploadFirst": "Bu kaynağı beslemek için dosya yükleyin.",
+      "help": "Bağlamak için bir düğümün sağ bağlantı noktasından başka bir düğümün sol bağlantı noktasına sürükleyin. Kaldırmak için bir düğüm seçip Delete tuşuna basın.",
+      "save": "Kaydet",
+      "load": "Yükle",
+      "clear": "Temizle",
+      "loadError": "Bu iş akışı dosyası yüklenemedi.",
+      "removeNode": "Düğümü kaldır",
+      "removeConnection": "Bağlantıyı kaldır",
+      "inPort": "Giriş bağlantı noktası",
+      "outPort": "Çıkış bağlantı noktası (bağlamak için sürükleyin)",
+      "summary": {
+        "noFiles": "Dosya yok",
+        "pages": "Sayfalar: {{pages}}",
+        "all": "tümü",
+        "separate": "ayrı",
+        "order": "Sıra: {{order}}",
+        "natural": "doğal",
+        "target": "Hedef: {{size}}",
+        "pageSize": "Sayfa boyutu: {{size}}",
+        "merge": "Tek dosyada birleştir",
+        "hasPassword": "Parola ayarlandı",
+        "noPassword": "Parola yok",
+        "metaStrip": "Meta verileri kaldır",
+        "metaEdit": "Meta verileri düzenle"
+      }
+    }
   }
 }

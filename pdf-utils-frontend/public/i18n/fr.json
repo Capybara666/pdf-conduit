@@ -492,5 +492,62 @@
       "valid": "✓ Le pipeline est valide.",
       "jsonTitle": "JSON du pipeline"
     }
+  },
+  "pageGrid": {
+    "loading": "Chargement des pages…",
+    "toolbar": "Outils de sélection de pages",
+    "selectAll": "Toutes",
+    "none": "Aucune",
+    "invert": "Inverser",
+    "odd": "Impaires",
+    "even": "Paires",
+    "ofCount": "{{n}} sur {{m}} sélectionnées",
+    "count": "{{n}} pages",
+    "reset": "Réinitialiser",
+    "reverse": "Inverser l'ordre",
+    "pageLabel": "Page {{n}}",
+    "moveLeft": "Déplacer à gauche",
+    "moveRight": "Déplacer à droite",
+    "duplicate": "Dupliquer la page",
+    "remove": "Retirer la page",
+    "tooManyPages": "Ce PDF comporte {{pages}} pages (plus de {{max}}). Utilisez le champ de texte ci-dessous pour saisir les pages.",
+    "renderFailed": "Impossible de générer les miniatures des pages.",
+    "appliesToAll": "Cette sélection de pages s'applique à tous les fichiers importés."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "Source",
+      "sourceTitle": "Fichiers source",
+      "sourceFiles": "Fichiers inclus",
+      "addNode": "Ajouter un nœud",
+      "inspector": "Inspecteur",
+      "inspectorEmpty": "Sélectionnez un nœud pour modifier ses paramètres.",
+      "noParams": "Ce nœud n'a aucun paramètre.",
+      "uploadFirst": "Importez des fichiers pour alimenter cette source.",
+      "help": "Faites glisser du port droit d'un nœud vers le port gauche d'un autre pour les connecter. Sélectionnez un nœud et appuyez sur Suppr pour le supprimer.",
+      "save": "Enregistrer",
+      "load": "Charger",
+      "clear": "Vider",
+      "loadError": "Impossible de charger ce fichier de pipeline.",
+      "removeNode": "Retirer le nœud",
+      "removeConnection": "Retirer la connexion",
+      "inPort": "Port d'entrée",
+      "outPort": "Port de sortie (glisser pour connecter)",
+      "summary": {
+        "noFiles": "Aucun fichier",
+        "pages": "Pages : {{pages}}",
+        "all": "toutes",
+        "separate": "séparés",
+        "order": "Ordre : {{order}}",
+        "natural": "naturel",
+        "target": "Cible : {{size}}",
+        "pageSize": "Format de page : {{size}}",
+        "merge": "Combiner en un seul",
+        "hasPassword": "Mot de passe défini",
+        "noPassword": "Aucun mot de passe",
+        "metaStrip": "Supprimer les métadonnées",
+        "metaEdit": "Modifier les métadonnées"
+      }
+    }
   }
 }

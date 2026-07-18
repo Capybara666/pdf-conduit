@@ -492,5 +492,62 @@
       "valid": "✓ 流程有效。",
       "jsonTitle": "流程 JSON"
     }
+  },
+  "pageGrid": {
+    "loading": "正在加载页面…",
+    "toolbar": "页面选择工具",
+    "selectAll": "全部",
+    "none": "无",
+    "invert": "反选",
+    "odd": "奇数页",
+    "even": "偶数页",
+    "ofCount": "已选择 {{m}} 页中的 {{n}} 页",
+    "count": "{{n}} 页",
+    "reset": "重置",
+    "reverse": "反转顺序",
+    "pageLabel": "第 {{n}} 页",
+    "moveLeft": "向左移动",
+    "moveRight": "向右移动",
+    "duplicate": "复制页面",
+    "remove": "移除页面",
+    "tooManyPages": "此 PDF 有 {{pages}} 页（超过 {{max}}）。请使用下方的文本框输入页面。",
+    "renderFailed": "无法生成页面缩略图。",
+    "appliesToAll": "此页面选择适用于所有已上传的文件。"
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "源",
+      "sourceTitle": "源文件",
+      "sourceFiles": "包含的文件",
+      "addNode": "添加节点",
+      "inspector": "检查器",
+      "inspectorEmpty": "选择一个节点以编辑其设置。",
+      "noParams": "此节点没有设置。",
+      "uploadFirst": "上传文件以供入此源。",
+      "help": "从一个节点的右侧端口拖动到另一个节点的左侧端口即可连接。选择节点并按 Delete 键可将其删除。",
+      "save": "保存",
+      "load": "加载",
+      "clear": "清除",
+      "loadError": "无法加载该流程文件。",
+      "removeNode": "移除节点",
+      "removeConnection": "移除连接",
+      "inPort": "输入端口",
+      "outPort": "输出端口（拖动以连接）",
+      "summary": {
+        "noFiles": "无文件",
+        "pages": "页面：{{pages}}",
+        "all": "全部",
+        "separate": "分开",
+        "order": "顺序：{{order}}",
+        "natural": "自然顺序",
+        "target": "目标：{{size}}",
+        "pageSize": "页面大小：{{size}}",
+        "merge": "合并为一个",
+        "hasPassword": "已设置密码",
+        "noPassword": "无密码",
+        "metaStrip": "清除元数据",
+        "metaEdit": "编辑元数据"
+      }
+    }
   }
 }

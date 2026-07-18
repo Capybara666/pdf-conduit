@@ -492,5 +492,62 @@
       "valid": "✓ 파이프라인이 유효합니다.",
       "jsonTitle": "파이프라인 JSON"
     }
+  },
+  "pageGrid": {
+    "loading": "페이지 불러오는 중…",
+    "toolbar": "페이지 선택 도구",
+    "selectAll": "전체",
+    "none": "없음",
+    "invert": "반전",
+    "odd": "홀수",
+    "even": "짝수",
+    "ofCount": "{{m}}개 중 {{n}}개 선택됨",
+    "count": "{{n}}페이지",
+    "reset": "초기화",
+    "reverse": "순서 뒤집기",
+    "pageLabel": "{{n}}페이지",
+    "moveLeft": "왼쪽으로 이동",
+    "moveRight": "오른쪽으로 이동",
+    "duplicate": "페이지 복제",
+    "remove": "페이지 제거",
+    "tooManyPages": "이 PDF에는 {{pages}}페이지가 있습니다({{max}} 초과). 아래 텍스트 필드에 페이지를 입력하세요.",
+    "renderFailed": "페이지 미리보기를 생성할 수 없습니다.",
+    "appliesToAll": "이 페이지 선택은 업로드한 모든 파일에 적용됩니다."
+  },
+  "pipeline": {
+    "canvas": {
+      "source": "소스",
+      "sourceTitle": "소스 파일",
+      "sourceFiles": "포함된 파일",
+      "addNode": "노드 추가",
+      "inspector": "인스펙터",
+      "inspectorEmpty": "설정을 편집할 노드를 선택하세요.",
+      "noParams": "이 노드에는 설정이 없습니다.",
+      "uploadFirst": "이 소스에 공급할 파일을 업로드하세요.",
+      "help": "노드의 오른쪽 포트에서 다른 노드의 왼쪽 포트로 드래그하여 연결합니다. 노드를 선택하고 Delete 키를 누르면 제거됩니다.",
+      "save": "저장",
+      "load": "불러오기",
+      "clear": "지우기",
+      "loadError": "해당 파이프라인 파일을 불러올 수 없습니다.",
+      "removeNode": "노드 제거",
+      "removeConnection": "연결 제거",
+      "inPort": "입력 포트",
+      "outPort": "출력 포트 (드래그하여 연결)",
+      "summary": {
+        "noFiles": "파일 없음",
+        "pages": "페이지: {{pages}}",
+        "all": "전체",
+        "separate": "분리",
+        "order": "순서: {{order}}",
+        "natural": "기본 순서",
+        "target": "목표: {{size}}",
+        "pageSize": "페이지 크기: {{size}}",
+        "merge": "하나로 결합",
+        "hasPassword": "비밀번호 설정됨",
+        "noPassword": "비밀번호 없음",
+        "metaStrip": "메타데이터 삭제",
+        "metaEdit": "메타데이터 편집"
+      }
+    }
   }
 }
