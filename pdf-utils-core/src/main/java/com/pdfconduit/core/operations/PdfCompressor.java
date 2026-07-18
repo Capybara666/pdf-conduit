@@ -1,6 +1,7 @@
 package com.pdfconduit.core.operations;
 
 import com.pdfconduit.core.util.PdfLoader;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -21,7 +22,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public final class PdfCompressor {
 
@@ -85,9 +91,15 @@ public final class PdfCompressor {
             }
 
             // 3) Lossy image ladder, gentlest first; stop as soon as the target is met.
+            //    Each rung reloads a pristine copy of the PDF (so orphaned objects never
+            //    accumulate and the output is byte-for-byte what a per-rung reload always
+            //    produced), but the expensive part — decoding each source image's raster —
+            //    is memoised across rungs in decodeCache, so a source image is rasterised
+            //    once instead of once per rung. Only the redundant decode is avoided.
+            DecodeCache decodeCache = new DecodeCache();
             for (Step step : STEPS) {
                 try (PDDocument compressed = PdfLoader.load(opts.input())) {
-                    recompressImages(compressed, step.scale(), step.quality());
+                    recompressImages(compressed, step.scale(), step.quality(), decodeCache);
                     if (SizeEstimator.estimateBytes(compressed) <= opts.targetSizeBytes()) {
                         compressed.save(opts.output().toFile());
                         return new CompressResult(opts.output(), originalSize,
@@ -99,7 +111,7 @@ public final class PdfCompressor {
             // 4) Target unreachable — save the most-compressed version, but never larger than original.
             try (PDDocument compressed = PdfLoader.load(opts.input())) {
                 Step strongest = STEPS.get(STEPS.size() - 1);
-                recompressImages(compressed, strongest.scale(), strongest.quality());
+                recompressImages(compressed, strongest.scale(), strongest.quality(), decodeCache);
                 if (SizeEstimator.estimateBytes(compressed) < originalSize) {
                     compressed.save(opts.output().toFile());
                 } else {
@@ -154,9 +166,12 @@ public final class PdfCompressor {
             }
 
             // 3) Lossy image ladder, gentlest first; stop as soon as the target is met.
+            //    Reload a pristine copy per rung (identical output to before), but decode each
+            //    source image only once via decodeCache — see execute() for the rationale.
+            DecodeCache decodeCache = new DecodeCache();
             for (Step step : STEPS) {
                 try (PDDocument compressed = PdfLoader.load(input)) {
-                    recompressImages(compressed, step.scale(), step.quality());
+                    recompressImages(compressed, step.scale(), step.quality(), decodeCache);
                     if (SizeEstimator.estimateBytes(compressed) <= targetSizeBytes) {
                         byte[] out = PdfLoader.toBytes(compressed);
                         return new CompressBytesResult(out, originalSize, out.length, true);
@@ -167,7 +182,7 @@ public final class PdfCompressor {
             // 4) Target unreachable — most-compressed version, but never larger than original.
             try (PDDocument compressed = PdfLoader.load(input)) {
                 Step strongest = STEPS.get(STEPS.size() - 1);
-                recompressImages(compressed, strongest.scale(), strongest.quality());
+                recompressImages(compressed, strongest.scale(), strongest.quality(), decodeCache);
                 byte[] out = SizeEstimator.estimateBytes(compressed) < originalSize
                     ? PdfLoader.toBytes(compressed) : input;
                 return new CompressBytesResult(out, originalSize, out.length, false);
@@ -189,13 +204,62 @@ public final class PdfCompressor {
     }
 
     /**
+     * Memoises the decoded raster of each <em>source</em> image across the ladder's per-rung
+     * reloads. Every rung reloads a pristine copy of the same PDF, so the image sitting at a
+     * given (page index, resource name) slot is the identical source stream each time and
+     * decodes to the identical raster — decoding it once and reusing it is behaviour-preserving.
+     *
+     * <p>The one case that must <em>not</em> be cached is a resource dictionary shared by more
+     * than one page: after the first page rewrites the shared slot to a JPEG, a later page sees
+     * that freshly-made JPEG (not the original) and re-encodes it — quality that varies per rung.
+     * {@link #shouldCache} detects a repeat visit to the same (dictionary, name) within a rung and
+     * forces a fresh decode there, exactly mirroring the pre-cache behaviour.
+     */
+    private static final class DecodeCache {
+        private record SlotKey(int pageIndex, COSName name) {}
+
+        private final Map<SlotKey, BufferedImage> bySlot = new HashMap<>();
+        // Per-rung guard: (resource dictionary identity, name) slots already rewritten this rung.
+        // Keyed on the COS dictionary (not the PDResources wrapper, which PDPage re-creates per
+        // call) so two pages sharing one /Resources dictionary are recognised as the same slot.
+        private Map<COSDictionary, Set<COSName>> visitedThisRung = new IdentityHashMap<>();
+
+        /** Resets the per-rung visit tracking; call once at the start of each rung. */
+        void beginRung() {
+            visitedThisRung = new IdentityHashMap<>();
+        }
+
+        /** True if this (dictionary, name) slot is being rewritten for the first time this rung. */
+        boolean shouldCache(PDResources resources, COSName name) {
+            return visitedThisRung.computeIfAbsent(resources.getCOSObject(), r -> new HashSet<>())
+                                  .add(name);
+        }
+
+        BufferedImage get(int pageIndex, COSName name) {
+            return bySlot.get(new SlotKey(pageIndex, name));
+        }
+
+        void put(int pageIndex, COSName name, BufferedImage image) {
+            bySlot.put(new SlotKey(pageIndex, name), image);
+        }
+    }
+
+    /**
      * Re-encodes every image on every page as JPEG at {@code quality}, first scaling
      * it by {@code scale} (1.0 keeps the pixel dimensions but still re-encodes —
      * which is what shrinks losslessly-stored images). Images are never upscaled.
+     *
+     * <p>{@code decodeCache} supplies each source image's decoded raster, rasterising it only the
+     * first time it is seen and reusing it on later rungs. The cached raster is only ever read
+     * (drawn from), never mutated, so reuse yields byte-for-byte the same JPEG a fresh decode would.
      */
-    private static void recompressImages(PDDocument doc, float scale, float quality)
+    private static void recompressImages(PDDocument doc, float scale, float quality,
+                                         DecodeCache decodeCache)
             throws IOException {
+        decodeCache.beginRung();
+        int pageIndex = 0;
         for (PDPage page : doc.getPages()) {
+            int currentPage = pageIndex++;
             PDResources resources = page.getResources();
             if (resources == null) continue;
             for (COSName name : resources.getXObjectNames()) {
@@ -205,11 +269,24 @@ public final class PdfCompressor {
                 int newW = clampDimension(image.getWidth(), scale);
                 int newH = clampDimension(image.getHeight(), scale);
 
+                BufferedImage source;
+                if (decodeCache.shouldCache(resources, name)) {
+                    source = decodeCache.get(currentPage, name);
+                    if (source == null) {
+                        source = image.getImage();
+                        decodeCache.put(currentPage, name, source);
+                    }
+                } else {
+                    // A shared resource dictionary revisited this rung: the slot now holds the
+                    // JPEG a previous page just wrote, so decode it fresh (never cache it).
+                    source = image.getImage();
+                }
+
                 BufferedImage rgb = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
                 Graphics2D g = rgb.createGraphics();
                 g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                g.drawImage(image.getImage(), 0, 0, newW, newH, null);
+                g.drawImage(source, 0, 0, newW, newH, null);
                 g.dispose();
 
                 resources.put(name, JPEGFactory.createFromImage(doc, rgb, quality));
