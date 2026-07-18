@@ -64,15 +64,28 @@
   }
 }
 
+// Technical error identifiers (code · HTTP status) — kept for debugging /
+// accessibility but deliberately de-emphasised so the human sentence above
+// stays the focus.
 .meta {
-  margin: 0;
-  font-size: 0.85rem;
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.3;
   color: var(--text-muted);
+  opacity: 0.7;
 
-  code {
-    background: var(--surface-2);
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
+  .tech-label {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-right: 0.35rem;
+  }
+
+  .tech {
+    font-family: var(--font-mono, ui-monospace, monospace);
+
+    & + .tech {
+      margin-left: 0.25rem;
+    }
   }
 }
 

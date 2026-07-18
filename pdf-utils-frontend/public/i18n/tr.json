@@ -242,7 +242,8 @@
     "batchFailures": "Bazı girdiler başarısız oldu: {{count}}",
     "seeProPlans": "Pro planlarına bakın →",
     "seeProPlansShort": "Pro planlarına bakın",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Teknik ayrıntılar"
   },
   "viewer": {
     "renderingPreview": "Önizleme oluşturuluyor…",

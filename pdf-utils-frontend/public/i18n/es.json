@@ -242,7 +242,8 @@
     "batchFailures": "Algunas entradas fallaron: {{count}}",
     "seeProPlans": "Ver planes Pro →",
     "seeProPlansShort": "Ver planes Pro",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Detalles técnicos"
   },
   "viewer": {
     "renderingPreview": "Generando vista previa…",

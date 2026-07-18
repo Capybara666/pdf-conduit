@@ -242,7 +242,8 @@
     "batchFailures": "Некоторые файлы не обработаны: {{count}}",
     "seeProPlans": "Смотреть тарифы Pro →",
     "seeProPlansShort": "Смотреть тарифы Pro",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Технические сведения"
   },
   "viewer": {
     "renderingPreview": "Отрисовка предпросмотра…",

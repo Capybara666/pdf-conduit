@@ -242,7 +242,8 @@
     "batchFailures": "一部の入力が失敗しました：{{count}}",
     "seeProPlans": "Pro プランを見る →",
     "seeProPlansShort": "Pro プランを見る",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "技術的な詳細"
   },
   "viewer": {
     "renderingPreview": "プレビューを描画中…",

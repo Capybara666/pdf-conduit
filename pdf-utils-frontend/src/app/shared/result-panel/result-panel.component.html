@@ -17,10 +17,11 @@
     @if (copy?.proLink) {
       <a class="pro-link" [routerLink]="['/']" fragment="pro">{{ 'result.seeProPlans' | transloco }}</a>
     }
-    <p class="meta">
-      <code>{{ error.code }}</code>
+    <p class="meta" [title]="'result.technicalDetails' | transloco">
+      <span class="tech-label">{{ 'result.technicalDetails' | transloco }}:</span>
+      <span class="tech">{{ error.code }}</span>
       @if (error.status) {
-        <span>{{ 'result.httpStatus' | transloco: { status: error.status } }}</span>
+        <span class="tech">{{ 'result.httpStatus' | transloco: { status: error.status } }}</span>
       }
     </p>
   </div>

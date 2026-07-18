@@ -242,7 +242,8 @@
     "batchFailures": "Certains fichiers ont échoué : {{count}}",
     "seeProPlans": "Voir les offres Pro →",
     "seeProPlansShort": "Voir les offres Pro",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Détails techniques"
   },
   "viewer": {
     "renderingPreview": "Génération de l'aperçu…",

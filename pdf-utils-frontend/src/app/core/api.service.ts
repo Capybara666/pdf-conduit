@@ -224,8 +224,12 @@ export class ApiService {
       return throwError(() => this.finalize(new ApiError('unknown', message, 0)));
     }
 
-    // Quota / rate-limit headers ride along on error responses too.
-    this.quota.update(err.headers);
+    // Rate-limit headers ride along on error responses too, but the daily
+    // quota is only truly spent on a 2xx (the backend writes X-Quota-Remaining
+    // optimistically in preHandle). Apply only the rate-limit headers here; the
+    // quota headers are applied in `finalize` for an authoritative
+    // `quota_exceeded` response.
+    this.quota.update(err.headers, { quota: false });
     const retryAfter = this.retryAfterFrom(err.headers);
 
     const status = err.status;
@@ -236,10 +240,15 @@ export class ApiService {
       return new Observable<never>((subscriber) => {
         body
           .text()
-          .then((text) => subscriber.error(this.finalize(this.parseError(text, status, retryAfter))))
+          .then((text) =>
+            subscriber.error(this.finalize(this.parseError(text, status, retryAfter), err.headers)),
+          )
           .catch(() =>
             subscriber.error(
-              this.finalize(new ApiError(this.codeForStatus(status), err.message, status, retryAfter)),
+              this.finalize(
+                new ApiError(this.codeForStatus(status), err.message, status, retryAfter),
+                err.headers,
+              ),
             ),
           );
       });
@@ -249,15 +258,18 @@ export class ApiService {
     if (body && typeof body === 'object') {
       const code = typeof body.code === 'string' ? body.code : this.codeForStatus(status);
       const message = typeof body.error === 'string' ? body.error : err.message;
-      return throwError(() => this.finalize(new ApiError(code, message, status, retryAfter)));
+      return throwError(() => this.finalize(new ApiError(code, message, status, retryAfter), err.headers));
     }
 
     if (typeof body === 'string' && body.trim().startsWith('{')) {
-      return throwError(() => this.finalize(this.parseError(body, status, retryAfter)));
+      return throwError(() => this.finalize(this.parseError(body, status, retryAfter), err.headers));
     }
 
     return throwError(() =>
-      this.finalize(new ApiError(this.codeForStatus(status), err.message, status, retryAfter)),
+      this.finalize(
+        new ApiError(this.codeForStatus(status), err.message, status, retryAfter),
+        err.headers,
+      ),
     );
   }
 
@@ -289,7 +301,13 @@ export class ApiService {
    * rate-limit, capacity) as a toast so the nudge shows even when a page has no
    * visible result panel. Returns the error unchanged for the throwError chain.
    */
-  private finalize(error: ApiError): ApiError {
+  private finalize(error: ApiError, headers?: HttpHeaders): ApiError {
+    // A `quota_exceeded` (429, 0 remaining) response is authoritative about the
+    // daily quota, so trust its X-Quota-* headers and update the chip. Every
+    // other error left the quota untouched (see `toApiError`).
+    if (headers && error.code === 'quota_exceeded') {
+      this.quota.update(headers, { quota: true });
+    }
     const copy = errorCopyKeys(error);
     if (copy.global) {
       const t = (key?: string, params?: Record<string, unknown>) =>

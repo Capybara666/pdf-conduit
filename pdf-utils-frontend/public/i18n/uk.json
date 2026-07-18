@@ -242,7 +242,8 @@
     "batchFailures": "Деякі вхідні файли не оброблено: {{count}}",
     "seeProPlans": "Переглянути тарифи Pro →",
     "seeProPlansShort": "Переглянути тарифи Pro",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Технічні деталі"
   },
   "viewer": {
     "renderingPreview": "Формування попереднього перегляду…",

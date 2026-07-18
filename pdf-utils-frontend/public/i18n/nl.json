@@ -242,7 +242,8 @@
     "batchFailures": "Enkele invoerbestanden zijn mislukt: {{count}}",
     "seeProPlans": "Bekijk Pro-abonnementen →",
     "seeProPlansShort": "Bekijk Pro-abonnementen",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Technische details"
   },
   "viewer": {
     "renderingPreview": "Voorbeeld weergeven…",

@@ -1,6 +1,7 @@
 import { ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import {
+  TitleStrategy,
   provideRouter,
   withComponentInputBinding,
   withInMemoryScrolling,
@@ -11,6 +12,7 @@ import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat'
 import { routes } from './app.routes';
 import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
 import { DEFAULT_LANG, LANGUAGE_CODES, resolveInitialLang } from './core/i18n/languages';
+import { TranslatedTitleStrategy } from './core/title-strategy';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +23,7 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
     provideHttpClient(withFetch()),
+    { provide: TitleStrategy, useClass: TranslatedTitleStrategy },
     provideTransloco({
       config: {
         availableLangs: LANGUAGE_CODES,

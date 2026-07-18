@@ -242,7 +242,8 @@
     "batchFailures": "部分输入失败：{{count}}",
     "seeProPlans": "查看 Pro 方案 →",
     "seeProPlansShort": "查看 Pro 方案",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "技术详情"
   },
   "viewer": {
     "renderingPreview": "正在渲染预览…",

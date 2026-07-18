@@ -1,95 +1,98 @@
 import { Routes } from '@angular/router';
 
 /**
- * Route table. Each operation lazy-loads its standalone page component (scaffold
- * placeholders for now). Keep the path segments in sync with `NAV_ITEMS` ids in
- * core/operations.ts.
+ * Route table. Each operation lazy-loads its standalone page component. Keep the
+ * path segments in sync with `NAV_ITEMS` ids in core/operations.ts.
+ *
+ * Tab titles are localized: each route declares a Transloco `data.titleKey`
+ * (usually an `op.<id>.label` / `nav.*` key) which `TranslatedTitleStrategy`
+ * turns into "<label> · PDF Conduit" and re-applies on language change. The
+ * landing page has no key, so it shows the bare brand.
  */
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'PDF Conduit — Free online PDF tools',
     loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
   },
   {
     path: 'privacy',
-    title: 'Privacy · PDF Conduit',
+    data: { titleKey: 'privacy.title' },
     loadComponent: () => import('./pages/privacy/privacy.page').then((m) => m.PrivacyPage),
   },
   {
     path: 'merge',
-    title: 'Merge · PDF Conduit',
+    data: { titleKey: 'op.merge.label' },
     loadComponent: () => import('./pages/merge/merge.page').then((m) => m.MergePage),
   },
   {
     path: 'extract',
-    title: 'Extract · PDF Conduit',
+    data: { titleKey: 'op.extract.label' },
     loadComponent: () => import('./pages/extract/extract.page').then((m) => m.ExtractPage),
   },
   {
     path: 'compress',
-    title: 'Compress · PDF Conduit',
+    data: { titleKey: 'op.compress.label' },
     loadComponent: () => import('./pages/compress/compress.page').then((m) => m.CompressPage),
   },
   {
     path: 'rotate',
-    title: 'Rotate · PDF Conduit',
+    data: { titleKey: 'op.rotate.label' },
     loadComponent: () => import('./pages/rotate/rotate.page').then((m) => m.RotatePage),
   },
   {
     path: 'arrange',
-    title: 'Arrange · PDF Conduit',
+    data: { titleKey: 'op.arrange.label' },
     loadComponent: () => import('./pages/arrange/arrange.page').then((m) => m.ArrangePage),
   },
   {
     path: 'to-pdf',
-    title: 'To PDF · PDF Conduit',
+    data: { titleKey: 'op.to-pdf.label' },
     loadComponent: () => import('./pages/to-pdf/to-pdf.page').then((m) => m.ToPdfPage),
   },
   {
     path: 'protect',
-    title: 'Protect · PDF Conduit',
+    data: { titleKey: 'op.protect.label' },
     loadComponent: () => import('./pages/protect/protect.page').then((m) => m.ProtectPage),
   },
   {
     path: 'unlock',
-    title: 'Unlock · PDF Conduit',
+    data: { titleKey: 'op.unlock.label' },
     loadComponent: () => import('./pages/unlock/unlock.page').then((m) => m.UnlockPage),
   },
   {
     path: 'metadata',
-    title: 'Metadata · PDF Conduit',
+    data: { titleKey: 'op.metadata.label' },
     loadComponent: () => import('./pages/metadata/metadata.page').then((m) => m.MetadataPage),
   },
   {
     path: 'watermark',
-    title: 'Watermark · PDF Conduit',
+    data: { titleKey: 'op.watermark.label' },
     loadComponent: () => import('./pages/watermark/watermark.page').then((m) => m.WatermarkPage),
   },
   {
     path: 'redact',
-    title: 'Redact · PDF Conduit',
+    data: { titleKey: 'op.redact.label' },
     loadComponent: () => import('./pages/redact/redact.page').then((m) => m.RedactPage),
   },
   {
     path: 'to-images',
-    title: 'To Images · PDF Conduit',
+    data: { titleKey: 'op.to-images.label' },
     loadComponent: () => import('./pages/to-images/to-images.page').then((m) => m.ToImagesPage),
   },
   {
     path: 'to-text',
-    title: 'To Text · PDF Conduit',
+    data: { titleKey: 'op.to-text.label' },
     loadComponent: () => import('./pages/to-text/to-text.page').then((m) => m.ToTextPage),
   },
   {
     path: 'wizard',
-    title: 'Wizard · PDF Conduit',
+    data: { titleKey: 'op.wizard.label' },
     loadComponent: () => import('./pages/wizard/wizard.page').then((m) => m.WizardPage),
   },
   {
     path: 'pipeline',
-    title: 'Pipeline · PDF Conduit',
+    data: { titleKey: 'op.pipeline.label' },
     loadComponent: () => import('./pages/pipeline/pipeline.page').then((m) => m.PipelinePage),
   },
   { path: '**', redirectTo: '' },

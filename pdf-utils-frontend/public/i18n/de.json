@@ -242,7 +242,8 @@
     "batchFailures": "Einige Eingaben sind fehlgeschlagen: {{count}}",
     "seeProPlans": "Pro-Tarife ansehen →",
     "seeProPlansShort": "Pro-Tarife ansehen",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Technische Details"
   },
   "viewer": {
     "renderingPreview": "Vorschau wird gerendert…",

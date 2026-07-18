@@ -36,8 +36,21 @@ export class QuotaService {
     return r > 0 && r <= threshold;
   });
 
-  /** Merge any quota headers present on a response into the current snapshot. */
-  update(headers: HttpHeaders): void {
+  /**
+   * Merge any quota / rate-limit headers present on a response into the current
+   * snapshot.
+   *
+   * The backend writes `X-Quota-Remaining` optimistically in `preHandle` on
+   * *every* request, but only actually charges quota on a 2xx. So the daily
+   * quota headers (`X-Quota-*`) must only be trusted on success or on an
+   * authoritative `quota_exceeded` (0 remaining) response — otherwise a
+   * rejected upload (422/413/415/…) would make the chip drop as if it had cost
+   * a free credit. Rate-limit headers (`X-RateLimit-*`) are always applied.
+   *
+   * Pass `{ quota: false }` to apply only the rate-limit headers.
+   */
+  update(headers: HttpHeaders, opts: { quota?: boolean } = {}): void {
+    const includeQuota = opts.quota ?? true;
     const next: QuotaSnapshot = { ...(this.snapshot() ?? {}) };
     let changed = false;
 
@@ -54,9 +67,11 @@ export class QuotaService {
 
     apply('X-RateLimit-Limit', 'rateLimit');
     apply('X-RateLimit-Remaining', 'rateRemaining');
-    apply('X-Quota-Limit', 'quotaLimit');
-    apply('X-Quota-Remaining', 'quotaRemaining');
-    apply('X-Quota-Reset', 'quotaReset');
+    if (includeQuota) {
+      apply('X-Quota-Limit', 'quotaLimit');
+      apply('X-Quota-Remaining', 'quotaRemaining');
+      apply('X-Quota-Reset', 'quotaReset');
+    }
 
     if (changed) {
       this.snapshot.set(next);

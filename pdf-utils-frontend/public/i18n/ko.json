@@ -242,7 +242,8 @@
     "batchFailures": "일부 입력이 실패했습니다: {{count}}",
     "seeProPlans": "Pro 플랜 보기 →",
     "seeProPlansShort": "Pro 플랜 보기",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "기술 세부 정보"
   },
   "viewer": {
     "renderingPreview": "미리보기 렌더링 중…",

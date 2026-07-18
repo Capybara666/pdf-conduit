@@ -242,7 +242,8 @@
     "batchFailures": "Niektóre pliki wejściowe nie powiodły się: {{count}}",
     "seeProPlans": "Zobacz plany Pro →",
     "seeProPlansShort": "Zobacz plany Pro",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Szczegóły techniczne"
   },
   "viewer": {
     "renderingPreview": "Renderowanie podglądu…",

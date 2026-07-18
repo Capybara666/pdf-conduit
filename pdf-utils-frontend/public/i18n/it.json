@@ -242,7 +242,8 @@
     "batchFailures": "Alcuni input non sono riusciti: {{count}}",
     "seeProPlans": "Vedi i piani Pro →",
     "seeProPlansShort": "Vedi i piani Pro",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Dettagli tecnici"
   },
   "viewer": {
     "renderingPreview": "Generazione anteprima…",

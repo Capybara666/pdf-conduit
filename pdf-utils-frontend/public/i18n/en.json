@@ -242,7 +242,8 @@
     "batchFailures": "Some inputs failed: {{count}}",
     "seeProPlans": "See Pro plans →",
     "seeProPlansShort": "See Pro plans",
-    "httpStatus": "· HTTP {{status}}"
+    "httpStatus": "· HTTP {{status}}",
+    "technicalDetails": "Technical details"
   },
   "viewer": {
     "renderingPreview": "Rendering preview…",
