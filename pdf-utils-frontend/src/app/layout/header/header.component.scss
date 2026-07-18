@@ -25,6 +25,8 @@
   background: var(--surface-2);
   color: var(--text);
   cursor: pointer;
+  transition: border-color var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard);
 
   svg {
     width: 1.35rem;
@@ -73,6 +75,8 @@
     height: 0.6rem;
     border-radius: 50%;
     background: var(--text-muted);
+    transition: background var(--dur-base) var(--ease-standard),
+      box-shadow var(--dur-base) var(--ease-standard);
   }
 
   &[data-state='up'] .dot {
@@ -100,6 +104,9 @@
   font-size: 0.82rem;
   text-decoration: none;
   white-space: nowrap;
+  transition: border-color var(--dur-base) var(--ease-standard),
+    background var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard);
 
   .quota-count {
     font-weight: 700;
@@ -142,6 +149,8 @@
   font-size: 0.85rem;
   text-decoration: none;
   white-space: nowrap;
+  transition: border-color var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard);
 
   .help-icon {
     width: 1.15rem;
@@ -179,6 +188,7 @@
   background: var(--surface-2);
   color: var(--text);
   cursor: pointer;
+  transition: border-color var(--dur-base) var(--ease-standard);
 
   &:hover,
   &:focus-within {
@@ -224,6 +234,7 @@
   background: var(--surface-2);
   color: var(--text);
   cursor: pointer;
+  transition: border-color var(--dur-base) var(--ease-standard);
 
   &:hover,
   &:focus-within {

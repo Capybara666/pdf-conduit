@@ -21,6 +21,17 @@ $bp-rail: 820px;
   --sidebar-width-collapsed: 64px;
   --radius: 12px;
 
+  /* Motion system — durations + easings. Defined once here so all 6 themes
+     inherit them (themes override colours only). Consumed across global
+     controls and component surfaces; the reduced-motion block at the end of
+     this file neutralises them for users who ask for less motion. */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-standard: cubic-bezier(.4, 0, .2, 1);
+  --ease-decelerate: cubic-bezier(0, 0, .2, 1);
+  --ease-accelerate: cubic-bezier(.4, 0, 1, 1);
+
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
 }
@@ -324,6 +335,8 @@ textarea {
   border: 1px solid var(--border-strong);
   border-radius: calc(var(--radius) - 6px);
   padding: 0.5rem 0.65rem;
+  transition: border-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
 }
 
 input:focus,
@@ -367,11 +380,18 @@ input[type='range'] {
   padding: 0.55rem 1.1rem;
   border-radius: calc(var(--radius) - 5px);
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
+  transition: background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-standard);
 }
 
 .btn:hover:not(:disabled) {
   border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn:disabled {
@@ -439,6 +459,8 @@ input[type='range'] {
   cursor: pointer;
   font-weight: 600;
   font-size: 0.85rem;
+  transition: background var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
 }
 
 .seg button + button {
@@ -506,6 +528,8 @@ input[type='range'] {
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.95rem;
+  transition: background var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
 }
 
 .icon-btn:hover {
@@ -538,5 +562,22 @@ input[type='range'] {
   /* F — never show two cramped columns on phones. */
   .form-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Motion — global reduced-motion opt-out. Honour the user's OS preference by
+ * collapsing every transition/animation to a near-instant, non-looping change.
+ * Single source of truth; component stylesheets rely on this rather than each
+ * repeating the query.
+ * ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -6,11 +6,14 @@
   border: 2px dashed var(--border-strong);
   border-radius: var(--radius);
   background: var(--surface-2);
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color var(--dur-fast) var(--ease-standard),
+    background var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-standard);
 
   &.dragging {
     border-color: var(--accent);
     background: var(--accent-soft);
+    transform: scale(1.01);
   }
 }
 
@@ -123,6 +126,16 @@
   background: color-mix(in srgb, var(--surface) 82%, transparent);
   backdrop-filter: blur(2px);
   pointer-events: none;
+  animation: overlay-fade var(--dur-base) var(--ease-decelerate);
+}
+
+@keyframes overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .page-overlay-inner {

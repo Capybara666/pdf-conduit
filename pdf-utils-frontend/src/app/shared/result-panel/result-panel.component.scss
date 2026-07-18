@@ -7,6 +7,20 @@
   border-radius: var(--radius);
   padding: 1rem 1.25rem;
   background: var(--surface);
+  /* Enter reveal: the result panel eases in with a small upward rise so a
+     finished operation reads as arriving, not popping. */
+  animation: result-reveal var(--dur-base) var(--ease-decelerate);
+}
+
+@keyframes result-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .head {
@@ -158,9 +172,16 @@
   padding: 0.6rem 1.75rem;
   border-radius: calc(var(--radius) - 4px);
   cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-standard);
 
   &:hover {
     background: var(--accent-hover);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:focus-visible {
@@ -183,6 +204,7 @@
   padding: 0.45rem 1rem;
   border-radius: calc(var(--radius) - 4px);
   cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard);
 
   &:hover {
     background: var(--danger-soft);
@@ -239,6 +261,16 @@
   justify-content: center;
   padding: 1.5rem;
   background: rgba(0, 0, 0, 0.6);
+  animation: lightbox-fade var(--dur-base) var(--ease-decelerate);
+}
+
+@keyframes lightbox-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .lightbox-inner {
