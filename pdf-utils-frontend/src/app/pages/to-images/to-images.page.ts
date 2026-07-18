@@ -36,6 +36,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
 
       <p class="hint-note" role="note">{{ 'pages.toImages.privacyLine' | transloco }}</p>
+      @if (files().length > 1) {
+        <p class="help">{{ 'pages.toImages.batchNote' | transloco: { count: files().length } }}</p>
+      }
 
       <div class="card form-grid">
         <div class="field">

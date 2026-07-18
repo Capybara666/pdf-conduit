@@ -33,6 +33,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         (filesChange)="files.set($event)"
       />
 
+      @if (files().length > 1) {
+        <p class="help">{{ 'pages.toText.batchNote' | transloco: { count: files().length } }}</p>
+      }
+
       <div class="card form-grid">
         <div class="field">
           <label for="tt-format">{{ 'pages.toText.format' | transloco }}</label>
