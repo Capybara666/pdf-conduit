@@ -19,7 +19,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <pdfbox.version>3.0.3</pdfbox.version>
+        <pdfbox.version>3.0.4</pdfbox.version>
         <javafx.version>21.0.6</javafx.version>
         <picocli.version>4.7.6</picocli.version>
         <junit.version>5.11.4</junit.version>
