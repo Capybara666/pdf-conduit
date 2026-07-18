@@ -49,6 +49,7 @@ interface PageMeta {
     @if (errorMsg()) {
       <p class="viewer-error" role="alert">{{ errorMsg() }}</p>
     }
+    <div class="viewer-scroll">
     <div class="pages" [class.compact]="compact">
       @for (p of pages(); track p.pageNumber) {
         <div class="page-wrap">
@@ -98,6 +99,7 @@ interface PageMeta {
         </div>
       }
     </div>
+    </div>
   `,
   styles: [
     `
@@ -111,11 +113,25 @@ interface PageMeta {
         color: var(--danger);
         font-size: 0.9rem;
       }
+      /* Plain horizontal-scroll wrapper: a wide page scrolls sideways instead of
+         squishing. No transform/zoom/scale here — the render scale and all
+         pixel↔PDF-point math stay untouched, and getBoundingClientRect used by
+         the pointer/region code remains valid. */
+      .viewer-scroll {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
       .pages {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 1rem;
+        /* Grow to the widest page so an oversized page overflows the scroll
+           wrapper (which scrolls) rather than being clipped by flex centering;
+           min-width keeps narrow pages centered in the wrapper. */
+        width: max-content;
+        min-width: 100%;
       }
       .pages.compact {
         gap: 0.5rem;
