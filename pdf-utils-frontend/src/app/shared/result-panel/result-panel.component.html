@@ -17,6 +17,9 @@
     @if (copy?.proLink) {
       <a class="pro-link" [routerLink]="['/']" fragment="pro">{{ 'result.seeProPlans' | transloco }}</a>
     }
+    <p class="actions">
+      <button type="button" class="retry" (click)="onRetry()">{{ 'result.tryAgain' | transloco }}</button>
+    </p>
     <p class="meta" [title]="'result.technicalDetails' | transloco">
       <span class="tech-label">{{ 'result.technicalDetails' | transloco }}:</span>
       <span class="tech">{{ error.code }}</span>
@@ -59,6 +62,32 @@
       <p class="warn">{{ 'result.batchFailures' | transloco: { count: result.batchFailures } }}</p>
     }
 
+    @if (previewImageUrl(); as url) {
+      <button type="button" class="preview" (click)="openExpand()" [attr.aria-label]="'result.expandPreview' | transloco">
+        <img class="preview-img" [src]="url" alt="" />
+        <span class="preview-hint">{{ 'result.expandPreview' | transloco }}</span>
+      </button>
+    } @else if (previewPdfThumb()) {
+      <button type="button" class="preview" (click)="openExpand()" [attr.aria-label]="'result.expandPreview' | transloco">
+        <img class="preview-img pdf" [src]="previewPdfThumb()" alt="" />
+        <span class="preview-hint">{{ 'result.expandPreview' | transloco }}</span>
+      </button>
+    }
+
     <button type="button" class="download" (click)="download()">{{ 'common.download' | transloco }}</button>
+  </div>
+}
+
+@if (expanded()) {
+  <div class="lightbox" role="dialog" aria-modal="true" (click)="closeExpand()">
+    <div class="lightbox-inner" (click)="$event.stopPropagation()">
+      <button type="button" class="lightbox-close" (click)="closeExpand()" [attr.aria-label]="'result.close' | transloco">✕</button>
+      <div class="lightbox-body">
+        @if (previewImageUrl(); as url) {
+          <img class="lightbox-img" [src]="url" alt="" />
+        }
+        <ng-container #viewerHost></ng-container>
+      </div>
+    </div>
   </div>
 }

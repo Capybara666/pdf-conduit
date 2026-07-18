@@ -13,7 +13,9 @@ export class OperationState {
   readonly error = signal<ApiError | null>(null);
   readonly result = signal<RunResult | null>(null);
 
+  /** Return to idle: clear any in-flight loading, error and result. */
   reset(): void {
+    this.loading.set(false);
     this.error.set(null);
     this.result.set(null);
   }

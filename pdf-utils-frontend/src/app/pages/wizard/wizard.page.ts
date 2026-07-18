@@ -9,6 +9,7 @@ import { loadPdf } from '../../core/pdfjs';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
@@ -43,6 +44,7 @@ const STEP_KEYS = [
     FileDropZoneComponent,
     PageGridComponent,
     PageHeaderComponent,
+    ResultPanelComponent,
     SpinnerComponent,
   ],
   template: `
@@ -218,17 +220,14 @@ const STEP_KEYS = [
             <li><span>{{ 'pages.wizard.sumCompress' | transloco }}</span><b>{{ compress() ? targetSize() : ('pages.wizard.compressNo' | transloco) }}</b></li>
           </ul>
 
-          @if (busy()) {
-            <app-spinner [label]="progress()" />
-          }
-          @if (error()) {
-            <p class="err">{{ error()!.message }}</p>
-          }
-          @if (result()) {
-            <div class="done-box">
-              <p class="filename">{{ result()!.filename }} ({{ formatBytes(result()!.blob.size) }})</p>
-              <button type="button" class="btn btn-primary" (click)="download()">{{ 'common.download' | transloco }}</button>
-            </div>
+          @if (busy() || error() || result()) {
+            <app-result-panel
+              [loading]="busy()"
+              [loadingLabel]="progress()"
+              [error]="error()"
+              [result]="result()"
+              (retry)="runExport()"
+            />
           }
         }
       </div>
