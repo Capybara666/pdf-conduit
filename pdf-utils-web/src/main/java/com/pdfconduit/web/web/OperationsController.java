@@ -248,36 +248,38 @@ public class OperationsController {
     // ----------------------------------------------------------------- TO-IMAGES
 
     @PostMapping(value = "/to-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> toImages(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<byte[]> toImages(@RequestParam("files") List<MultipartFile> files,
                                            @RequestParam(required = false) String format,
                                            @RequestParam(required = false) Integer dpi,
-                                           @RequestParam(required = false) String pages)
+                                           @RequestParam(required = false) String pages,
+                                           @RequestParam(required = false) Float quality)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        guardCount(files, maxFiles);
         ImageFormat fmt = Params.imageFormat(format, ImageFormat.PNG);
-        NamedBytes in = uploads.read(file);
         int resolvedDpi = dpi != null ? dpi : 150;
-        List<NamedBytes> images = loadGuard.execute(in.data().length,
-            () -> ops.toImages(in, fmt, resolvedDpi, pages, 0.8f));
-        if (images.size() == 1) {
-            MediaType type = fmt == ImageFormat.PNG ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
-            return Responses.file(images.get(0), type);
-        }
-        return Responses.zip(images, "to-images_results.zip");
+        // JPEG quality clamped to [0.05, 1.0]; ignored for PNG (lossless). Default 0.8.
+        float q = quality != null ? Math.max(0.05f, Math.min(1.0f, quality)) : 0.8f;
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> images = loadGuard.execute(totalBytes(inputs),
+            () -> ops.toImages(inputs, fmt, resolvedDpi, pages, q));
+        MediaType type = fmt == ImageFormat.PNG ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+        return Responses.batch("to-images", images, type);
     }
 
     // ------------------------------------------------------------------- TO-TEXT
 
     @PostMapping(value = "/to-text", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> toText(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<byte[]> toText(@RequestParam("files") List<MultipartFile> files,
                                          @RequestParam(required = false) String format,
                                          @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        guardCount(files, maxFiles);
         TextFormat fmt = Params.textFormat(format, TextFormat.TXT);
-        NamedBytes in = uploads.read(file);
-        NamedBytes out = loadGuard.execute(in.data().length, () -> ops.toText(in, fmt, pages));
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> outputs = loadGuard.execute(totalBytes(inputs), () -> ops.toText(inputs, fmt, pages));
         MediaType type = fmt == TextFormat.TXT
             ? new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8)
             : DOCX;
-        return Responses.file(out, type);
+        return Responses.batch("to-text", outputs, type);
     }
 }

@@ -146,7 +146,7 @@ class OperationsControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         MvcResult edited = mvc().perform(multipart("/api/metadata")
-                .file(pdf("file", "a.pdf", a))
+                .file(pdf("files", "a.pdf", a))
                 .param("title", "Hello Title")
                 .param("author", "Ada"))
             .andExpect(status().isOk())
@@ -216,7 +216,7 @@ class OperationsControllerTest {
     void toImages_multiPage_returnsZip() throws Exception {
         byte[] a = TestPdfs.blank(2);
         mvc().perform(multipart("/api/to-images")
-                .file(pdf("file", "a.pdf", a))
+                .file(pdf("files", "a.pdf", a))
                 .param("format", "png")
                 .param("dpi", "72"))
             .andExpect(status().isOk())
@@ -225,17 +225,94 @@ class OperationsControllerTest {
                 org.hamcrest.Matchers.containsString("to-images_results.zip")));
     }
 
+    @Test
+    void toImages_singlePage_streamsImageDirectly() throws Exception {
+        byte[] a = TestPdfs.blank(1);
+        MvcResult result = mvc().perform(multipart("/api/to-images")
+                .file(pdf("files", "a.pdf", a))
+                .param("format", "png")
+                .param("dpi", "72"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG))
+            .andReturn();
+        assertThat(result.getResponse().getContentAsByteArray()).isNotEmpty();
+    }
+
+    @Test
+    void toImages_multipleFiles_returnsZip() throws Exception {
+        byte[] a = TestPdfs.blank(1);
+        byte[] b = TestPdfs.blank(1);
+        mvc().perform(multipart("/api/to-images")
+                .file(pdf("files", "a.pdf", a))
+                .file(pdf("files", "b.pdf", b))
+                .param("format", "png")
+                .param("dpi", "72"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andExpect(header().string("Content-Disposition",
+                org.hamcrest.Matchers.containsString("to-images_results.zip")));
+    }
+
+    @Test
+    void toImages_lowerQuality_yieldsSmallerJpeg() throws Exception {
+        byte[] a = TestPdfs.withText("quality matters for jpeg output");
+        byte[] high = mvc().perform(multipart("/api/to-images")
+                .file(pdf("files", "a.pdf", a))
+                .param("format", "jpeg")
+                .param("dpi", "150")
+                .param("quality", "0.95"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_JPEG))
+            .andReturn().getResponse().getContentAsByteArray();
+        byte[] low = mvc().perform(multipart("/api/to-images")
+                .file(pdf("files", "a.pdf", a))
+                .param("format", "jpeg")
+                .param("dpi", "150")
+                .param("quality", "0.1"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_JPEG))
+            .andReturn().getResponse().getContentAsByteArray();
+        assertThat(low.length).isLessThan(high.length);
+    }
+
     // -------------------------------------------------------------- to-text
 
     @Test
     void toText_returnsPlainText() throws Exception {
         byte[] a = TestPdfs.withText("hello extracted world");
         MvcResult result = mvc().perform(multipart("/api/to-text")
-                .file(pdf("file", "a.pdf", a)))
+                .file(pdf("files", "a.pdf", a)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(new MediaType(MediaType.TEXT_PLAIN, java.nio.charset.StandardCharsets.UTF_8)))
             .andReturn();
         assertThat(result.getResponse().getContentAsString()).contains("hello extracted world");
+    }
+
+    @Test
+    void toText_multipleFiles_returnsZip() throws Exception {
+        byte[] a = TestPdfs.withText("first document text");
+        byte[] b = TestPdfs.withText("second document text");
+        mvc().perform(multipart("/api/to-text")
+                .file(pdf("files", "a.pdf", a))
+                .file(pdf("files", "b.pdf", b)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andExpect(header().string("Content-Disposition",
+                org.hamcrest.Matchers.containsString("to-text_results.zip")));
+    }
+
+    @Test
+    void metadata_multipleFiles_returnsZip() throws Exception {
+        byte[] a = TestPdfs.blank(1);
+        byte[] b = TestPdfs.blank(2);
+        mvc().perform(multipart("/api/metadata")
+                .file(pdf("files", "a.pdf", a))
+                .file(pdf("files", "b.pdf", b))
+                .param("title", "Batch Title"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andExpect(header().string("Content-Disposition",
+                org.hamcrest.Matchers.containsString("metadata_results.zip")));
     }
 
     // --------------------------------------------------------------- render

@@ -201,6 +201,15 @@ public class WebOperations {
         return new NamedBytes(MemoryOperations.outputName(OperationType.METADATA, in.filename()), out);
     }
 
+    /** Batch-edit (or strip) every input's metadata, preserving order. */
+    public List<NamedBytes> editMetadata(List<NamedBytes> inputs, String title, String author,
+                                         String subject, String keywords, boolean strip)
+            throws PdfOperationException {
+        List<NamedBytes> out = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) out.add(editMetadata(in, title, author, subject, keywords, strip));
+        return out;
+    }
+
     // --------------------------------------------------------------- WATERMARK
 
     public List<NamedBytes> watermark(List<NamedBytes> inputs, String text, byte[] image,
@@ -234,6 +243,19 @@ public class WebOperations {
         return nameMulti(OperationType.PDF_TO_IMAGES, in.filename(), images, format.extension());
     }
 
+    /**
+     * Render selected pages of every input to images, concatenated. Each input's page images are
+     * named from that input's filename ({@link #nameMulti}), so results from different source files
+     * stay distinct; any residual name collision is de-duplicated when zipped.
+     */
+    public List<NamedBytes> toImages(List<NamedBytes> inputs, ImageFormat format, int dpi,
+                                     String pagesExpr, float jpegQuality)
+            throws PdfOperationException, InvalidPageRangeException {
+        List<NamedBytes> out = new ArrayList<>();
+        for (NamedBytes in : inputs) out.addAll(toImages(in, format, dpi, pagesExpr, jpegQuality));
+        return out;
+    }
+
     // ---------------------------------------------------------------- TO-TEXT
 
     public NamedBytes toText(NamedBytes in, TextFormat format, String pagesExpr)
@@ -247,6 +269,14 @@ public class WebOperations {
         byte[] out = PdfTextExporter.toTextBytes(pdf, format, range(pagesExpr, pdf));
         String name = stem(in.filename()) + OperationType.PDF_TO_TEXT.suffix() + "." + format.extension();
         return new NamedBytes(name, out);
+    }
+
+    /** Batch-export every input to text/docx, preserving order. */
+    public List<NamedBytes> toText(List<NamedBytes> inputs, TextFormat format, String pagesExpr)
+            throws PdfOperationException, InvalidPageRangeException {
+        List<NamedBytes> out = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) out.add(toText(in, format, pagesExpr));
+        return out;
     }
 
     // --------------------------------------------------------------- GDPR-SCAN

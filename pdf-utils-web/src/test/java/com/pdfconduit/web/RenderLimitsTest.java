@@ -43,7 +43,7 @@ class RenderLimitsTest {
     @Test
     void toImages_hugeDpi_rejectedNotOom() throws Exception {
         byte[] a = TestPdfs.blank(1);
-        mvc.perform(multipart("/api/to-images").file(file("file", a))
+        mvc.perform(multipart("/api/to-images").file(file("files", a))
                 .param("dpi", "60000"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("bad_request"));
