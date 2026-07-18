@@ -79,17 +79,21 @@ const STEP_KEYS = [
           <p class="hint-note">{{ 'pages.wizard.arrangeHint' | transloco }}</p>
           <ul class="file-list" role="list">
             @for (it of items(); track it.file; let i = $index) {
+              @if (dragIndex() !== null && dropIndex() === i) {
+                <li class="drop-marker" aria-hidden="true"></li>
+              }
               <li
                 class="file-card"
                 [class.dragging]="dragIndex() === i"
                 [class.expanded]="expandedFile() === it.file"
                 (dragover)="onDragOver($event, i)"
+                (drop)="onDrop($event)"
               >
                 <div
                   class="file-head"
                   draggable="true"
                   (dragstart)="dragIndex.set(i)"
-                  (dragend)="dragIndex.set(null)"
+                  (dragend)="dragEnd()"
                 >
                   <span class="grip" aria-hidden="true">⠿</span>
                   <span class="idx" aria-hidden="true">{{ i + 1 }}</span>
@@ -163,6 +167,9 @@ const STEP_KEYS = [
                   </div>
                 }
               </li>
+            }
+            @if (dragIndex() !== null && dropIndex() === items().length) {
+              <li class="drop-marker" aria-hidden="true"></li>
             }
           </ul>
         }
@@ -316,6 +323,16 @@ const STEP_KEYS = [
       }
       .file-card.dragging {
         opacity: 0.5;
+      }
+      /* Slim insertion marker: a horizontal bar in the gap where the row lands. */
+      .drop-marker {
+        height: 3px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border-radius: 2px;
+        background: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent-soft);
       }
       .file-head {
         display: flex;
@@ -487,6 +504,8 @@ export class WizardPage implements OnDestroy {
   protected readonly step = signal(0);
   protected readonly items = signal<WizardFile[]>([]);
   protected readonly dragIndex = signal<number | null>(null);
+  /** Insertion index (0..items().length) where a drop would land, or null. */
+  protected readonly dropIndex = signal<number | null>(null);
   /** Which PDF file (identity) has its visual page-picker expanded (only one at a time). */
   protected readonly expandedFile = signal<File | null>(null);
 
@@ -621,15 +640,38 @@ export class WizardPage implements OnDestroy {
     this.objectUrls.length = 0;
   }
 
+  /**
+   * Update the insertion marker (not the list) while dragging: the cursor's
+   * top half of a row inserts BEFORE it, bottom half AFTER it. The list only
+   * reorders on drop, so the marker unambiguously previews the outcome.
+   */
   onDragOver(ev: DragEvent, over: number): void {
     ev.preventDefault();
+    if (this.dragIndex() === null) return;
+    const el = ev.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const leading = ev.clientY < rect.top + rect.height / 2;
+    this.dropIndex.set(leading ? over : over + 1);
+  }
+
+  onDrop(ev: DragEvent): void {
+    ev.preventDefault();
     const from = this.dragIndex();
-    if (from === null || from === over) return;
-    const next = this.items().slice();
-    const [moved] = next.splice(from, 1);
-    next.splice(over, 0, moved);
-    this.items.set(next);
-    this.dragIndex.set(over);
+    const to = this.dropIndex();
+    if (from !== null && to !== null) {
+      const next = this.items().slice();
+      const [moved] = next.splice(from, 1);
+      // Same-list off-by-one: after removing `from`, a marker past it shifts down.
+      const target = to > from ? to - 1 : to;
+      next.splice(target, 0, moved);
+      this.items.set(next);
+    }
+    this.dragEnd();
+  }
+
+  dragEnd(): void {
+    this.dragIndex.set(null);
+    this.dropIndex.set(null);
   }
 
   canNext(): boolean {

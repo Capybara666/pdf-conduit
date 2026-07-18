@@ -71,6 +71,15 @@ interface OrderTile {
       </div>
 
       <div class="pg-grid" #scroll [style.--thumb.px]="thumbWidth">
+        @if (mode === 'reorder' && dropMarker(); as m) {
+          <div
+            class="pg-drop-marker"
+            aria-hidden="true"
+            [style.left.px]="m.left"
+            [style.top.px]="m.top"
+            [style.height.px]="m.height"
+          ></div>
+        }
         @if (mode === 'select') {
           @for (n of pageList(); track n) {
             <button
@@ -95,7 +104,7 @@ interface OrderTile {
           @for (t of order(); track t.id; let i = $index) {
             <div
               class="pg-tile reorder"
-              [class.dragover]="dragOverIndex() === i"
+              [class.dragging]="dragIndex() === i"
               [attr.data-tile]="t.id"
               [attr.data-page]="t.page"
               [style.width.px]="thumbWidth"
@@ -103,7 +112,7 @@ interface OrderTile {
               [attr.aria-label]="'pageGrid.pageLabel' | transloco: { n: t.page }"
               (dragstart)="onDragStart(i)"
               (dragover)="onDragOver($event, i)"
-              (drop)="onDrop(i)"
+              (drop)="onDrop()"
               (dragend)="onDragEnd()"
             >
               <span class="pg-thumb" [style.height.px]="thumbHeight(t.page)">
@@ -188,12 +197,24 @@ interface OrderTile {
         font-variant-numeric: tabular-nums;
       }
       .pg-grid {
+        position: relative;
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem;
         max-height: 460px;
         overflow-y: auto;
         padding: 0.25rem;
+      }
+      /* Slim insertion marker: sits in the gap between two tiles, matching the
+         hovered tile's row/height, so the drop position is unambiguous. */
+      .pg-drop-marker {
+        position: absolute;
+        width: 3px;
+        border-radius: 2px;
+        background: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent-soft);
+        pointer-events: none;
+        z-index: 5;
       }
       .pg-tile {
         position: relative;
@@ -226,9 +247,8 @@ interface OrderTile {
       .pg-tile.reorder {
         cursor: grab;
       }
-      .pg-tile.reorder.dragover {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 2px var(--accent-soft);
+      .pg-tile.reorder.dragging {
+        opacity: 0.5;
       }
       .pg-thumb {
         display: flex;
@@ -332,7 +352,10 @@ export class PageGridComponent implements OnDestroy {
   readonly pageList = signal<number[]>([]);
   readonly selectedCount = signal(0);
   readonly order = signal<OrderTile[]>([]);
-  readonly dragOverIndex = signal<number | null>(null);
+  /** Index of the tile currently being dragged (drives the source-tile fade). */
+  readonly dragIndex = signal<number | null>(null);
+  /** Absolute placement of the insertion marker within the grid, or null. */
+  readonly dropMarker = signal<{ left: number; top: number; height: number } | null>(null);
 
   private _file: File | Blob | null = null;
   private _seed = '';
@@ -340,7 +363,8 @@ export class PageGridComponent implements OnDestroy {
   private renderToken = 0;
   private selected = new Set<number>();
   private nextTileId = 1;
-  private dragIndex: number | null = null;
+  /** Insertion index (0..order().length) where a drop would land. */
+  private dropTargetIndex: number | null = null;
 
   // Per-page aspect (points) for stable placeholder sizing, cached rendered
   // source canvases, painted tile ids, and the lazy-render observer.
@@ -465,24 +489,54 @@ export class PageGridComponent implements OnDestroy {
   }
 
   onDragStart(index: number): void {
-    this.dragIndex = index;
+    this.dragIndex.set(index);
   }
 
+  /**
+   * Compute the insertion index + marker placement from the cursor position.
+   * Leading half of a tile inserts BEFORE it, trailing half AFTER it; the marker
+   * is anchored to the hovered tile's rect so it always renders on the cursor's
+   * own row (end-of-row vs start-of-next-row are disambiguated for free, since
+   * the marker follows whichever tile is under the cursor).
+   */
   onDragOver(event: DragEvent, index: number): void {
     event.preventDefault();
-    this.dragOverIndex.set(index);
+    const el = event.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const leading = event.clientX < rect.left + rect.width / 2;
+    this.dropTargetIndex = leading ? index : index + 1;
+
+    const gap = 12; // matches the .pg-grid flex gap (0.75rem)
+    const markerW = 3;
+    const grid = el.offsetParent as HTMLElement | null;
+    const maxLeft = grid ? grid.clientWidth - markerW - 1 : Number.MAX_SAFE_INTEGER;
+    let left = leading
+      ? el.offsetLeft - gap / 2 - markerW / 2
+      : el.offsetLeft + el.offsetWidth + gap / 2 - markerW / 2;
+    left = Math.max(1, Math.min(left, maxLeft));
+    this.dropMarker.set({ left, top: el.offsetTop, height: el.offsetHeight });
   }
 
-  onDrop(index: number): void {
-    if (this.dragIndex !== null && this.dragIndex !== index) {
-      this.moveTile(this.dragIndex, index);
+  onDrop(): void {
+    const from = this.dragIndex();
+    const to = this.dropTargetIndex;
+    if (from !== null && to !== null) {
+      const arr = this.order().slice();
+      const [moved] = arr.splice(from, 1);
+      // Same-list off-by-one: removing `from` shifts everything after it down by
+      // one, so a marker at `to` past the source maps to `to - 1`.
+      const target = to > from ? to - 1 : to;
+      arr.splice(target, 0, moved);
+      this.order.set(arr);
+      this.afterOrderChange();
     }
     this.onDragEnd();
   }
 
   onDragEnd(): void {
-    this.dragIndex = null;
-    this.dragOverIndex.set(null);
+    this.dragIndex.set(null);
+    this.dropTargetIndex = null;
+    this.dropMarker.set(null);
   }
 
   private moveTile(from: number, to: number): void {
