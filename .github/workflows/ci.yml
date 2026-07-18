@@ -1,0 +1,65 @@
+name: CI
+
+# Build + test the whole product on every push / PR.
+# - backend: full Maven reactor (core + desktop + web). LibreOffice is installed
+#   because some core/convert tests shell out to `soffice`; xvfb provides a
+#   virtual display for the JavaFX desktop tests.
+# - frontend: the standalone Angular app (not in the Maven reactor).
+# - compose: validate that the dev and prod compose files parse.
+
+on:
+  push:
+    branches: [ main, web-version ]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Maven reactor (test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Install LibreOffice + xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libreoffice-core libreoffice-writer libreoffice-calc libreoffice-impress \
+            fonts-dejavu xvfb
+      - name: Build + test (full reactor)
+        run: xvfb-run -a mvn -B -ntp test
+
+  frontend:
+    name: Angular build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pdf-utils-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: pdf-utils-frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  compose:
+    name: Compose config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose files
+        run: |
+          docker compose -f docker-compose.yml config >/dev/null && echo "BASE_OK"
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml config >/dev/null && echo "PROD_OK"
