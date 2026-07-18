@@ -34,15 +34,14 @@ class OpenApiDumpTest {
     /**
      * Schema names that MUST appear in the spec — drift here breaks downstream FE codegen.
      *
-     * <p>Note: the error shape {@code ApiError} is deliberately NOT in this list. Springdoc only
-     * emits schemas reachable from a documented response, and {@code ApiError} is produced solely
-     * by the {@code @RestControllerAdvice} exception handler, which springdoc does not scan without
-     * an explicit {@code @ApiResponse} on the controllers. Documenting it requires a source change
-     * (a follow-up); until then the error body is a known gap in the generated client.
+     * <p>{@code ApiError} — the error body produced by the {@code @RestControllerAdvice} exception
+     * handler — is included: springdoc alone would not emit it (it only scans schemas reachable from
+     * a documented response), so {@code OpenApiConfig} registers the schema and attaches it as the
+     * error responses on every operation. Its presence here guards that customizer against drift.
      */
     private static final String[] REQUIRED_SCHEMAS = {
         "OperationInfo", "MetadataDto", "PiiReportDto",
-        "NodeKindInfo", "ValidationErrorDto",
+        "NodeKindInfo", "ValidationErrorDto", "ApiError",
     };
 
     @Autowired
@@ -71,5 +70,11 @@ class OpenApiDumpTest {
                 .as("OpenAPI spec is missing schema '%s' — that endpoint/DTO is not documented", schema)
                 .contains("\"" + schema + "\"");
         }
+
+        // ApiError must be wired as an operation error response, not merely present as a schema —
+        // OpenApiConfig attaches it via $ref so the generated client gets a typed error body.
+        assertThat(spec)
+            .as("no operation references ApiError in an error response (OpenApiConfig not applied)")
+            .contains("#/components/schemas/ApiError");
     }
 }
