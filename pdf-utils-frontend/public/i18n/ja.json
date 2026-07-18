@@ -130,6 +130,17 @@
     "themeToDark": "ダークテーマに切り替え",
     "languageLabel": "言語"
   },
+  "theme": {
+    "label": "テーマ",
+    "name": {
+      "light": "ライト",
+      "dark": "ダーク",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "サンセット"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "無料 · ブラウザ上で完結",

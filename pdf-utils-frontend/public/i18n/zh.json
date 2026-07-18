@@ -130,6 +130,17 @@
     "themeToDark": "切换到深色主题",
     "languageLabel": "语言"
   },
+  "theme": {
+    "label": "主题",
+    "name": {
+      "light": "浅色",
+      "dark": "深色",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "日落"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "免费 · 在浏览器中运行",

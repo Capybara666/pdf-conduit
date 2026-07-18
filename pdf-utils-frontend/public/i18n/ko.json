@@ -130,6 +130,17 @@
     "themeToDark": "어두운 테마로 전환",
     "languageLabel": "언어"
   },
+  "theme": {
+    "label": "테마",
+    "name": {
+      "light": "라이트",
+      "dark": "다크",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "선셋"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "무료 · 브라우저에서",

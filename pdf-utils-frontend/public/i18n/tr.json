@@ -130,6 +130,17 @@
     "themeToDark": "Koyu temaya geç",
     "languageLabel": "Dil"
   },
+  "theme": {
+    "label": "Tema",
+    "name": {
+      "light": "Açık",
+      "dark": "Koyu",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "Gün batımı"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "Ücretsiz · Tarayıcınızda",

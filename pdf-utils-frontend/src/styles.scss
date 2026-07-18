@@ -61,6 +61,110 @@
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
+/* Nord — cool arctic palette (frost accent on polar night). Ported from
+   pdf-utils-desktop css/nord.css. */
+:root[data-theme='nord'] {
+  --bg: #2e3440;
+  --surface: #3b4252;
+  --surface-2: #434c5e;
+  --border: #434c5e;
+  --border-strong: #4c566a;
+
+  --text: #eceff4;
+  --text-muted: #9aa4ba;
+
+  --accent: #88c0d0;
+  --accent-hover: #8fbcbb;
+  --accent-soft: #2f4650;
+  --accent-contrast: #2e3440;
+
+  --success: #a3be8c;
+  --success-soft: #333d2f;
+  --danger: #bf616a;
+  --danger-soft: #3f2a2d;
+  --warning: #ebcb8b;
+
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Dracula — classic dark theme with a violet accent. Ported from
+   pdf-utils-desktop css/dracula.css. */
+:root[data-theme='dracula'] {
+  --bg: #282a36;
+  --surface: #343746;
+  --surface-2: #44475a;
+  --border: #44475a;
+  --border-strong: #6272a4;
+
+  --text: #f8f8f2;
+  --text-muted: #9ea8c7;
+
+  --accent: #bd93f9;
+  --accent-hover: #caa9fa;
+  --accent-soft: #352d4d;
+  --accent-contrast: #282a36;
+
+  --success: #50fa7b;
+  --success-soft: #1f3a28;
+  --danger: #ff5555;
+  --danger-soft: #3f2222;
+  --warning: #f1fa8c;
+
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+/* Solarized — warm low-contrast light theme with a blue accent. Ported from
+   pdf-utils-desktop css/solarized.css. */
+:root[data-theme='solarized'] {
+  --bg: #fdf6e3;
+  --surface: #fffbf0;
+  --surface-2: #eee8d5;
+  --border: #e5dcc3;
+  --border-strong: #d9cfb0;
+
+  --text: #073642;
+  --text-muted: #657b83;
+
+  --accent: #268bd2;
+  --accent-hover: #1c6fa8;
+  --accent-soft: #d7e9f6;
+  --accent-contrast: #fdf6e3;
+
+  --success: #859900;
+  --success-soft: #eaefcf;
+  --danger: #dc322f;
+  --danger-soft: #f7e0dd;
+  --warning: #b58900;
+
+  --shadow: 0 1px 3px rgba(101, 123, 131, 0.18);
+}
+
+/* Sunset — warm light theme with a glowing orange accent. Ported from
+   pdf-utils-desktop css/sunset.css. */
+:root[data-theme='sunset'] {
+  --bg: #fff7ed;
+  --surface: #ffffff;
+  --surface-2: #ffedd5;
+  --border: #fed7aa;
+  --border-strong: #fdba74;
+
+  --text: #7c2d12;
+  --text-muted: #b45309;
+
+  --accent: #f97316;
+  --accent-hover: #ea580c;
+  --accent-soft: #ffe4cc;
+  --accent-contrast: #ffffff;
+
+  --success: #16a34a;
+  --success-soft: #dcf5e4;
+  --danger: #e11d48;
+  --danger-soft: #fbe0e6;
+  --warning: #b45309;
+
+  --shadow: 0 1px 3px rgba(124, 45, 18, 0.14);
+}
+
 * {
   box-sizing: border-box;
 }

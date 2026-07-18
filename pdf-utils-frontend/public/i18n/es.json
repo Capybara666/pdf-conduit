@@ -130,6 +130,17 @@
     "themeToDark": "Cambiar al tema oscuro",
     "languageLabel": "Idioma"
   },
+  "theme": {
+    "label": "Tema",
+    "name": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "Atardecer"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "Gratis · En tu navegador",

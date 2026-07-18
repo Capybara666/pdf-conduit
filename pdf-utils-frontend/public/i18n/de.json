@@ -130,6 +130,17 @@
     "themeToDark": "Zum dunklen Design wechseln",
     "languageLabel": "Sprache"
   },
+  "theme": {
+    "label": "Design",
+    "name": {
+      "light": "Hell",
+      "dark": "Dunkel",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "Sonnenuntergang"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "Kostenlos · In Ihrem Browser",

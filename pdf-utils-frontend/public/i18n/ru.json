@@ -130,6 +130,17 @@
     "themeToDark": "Переключить на тёмную тему",
     "languageLabel": "Язык"
   },
+  "theme": {
+    "label": "Тема",
+    "name": {
+      "light": "Светлая",
+      "dark": "Тёмная",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "Закат"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "Бесплатно · В вашем браузере",

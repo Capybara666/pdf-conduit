@@ -130,6 +130,17 @@
     "themeToDark": "Przełącz na ciemny motyw",
     "languageLabel": "Język"
   },
+  "theme": {
+    "label": "Motyw",
+    "name": {
+      "light": "Jasny",
+      "dark": "Ciemny",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "Zachód słońca"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "Za darmo · W Twojej przeglądarce",

@@ -130,6 +130,17 @@
     "themeToDark": "Overschakelen naar donker thema",
     "languageLabel": "Taal"
   },
+  "theme": {
+    "label": "Thema",
+    "name": {
+      "light": "Licht",
+      "dark": "Donker",
+      "nord": "Nord",
+      "dracula": "Dracula",
+      "solarized": "Solarized",
+      "sunset": "Zonsondergang"
+    }
+  },
   "home": {
     "hero": {
       "eyebrow": "Gratis · In je browser",

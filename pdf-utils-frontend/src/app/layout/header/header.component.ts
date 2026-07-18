@@ -17,13 +17,14 @@ import { Subscription, switchMap, timer } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { LanguageService } from '../../core/i18n/language.service';
 import { QuotaService } from '../../core/quota.service';
-import { ThemeService } from '../../core/theme.service';
+import { Theme, ThemeService } from '../../core/theme.service';
 
 type HealthState = 'unknown' | 'up' | 'down';
 
 /**
  * App header: brand, live backend-health indicator (polls `GET /api/health`),
- * a language picker and a light/dark theme toggle.
+ * a language picker and a theme picker (light, dark, nord, dracula, solarized,
+ * sunset).
  */
 @Component({
   selector: 'app-header',
@@ -74,8 +75,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  toggleTheme(): void {
-    this.themeService.toggle();
+  onThemeChange(event: Event): void {
+    this.themeService.set((event.target as HTMLSelectElement).value as Theme);
   }
 
   onLangChange(event: Event): void {
