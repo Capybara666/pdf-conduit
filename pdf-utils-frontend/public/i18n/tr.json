@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Ücretsiz · Tarayıcınızda",
       "title": "İhtiyacınız olan tüm PDF araçları, tek bir temiz çalışma alanında.",
-      "lede": "PDF'leri saniyeler içinde birleştirin, sıkıştırın, dönüştürün, koruyun ve karartın — tamamen bellekte işlenir ve sunucularımızda hiçbir zaman saklanmaz. Hesap yok. Kurulum yok.",
+      "lede": "PDF'leri saniyeler içinde birleştirin, sıkıştırın, dönüştürün, koruyun ve karartın — anında işlenir ve sunucularımızda hiçbir zaman saklanmaz. Hesap yok. Kurulum yok.",
       "ctaStart": "Ücretsiz başlayın",
       "ctaExplore": "Araçları keşfedin",
-      "note": "Dosyalar belleğin dışına çıkmaz · Kayıt gerekmez · Her cihazda çalışır"
+      "note": "Dosyalar asla saklanmaz · Kayıt gerekmez · Her cihazda çalışır"
     },
     "trust": {
       "aria": "Neden PDF Conduit",
-      "memoryTitle": "Bellekte işlenir",
-      "memoryDesc": "Dosyalarınız RAM'de işlenir ve asla diske yazılmaz veya saklanmaz.",
+      "memoryTitle": "Asla saklanmaz",
+      "memoryDesc": "Dosyalarınız işlenir ve ardından silinir — asla diske yazılmaz veya sunucularımızda tutulmaz.",
       "accountTitle": "Hesap gerekmez",
       "accountDesc": "Doğrudan başlayın — e-posta yok, parola yok, takip duvarı yok.",
       "browserTitle": "Tarayıcınızda açın",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Bir araç seçin ve başlayın",
-      "subtitle": "On beş odaklı araç, her biri tek bir işi iyi yapıyor."
+      "subtitle": "Odaklı araçlar, her biri tek bir işi iyi yapıyor."
     },
     "pro": {
       "soon": "Yakında",
@@ -159,8 +159,8 @@
       "freeName": "Ücretsiz",
       "freePrice": "$0",
       "freePer": "/ sonsuza dek",
-      "freeFeat1": "On beş PDF aracının tümü",
-      "freeFeat2": "Bellekte işleme, hiçbir şey saklanmaz",
+      "freeFeat1": "Tüm PDF araçları",
+      "freeFeat2": "Hiçbir şey asla saklanmaz",
       "freeFeat3": "Günlük işlem sınırı",
       "freeFeat4": "Standart dosya boyutu sınırı",
       "freeFeat5": "Hesap gerekmez",
@@ -184,14 +184,14 @@
       "tools": "Araçlar",
       "privacy": "Gizlilik",
       "github": "GitHub",
-      "copy": "Dosyalar bellekte işlenir ve asla saklanmaz. Kullanımı ücretsizdir."
+      "copy": "Dosyalarınız işlenir ve asla saklanmaz. Kullanımı ücretsizdir."
     }
   },
   "privacy": {
     "title": "Gizlilik",
     "description": "PDF Conduit dosyalarınızı nasıl işler — kısacası: onları saklamaz.",
-    "memoryTitle": "Dosyalarınız bellekte kalır",
-    "memoryBody": "Her işlem sunucuda tamamen bellekte (RAM) çalışır. Yüklediğiniz dosyalar tek bir istek içinde çözülür, işlenir ve bir indirme olarak geri iletilir. Dosyalarınızı diske yazmaz ve sonrasında saklamayız. Yanıt gönderildikten sonra baytlar atılır.",
+    "memoryTitle": "Dosyalarınız asla saklanmaz",
+    "memoryBody": "Dosyalarınız asla kaydedilmez. Her işlem sunucuda bellekte (RAM) çalışır: yüklediğiniz dosya tek bir istek içinde çözülür, işlenir ve geri iletilir, ardından baytlar atılır — dosyalarınızı asla diske yazmaz ve sonrasında asla saklamayız.",
     "exceptionTitle": "Tek geçici istisna",
     "exceptionBody": "Ofis veya metin belgelerini (örneğin .docx, .xlsx, .pptx) dönüştürmek için başsız bir LibreOffice gerekir. Yalnızca o adım için dosya, dönüştürme tamamlandıktan hemen sonra silinen izole bir geçici klasöre yazılır. Düz PDF'ler ve görseller diske hiç dokunmaz.",
     "accountTitle": "Hesap yok, takip duvarı yok",
@@ -527,7 +527,7 @@
       "title": "GDPR / PII Taraması",
       "description": "Paylaşmadan önce bir PDF'deki kişisel verileri bulun.",
       "hint": "Bir PDF, görüntü veya ofis belgesi.",
-      "privacyLine": "Dosyanız bellekte taranır; asla saklanmaz veya üçüncü taraflara gönderilmez.",
+      "privacyLine": "Dosyanız gizli olarak taranır; asla saklanmaz veya kimseye gönderilmez.",
       "submit": "Kişisel verileri tara",
       "loading": "Taranıyor…",
       "riskLabel": "risk",

@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Kostenlos · In Ihrem Browser",
       "title": "Alle PDF-Werkzeuge, die Sie brauchen — in einem aufgeräumten Arbeitsbereich.",
-      "lede": "PDFs in Sekunden zusammenführen, komprimieren, umwandeln, schützen und schwärzen — vollständig im Arbeitsspeicher verarbeitet und niemals auf unseren Servern gespeichert. Kein Konto. Keine Installation.",
+      "lede": "PDFs in Sekunden zusammenführen, komprimieren, umwandeln, schützen und schwärzen — sofort verarbeitet und niemals auf unseren Servern gespeichert. Kein Konto. Keine Installation.",
       "ctaStart": "Kostenlos starten",
       "ctaExplore": "Werkzeuge entdecken",
-      "note": "Dateien verlassen nie den Arbeitsspeicher · Keine Anmeldung nötig · Funktioniert auf jedem Gerät"
+      "note": "Dateien werden nie gespeichert · Keine Anmeldung nötig · Funktioniert auf jedem Gerät"
     },
     "trust": {
       "aria": "Warum PDF Conduit",
-      "memoryTitle": "Im Arbeitsspeicher verarbeitet",
-      "memoryDesc": "Ihre Dateien werden im RAM verarbeitet und nie auf die Festplatte geschrieben oder gespeichert.",
+      "memoryTitle": "Nie gespeichert",
+      "memoryDesc": "Ihre Dateien werden verarbeitet und danach verworfen — nie auf die Festplatte geschrieben oder auf unseren Servern aufbewahrt.",
       "accountTitle": "Kein Konto nötig",
       "accountDesc": "Direkt loslegen — keine E-Mail, kein Passwort, keine Tracking-Hürde.",
       "browserTitle": "Öffnen im Browser",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Werkzeug auswählen und loslegen",
-      "subtitle": "Fünfzehn fokussierte Werkzeuge, jedes erledigt eine Aufgabe richtig gut."
+      "subtitle": "Fokussierte Werkzeuge, jedes erledigt eine Aufgabe richtig gut."
     },
     "pro": {
       "soon": "Demnächst verfügbar",
@@ -159,8 +159,8 @@
       "freeName": "Kostenlos",
       "freePrice": "$0",
       "freePer": "/ für immer",
-      "freeFeat1": "Alle fünfzehn PDF-Werkzeuge",
-      "freeFeat2": "Verarbeitung im Arbeitsspeicher, nichts wird gespeichert",
+      "freeFeat1": "Alle PDF-Werkzeuge",
+      "freeFeat2": "Es wird nie etwas gespeichert",
       "freeFeat3": "Tägliches Vorgangslimit",
       "freeFeat4": "Standard-Obergrenze für Dateigröße",
       "freeFeat5": "Kein Konto erforderlich",
@@ -184,14 +184,14 @@
       "tools": "Werkzeuge",
       "privacy": "Datenschutz",
       "github": "GitHub",
-      "copy": "Dateien werden im Arbeitsspeicher verarbeitet und nie gespeichert. Kostenlos nutzbar."
+      "copy": "Ihre Dateien werden verarbeitet und nie gespeichert. Kostenlos nutzbar."
     }
   },
   "privacy": {
     "title": "Datenschutz",
     "description": "Wie PDF Conduit mit Ihren Dateien umgeht — kurz gesagt: Es behält sie nicht.",
-    "memoryTitle": "Ihre Dateien bleiben im Arbeitsspeicher",
-    "memoryBody": "Jeder Vorgang läuft auf dem Server vollständig im Arbeitsspeicher (RAM). Ihre Uploads werden innerhalb einer einzigen Anfrage dekodiert, verarbeitet und als Download zurückgesendet. Wir schreiben Ihre Dateien nicht auf die Festplatte und speichern sie danach nicht. Sobald die Antwort gesendet ist, werden die Bytes verworfen.",
+    "memoryTitle": "Ihre Dateien werden nie gespeichert",
+    "memoryBody": "Ihre Dateien werden nie gespeichert. Jeder Vorgang läuft auf dem Server im Arbeitsspeicher (RAM): Ihr Upload wird innerhalb einer einzigen Anfrage dekodiert, verarbeitet und zurückgesendet, dann werden die Bytes verworfen — wir schreiben Ihre Dateien nie auf die Festplatte und bewahren sie danach nie auf.",
     "exceptionTitle": "Die eine vorübergehende Ausnahme",
     "exceptionBody": "Das Umwandeln von Office- oder Textdokumenten (zum Beispiel .docx, .xlsx, .pptx) erfordert ein headless LibreOffice. Nur für diesen Schritt wird die Datei in einen isolierten temporären Ordner geschrieben, der unmittelbar nach Abschluss der Umwandlung gelöscht wird. Reine PDFs und Bilder berühren die Festplatte nie.",
     "accountTitle": "Kein Konto, keine Tracking-Hürde",
@@ -527,7 +527,7 @@
       "title": "DSGVO-/PII-Scan",
       "description": "Personenbezogene Daten in einem PDF finden, bevor Sie es teilen.",
       "hint": "Ein PDF, Bild oder Office-Dokument.",
-      "privacyLine": "Ihre Datei wird im Arbeitsspeicher gescannt und niemals gespeichert oder an Dritte weitergegeben.",
+      "privacyLine": "Ihre Datei wird privat gescannt und niemals gespeichert oder an Dritte weitergegeben.",
       "submit": "Auf personenbezogene Daten prüfen",
       "loading": "Wird gescannt…",
       "riskLabel": "Risiko",

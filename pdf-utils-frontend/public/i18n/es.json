@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Gratis · En tu navegador",
       "title": "Todas las herramientas PDF que necesitas, en un espacio de trabajo limpio.",
-      "lede": "Combina, comprime, convierte, protege y censura PDF en segundos — procesados por completo en memoria y nunca almacenados en nuestros servidores. Sin cuenta. Sin instalaciones.",
+      "lede": "Combina, comprime, convierte, protege y censura PDF en segundos — procesados al instante y nunca almacenados en nuestros servidores. Sin cuenta. Sin instalaciones.",
       "ctaStart": "Empieza gratis",
       "ctaExplore": "Explora las herramientas",
-      "note": "Los archivos nunca salen de la memoria · Sin registro · Funciona en cualquier dispositivo"
+      "note": "Los archivos nunca se almacenan · Sin registro · Funciona en cualquier dispositivo"
     },
     "trust": {
       "aria": "Por qué PDF Conduit",
-      "memoryTitle": "Procesado en memoria",
-      "memoryDesc": "Tus archivos se gestionan en la RAM y nunca se escriben en disco ni se almacenan.",
+      "memoryTitle": "Nunca se almacena",
+      "memoryDesc": "Tus archivos se procesan y luego se descartan — nunca se guardan en disco ni se conservan en nuestros servidores.",
       "accountTitle": "Sin cuenta necesaria",
       "accountDesc": "Empieza directamente — sin correo, sin contraseña, sin muros de seguimiento.",
       "browserTitle": "Ábrelo en tu navegador",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Elige una herramienta y adelante",
-      "subtitle": "Quince herramientas específicas, cada una hace bien su tarea."
+      "subtitle": "Herramientas específicas, cada una hace bien su tarea."
     },
     "pro": {
       "soon": "Próximamente",
@@ -159,8 +159,8 @@
       "freeName": "Gratis",
       "freePrice": "$0",
       "freePer": "/ para siempre",
-      "freeFeat1": "Las quince herramientas PDF",
-      "freeFeat2": "Procesamiento en memoria, nada se almacena",
+      "freeFeat1": "Todas las herramientas PDF",
+      "freeFeat2": "Nunca se almacena nada",
       "freeFeat3": "Límite diario de operaciones",
       "freeFeat4": "Límite de tamaño de archivo estándar",
       "freeFeat5": "Sin cuenta necesaria",
@@ -184,14 +184,14 @@
       "tools": "Herramientas",
       "privacy": "Privacidad",
       "github": "GitHub",
-      "copy": "Los archivos se procesan en memoria y nunca se almacenan. Gratis de usar."
+      "copy": "Tus archivos se procesan y nunca se almacenan. Gratis de usar."
     }
   },
   "privacy": {
     "title": "Privacidad",
     "description": "Cómo trata PDF Conduit tus archivos — en resumen: no los conserva.",
-    "memoryTitle": "Tus archivos permanecen en memoria",
-    "memoryBody": "Cada operación se ejecuta en el servidor por completo en memoria (RAM). Tus archivos subidos se decodifican, procesan y devuelven como descarga dentro de una única solicitud. No escribimos tus archivos en disco ni los almacenamos después. Una vez enviada la respuesta, los bytes se descartan.",
+    "memoryTitle": "Tus archivos nunca se almacenan",
+    "memoryBody": "Tus archivos nunca se guardan. Cada operación se ejecuta en el servidor en memoria (RAM): tu archivo subido se decodifica, se procesa y se devuelve dentro de una única solicitud, y luego los bytes se descartan — nunca escribimos tus archivos en disco ni los conservamos después.",
     "exceptionTitle": "La única excepción temporal",
     "exceptionBody": "Convertir documentos de oficina o de texto (por ejemplo .docx, .xlsx, .pptx) requiere un LibreOffice sin interfaz. Solo para ese paso, el archivo se escribe en una carpeta temporal aislada que se elimina inmediatamente después de completarse la conversión. Los PDF y las imágenes normales nunca tocan el disco.",
     "accountTitle": "Sin cuenta, sin muro de seguimiento",
@@ -527,7 +527,7 @@
       "title": "Análisis RGPD / PII",
       "description": "Encuentra datos personales en un PDF antes de compartirlo.",
       "hint": "Un PDF, imagen o documento de oficina.",
-      "privacyLine": "Tu archivo se analiza en memoria y nunca se almacena ni se envía a terceros.",
+      "privacyLine": "Tu archivo se analiza de forma privada y nunca se almacena ni se envía a nadie.",
       "submit": "Buscar datos personales",
       "loading": "Analizando…",
       "riskLabel": "riesgo",

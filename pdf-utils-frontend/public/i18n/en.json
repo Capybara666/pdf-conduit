@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Free · In your browser",
       "title": "Every PDF tool you need, in one clean workspace.",
-      "lede": "Merge, compress, convert, protect and redact PDFs in seconds — processed entirely in memory and never stored on our servers. No account. No installs.",
+      "lede": "Merge, compress, convert, protect and redact PDFs in seconds — processed instantly and never stored on our servers. No account. No installs.",
       "ctaStart": "Start for free",
       "ctaExplore": "Explore the tools",
-      "note": "Files never leave memory · No sign-up required · Works on any device"
+      "note": "Files are never stored · No sign-up required · Works on any device"
     },
     "trust": {
       "aria": "Why PDF Conduit",
-      "memoryTitle": "Processed in memory",
-      "memoryDesc": "Your files are handled in RAM and never written to disk or stored.",
+      "memoryTitle": "Never stored",
+      "memoryDesc": "Your files are processed and then discarded — never saved to disk or kept on our servers.",
       "accountTitle": "No account needed",
       "accountDesc": "Jump straight in — no email, no password, no tracking wall.",
       "browserTitle": "Open in your browser",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Pick a tool and go",
-      "subtitle": "Fifteen focused tools, each doing one job well."
+      "subtitle": "Focused tools, each doing one job well."
     },
     "pro": {
       "soon": "Coming soon",
@@ -159,8 +159,8 @@
       "freeName": "Free",
       "freePrice": "$0",
       "freePer": "/ forever",
-      "freeFeat1": "All fifteen PDF tools",
-      "freeFeat2": "In-memory processing, nothing stored",
+      "freeFeat1": "Every PDF tool",
+      "freeFeat2": "Nothing is ever stored",
       "freeFeat3": "Daily operation limit",
       "freeFeat4": "Standard file-size cap",
       "freeFeat5": "No account required",
@@ -184,14 +184,14 @@
       "tools": "Tools",
       "privacy": "Privacy",
       "github": "GitHub",
-      "copy": "Files are processed in memory and never stored. Free to use."
+      "copy": "Your files are processed and never stored. Free to use."
     }
   },
   "privacy": {
     "title": "Privacy",
     "description": "How PDF Conduit handles your files — in short: it doesn't keep them.",
-    "memoryTitle": "Your files stay in memory",
-    "memoryBody": "Every operation runs on the server entirely in memory (RAM). Your uploads are decoded, processed and streamed back as a download within a single request. We do not write your files to disk and we do not store them afterwards. Once the response is sent, the bytes are discarded.",
+    "memoryTitle": "Your files are never stored",
+    "memoryBody": "Your files are never saved. Every operation runs on the server in memory (RAM): your upload is decoded, processed and streamed back within a single request, then the bytes are discarded — we never write your files to disk and never keep them afterwards.",
     "exceptionTitle": "The one temporary exception",
     "exceptionBody": "Converting office or text documents (for example .docx, .xlsx, .pptx) requires a headless LibreOffice. For that step only, the file is written to an isolated temporary folder that is deleted immediately after the conversion completes. Plain PDFs and images never touch the disk.",
     "accountTitle": "No account, no tracking wall",
@@ -527,7 +527,7 @@
       "title": "GDPR / PII Scan",
       "description": "Find personal data in a PDF before you share it.",
       "hint": "One PDF, image or office document.",
-      "privacyLine": "Your file is scanned in memory and never stored or sent to any third party.",
+      "privacyLine": "Your file is scanned privately and never stored or sent to anyone.",
       "submit": "Scan for personal data",
       "loading": "Scanning…",
       "riskLabel": "risk",

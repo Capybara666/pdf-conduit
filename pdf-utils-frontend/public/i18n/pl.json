@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Za darmo · W Twojej przeglądarce",
       "title": "Wszystkie narzędzia PDF, których potrzebujesz, w jednym przejrzystym miejscu.",
-      "lede": "Scalaj, kompresuj, konwertuj, zabezpieczaj i zamazuj pliki PDF w kilka sekund — przetwarzane w całości w pamięci i nigdy nieprzechowywane na naszych serwerach. Bez konta. Bez instalacji.",
+      "lede": "Scalaj, kompresuj, konwertuj, zabezpieczaj i zamazuj pliki PDF w kilka sekund — przetwarzane natychmiast i nigdy nieprzechowywane na naszych serwerach. Bez konta. Bez instalacji.",
       "ctaStart": "Zacznij za darmo",
       "ctaExplore": "Poznaj narzędzia",
-      "note": "Pliki nigdy nie opuszczają pamięci · Bez rejestracji · Działa na każdym urządzeniu"
+      "note": "Pliki nigdy nie są przechowywane · Bez rejestracji · Działa na każdym urządzeniu"
     },
     "trust": {
       "aria": "Dlaczego PDF Conduit",
-      "memoryTitle": "Przetwarzane w pamięci",
-      "memoryDesc": "Twoje pliki są obsługiwane w pamięci RAM i nigdy nie są zapisywane na dysku ani przechowywane.",
+      "memoryTitle": "Nigdy nieprzechowywane",
+      "memoryDesc": "Twoje pliki są przetwarzane, a następnie usuwane — nigdy nie są zapisywane na dysku ani przechowywane na naszych serwerach.",
       "accountTitle": "Konto niepotrzebne",
       "accountDesc": "Zaczynasz od razu — bez e-maila, bez hasła, bez ściany rejestracji.",
       "browserTitle": "Otwierasz w przeglądarce",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Wybierz narzędzie i działaj",
-      "subtitle": "Piętnaście wyspecjalizowanych narzędzi, każde robi jedną rzecz dobrze."
+      "subtitle": "Wyspecjalizowane narzędzia, każde robi jedną rzecz dobrze."
     },
     "pro": {
       "soon": "Wkrótce",
@@ -159,8 +159,8 @@
       "freeName": "Darmowy",
       "freePrice": "$0",
       "freePer": "/ na zawsze",
-      "freeFeat1": "Wszystkie piętnaście narzędzi PDF",
-      "freeFeat2": "Przetwarzanie w pamięci, nic nie jest przechowywane",
+      "freeFeat1": "Wszystkie narzędzia PDF",
+      "freeFeat2": "Nic nie jest przechowywane",
       "freeFeat3": "Dzienny limit operacji",
       "freeFeat4": "Standardowy limit rozmiaru pliku",
       "freeFeat5": "Konto niewymagane",
@@ -184,14 +184,14 @@
       "tools": "Narzędzia",
       "privacy": "Prywatność",
       "github": "GitHub",
-      "copy": "Pliki są przetwarzane w pamięci i nigdy nieprzechowywane. Darmowe w użyciu."
+      "copy": "Twoje pliki są przetwarzane i nigdy nieprzechowywane. Darmowe w użyciu."
     }
   },
   "privacy": {
     "title": "Prywatność",
     "description": "Jak PDF Conduit obchodzi się z Twoimi plikami — w skrócie: nie zatrzymuje ich.",
-    "memoryTitle": "Twoje pliki zostają w pamięci",
-    "memoryBody": "Każda operacja przebiega na serwerze w całości w pamięci (RAM). Twoje pliki są dekodowane, przetwarzane i przesyłane z powrotem jako plik do pobrania w ramach jednego żądania. Nie zapisujemy Twoich plików na dysku i nie przechowujemy ich później. Po wysłaniu odpowiedzi bajty są odrzucane.",
+    "memoryTitle": "Twoje pliki nigdy nie są przechowywane",
+    "memoryBody": "Twoje pliki nigdy nie są zapisywane. Każda operacja przebiega na serwerze w pamięci (RAM): Twój plik jest dekodowany, przetwarzany i odsyłany w ramach jednego żądania, a następnie bajty są odrzucane — nigdy nie zapisujemy Twoich plików na dysku i nigdy nie przechowujemy ich później.",
     "exceptionTitle": "Jeden tymczasowy wyjątek",
     "exceptionBody": "Konwersja dokumentów biurowych lub tekstowych (na przykład .docx, .xlsx, .pptx) wymaga bezokienkowego LibreOffice. Tylko na potrzeby tego kroku plik jest zapisywany w odizolowanym folderze tymczasowym, który jest usuwany natychmiast po zakończeniu konwersji. Zwykłe pliki PDF i obrazy nigdy nie dotykają dysku.",
     "accountTitle": "Bez konta, bez ściany śledzenia",
@@ -527,7 +527,7 @@
       "title": "Skan RODO / PII",
       "description": "Znajdź dane osobowe w pliku PDF, zanim go udostępnisz.",
       "hint": "Jeden plik PDF, obraz lub dokument biurowy.",
-      "privacyLine": "Twój plik jest skanowany w pamięci i nigdy nie jest przechowywany ani przesyłany osobom trzecim.",
+      "privacyLine": "Twój plik jest skanowany prywatnie i nigdy nie jest przechowywany ani przesyłany komukolwiek.",
       "submit": "Skanuj w poszukiwaniu danych osobowych",
       "loading": "Skanowanie…",
       "riskLabel": "ryzyko",

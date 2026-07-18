@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Gratis · Nel tuo browser",
       "title": "Ogni strumento PDF di cui hai bisogno, in un unico spazio di lavoro ordinato.",
-      "lede": "Unisci, comprimi, converti, proteggi e oscura i PDF in pochi secondi — elaborati interamente in memoria e mai salvati sui nostri server. Nessun account. Nessuna installazione.",
+      "lede": "Unisci, comprimi, converti, proteggi e oscura i PDF in pochi secondi — elaborati all'istante e mai salvati sui nostri server. Nessun account. Nessuna installazione.",
       "ctaStart": "Inizia gratis",
       "ctaExplore": "Esplora gli strumenti",
-      "note": "I file non lasciano mai la memoria · Nessuna registrazione richiesta · Funziona su qualsiasi dispositivo"
+      "note": "I file non vengono mai salvati · Nessuna registrazione richiesta · Funziona su qualsiasi dispositivo"
     },
     "trust": {
       "aria": "Perché PDF Conduit",
-      "memoryTitle": "Elaborato in memoria",
-      "memoryDesc": "I tuoi file vengono gestiti nella RAM e mai scritti su disco o salvati.",
+      "memoryTitle": "Mai salvato",
+      "memoryDesc": "I tuoi file vengono elaborati e poi eliminati — mai scritti su disco né conservati sui nostri server.",
       "accountTitle": "Nessun account necessario",
       "accountDesc": "Vai dritto al punto — niente email, niente password, nessun muro di tracciamento.",
       "browserTitle": "Aprilo nel tuo browser",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Scegli uno strumento e via",
-      "subtitle": "Quindici strumenti mirati, ciascuno che svolge bene un solo compito."
+      "subtitle": "Strumenti mirati, ciascuno che svolge bene un solo compito."
     },
     "pro": {
       "soon": "Presto disponibile",
@@ -159,8 +159,8 @@
       "freeName": "Gratis",
       "freePrice": "$0",
       "freePer": "/ per sempre",
-      "freeFeat1": "Tutti i quindici strumenti PDF",
-      "freeFeat2": "Elaborazione in memoria, niente viene salvato",
+      "freeFeat1": "Tutti gli strumenti PDF",
+      "freeFeat2": "Non viene mai salvato nulla",
       "freeFeat3": "Limite giornaliero di operazioni",
       "freeFeat4": "Limite standard sulla dimensione dei file",
       "freeFeat5": "Nessun account richiesto",
@@ -184,14 +184,14 @@
       "tools": "Strumenti",
       "privacy": "Privacy",
       "github": "GitHub",
-      "copy": "I file vengono elaborati in memoria e mai salvati. Uso gratuito."
+      "copy": "I tuoi file vengono elaborati e mai salvati. Uso gratuito."
     }
   },
   "privacy": {
     "title": "Privacy",
     "description": "Come PDF Conduit gestisce i tuoi file — in breve: non li conserva.",
-    "memoryTitle": "I tuoi file restano in memoria",
-    "memoryBody": "Ogni operazione viene eseguita sul server interamente in memoria (RAM). I tuoi caricamenti vengono decodificati, elaborati e restituiti come download all'interno di una singola richiesta. Non scriviamo i tuoi file su disco e non li conserviamo in seguito. Una volta inviata la risposta, i byte vengono eliminati.",
+    "memoryTitle": "I tuoi file non vengono mai salvati",
+    "memoryBody": "I tuoi file non vengono mai salvati. Ogni operazione viene eseguita sul server in memoria (RAM): il file caricato viene decodificato, elaborato e restituito all'interno di una singola richiesta, poi i byte vengono eliminati — non scriviamo mai i tuoi file su disco né li conserviamo in seguito.",
     "exceptionTitle": "L'unica eccezione temporanea",
     "exceptionBody": "La conversione di documenti office o di testo (ad esempio .docx, .xlsx, .pptx) richiede un LibreOffice headless. Solo per quel passaggio, il file viene scritto in una cartella temporanea isolata che viene eliminata immediatamente al termine della conversione. I PDF e le immagini semplici non toccano mai il disco.",
     "accountTitle": "Nessun account, nessun muro di tracciamento",
@@ -527,7 +527,7 @@
       "title": "Scansione GDPR / PII",
       "description": "Trova i dati personali in un PDF prima di condividerlo.",
       "hint": "Un PDF, un’immagine o un documento office.",
-      "privacyLine": "Il file viene analizzato in memoria e non viene mai memorizzato né inviato a terzi.",
+      "privacyLine": "Il file viene analizzato in privato e non viene mai memorizzato né inviato a nessuno.",
       "submit": "Cerca dati personali",
       "loading": "Scansione…",
       "riskLabel": "rischio",

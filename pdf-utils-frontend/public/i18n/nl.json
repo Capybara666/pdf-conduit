@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Gratis · In je browser",
       "title": "Elke PDF-tool die je nodig hebt, in één overzichtelijke werkruimte.",
-      "lede": "Voeg samen, comprimeer, converteer, beveilig en redigeer PDF's in seconden — volledig in het geheugen verwerkt en nooit opgeslagen op onze servers. Geen account. Geen installaties.",
+      "lede": "Voeg samen, comprimeer, converteer, beveilig en redigeer PDF's in seconden — direct verwerkt en nooit opgeslagen op onze servers. Geen account. Geen installaties.",
       "ctaStart": "Gratis beginnen",
       "ctaExplore": "Verken de tools",
-      "note": "Bestanden verlaten het geheugen nooit · Geen registratie nodig · Werkt op elk apparaat"
+      "note": "Bestanden worden nooit opgeslagen · Geen registratie nodig · Werkt op elk apparaat"
     },
     "trust": {
       "aria": "Waarom PDF Conduit",
-      "memoryTitle": "In het geheugen verwerkt",
-      "memoryDesc": "Je bestanden worden in het RAM verwerkt en nooit naar schijf geschreven of opgeslagen.",
+      "memoryTitle": "Nooit opgeslagen",
+      "memoryDesc": "Je bestanden worden verwerkt en daarna weggegooid — nooit naar schijf geschreven of op onze servers bewaard.",
       "accountTitle": "Geen account nodig",
       "accountDesc": "Meteen aan de slag — geen e-mail, geen wachtwoord, geen trackingmuur.",
       "browserTitle": "Open in je browser",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Kies een tool en ga aan de slag",
-      "subtitle": "Vijftien gerichte tools, elk perfect voor één taak."
+      "subtitle": "Gerichte tools, elk perfect voor één taak."
     },
     "pro": {
       "soon": "Binnenkort beschikbaar",
@@ -159,8 +159,8 @@
       "freeName": "Gratis",
       "freePrice": "$0",
       "freePer": "/ voor altijd",
-      "freeFeat1": "Alle vijftien PDF-tools",
-      "freeFeat2": "Verwerking in het geheugen, niets opgeslagen",
+      "freeFeat1": "Alle PDF-tools",
+      "freeFeat2": "Er wordt nooit iets opgeslagen",
       "freeFeat3": "Dagelijkse bewerkingslimiet",
       "freeFeat4": "Standaard limiet voor bestandsgrootte",
       "freeFeat5": "Geen account vereist",
@@ -184,14 +184,14 @@
       "tools": "Tools",
       "privacy": "Privacy",
       "github": "GitHub",
-      "copy": "Bestanden worden in het geheugen verwerkt en nooit opgeslagen. Gratis te gebruiken."
+      "copy": "Je bestanden worden verwerkt en nooit opgeslagen. Gratis te gebruiken."
     }
   },
   "privacy": {
     "title": "Privacy",
     "description": "Hoe PDF Conduit met je bestanden omgaat — kort gezegd: het bewaart ze niet.",
-    "memoryTitle": "Je bestanden blijven in het geheugen",
-    "memoryBody": "Elke bewerking draait volledig in het geheugen (RAM) op de server. Je uploads worden gedecodeerd, verwerkt en binnen één verzoek als download teruggestuurd. We schrijven je bestanden niet naar schijf en bewaren ze daarna niet. Zodra de reactie is verzonden, worden de bytes weggegooid.",
+    "memoryTitle": "Je bestanden worden nooit opgeslagen",
+    "memoryBody": "Je bestanden worden nooit bewaard. Elke bewerking draait op de server in het geheugen (RAM): je upload wordt binnen één verzoek gedecodeerd, verwerkt en teruggestuurd, waarna de bytes worden weggegooid — we schrijven je bestanden nooit naar schijf en bewaren ze daarna nooit.",
     "exceptionTitle": "De enige tijdelijke uitzondering",
     "exceptionBody": "Het converteren van office- of tekstdocumenten (bijvoorbeeld .docx, .xlsx, .pptx) vereist een headless LibreOffice. Alleen voor die stap wordt het bestand naar een geïsoleerde tijdelijke map geschreven die onmiddellijk na de conversie wordt verwijderd. Gewone PDF's en afbeeldingen raken de schijf nooit aan.",
     "accountTitle": "Geen account, geen trackingmuur",
@@ -527,7 +527,7 @@
       "title": "AVG-/PII-scan",
       "description": "Vind persoonsgegevens in een PDF voordat je hem deelt.",
       "hint": "Eén PDF, afbeelding of office-document.",
-      "privacyLine": "Je bestand wordt in het geheugen gescand en nooit opgeslagen of naar derden verzonden.",
+      "privacyLine": "Je bestand wordt privé gescand en nooit opgeslagen of naar iemand verzonden.",
       "submit": "Scannen op persoonsgegevens",
       "loading": "Scannen…",
       "riskLabel": "risico",

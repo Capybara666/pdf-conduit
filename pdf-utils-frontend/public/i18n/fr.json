@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Gratuit · Dans votre navigateur",
       "title": "Tous les outils PDF dont vous avez besoin, dans un espace de travail épuré.",
-      "lede": "Fusionnez, compressez, convertissez, protégez et caviardez vos PDF en quelques secondes — traités entièrement en mémoire et jamais stockés sur nos serveurs. Sans compte. Sans installation.",
+      "lede": "Fusionnez, compressez, convertissez, protégez et caviardez vos PDF en quelques secondes — traités instantanément et jamais stockés sur nos serveurs. Sans compte. Sans installation.",
       "ctaStart": "Commencer gratuitement",
       "ctaExplore": "Explorer les outils",
-      "note": "Vos fichiers ne quittent jamais la mémoire · Aucune inscription requise · Fonctionne sur tous les appareils"
+      "note": "Vos fichiers ne sont jamais stockés · Aucune inscription requise · Fonctionne sur tous les appareils"
     },
     "trust": {
       "aria": "Pourquoi PDF Conduit",
-      "memoryTitle": "Traité en mémoire",
-      "memoryDesc": "Vos fichiers sont traités en RAM et ne sont jamais écrits sur disque ni stockés.",
+      "memoryTitle": "Jamais stocké",
+      "memoryDesc": "Vos fichiers sont traités puis supprimés — jamais écrits sur disque ni conservés sur nos serveurs.",
       "accountTitle": "Aucun compte requis",
       "accountDesc": "Lancez-vous directement — sans e-mail, sans mot de passe, sans mur de suivi.",
       "browserTitle": "S'ouvre dans votre navigateur",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Choisissez un outil et lancez-vous",
-      "subtitle": "Quinze outils ciblés, chacun faisant bien une seule tâche."
+      "subtitle": "Des outils ciblés, chacun faisant bien une seule tâche."
     },
     "pro": {
       "soon": "Bientôt disponible",
@@ -159,8 +159,8 @@
       "freeName": "Gratuit",
       "freePrice": "$0",
       "freePer": "/ pour toujours",
-      "freeFeat1": "Les quinze outils PDF",
-      "freeFeat2": "Traitement en mémoire, rien n'est stocké",
+      "freeFeat1": "Tous les outils PDF",
+      "freeFeat2": "Rien n'est jamais stocké",
       "freeFeat3": "Limite d'opérations quotidienne",
       "freeFeat4": "Plafond de taille de fichier standard",
       "freeFeat5": "Aucun compte requis",
@@ -184,14 +184,14 @@
       "tools": "Outils",
       "privacy": "Confidentialité",
       "github": "GitHub",
-      "copy": "Les fichiers sont traités en mémoire et ne sont jamais stockés. Utilisation gratuite."
+      "copy": "Vos fichiers sont traités et jamais stockés. Utilisation gratuite."
     }
   },
   "privacy": {
     "title": "Confidentialité",
     "description": "Comment PDF Conduit traite vos fichiers — en bref : il ne les conserve pas.",
-    "memoryTitle": "Vos fichiers restent en mémoire",
-    "memoryBody": "Chaque opération s'exécute sur le serveur entièrement en mémoire (RAM). Vos fichiers importés sont décodés, traités et renvoyés en téléchargement au sein d'une même requête. Nous n'écrivons pas vos fichiers sur disque et ne les stockons pas par la suite. Une fois la réponse envoyée, les données sont supprimées.",
+    "memoryTitle": "Vos fichiers ne sont jamais stockés",
+    "memoryBody": "Vos fichiers ne sont jamais enregistrés. Chaque opération s'exécute sur le serveur en mémoire (RAM) : votre fichier importé est décodé, traité et renvoyé au sein d'une même requête, puis les données sont supprimées — nous n'écrivons jamais vos fichiers sur disque et ne les conservons jamais ensuite.",
     "exceptionTitle": "La seule exception temporaire",
     "exceptionBody": "La conversion de documents bureautiques ou texte (par exemple .docx, .xlsx, .pptx) nécessite un LibreOffice en mode sans interface. Pour cette étape uniquement, le fichier est écrit dans un dossier temporaire isolé qui est supprimé immédiatement après la fin de la conversion. Les simples PDF et images ne touchent jamais le disque.",
     "accountTitle": "Aucun compte, aucun mur de suivi",
@@ -527,7 +527,7 @@
       "title": "Analyse RGPD / PII",
       "description": "Repérez les données personnelles d’un PDF avant de le partager.",
       "hint": "Un PDF, une image ou un document bureautique.",
-      "privacyLine": "Votre fichier est analysé en mémoire et n’est jamais stocké ni transmis à un tiers.",
+      "privacyLine": "Votre fichier est analysé en privé et n'est jamais stocké ni transmis à qui que ce soit.",
       "submit": "Rechercher des données personnelles",
       "loading": "Analyse en cours…",
       "riskLabel": "risque",

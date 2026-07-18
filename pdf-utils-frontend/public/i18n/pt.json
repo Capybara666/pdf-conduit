@@ -134,15 +134,15 @@
     "hero": {
       "eyebrow": "Gratuito · No seu navegador",
       "title": "Todas as ferramentas de PDF de que precisa, num só espaço de trabalho.",
-      "lede": "Junte, comprima, converta, proteja e oculte conteúdo em PDF em segundos — processado inteiramente na memória e nunca guardado nos nossos servidores. Sem conta. Sem instalações.",
+      "lede": "Junte, comprima, converta, proteja e oculte conteúdo em PDF em segundos — processado instantaneamente e nunca guardado nos nossos servidores. Sem conta. Sem instalações.",
       "ctaStart": "Começar gratuitamente",
       "ctaExplore": "Explorar as ferramentas",
-      "note": "Os ficheiros nunca saem da memória · Não é necessário registo · Funciona em qualquer dispositivo"
+      "note": "Os ficheiros nunca são guardados · Não é necessário registo · Funciona em qualquer dispositivo"
     },
     "trust": {
       "aria": "Porquê o PDF Conduit",
-      "memoryTitle": "Processado na memória",
-      "memoryDesc": "Os seus ficheiros são processados na RAM e nunca gravados em disco ou guardados.",
+      "memoryTitle": "Nunca guardado",
+      "memoryDesc": "Os seus ficheiros são processados e depois descartados — nunca gravados em disco nem mantidos nos nossos servidores.",
       "accountTitle": "Não é necessária conta",
       "accountDesc": "Comece já — sem e-mail, sem palavra-passe, sem barreiras de rastreio.",
       "browserTitle": "Abra no seu navegador",
@@ -150,7 +150,7 @@
     },
     "tools": {
       "title": "Escolha uma ferramenta e avance",
-      "subtitle": "Quinze ferramentas focadas, cada uma a fazer bem uma tarefa."
+      "subtitle": "Ferramentas focadas, cada uma a fazer bem uma tarefa."
     },
     "pro": {
       "soon": "Brevemente",
@@ -159,8 +159,8 @@
       "freeName": "Gratuito",
       "freePrice": "$0",
       "freePer": "/ para sempre",
-      "freeFeat1": "Todas as quinze ferramentas de PDF",
-      "freeFeat2": "Processamento na memória, nada é guardado",
+      "freeFeat1": "Todas as ferramentas de PDF",
+      "freeFeat2": "Nunca é guardado nada",
       "freeFeat3": "Limite diário de operações",
       "freeFeat4": "Limite padrão de tamanho de ficheiro",
       "freeFeat5": "Não é necessária conta",
@@ -184,14 +184,14 @@
       "tools": "Ferramentas",
       "privacy": "Privacidade",
       "github": "GitHub",
-      "copy": "Os ficheiros são processados na memória e nunca guardados. Utilização gratuita."
+      "copy": "Os seus ficheiros são processados e nunca guardados. Utilização gratuita."
     }
   },
   "privacy": {
     "title": "Privacidade",
     "description": "Como o PDF Conduit trata os seus ficheiros — em resumo: não os guarda.",
-    "memoryTitle": "Os seus ficheiros ficam na memória",
-    "memoryBody": "Cada operação é executada no servidor inteiramente na memória (RAM). Os seus carregamentos são descodificados, processados e devolvidos como descarregamento dentro de um único pedido. Não gravamos os seus ficheiros em disco nem os guardamos depois. Assim que a resposta é enviada, os bytes são descartados.",
+    "memoryTitle": "Os seus ficheiros nunca são guardados",
+    "memoryBody": "Os seus ficheiros nunca são guardados. Cada operação é executada no servidor em memória (RAM): o seu carregamento é descodificado, processado e devolvido dentro de um único pedido, e depois os bytes são descartados — nunca gravamos os seus ficheiros em disco nem os mantemos depois.",
     "exceptionTitle": "A única exceção temporária",
     "exceptionBody": "Converter documentos office ou de texto (por exemplo .docx, .xlsx, .pptx) requer um LibreOffice em modo headless. Apenas para esse passo, o ficheiro é gravado numa pasta temporária isolada que é eliminada imediatamente após a conclusão da conversão. Os PDF simples e as imagens nunca tocam no disco.",
     "accountTitle": "Sem conta, sem barreiras de rastreio",
@@ -527,7 +527,7 @@
       "title": "Análise RGPD / PII",
       "description": "Encontre dados pessoais num PDF antes de o partilhar.",
       "hint": "Um PDF, imagem ou documento office.",
-      "privacyLine": "O seu ficheiro é analisado em memória e nunca é armazenado nem enviado a terceiros.",
+      "privacyLine": "O seu ficheiro é analisado de forma privada e nunca é armazenado nem enviado a ninguém.",
       "submit": "Procurar dados pessoais",
       "loading": "A analisar…",
       "riskLabel": "risco",
