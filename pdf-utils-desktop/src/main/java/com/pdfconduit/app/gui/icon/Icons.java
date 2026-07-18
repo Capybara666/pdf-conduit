@@ -91,6 +91,11 @@ public final class Icons {
     private static final String REDACT =
         "M7 3 H15 L19 7 V21 H7 Z M15 3 V7 H19 "
         + "M9.5 11 H16 M9 13.2 H16.5 V15.6 H9 Z M9.5 17.8 H13.5";
+    // a document with text lines under a magnifier (OCR / recognise text)
+    private static final String OCR =
+        "M7 3 H15 L19 7 V21 H7 Z M15 3 V7 H19 "
+        + "M9.5 10.5 H16 M9.5 13 H12.5 "
+        + "M11 16 a2.5 2.5 0 1 0 5 0 a2.5 2.5 0 1 0 -5 0 M15.3 17.8 L17.6 20";
     // sliders: three horizontal rails each with a knob (settings)
     private static final String SETTINGS =
         "M4 7 H20 M4 12 H20 M4 17 H20 "
@@ -138,6 +143,7 @@ public final class Icons {
             case WATERMARK     -> WATERMARK;
             case CROP          -> CROP;
             case PAGE_MARKS    -> PAGE_MARKS;
+            case OCR           -> OCR;
             case TO_IMAGES     -> TO_IMAGES;
             case TO_TEXT       -> TO_TEXT;
         }, size);

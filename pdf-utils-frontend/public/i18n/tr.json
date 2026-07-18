@@ -91,6 +91,10 @@
       "label": "Metne",
       "description": "Bir PDF'in metin içeriğini ayıklayın."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Taranmış bir PDF’i OCR ile aranabilir hale getirin."
+    },
     "protect": {
       "label": "Koru",
       "description": "Bir PDF'e parola şifrelemesi ekleyin."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "örn. 1-3 (boş = tümü)",
       "submit": "Metni ayıkla",
       "loading": "Metin ayıklanıyor…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Taranmış bir PDF’i aranabilir yapın — görünmez bir metin katmanı ekler.",
+      "hint": "Taranmış bir PDF veya görüntü — metin seçilebilir hale gelir.",
+      "languages": "Diller",
+      "languagesPlaceholder": "örn. eng veya eng+deu (boş = eng)",
+      "languagesHelp": "Tesseract dil kodları; dil paketi sunucuda kurulu olmalıdır.",
+      "submit": "Aranabilir yap",
+      "loading": "Metin tanınıyor…"
     },
     "protect": {
       "title": "Koru",

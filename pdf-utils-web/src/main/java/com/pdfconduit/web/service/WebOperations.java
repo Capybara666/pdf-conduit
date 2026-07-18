@@ -23,6 +23,7 @@ import com.pdfconduit.core.operations.PdfCropper;
 import com.pdfconduit.core.operations.PdfMerger;
 import com.pdfconduit.core.operations.PdfMetadataEditor;
 import com.pdfconduit.core.operations.PdfPageMarker;
+import com.pdfconduit.core.operations.PdfOcr;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.core.operations.PdfRotator;
@@ -41,7 +42,9 @@ import com.pdfconduit.core.util.PageRangeParser;
 import com.pdfconduit.core.util.PdfLoader;
 import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.error.OcrDisabledException;
 import com.pdfconduit.web.error.OfficeDisabledException;
+import com.pdfconduit.web.guard.OcrGuard;
 import com.pdfconduit.web.guard.OfficeGuard;
 import com.pdfconduit.web.plan.PlanLimits;
 import com.pdfconduit.web.plan.PlanLimitsResolver;
@@ -70,13 +73,18 @@ import java.util.Set;
 public class WebOperations {
 
     private final OfficeGuard officeGuard;
+    private final OcrGuard ocrGuard;
     private final int maxPages;
     private final int maxDpi;
     private final long maxOutputPixels;
     private final boolean officeEnabled;
+    private final boolean ocrEnabled;
+    private final String ocrLanguages;
 
-    public WebOperations(OfficeGuard officeGuard, PlanLimitsResolver planLimits, WebProperties props) {
+    public WebOperations(OfficeGuard officeGuard, OcrGuard ocrGuard,
+                         PlanLimitsResolver planLimits, WebProperties props) {
         this.officeGuard = officeGuard;
+        this.ocrGuard = ocrGuard;
         // Page-count and render ceilings are read from the resolved plan (today the constant FREE
         // plan built from WebProperties, so identical values); office availability stays a
         // system-level WebProperties toggle. The service guards by value with no request in scope,
@@ -86,6 +94,8 @@ public class WebOperations {
         this.maxDpi = plan.maxDpi();
         this.maxOutputPixels = plan.maxOutputPixels();
         this.officeEnabled = props.officeEnabled();
+        this.ocrEnabled = props.ocrEnabled();
+        this.ocrLanguages = props.ocr().languages();
     }
 
     // ------------------------------------------------------------------ MERGE
@@ -363,6 +373,36 @@ public class WebOperations {
                 return PdfSigner.executeBytes(pdf, signatureImages, placements, fieldValues, flatten);
             });
         return new NamedBytes(MemoryOperations.outputName(OperationType.SIGN, in.filename()), out);
+    }
+
+    // --------------------------------------------------------------------- OCR
+
+    /**
+     * OCR a single input into a <b>searchable</b> PDF (invisible text layer over the original page)
+     * via the external {@code tesseract} binary. Rejected up front (415, {@code ocr_disabled}) when
+     * OCR is disabled by config or Tesseract is not installed. Pages are rendered at
+     * {@link PdfOcr#DEFAULT_DPI} (capped to the render ceiling) for recognition; the heavy
+     * page-render + external-process work runs under {@link OcrGuard}'s concurrency + timeout gate.
+     */
+    public NamedBytes ocr(NamedBytes in, String languages) throws PdfOperationException {
+        if (!ocrEnabled || !PdfOcr.available()) {
+            throw new OcrDisabledException();
+        }
+        byte[] pdf = routeToPdf(in);
+        int ocrDpi = maxDpi > 0 ? Math.min(PdfOcr.DEFAULT_DPI, maxDpi) : PdfOcr.DEFAULT_DPI;
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            guardRender(lp, ocrDpi);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
+        String lang = (languages == null || languages.isBlank()) ? ocrLanguages : languages.strip();
+        try {
+            byte[] out = ocrGuard.run(() -> PdfOcr.executeBytes(pdf, lang, ocrDpi));
+            return new NamedBytes(MemoryOperations.outputName(OperationType.OCR, in.filename()), out);
+        } catch (IOException e) {
+            throw new PdfOperationException("OCR failed: " + e.getMessage(), e);
+        }
     }
 
     // --------------------------------------------------------------- TO-IMAGES

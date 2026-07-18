@@ -188,6 +188,8 @@ class NodeView extends HBox {
             }
             case TO_IMAGES -> node.imageFormat + "  ·  " + node.imageDpi + " DPI";
             case TO_TEXT -> "." + node.textFormat.extension();
+            case OCR -> (node.ocrLanguages == null || node.ocrLanguages.isBlank()
+                ? "eng" : node.ocrLanguages) + "  ·  " + node.ocrDpi + " DPI";
         });
     }
 

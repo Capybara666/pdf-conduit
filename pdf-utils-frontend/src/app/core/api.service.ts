@@ -167,6 +167,9 @@ export class ApiService {
   toText(formData: FormData): Observable<RunResult> {
     return this.runOperation('to-text', formData);
   }
+  ocr(formData: FormData): Observable<RunResult> {
+    return this.runOperation('ocr', formData);
+  }
 
   // ---- Pipeline ---------------------------------------------------------
 

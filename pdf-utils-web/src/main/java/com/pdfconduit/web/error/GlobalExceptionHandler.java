@@ -54,6 +54,11 @@ public class GlobalExceptionHandler {
         return body(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "office_disabled", e.getMessage());
     }
 
+    @ExceptionHandler(OcrDisabledException.class)
+    public ResponseEntity<ApiError> onOcrDisabled(OcrDisabledException e) {
+        return body(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "ocr_disabled", e.getMessage());
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiError> onTooLarge(MaxUploadSizeExceededException e) {
         return body(HttpStatus.PAYLOAD_TOO_LARGE, "file_too_large",

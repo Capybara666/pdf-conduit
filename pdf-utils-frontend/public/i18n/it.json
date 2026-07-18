@@ -91,6 +91,10 @@
       "label": "In testo",
       "description": "Estrai il contenuto testuale di un PDF."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Rendi ricercabile un PDF scansionato con l’OCR."
+    },
     "protect": {
       "label": "Proteggi",
       "description": "Aggiungi la crittografia con password a un PDF."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "es. 1-3 (vuoto = tutte)",
       "submit": "Estrai testo",
       "loading": "Estrazione del testo…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Rendi ricercabile un PDF scansionato: aggiunge un livello di testo invisibile.",
+      "hint": "Un PDF scansionato o un’immagine: il testo diventa selezionabile.",
+      "languages": "Lingue",
+      "languagesPlaceholder": "es. eng o eng+deu (vuoto = eng)",
+      "languagesHelp": "Codici lingua di Tesseract; il pacchetto deve essere installato sul server.",
+      "submit": "Rendi ricercabile",
+      "loading": "Riconoscimento del testo…"
     },
     "protect": {
       "title": "Proteggi",

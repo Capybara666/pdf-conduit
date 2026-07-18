@@ -91,6 +91,10 @@
       "label": "Do tekstu",
       "description": "Wyodrębnij treść tekstową z pliku PDF."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Umożliw wyszukiwanie w zeskanowanym PDF dzięki OCR."
+    },
     "protect": {
       "label": "Zabezpiecz",
       "description": "Dodaj szyfrowanie hasłem do pliku PDF."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "np. 1-3 (puste = wszystkie)",
       "submit": "Wyodrębnij tekst",
       "loading": "Wyodrębnianie tekstu…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Uczyń zeskanowany PDF przeszukiwalnym — dodaje niewidoczną warstwę tekstu.",
+      "hint": "Zeskanowany PDF lub obraz — tekst staje się zaznaczalny.",
+      "languages": "Języki",
+      "languagesPlaceholder": "np. eng lub eng+deu (puste = eng)",
+      "languagesHelp": "Kody języków Tesseract; pakiet języka musi być zainstalowany na serwerze.",
+      "submit": "Uczyń przeszukiwalnym",
+      "loading": "Rozpoznawanie tekstu…"
     },
     "protect": {
       "title": "Zabezpiecz",

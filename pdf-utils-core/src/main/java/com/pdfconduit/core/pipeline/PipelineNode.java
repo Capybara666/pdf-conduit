@@ -89,6 +89,10 @@ public class PipelineNode {
     // TO_TEXT export
     public com.pdfconduit.core.model.TextFormat textFormat = com.pdfconduit.core.model.TextFormat.TXT;
 
+    // OCR — tesseract language codes (e.g. "eng", "eng+deu") + render DPI for recognition
+    public String ocrLanguages = "eng";
+    public int ocrDpi = 300;
+
     // terminal nodes only — a file path (single output) or folder (multiple)
     public String outputDestination = "";
 

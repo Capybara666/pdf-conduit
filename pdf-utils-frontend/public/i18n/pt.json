@@ -91,6 +91,10 @@
       "label": "Para texto",
       "description": "Extraia o conteúdo de texto de um PDF."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Torne um PDF digitalizado pesquisável com OCR."
+    },
     "protect": {
       "label": "Proteger",
       "description": "Adicione encriptação por palavra-passe a um PDF."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "ex.: 1-3 (em branco = todas)",
       "submit": "Extrair texto",
       "loading": "A extrair texto…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Torne um PDF digitalizado pesquisável — adiciona uma camada de texto invisível.",
+      "hint": "Um PDF digitalizado ou imagem — o texto fica selecionável.",
+      "languages": "Idiomas",
+      "languagesPlaceholder": "ex.: eng ou eng+deu (vazio = eng)",
+      "languagesHelp": "Códigos de idioma do Tesseract; o pacote deve estar instalado no servidor.",
+      "submit": "Tornar pesquisável",
+      "loading": "Reconhecendo texto…"
     },
     "protect": {
       "title": "Proteger",

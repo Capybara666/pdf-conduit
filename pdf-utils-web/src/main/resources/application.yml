@@ -63,6 +63,17 @@ pdfconduit:
       # Cap concurrent LibreOffice conversions (each is heavy); excess → 503.
       max-concurrent: ${PDFCONDUIT_WEB_OFFICE_MAX_CONCURRENT:2}
       timeout-seconds: ${PDFCONDUIT_WEB_OFFICE_TIMEOUT_SECONDS:90}
+    # OCR → searchable PDF via the external `tesseract` binary. Opt-in (default DISABLED): requires
+    # Tesseract to be installed; when disabled or absent, /api/ocr returns a clear 415 (ocr_disabled).
+    ocr:
+      enabled: ${PDFCONDUIT_WEB_OCR_ENABLED:false}
+      # Optional explicit path to the tesseract binary; blank to auto-detect (PATH + common locations).
+      tesseract-path: ${PDFCONDUIT_WEB_OCR_TESSERACT_PATH:}
+      # Cap concurrent OCR jobs (each renders every page + shells out to tesseract); excess → 503.
+      max-concurrent: ${PDFCONDUIT_WEB_OCR_MAX_CONCURRENT:1}
+      timeout-seconds: ${PDFCONDUIT_WEB_OCR_TIMEOUT_SECONDS:120}
+      # Default tesseract language(s), e.g. "eng" or "eng+deu".
+      languages: ${PDFCONDUIT_WEB_OCR_LANGUAGES:eng}
     # CORS: origins allowed to call /api/** (the Angular frontend). Comma-separated via env.
     cors:
       allowed-origins: ${PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS:http://localhost:4200}

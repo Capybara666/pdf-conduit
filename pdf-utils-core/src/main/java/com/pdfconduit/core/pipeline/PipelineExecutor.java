@@ -13,6 +13,7 @@ import com.pdfconduit.core.operations.PdfMerger;
 import com.pdfconduit.core.operations.PdfMetadataEditor;
 import com.pdfconduit.core.operations.PdfNupImposer;
 import com.pdfconduit.core.operations.PdfPageMarker;
+import com.pdfconduit.core.operations.PdfOcr;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRotator;
 import com.pdfconduit.core.operations.PdfSplitter;
@@ -264,6 +265,7 @@ public final class PipelineExecutor {
                         n.pmFooterLeft, n.pmFooterCenter, n.pmFooterRight,
                         (float) n.pmFontSize, (float) n.pmMargin, n.pmSkipFirst,
                         n.pmStartNumber, n.pmPrefix, out));
+                    case OCR -> PdfOcr.execute(new OcrOptions(src, n.ocrLanguages, n.ocrDpi, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
@@ -577,6 +579,7 @@ public final class PipelineExecutor {
                     n.pmFooterLeft, n.pmFooterCenter, n.pmFooterRight,
                     (float) n.pmFontSize, (float) n.pmMargin, n.pmSkipFirst,
                     n.pmStartNumber, n.pmPrefix);
+                case OCR       -> PdfOcr.executeBytes(pdf, n.ocrLanguages, n.ocrDpi);
                 default -> throw new PipelineException("Not a map node: " + n.kind);
             };
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));

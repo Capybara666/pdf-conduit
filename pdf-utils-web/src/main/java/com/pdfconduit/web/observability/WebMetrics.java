@@ -25,6 +25,7 @@ public class WebMetrics {
     private final Counter quotaExhausted;
     private final Counter rateLimited;
     private final Counter officeConversions;
+    private final Counter ocrJobs;
 
     public WebMetrics(MeterRegistry registry) {
         this.loadShed = Counter.builder("pdfconduit.load.shed")
@@ -38,6 +39,9 @@ public class WebMetrics {
             .register(registry);
         this.officeConversions = Counter.builder("pdfconduit.office.conversions")
             .description("LibreOffice office/document conversions started")
+            .register(registry);
+        this.ocrJobs = Counter.builder("pdfconduit.ocr.jobs")
+            .description("OCR (searchable-PDF, tesseract) jobs started")
             .register(registry);
     }
 
@@ -55,5 +59,9 @@ public class WebMetrics {
 
     public void officeConversion() {
         officeConversions.increment();
+    }
+
+    public void ocrJob() {
+        ocrJobs.increment();
     }
 }

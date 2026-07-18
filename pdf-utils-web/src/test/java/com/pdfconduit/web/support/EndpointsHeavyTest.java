@@ -18,7 +18,8 @@ class EndpointsHeavyTest {
         for (String op : new String[]{
             "/api/merge", "/api/extract", "/api/compress", "/api/rotate", "/api/arrange",
             "/api/to-pdf", "/api/to-images", "/api/to-text", "/api/protect", "/api/unlock",
-            "/api/metadata", "/api/watermark", "/api/redact", "/api/render", "/api/pipeline/run"}) {
+            "/api/metadata", "/api/watermark", "/api/redact", "/api/ocr", "/api/render",
+            "/api/pipeline/run"}) {
             assertTrue(Endpoints.isHeavy(op), op + " should be HEAVY");
         }
     }

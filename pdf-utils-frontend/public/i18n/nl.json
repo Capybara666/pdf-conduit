@@ -91,6 +91,10 @@
       "label": "Naar tekst",
       "description": "Extraheer de tekstinhoud van een PDF."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Maak een gescande PDF doorzoekbaar met OCR."
+    },
     "protect": {
       "label": "Beveiligen",
       "description": "Voeg wachtwoordversleuteling toe aan een PDF."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "bijv. 1-3 (leeg = alle)",
       "submit": "Tekst extraheren",
       "loading": "Tekst extraheren…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Maak een gescande PDF doorzoekbaar — voeg een onzichtbare tekstlaag toe.",
+      "hint": "Een gescande PDF of afbeelding — de tekst wordt selecteerbaar.",
+      "languages": "Talen",
+      "languagesPlaceholder": "bijv. eng of eng+deu (leeg = eng)",
+      "languagesHelp": "Tesseract-taalcodes; het taalpakket moet op de server geïnstalleerd zijn.",
+      "submit": "Doorzoekbaar maken",
+      "loading": "Tekst herkennen…"
     },
     "protect": {
       "title": "Beveiligen",

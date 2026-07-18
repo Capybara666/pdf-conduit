@@ -111,6 +111,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/to-text/to-text.page').then((m) => m.ToTextPage),
   },
   {
+    path: 'ocr',
+    data: { titleKey: 'op.ocr.label' },
+    loadComponent: () => import('./pages/ocr/ocr.page').then((m) => m.OcrPage),
+  },
+  {
     path: 'wizard',
     data: { titleKey: 'op.wizard.label' },
     loadComponent: () => import('./pages/wizard/wizard.page').then((m) => m.WizardPage),

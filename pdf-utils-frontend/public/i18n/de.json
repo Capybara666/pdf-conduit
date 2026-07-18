@@ -91,6 +91,10 @@
       "label": "In Text",
       "description": "Den Textinhalt eines PDF extrahieren."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Ein gescanntes PDF per OCR durchsuchbar machen."
+    },
     "protect": {
       "label": "Schützen",
       "description": "Ein PDF mit einem Passwort verschlüsseln."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "z. B. 1-3 (leer = alle)",
       "submit": "Text extrahieren",
       "loading": "Text wird extrahiert…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Ein gescanntes PDF durchsuchbar machen – eine unsichtbare Textebene hinzufügen.",
+      "hint": "Ein gescanntes PDF oder Bild – der Text wird auswählbar.",
+      "languages": "Sprachen",
+      "languagesPlaceholder": "z. B. eng oder eng+deu (leer = eng)",
+      "languagesHelp": "Tesseract-Sprachcodes; das Sprachpaket muss auf dem Server installiert sein.",
+      "submit": "Durchsuchbar machen",
+      "loading": "Text wird erkannt…"
     },
     "protect": {
       "title": "Schützen",

@@ -34,7 +34,7 @@ class PlanSeamTest {
 
     /** All-defaults WebProperties (each null normalised to the documented default in the record). */
     private static WebProperties defaults() {
-        return new WebProperties(null, null, null, null, null, null, null, null, null, null, null);
+        return new WebProperties(null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     @Test
@@ -80,18 +80,20 @@ class PlanSeamTest {
     @Test
     void webOperations_enforcesResolvedPlanMaxPages() throws Exception {
         WebProperties props = defaults();
-        OfficeGuard officeGuard = new OfficeGuard(props, new WebMetrics(new SimpleMeterRegistry()));
+        WebMetrics metrics = new WebMetrics(new SimpleMeterRegistry());
+        OfficeGuard officeGuard = new OfficeGuard(props, metrics);
+        com.pdfconduit.web.guard.OcrGuard ocrGuard = new com.pdfconduit.web.guard.OcrGuard(props, metrics);
         NamedBytes twoPage = new NamedBytes("a.pdf", TestPdfs.blank(2));
 
         // Default FREE plan (maxPages 3000): a 2-page PDF passes the page-count guard.
-        WebOperations lenient = new WebOperations(officeGuard, new FreePlanLimitsResolver(props), props);
+        WebOperations lenient = new WebOperations(officeGuard, ocrGuard, new FreePlanLimitsResolver(props), props);
         assertDoesNotThrow(() -> lenient.readMetadata(twoPage));
 
         // Swap in a stub plan with maxPages=1: the SAME operation is now rejected — proving the guard
         // reads its ceiling from the resolved PlanLimits seam, not from a hard-wired WebProperties field.
         PlanLimitsResolver stub = principal -> new FreePlanLimits(60, 15, 26_214_400L,
             /* maxPages */ 1, 300, 60_000_000L, 40, 10, 15);
-        WebOperations strict = new WebOperations(officeGuard, stub, props);
+        WebOperations strict = new WebOperations(officeGuard, ocrGuard, stub, props);
         PdfOperationException ex =
             assertThrows(PdfOperationException.class, () -> strict.readMetadata(twoPage));
         assertEquals(true, ex.getMessage().contains("maximum page count"));

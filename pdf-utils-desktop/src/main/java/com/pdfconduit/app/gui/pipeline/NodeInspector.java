@@ -83,6 +83,7 @@ class NodeInspector extends FlowPane {
             case PAGE_MARKS -> buildPageMarks(node);
             case TO_IMAGES -> buildToImages(node);
             case TO_TEXT -> buildToText(node);
+            case OCR -> buildOcr(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
         }
 
@@ -258,6 +259,22 @@ class NodeInspector extends FlowPane {
 
         getChildren().add(group("pipeline.node.format", fmt));
         if (!lo) getChildren().add(hint(I18n.t("totext.word.needslo")));
+    }
+
+    private void buildOcr(PipelineNode node) {
+        TextField langs = new TextField(node.ocrLanguages);
+        langs.setPromptText("eng");
+        langs.setPrefWidth(120);
+        langs.textProperty().addListener((o, a, b) -> { node.ocrLanguages = b; canvas.refreshNode(node); });
+
+        ComboBox<Integer> dpi = new ComboBox<>(FXCollections.observableArrayList(150, 300, 600));
+        dpi.setValue(node.ocrDpi);
+        dpi.valueProperty().addListener((o, a, b) -> { if (b != null) { node.ocrDpi = b; canvas.refreshNode(node); } });
+
+        getChildren().addAll(group("pipeline.node.ocrlangs", langs), group("pipeline.node.dpi", dpi));
+        if (!com.pdfconduit.core.operations.PdfOcr.available()) {
+            getChildren().add(hint(I18n.t("ocr.needstesseract")));
+        }
     }
 
     private void buildProtect(PipelineNode node) {

@@ -29,8 +29,8 @@ import java.util.List;
  * @param trustedProxies     CIDRs of proxies allowed to set {@code X-Forwarded-For} (client-IP trust)
  */
 @ConfigurationProperties("pdfconduit.web")
-public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Office office, Cors cors,
-                            RateLimit ratelimit, Quota quota, Concurrency concurrency,
+public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Office office, Ocr ocr,
+                            Cors cors, RateLimit ratelimit, Quota quota, Concurrency concurrency,
                             Processing processing, Pdf pdf, Render render, List<String> trustedProxies) {
 
     /** Loopback + RFC-1918 private ranges (covers the docker-compose bridge subnet) trusted by default. */
@@ -40,6 +40,7 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
     public WebProperties {
         if (maxFilesPerRequest == null || maxFilesPerRequest < 1) maxFilesPerRequest = 50;
         if (office == null) office = new Office(true, null, null);
+        if (ocr == null) ocr = new Ocr(false, null, null, null, null);
         if (cors == null || cors.allowedOrigins() == null || cors.allowedOrigins().isEmpty()) {
             cors = new Cors(List.of("http://localhost:4200"));
         }
@@ -61,6 +62,23 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
         public Office {
             if (maxConcurrent == null || maxConcurrent < 1) maxConcurrent = 2;
             if (timeoutSeconds == null || timeoutSeconds < 1) timeoutSeconds = 90;
+        }
+    }
+
+    /**
+     * OCR (searchable-PDF) settings, powered by the external {@code tesseract} binary. {@code
+     * enabled} gates whether the {@code /api/ocr} endpoint accepts work at all (default {@code
+     * false} — OCR is opt-in and requires Tesseract to be installed); {@code tesseractPath} is an
+     * optional explicit binary path (blank ⇒ auto-detect); {@code maxConcurrent}/{@code
+     * timeoutSeconds} bound how many OCR jobs run at once and how long each may take; {@code
+     * languages} is the default tesseract language set (e.g. {@code eng} or {@code eng+deu}).
+     */
+    public record Ocr(boolean enabled, String tesseractPath, Integer maxConcurrent,
+                      Integer timeoutSeconds, String languages) {
+        public Ocr {
+            if (maxConcurrent == null || maxConcurrent < 1) maxConcurrent = 1;
+            if (timeoutSeconds == null || timeoutSeconds < 1) timeoutSeconds = 120;
+            if (languages == null || languages.isBlank()) languages = "eng";
         }
     }
 
@@ -138,5 +156,13 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
 
     public boolean officeEnabled() {
         return office != null && office.enabled();
+    }
+
+    public boolean ocrEnabled() {
+        return ocr != null && ocr.enabled();
+    }
+
+    public boolean hasTesseractPath() {
+        return ocr != null && ocr.tesseractPath() != null && !ocr.tesseractPath().isBlank();
     }
 }

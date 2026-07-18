@@ -91,6 +91,10 @@
       "label": "A texto",
       "description": "Extrae el contenido de texto de un PDF."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Haz que un PDF escaneado se pueda buscar con OCR."
+    },
     "protect": {
       "label": "Proteger",
       "description": "Añade cifrado con contraseña a un PDF."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "p. ej. 1-3 (en blanco = todas)",
       "submit": "Extraer texto",
       "loading": "Extrayendo texto…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Haz que un PDF escaneado se pueda buscar: añade una capa de texto invisible.",
+      "hint": "Un PDF escaneado o una imagen: el texto se vuelve seleccionable.",
+      "languages": "Idiomas",
+      "languagesPlaceholder": "p. ej. eng o eng+deu (vacío = eng)",
+      "languagesHelp": "Códigos de idioma de Tesseract; el paquete debe estar instalado en el servidor.",
+      "submit": "Hacer buscable",
+      "loading": "Reconociendo texto…"
     },
     "protect": {
       "title": "Proteger",

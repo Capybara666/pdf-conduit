@@ -35,15 +35,18 @@ RUN mvn -q -pl pdf-utils-web -am -DskipTests package
 FROM eclipse-temurin:21-jre AS runtime
 
 # LibreOffice (headless) lets DocumentConverter turn .docx/.odt/.xlsx/… into
-# PDF. fonts-dejavu + fontconfig give conversions a sane default font; curl is
-# used by the container HEALTHCHECK below. --no-install-recommends keeps the
-# image small.
+# PDF. tesseract-ocr (+ the English data pack) powers the OCR → searchable-PDF
+# feature (opt-in via pdfconduit.web.ocr.enabled). fonts-dejavu + fontconfig
+# give conversions a sane default font; curl is used by the container
+# HEALTHCHECK below. --no-install-recommends keeps the image small.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libreoffice-core \
         libreoffice-writer \
         libreoffice-calc \
         libreoffice-impress \
+        tesseract-ocr \
+        tesseract-ocr-eng \
         fonts-dejavu \
         fontconfig \
         curl \

@@ -439,6 +439,17 @@ public class OperationsController {
         return out;
     }
 
+    // ---------------------------------------------------------------------- OCR
+
+    @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> ocr(@RequestParam("file") MultipartFile file,
+                                      @RequestParam(required = false) String languages)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        NamedBytes in = uploads.read(file);
+        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.ocr(in, languages));
+        return Responses.file(result, MediaType.APPLICATION_PDF);
+    }
+
     // ----------------------------------------------------------------- TO-IMAGES
 
     @PostMapping(value = "/to-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

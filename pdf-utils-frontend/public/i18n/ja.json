@@ -91,6 +91,10 @@
       "label": "テキストに変換",
       "description": "PDF のテキスト内容を抽出します。"
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "スキャンしたPDFをOCRで検索可能にします。"
+    },
     "protect": {
       "label": "保護",
       "description": "PDF にパスワード暗号化を追加します。"
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "例：1-3（空欄 = すべて）",
       "submit": "テキストを抽出",
       "loading": "テキストを抽出中…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "スキャンしたPDFを検索可能に — 見えないテキスト層を追加します。",
+      "hint": "スキャンしたPDFまたは画像 — テキストが選択可能になります。",
+      "languages": "言語",
+      "languagesPlaceholder": "例: eng または eng+deu（空欄 = eng）",
+      "languagesHelp": "Tesseractの言語コード。言語パックがサーバーにインストールされている必要があります。",
+      "submit": "検索可能にする",
+      "loading": "テキストを認識中…"
     },
     "protect": {
       "title": "保護",

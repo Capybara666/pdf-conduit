@@ -246,6 +246,13 @@ export const NAV_ITEMS: NavItem[] = [
     group: 'convert',
     icon: OP_ICONS['to-text'],
   },
+  {
+    id: 'ocr',
+    label: 'OCR',
+    description: 'Make a scanned PDF searchable with OCR.',
+    group: 'convert',
+    icon: 'M6 3h12v18H6z M9 8h5 M9 11h4 M11.8 16a2.2 2.2 0 1 0 4.4 0 a2.2 2.2 0 1 0 -4.4 0 M15.6 17.6l1.9 1.9',
+  },
 
   // Secure
   {

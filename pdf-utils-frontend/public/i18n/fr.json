@@ -91,6 +91,10 @@
       "label": "Vers texte",
       "description": "Extrayez le contenu textuel d'un PDF."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Rendre un PDF numérisé consultable grâce à l’OCR."
+    },
     "protect": {
       "label": "Protéger",
       "description": "Ajoutez un chiffrement par mot de passe à un PDF."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "ex. 1-3 (vide = toutes)",
       "submit": "Extraire le texte",
       "loading": "Extraction du texte…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Rendre un PDF numérisé consultable — ajouter une couche de texte invisible.",
+      "hint": "Un PDF numérisé ou une image — le texte devient sélectionnable.",
+      "languages": "Langues",
+      "languagesPlaceholder": "ex. eng ou eng+deu (vide = eng)",
+      "languagesHelp": "Codes de langue Tesseract ; le pack doit être installé sur le serveur.",
+      "submit": "Rendre consultable",
+      "loading": "Reconnaissance du texte…"
     },
     "protect": {
       "title": "Protéger",

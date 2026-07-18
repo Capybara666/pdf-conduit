@@ -1,6 +1,7 @@
 package com.pdfconduit.web.config;
 
 import com.pdfconduit.core.convert.DocumentConverter;
+import com.pdfconduit.core.operations.PdfOcr;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,19 @@ public class StartupConfig {
         DocumentConverter.setMaxConcurrentConversions(props.office().maxConcurrent());
         DocumentConverter.setConversionTimeoutSeconds(
             Math.min(props.office().timeoutSeconds(), props.processing().timeoutSeconds()));
-        log.info("PDF Conduit web backend started (stateless, in-memory; office conversion {}).",
-            props.officeEnabled() ? "enabled" : "disabled");
+
+        // OCR (searchable PDF) via the external tesseract binary — same pattern as LibreOffice:
+        // register an explicit binary path if configured, and cap the per-page timeout at the
+        // request processing deadline so a stuck tesseract can't outlive its request.
+        if (props.hasTesseractPath()) {
+            PdfOcr.setTesseractOverride(props.ocr().tesseractPath());
+            log.info("Using configured Tesseract binary: {}", props.ocr().tesseractPath());
+        }
+        PdfOcr.setTimeoutSeconds(
+            Math.min(props.ocr().timeoutSeconds(), props.processing().timeoutSeconds()));
+
+        log.info("PDF Conduit web backend started (stateless, in-memory; office conversion {}; OCR {}).",
+            props.officeEnabled() ? "enabled" : "disabled",
+            props.ocrEnabled() ? "enabled" : "disabled");
     }
 }

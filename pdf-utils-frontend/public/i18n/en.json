@@ -91,6 +91,10 @@
       "label": "To Text",
       "description": "Extract the text content of a PDF."
     },
+    "ocr": {
+      "label": "OCR",
+      "description": "Make a scanned PDF searchable with OCR."
+    },
     "protect": {
       "label": "Protect",
       "description": "Add password encryption to a PDF."
@@ -477,6 +481,16 @@
       "pagesPlaceholder": "e.g. 1-3 (blank = all)",
       "submit": "Extract text",
       "loading": "Extracting text…"
+    },
+    "ocr": {
+      "title": "OCR",
+      "description": "Make a scanned PDF searchable — add an invisible text layer.",
+      "hint": "A scanned PDF or image — the text becomes selectable.",
+      "languages": "Languages",
+      "languagesPlaceholder": "e.g. eng or eng+deu (blank = eng)",
+      "languagesHelp": "Tesseract language codes; the language pack must be installed on the server.",
+      "submit": "Make searchable",
+      "loading": "Recognizing text…"
     },
     "protect": {
       "title": "Protect",
