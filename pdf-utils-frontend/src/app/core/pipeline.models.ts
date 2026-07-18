@@ -87,3 +87,161 @@ export interface PipelineValidationError {
   nodeId?: string;
   message: string;
 }
+
+/* ---------------------------------------------------------------------------
+ * Client-only editing model for the free-form canvas builder.
+ *
+ * `CanvasNode` is a superset of the wire node: it keeps every possible param as
+ * a friendly editing value (e.g. `targetSize` as a "5MB" string) plus the live
+ * `x`,`y` drag coordinates. `toWireNode` narrows it down to the exact
+ * `PipelineNodeJson` fields the backend cares about for the node's kind. These
+ * fields never leave the browser except via `toWireNode`.
+ * ------------------------------------------------------------------------- */
+
+/** A node as edited on the canvas. Holds all params; only relevant ones ship. */
+export interface CanvasNode {
+  id: string;
+  kind: NodeKindName;
+  /** Real drag coordinates (stored on the wire node too — backend ignores them). */
+  x: number;
+  y: number;
+  /** SOURCE only — basenames of uploaded files fed into the graph. */
+  files: string[];
+  pages: string;
+  splitMode: SplitModeName;
+  order: string;
+  angle: number;
+  targetSize: string;
+  pageSize: PageSizeName;
+  password: string;
+  ownerPassword: string;
+  metaTitle: string;
+  metaAuthor: string;
+  metaSubject: string;
+  metaKeywords: string;
+  metaStrip: boolean;
+  wmText: string;
+  wmOpacity: number;
+  wmRotation: number;
+  wmScale: number;
+  imageFormat: ImageFormatName;
+  imageDpi: number;
+  textFormat: TextFormatName;
+}
+
+/** Build a fresh `CanvasNode` of the given kind at a position, with sane defaults. */
+export function newCanvasNode(id: string, kind: NodeKindName, x: number, y: number): CanvasNode {
+  return {
+    id,
+    kind,
+    x,
+    y,
+    files: [],
+    pages: '',
+    splitMode: 'COMBINE',
+    order: '',
+    angle: 90,
+    targetSize: '5MB',
+    pageSize: 'FIT',
+    password: '',
+    ownerPassword: '',
+    metaTitle: '',
+    metaAuthor: '',
+    metaSubject: '',
+    metaKeywords: '',
+    metaStrip: false,
+    wmText: '',
+    wmOpacity: 0.3,
+    wmRotation: 45,
+    wmScale: 0.5,
+    imageFormat: 'PNG',
+    imageDpi: 150,
+    textFormat: 'TXT',
+  };
+}
+
+/** Narrow a `CanvasNode` to the `PipelineNodeJson` fields its kind actually uses. */
+export function toWireNode(n: CanvasNode): PipelineNodeJson {
+  const base: PipelineNodeJson = { id: n.id, kind: n.kind, x: Math.round(n.x), y: Math.round(n.y) };
+  switch (n.kind) {
+    case 'SOURCE':
+      return { ...base, files: n.files };
+    case 'EXTRACT':
+      return { ...base, pages: n.pages, splitMode: n.splitMode };
+    case 'ROTATE':
+      return { ...base, pages: n.pages, angle: n.angle };
+    case 'ARRANGE':
+      return { ...base, order: n.order };
+    case 'COMPRESS':
+      return { ...base, targetBytes: parseSizeToBytes(n.targetSize) };
+    case 'IMAGES_TO_PDF':
+      return { ...base, pageSize: n.pageSize };
+    case 'PROTECT':
+      return { ...base, password: n.password, ownerPassword: n.ownerPassword };
+    case 'UNLOCK':
+      return { ...base, password: n.password };
+    case 'METADATA':
+      return {
+        ...base,
+        metaTitle: n.metaTitle,
+        metaAuthor: n.metaAuthor,
+        metaSubject: n.metaSubject,
+        metaKeywords: n.metaKeywords,
+        metaStrip: n.metaStrip,
+      };
+    case 'WATERMARK':
+      return { ...base, wmText: n.wmText, wmOpacity: n.wmOpacity, wmRotation: n.wmRotation, wmScale: n.wmScale };
+    case 'TO_IMAGES':
+      return { ...base, imageFormat: n.imageFormat, imageDpi: n.imageDpi };
+    case 'TO_TEXT':
+      return { ...base, textFormat: n.textFormat };
+    default:
+      return base; // MERGE has no params
+  }
+}
+
+/** Rebuild a `CanvasNode` from a loaded wire node (inverse of `toWireNode`). */
+export function fromWireNode(w: PipelineNodeJson): CanvasNode {
+  const n = newCanvasNode(w.id, w.kind, w.x ?? 40, w.y ?? 40);
+  n.files = w.files ?? [];
+  if (w.pages != null) n.pages = w.pages;
+  if (w.splitMode != null) n.splitMode = w.splitMode;
+  if (w.order != null) n.order = w.order;
+  if (w.angle != null) n.angle = w.angle;
+  if (w.targetBytes != null) n.targetSize = formatBytesToSize(w.targetBytes);
+  if (w.pageSize != null) n.pageSize = w.pageSize;
+  if (w.password != null) n.password = w.password;
+  if (w.ownerPassword != null) n.ownerPassword = w.ownerPassword;
+  if (w.metaTitle != null) n.metaTitle = w.metaTitle;
+  if (w.metaAuthor != null) n.metaAuthor = w.metaAuthor;
+  if (w.metaSubject != null) n.metaSubject = w.metaSubject;
+  if (w.metaKeywords != null) n.metaKeywords = w.metaKeywords;
+  if (w.metaStrip != null) n.metaStrip = w.metaStrip;
+  if (w.wmText != null) n.wmText = w.wmText;
+  if (w.wmOpacity != null) n.wmOpacity = w.wmOpacity;
+  if (w.wmRotation != null) n.wmRotation = w.wmRotation;
+  if (w.wmScale != null) n.wmScale = w.wmScale;
+  if (w.imageFormat != null) n.imageFormat = w.imageFormat;
+  if (w.imageDpi != null) n.imageDpi = w.imageDpi;
+  if (w.textFormat != null) n.textFormat = w.textFormat;
+  return n;
+}
+
+/** Parse "5MB"/"800KB"/"1234" into bytes (mirrors the CLI SizeConverter). */
+export function parseSizeToBytes(text: string): number {
+  const m = /^\s*(\d+(?:\.\d+)?)\s*(b|kb|mb|gb)?\s*$/i.exec(text ?? '');
+  if (!m) return 5 * 1024 * 1024;
+  const value = parseFloat(m[1]);
+  const unit = (m[2] ?? 'b').toLowerCase();
+  const factor = unit === 'gb' ? 1024 ** 3 : unit === 'mb' ? 1024 ** 2 : unit === 'kb' ? 1024 : 1;
+  return Math.round(value * factor);
+}
+
+/** Format bytes back into a compact "5MB"/"800KB" string for the size input. */
+export function formatBytesToSize(bytes: number): string {
+  if (bytes >= 1024 ** 2 && bytes % (1024 ** 2) === 0) return `${bytes / 1024 ** 2}MB`;
+  if (bytes >= 1024 && bytes % 1024 === 0) return `${bytes / 1024}KB`;
+  if (bytes >= 1024 ** 2) return `${(bytes / 1024 ** 2).toFixed(1)}MB`;
+  if (bytes >= 1024) return `${Math.round(bytes / 1024)}KB`;
+  return `${bytes}`;
+}

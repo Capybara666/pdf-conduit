@@ -126,10 +126,18 @@ export class ApiService {
       .pipe(catchError((err) => this.toApiError(err)));
   }
 
-  /** `POST /api/pipeline/validate` → list of validation errors (empty = OK). */
+  /**
+   * `POST /api/pipeline/validate` → list of validation errors (empty = OK).
+   *
+   * The backend reads the model from a multipart `pipeline` request-param (same
+   * as `/run`, minus the file parts), so we post `FormData` — not a JSON body,
+   * which the controller would silently ignore.
+   */
   validatePipeline(model: PipelineModelJson): Observable<PipelineValidationError[]> {
+    const fd = new FormData();
+    fd.append('pipeline', JSON.stringify(model));
     return this.http
-      .post<PipelineValidationError[]>(`${this.base}/pipeline/validate`, model)
+      .post<PipelineValidationError[]>(`${this.base}/pipeline/validate`, fd)
       .pipe(catchError((err) => this.toApiError(err)));
   }
 
