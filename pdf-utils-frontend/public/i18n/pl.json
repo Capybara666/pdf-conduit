@@ -447,7 +447,11 @@
       "compressNo": "nie",
       "preparing": "Przygotowywanie {{current}}/{{total}}: {{name}}",
       "merging": "Scalanie…",
-      "compressing": "Kompresowanie…"
+      "compressing": "Kompresowanie…",
+      "choosePages": "Wybierz strony",
+      "allPages": "Wszystkie strony",
+      "rangeSummary": "Strony {{range}}",
+      "rangeManual": "Lub wpisz zakres"
     },
     "pipeline": {
       "title": "Potok",

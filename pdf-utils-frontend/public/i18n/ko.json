@@ -447,7 +447,11 @@
       "compressNo": "아니오",
       "preparing": "준비 중 {{current}}/{{total}}: {{name}}",
       "merging": "병합 중…",
-      "compressing": "압축 중…"
+      "compressing": "압축 중…",
+      "choosePages": "페이지 선택",
+      "allPages": "모든 페이지",
+      "rangeSummary": "{{range}} 페이지",
+      "rangeManual": "또는 범위 입력"
     },
     "pipeline": {
       "title": "파이프라인",

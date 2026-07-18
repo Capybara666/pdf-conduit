@@ -447,7 +447,11 @@
       "compressNo": "ні",
       "preparing": "Підготовка {{current}}/{{total}}: {{name}}",
       "merging": "Об'єднання…",
-      "compressing": "Стиснення…"
+      "compressing": "Стиснення…",
+      "choosePages": "Вибрати сторінки",
+      "allPages": "Усі сторінки",
+      "rangeSummary": "Сторінки {{range}}",
+      "rangeManual": "Або введіть діапазон"
     },
     "pipeline": {
       "title": "Конвеєр",

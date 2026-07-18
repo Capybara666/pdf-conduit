@@ -447,7 +447,11 @@
       "compressNo": "否",
       "preparing": "正在准备 {{current}}/{{total}}：{{name}}",
       "merging": "合并中…",
-      "compressing": "压缩中…"
+      "compressing": "压缩中…",
+      "choosePages": "选择页面",
+      "allPages": "所有页面",
+      "rangeSummary": "第 {{range}} 页",
+      "rangeManual": "或输入范围"
     },
     "pipeline": {
       "title": "流程",

@@ -447,7 +447,11 @@
       "compressNo": "нет",
       "preparing": "Подготовка {{current}}/{{total}}: {{name}}",
       "merging": "Объединение…",
-      "compressing": "Сжатие…"
+      "compressing": "Сжатие…",
+      "choosePages": "Выбрать страницы",
+      "allPages": "Все страницы",
+      "rangeSummary": "Страницы {{range}}",
+      "rangeManual": "Или введите диапазон"
     },
     "pipeline": {
       "title": "Конвейер",

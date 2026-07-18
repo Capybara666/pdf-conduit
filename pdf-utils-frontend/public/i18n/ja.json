@@ -447,7 +447,11 @@
       "compressNo": "なし",
       "preparing": "準備中 {{current}}/{{total}}：{{name}}",
       "merging": "結合中…",
-      "compressing": "圧縮中…"
+      "compressing": "圧縮中…",
+      "choosePages": "ページを選択",
+      "allPages": "すべてのページ",
+      "rangeSummary": "ページ {{range}}",
+      "rangeManual": "または範囲を入力"
     },
     "pipeline": {
       "title": "パイプライン",

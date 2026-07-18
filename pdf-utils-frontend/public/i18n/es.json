@@ -447,7 +447,11 @@
       "compressNo": "no",
       "preparing": "Preparando {{current}}/{{total}}: {{name}}",
       "merging": "Combinando…",
-      "compressing": "Comprimiendo…"
+      "compressing": "Comprimiendo…",
+      "choosePages": "Elegir páginas",
+      "allPages": "Todas las páginas",
+      "rangeSummary": "Páginas {{range}}",
+      "rangeManual": "O escribe un intervalo"
     },
     "pipeline": {
       "title": "Flujo",

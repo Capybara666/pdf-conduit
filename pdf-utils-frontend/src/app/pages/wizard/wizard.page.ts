@@ -1,11 +1,13 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { downloadRunResult, formatBytes } from '../../core/download.util';
+import { loadPdf } from '../../core/pdfjs';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
@@ -36,7 +38,13 @@ const STEP_KEYS = [
 @Component({
   selector: 'app-wizard-page',
   standalone: true,
-  imports: [TranslocoModule, FileDropZoneComponent, PageHeaderComponent, SpinnerComponent],
+  imports: [
+    TranslocoModule,
+    FileDropZoneComponent,
+    PageGridComponent,
+    PageHeaderComponent,
+    SpinnerComponent,
+  ],
   template: `
     <section class="op-page">
       <app-page-header
@@ -69,30 +77,91 @@ const STEP_KEYS = [
         @if (step() === 1) {
           <h2 class="step-h">{{ 'pages.wizard.arrangeTitle' | transloco }}</h2>
           <p class="hint-note">{{ 'pages.wizard.arrangeHint' | transloco }}</p>
-          <ul class="reorder-list">
+          <ul class="file-list" role="list">
             @for (it of items(); track it.file; let i = $index) {
               <li
+                class="file-card"
                 [class.dragging]="dragIndex() === i"
-                draggable="true"
-                (dragstart)="dragIndex.set(i)"
+                [class.expanded]="expandedFile() === it.file"
                 (dragover)="onDragOver($event, i)"
-                (dragend)="dragIndex.set(null)"
               >
-                <span class="grip" aria-hidden="true">⠿</span>
-                <span class="idx">{{ i + 1 }}</span>
-                <span class="name" [title]="it.file.name">{{ it.file.name }}</span>
-                @if (isPdf(it.file)) {
-                  <input
-                    class="range-in"
-                    type="text"
-                    [value]="it.pages"
-                    (input)="setPages(i, $any($event.target).value)"
-                    [placeholder]="'pages.wizard.rangePlaceholder' | transloco"
-                  />
-                } @else {
-                  <span class="hint-note">{{ (isImage(it.file) ? 'pages.wizard.typeImage' : 'pages.wizard.typeDocument') | transloco }}</span>
+                <div
+                  class="file-head"
+                  draggable="true"
+                  (dragstart)="dragIndex.set(i)"
+                  (dragend)="dragIndex.set(null)"
+                >
+                  <span class="grip" aria-hidden="true">⠿</span>
+                  <span class="idx" aria-hidden="true">{{ i + 1 }}</span>
+
+                  <span class="thumb-box" aria-hidden="true">
+                    @if (thumbUrl(it.file); as url) {
+                      <img class="thumb-img" [src]="url" alt="" />
+                    } @else if (fileKind(it.file) === 'pdf' || fileKind(it.file) === 'image') {
+                      <span class="thumb-ph"><app-spinner /></span>
+                    } @else {
+                      <span class="thumb-icon">{{ docIcon(it.file) }}</span>
+                    }
+                  </span>
+
+                  <span class="file-meta">
+                    <span class="name" [title]="it.file.name">{{ it.file.name }}</span>
+                    <span class="sub">
+                      @if (fileKind(it.file) === 'pdf') {
+                        @if (pageCount(it.file); as pc) {
+                          {{ 'pageGrid.count' | transloco: { n: pc } }}
+                        }
+                        @if (it.pages.trim()) {
+                          <span class="chip">{{ 'pages.wizard.rangeSummary' | transloco: { range: it.pages.trim() } }}</span>
+                        } @else {
+                          <span class="chip subtle">{{ 'pages.wizard.allPages' | transloco }}</span>
+                        }
+                      } @else {
+                        {{ (fileKind(it.file) === 'image' ? 'pages.wizard.typeImage' : 'pages.wizard.typeDocument') | transloco }}
+                      }
+                    </span>
+                  </span>
+
+                  @if (fileKind(it.file) === 'pdf') {
+                    <button
+                      type="button"
+                      class="btn btn-ghost choose-btn"
+                      [class.on]="expandedFile() === it.file"
+                      (click)="toggleExpand(it.file)"
+                      [attr.aria-expanded]="expandedFile() === it.file"
+                    >
+                      {{ (expandedFile() === it.file ? 'common.done' : 'pages.wizard.choosePages') | transloco }}
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    (click)="remove(i)"
+                    [attr.aria-label]="'common.remove' | transloco"
+                  >✕</button>
+                </div>
+
+                @if (fileKind(it.file) === 'pdf' && expandedFile() === it.file) {
+                  <div class="page-picker">
+                    <app-page-grid
+                      mode="select"
+                      [thumbWidth]="96"
+                      [file]="it.file"
+                      [range]="it.pages"
+                      (rangeChange)="setPagesFor(it.file, $event)"
+                    />
+                    <label class="range-fallback">
+                      <span class="fallback-lbl">{{ 'pages.wizard.rangeManual' | transloco }}</span>
+                      <input
+                        class="range-in"
+                        type="text"
+                        [value]="it.pages"
+                        (input)="setPagesFor(it.file, $any($event.target).value)"
+                        [placeholder]="'pages.wizard.rangePlaceholder' | transloco"
+                      />
+                    </label>
+                  </div>
                 }
-                <button type="button" class="icon-btn" (click)="remove(i)" [attr.aria-label]="'common.remove' | transloco">✕</button>
               </li>
             }
           </ul>
@@ -216,8 +285,162 @@ const STEP_KEYS = [
         margin: 0 0 1rem;
         font-size: 1.1rem;
       }
+      .hint-note {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin: 0 0 0.9rem;
+      }
       .range-in {
-        width: 130px;
+        width: 140px;
+      }
+
+      /* ---- Step 2: file cards ---- */
+      .file-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .file-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface);
+        overflow: hidden;
+        transition: border-color 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+      }
+      .file-card.expanded {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent-soft);
+      }
+      .file-card.dragging {
+        opacity: 0.5;
+      }
+      .file-head {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.6rem 0.75rem;
+      }
+      .grip {
+        cursor: grab;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        line-height: 1;
+        user-select: none;
+        touch-action: none;
+      }
+      .file-head:active .grip {
+        cursor: grabbing;
+      }
+      .idx {
+        flex: 0 0 auto;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 1px solid var(--border-strong);
+        font-size: 0.78rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .thumb-box {
+        flex: 0 0 auto;
+        width: 42px;
+        height: 54px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: #fff;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .thumb-img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+      }
+      .thumb-ph {
+        display: inline-flex;
+      }
+      .thumb-icon {
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .file-meta {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+      .file-meta .name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .file-meta .sub {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.05rem 0.45rem;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+      }
+      .chip.subtle {
+        background: var(--surface-2);
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+      .choose-btn {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        font-size: 0.82rem;
+        padding: 0.35rem 0.7rem;
+      }
+      .choose-btn.on {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .page-picker {
+        border-top: 1px solid var(--border);
+        background: var(--surface-2);
+        padding: 0.85rem 0.9rem 0.9rem;
+      }
+      .range-fallback {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .fallback-lbl {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      @media (max-width: 560px) {
+        .file-meta .name {
+          max-width: 40vw;
+        }
+        .choose-btn {
+          padding: 0.35rem 0.5rem;
+        }
       }
       .summary {
         list-style: none;
@@ -256,7 +479,7 @@ const STEP_KEYS = [
     `,
   ],
 })
-export class WizardPage {
+export class WizardPage implements OnDestroy {
   private readonly transloco = inject(TranslocoService);
   protected readonly steps = STEP_KEYS;
   protected readonly formatBytes = formatBytes;
@@ -264,6 +487,16 @@ export class WizardPage {
   protected readonly step = signal(0);
   protected readonly items = signal<WizardFile[]>([]);
   protected readonly dragIndex = signal<number | null>(null);
+  /** Which PDF file (identity) has its visual page-picker expanded (only one at a time). */
+  protected readonly expandedFile = signal<File | null>(null);
+
+  // First-page thumbnail data-URLs / object-URLs keyed by File identity, plus the
+  // PDF page counts discovered while rendering. `thumbTick` re-triggers template
+  // reads once an async thumbnail lands.
+  private readonly thumbs = new Map<File, string>();
+  private readonly pageCounts = new Map<File, number>();
+  private readonly objectUrls: string[] = [];
+  private readonly thumbTick = signal(0);
   protected readonly pageSize = signal<PageSize>('FIT');
   protected readonly compress = signal(false);
   protected readonly targetSize = signal('5MB');
@@ -281,27 +514,111 @@ export class WizardPage {
 
   constructor(private readonly api: ApiService) {}
 
+  ngOnDestroy(): void {
+    this.revokeUrls();
+  }
+
   isPdf(f: File): boolean {
     return f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf');
   }
   isImage(f: File): boolean {
-    return f.type.startsWith('image/');
+    return f.type.startsWith('image/') || /\.(png|jpe?g|gif|bmp|webp|tiff?)$/i.test(f.name);
+  }
+
+  /** Coarse input classification driving the thumbnail + summary rendering. */
+  fileKind(f: File): 'pdf' | 'image' | 'doc' {
+    if (this.isPdf(f)) return 'pdf';
+    if (this.isImage(f)) return 'image';
+    return 'doc';
+  }
+
+  /** Emoji icon for office / text inputs that have no visual thumbnail. */
+  docIcon(f: File): string {
+    const n = f.name.toLowerCase();
+    if (/\.(txt|md)$/.test(n)) return '📄';
+    if (/\.(xlsx?|ods|csv)$/.test(n)) return '📊';
+    if (/\.(pptx?|odp)$/.test(n)) return '📽️';
+    return '📝';
+  }
+
+  thumbUrl(f: File): string | null {
+    this.thumbTick(); // subscribe to async thumbnail arrivals
+    return this.thumbs.get(f) ?? null;
+  }
+
+  pageCount(f: File): number | null {
+    this.thumbTick();
+    return this.pageCounts.get(f) ?? null;
   }
 
   onFiles(files: File[]): void {
+    this.revokeUrls();
+    this.thumbs.clear();
+    this.pageCounts.clear();
+    this.expandedFile.set(null);
     this.items.set(files.map((file) => ({ file, pages: '' })));
+    for (const file of files) void this.buildThumb(file);
   }
 
-  setPages(i: number, value: string): void {
+  /** Write a page range back by file identity (robust across drag-reorder). */
+  setPagesFor(file: File, value: string): void {
     const next = this.items().slice();
-    next[i] = { ...next[i], pages: value };
+    const idx = next.findIndex((it) => it.file === file);
+    if (idx < 0) return;
+    next[idx] = { ...next[idx], pages: value };
     this.items.set(next);
+  }
+
+  toggleExpand(file: File): void {
+    this.expandedFile.set(this.expandedFile() === file ? null : file);
   }
 
   remove(i: number): void {
     const next = this.items().slice();
-    next.splice(i, 1);
+    const [gone] = next.splice(i, 1);
+    if (gone && this.expandedFile() === gone.file) this.expandedFile.set(null);
     this.items.set(next);
+  }
+
+  /** Render a small first-page thumbnail (PDF) or object-URL (image), cached by File. */
+  private async buildThumb(file: File): Promise<void> {
+    const kind = this.fileKind(file);
+    if (kind === 'image') {
+      const url = URL.createObjectURL(file);
+      this.objectUrls.push(url);
+      this.thumbs.set(file, url);
+      this.thumbTick.update((v) => v + 1);
+      return;
+    }
+    if (kind !== 'pdf') return;
+    try {
+      const buf = await file.arrayBuffer();
+      const doc = await loadPdf(buf);
+      this.pageCounts.set(file, doc.numPages);
+      const page = await doc.getPage(1);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const base = page.getViewport({ scale: 1 });
+      const scale = (84 * dpr) / base.width;
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(vp.width);
+      canvas.height = Math.round(vp.height);
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        await page.render({ canvasContext: ctx, viewport: vp }).promise;
+        this.thumbs.set(file, canvas.toDataURL('image/png'));
+      }
+      void doc.destroy();
+    } catch {
+      // Leave the thumbnail unset — the row simply shows no preview.
+    } finally {
+      this.thumbTick.update((v) => v + 1);
+    }
+  }
+
+  private revokeUrls(): void {
+    for (const url of this.objectUrls) URL.revokeObjectURL(url);
+    this.objectUrls.length = 0;
   }
 
   onDragOver(ev: DragEvent, over: number): void {
@@ -328,6 +645,10 @@ export class WizardPage {
     this.step.set(Math.max(this.step() - 1, 0));
   }
   restart(): void {
+    this.revokeUrls();
+    this.thumbs.clear();
+    this.pageCounts.clear();
+    this.expandedFile.set(null);
     this.items.set([]);
     this.step.set(0);
     this.result.set(null);

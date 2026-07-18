@@ -447,7 +447,11 @@
       "compressNo": "hayır",
       "preparing": "Hazırlanıyor {{current}}/{{total}}: {{name}}",
       "merging": "Birleştiriliyor…",
-      "compressing": "Sıkıştırılıyor…"
+      "compressing": "Sıkıştırılıyor…",
+      "choosePages": "Sayfaları seç",
+      "allPages": "Tüm sayfalar",
+      "rangeSummary": "Sayfalar {{range}}",
+      "rangeManual": "Veya bir aralık yazın"
     },
     "pipeline": {
       "title": "İş akışı",

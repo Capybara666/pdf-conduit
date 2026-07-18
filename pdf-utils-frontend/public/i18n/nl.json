@@ -447,7 +447,11 @@
       "compressNo": "nee",
       "preparing": "Voorbereiden {{current}}/{{total}}: {{name}}",
       "merging": "Samenvoegen…",
-      "compressing": "Comprimeren…"
+      "compressing": "Comprimeren…",
+      "choosePages": "Pagina's kiezen",
+      "allPages": "Alle pagina's",
+      "rangeSummary": "Pagina's {{range}}",
+      "rangeManual": "Of typ een bereik"
     },
     "pipeline": {
       "title": "Pijplijn",

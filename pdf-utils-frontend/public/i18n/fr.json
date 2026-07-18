@@ -447,7 +447,11 @@
       "compressNo": "non",
       "preparing": "Préparation de {{current}}/{{total}} : {{name}}",
       "merging": "Fusion en cours…",
-      "compressing": "Compression en cours…"
+      "compressing": "Compression en cours…",
+      "choosePages": "Choisir les pages",
+      "allPages": "Toutes les pages",
+      "rangeSummary": "Pages {{range}}",
+      "rangeManual": "Ou saisir une plage"
     },
     "pipeline": {
       "title": "Pipeline",
