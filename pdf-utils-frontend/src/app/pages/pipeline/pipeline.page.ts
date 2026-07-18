@@ -28,6 +28,7 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
   { name: 'UNLOCK', label: 'Unlock', isSource: false, isReduce: false, isExport: false },
   { name: 'METADATA', label: 'Metadata', isSource: false, isReduce: false, isExport: false },
   { name: 'WATERMARK', label: 'Watermark', isSource: false, isReduce: false, isExport: false },
+  { name: 'NUP', label: 'N-up', isSource: false, isReduce: false, isExport: false },
   { name: 'TO_IMAGES', label: 'To Images', isSource: false, isReduce: false, isExport: true },
   { name: 'TO_TEXT', label: 'To Text', isSource: false, isReduce: false, isExport: true },
 ];
@@ -45,6 +46,7 @@ const KIND_TO_OP: Record<string, string> = {
   UNLOCK: 'unlock',
   METADATA: 'metadata',
   WATERMARK: 'watermark',
+  NUP: 'nup',
   TO_IMAGES: 'to-images',
   TO_TEXT: 'to-text',
 };

@@ -65,6 +65,9 @@ public class PipelineNode {
     public double cropBottom = 0;
     public double cropLeft = 0;
     public boolean cropMm = false;
+    // NUP — imposition grid preset; booklet mode overrides the grid with 2-up saddle-stitch.
+    public com.pdfconduit.core.model.NupLayout nupLayout = com.pdfconduit.core.model.NupLayout.TWO_UP;
+    public boolean nupBooklet = false;
 
     // TO_IMAGES export
     public com.pdfconduit.core.model.ImageFormat imageFormat = com.pdfconduit.core.model.ImageFormat.PNG;

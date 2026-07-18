@@ -152,6 +152,12 @@ export const OP_ICONS: Record<string, string> = {
       '<path d="M6.2 18 C11.5 18 12 12 17.8 12"/>',
   ),
 
+  nup: g(
+    '<path d="M3 5.5 H12 V18.5 H3 Z" fill="currentColor" stroke="none" opacity=".18"/>' +
+      '<path d="M3 5.5 H21 V18.5 H3 Z"/>' +
+      '<path d="M12 5.5 V18.5"/>',
+  ),
+
   // Pipeline SOURCE node (not an operation) — a plain page glyph.
   source: g('<path d="M6 2h9l5 5v15H6z M15 2v5h5"/>'),
 };
@@ -185,6 +191,13 @@ export const NAV_ITEMS: NavItem[] = [
     description: 'Reorder, reverse or duplicate pages.',
     group: 'organise',
     icon: OP_ICONS['arrange'],
+  },
+  {
+    id: 'nup',
+    label: 'N-up',
+    description: 'Place several pages per sheet, or fold a booklet.',
+    group: 'organise',
+    icon: OP_ICONS['nup'],
   },
 
   // Optimise

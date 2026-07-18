@@ -9,6 +9,7 @@ public enum SidebarItem {
     COMPRESS ("⊟", "Compress",  OperationType.COMPRESS),
     ROTATE   ("↻", "Rotate",    OperationType.ROTATE),
     ARRANGE  ("⇅", "Arrange",   OperationType.ARRANGE),
+    NUP      ("▦", "N-up",      OperationType.NUP),
     IMAGES   ("🖼", "To PDF",    OperationType.IMAGES_TO_PDF),
     TO_IMAGES("🏞", "To Images", OperationType.PDF_TO_IMAGES),
     TO_TEXT  ("🆎", "To Text",   OperationType.PDF_TO_TEXT),

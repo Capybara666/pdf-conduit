@@ -71,6 +71,10 @@
       "label": "Düzenle",
       "description": "Sayfaları yeniden sıralayın, tersine çevirin veya çoğaltın."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Bir yaprağa birden fazla sayfa yerleştirin veya bir kitapçık katlayın."
+    },
     "compress": {
       "label": "Sıkıştır",
       "description": "Bir PDF'i hedef boyuta doğru küçültün."
@@ -402,6 +406,24 @@
       "orderHelp3": "tekrarlar çoğaltır",
       "submit": "Düzenle",
       "loading": "Düzenleniyor…"
+    },
+    "nup": {
+      "title": "N-up / Kitapçık",
+      "description": "Bir yaprağa birden fazla sayfa yerleştirin veya tel dikişli bir kitapçık katlayın.",
+      "privacyLine": "Dosyalarınız gizli şekilde montajlanır ve asla saklanmaz.",
+      "hint": "PDF dosyaları — birden fazla dosya ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi — her biri ayrı ayrı montajlanır; sonuçlar ZIP olarak döner.",
+      "layout": "Düzen",
+      "layout2up": "sayfa başına 2",
+      "layout4up": "sayfa başına 4 (2×2)",
+      "layout6up": "sayfa başına 6 (2×3)",
+      "layout8up": "sayfa başına 8 (2×4)",
+      "layout9up": "sayfa başına 9 (3×3)",
+      "mode": "Mod",
+      "booklet": "Kitapçık (tel dikiş)",
+      "bookletHelp": "Yazdırılıp katlanan bir deste sırayla okunacak şekilde sayfaları yeniden düzenleyin.",
+      "submit": "Montajla",
+      "loading": "Montajlanıyor…"
     },
     "toPdf": {
       "title": "PDF'e",

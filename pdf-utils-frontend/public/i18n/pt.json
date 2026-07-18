@@ -71,6 +71,10 @@
       "label": "Organizar",
       "description": "Reordene, inverta ou duplique páginas."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Coloque várias páginas por folha ou dobre um folheto."
+    },
     "compress": {
       "label": "Comprimir",
       "description": "Reduza um PDF para um tamanho pretendido."
@@ -402,6 +406,24 @@
       "orderHelp3": "repetições duplicam",
       "submit": "Organizar",
       "loading": "A organizar…"
+    },
+    "nup": {
+      "title": "N-up / Folheto",
+      "description": "Coloque várias páginas por folha ou dobre um folheto agrafado a cavalo.",
+      "privacyLine": "Os seus ficheiros são impostos de forma privada e nunca são armazenados.",
+      "hint": "Ficheiros PDF — vários ficheiros são devolvidos como ZIP.",
+      "batchNote": "{{count}} ficheiros selecionados — cada um é imposto separadamente; os resultados são devolvidos como ZIP.",
+      "layout": "Esquema",
+      "layout2up": "2 por página",
+      "layout4up": "4 por página (2×2)",
+      "layout6up": "6 por página (2×3)",
+      "layout8up": "8 por página (2×4)",
+      "layout9up": "9 por página (3×3)",
+      "mode": "Modo",
+      "booklet": "Folheto (agrafado a cavalo)",
+      "bookletHelp": "Reordene as páginas para que uma pilha impressa e dobrada seja lida pela ordem correta.",
+      "submit": "Impor",
+      "loading": "A impor…"
     },
     "toPdf": {
       "title": "Para PDF",

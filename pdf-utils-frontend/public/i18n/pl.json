@@ -71,6 +71,10 @@
       "label": "Uporządkuj",
       "description": "Zmień kolejność, odwróć lub powiel strony."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Umieść kilka stron na arkuszu lub złóż broszurę."
+    },
     "compress": {
       "label": "Kompresuj",
       "description": "Zmniejsz plik PDF do docelowego rozmiaru."
@@ -402,6 +406,24 @@
       "orderHelp3": "powtórzenia duplikują",
       "submit": "Uporządkuj",
       "loading": "Porządkowanie…"
+    },
+    "nup": {
+      "title": "N-up / Broszura",
+      "description": "Umieść kilka stron na arkuszu lub złóż broszurę szytą zeszytowo.",
+      "privacyLine": "Twoje pliki są impozowane prywatnie i nigdy nie są przechowywane.",
+      "hint": "Pliki PDF — wiele plików wraca jako ZIP.",
+      "batchNote": "Wybrano plików: {{count}} — każdy jest impozowany osobno; wyniki wracają jako ZIP.",
+      "layout": "Układ",
+      "layout2up": "2 na stronę",
+      "layout4up": "4 na stronę (2×2)",
+      "layout6up": "6 na stronę (2×3)",
+      "layout8up": "8 na stronę (2×4)",
+      "layout9up": "9 na stronę (3×3)",
+      "mode": "Tryb",
+      "booklet": "Broszura (szycie zeszytowe)",
+      "bookletHelp": "Zmień kolejność stron, aby wydrukowany i złożony plik czytał się po kolei.",
+      "submit": "Impozuj",
+      "loading": "Impozowanie…"
     },
     "toPdf": {
       "title": "Do PDF",

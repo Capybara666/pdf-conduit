@@ -71,6 +71,10 @@
       "label": "Arrange",
       "description": "Reorder, reverse or duplicate pages."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Place several pages per sheet, or fold a booklet."
+    },
     "compress": {
       "label": "Compress",
       "description": "Shrink a PDF toward a target size."
@@ -402,6 +406,24 @@
       "orderHelp3": "repeats duplicate",
       "submit": "Arrange",
       "loading": "Arranging…"
+    },
+    "nup": {
+      "title": "N-up / Booklet",
+      "description": "Place several pages per sheet, or fold a saddle-stitch booklet.",
+      "privacyLine": "Your files are imposed privately and never stored.",
+      "hint": "PDF files — multiple files come back as a ZIP.",
+      "batchNote": "{{count}} files selected — each is imposed separately; results come back as a ZIP.",
+      "layout": "Layout",
+      "layout2up": "2 per page",
+      "layout4up": "4 per page (2×2)",
+      "layout6up": "6 per page (2×3)",
+      "layout8up": "8 per page (2×4)",
+      "layout9up": "9 per page (3×3)",
+      "mode": "Mode",
+      "booklet": "Booklet (saddle-stitch)",
+      "bookletHelp": "Reorder pages so a printed, folded stack reads in order.",
+      "submit": "Impose",
+      "loading": "Imposing…"
     },
     "toPdf": {
       "title": "To PDF",

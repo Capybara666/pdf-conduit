@@ -138,6 +138,9 @@ export class ApiService {
   redact(formData: FormData): Observable<RunResult> {
     return this.runOperation('redact', formData);
   }
+  nup(formData: FormData): Observable<RunResult> {
+    return this.runOperation('nup', formData);
+  }
   toImages(formData: FormData): Observable<RunResult> {
     return this.runOperation('to-images', formData);
   }

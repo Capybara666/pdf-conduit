@@ -25,10 +25,13 @@ export type NodeKindName =
   | 'UNLOCK'
   | 'METADATA'
   | 'WATERMARK'
+  | 'NUP'
   | 'TO_IMAGES'
   | 'TO_TEXT';
 
 export type SplitModeName = 'COMBINE' | 'SEPARATE';
+/** Must match `com.pdfconduit.core.model.NupLayout` enum names. */
+export type NupLayoutName = 'TWO_UP' | 'FOUR_UP' | 'SIX_UP' | 'EIGHT_UP' | 'NINE_UP';
 export type PageSizeName = 'FIT' | 'A4' | 'A3' | 'LETTER';
 export type ImageFormatName = 'PNG' | 'JPEG';
 export type TextFormatName = 'TXT' | 'DOCX';
@@ -59,6 +62,8 @@ export interface PipelineNodeJson {
   wmOpacity?: number;
   wmRotation?: number;
   wmScale?: number;
+  nupLayout?: NupLayoutName;
+  nupBooklet?: boolean;
   imageFormat?: ImageFormatName;
   imageDpi?: number;
   jpegQuality?: number;
@@ -129,6 +134,8 @@ export interface CanvasNode {
   wmOpacity: number;
   wmRotation: number;
   wmScale: number;
+  nupLayout: NupLayoutName;
+  nupBooklet: boolean;
   imageFormat: ImageFormatName;
   imageDpi: number;
   textFormat: TextFormatName;
@@ -160,6 +167,8 @@ export function newCanvasNode(id: string, kind: NodeKindName, x: number, y: numb
     wmOpacity: 0.3,
     wmRotation: 45,
     wmScale: 0.5,
+    nupLayout: 'TWO_UP',
+    nupBooklet: false,
     imageFormat: 'PNG',
     imageDpi: 150,
     textFormat: 'TXT',
@@ -206,6 +215,8 @@ export function toWireNode(n: CanvasNode): PipelineNodeJson {
         wmRotation: n.wmRotation,
         wmScale: n.wmScale,
       };
+    case 'NUP':
+      return { ...base, nupLayout: n.nupLayout, nupBooklet: n.nupBooklet };
     case 'TO_IMAGES':
       return { ...base, imageFormat: n.imageFormat, imageDpi: n.imageDpi };
     case 'TO_TEXT':
@@ -237,6 +248,8 @@ export function fromWireNode(w: PipelineNodeJson): CanvasNode {
   if (w.wmOpacity != null) n.wmOpacity = w.wmOpacity;
   if (w.wmRotation != null) n.wmRotation = w.wmRotation;
   if (w.wmScale != null) n.wmScale = w.wmScale;
+  if (w.nupLayout != null) n.nupLayout = w.nupLayout;
+  if (w.nupBooklet != null) n.nupBooklet = w.nupBooklet;
   if (w.imageFormat != null) n.imageFormat = w.imageFormat;
   if (w.imageDpi != null) n.imageDpi = w.imageDpi;
   if (w.textFormat != null) n.textFormat = w.textFormat;

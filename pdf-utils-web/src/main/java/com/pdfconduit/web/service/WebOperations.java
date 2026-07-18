@@ -293,6 +293,14 @@ public class WebOperations {
                                  double left, boolean millimetres) throws PdfOperationException {
         return MemoryOperations.runBatch(OperationType.CROP, pdfData(inputs), names(inputs),
             pdf -> PdfCropper.executeBytes(pdf, top, right, bottom, left, millimetres));
+    // --------------------------------------------------------------------- NUP
+
+    /** Batch N-up / booklet imposition: each input imposed to its own PDF, order preserved. */
+    public List<NamedBytes> nup(List<NamedBytes> inputs,
+                                com.pdfconduit.core.model.NupLayout layout, boolean booklet)
+            throws PdfOperationException {
+        return MemoryOperations.runBatch(OperationType.NUP, pdfData(inputs), names(inputs),
+            pdf -> com.pdfconduit.core.operations.PdfNupImposer.executeBytes(pdf, layout, booklet));
     }
 
     // ------------------------------------------------------------------ REDACT

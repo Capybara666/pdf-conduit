@@ -71,6 +71,10 @@
       "label": "Réorganiser",
       "description": "Réordonnez, inversez ou dupliquez des pages."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Placez plusieurs pages par feuille ou pliez un livret."
+    },
     "compress": {
       "label": "Compresser",
       "description": "Réduisez un PDF vers une taille cible."
@@ -402,6 +406,24 @@
       "orderHelp3": "les répétitions dupliquent",
       "submit": "Réorganiser",
       "loading": "Réorganisation en cours…"
+    },
+    "nup": {
+      "title": "N-up / Livret",
+      "description": "Placez plusieurs pages par feuille ou pliez un livret piqué à cheval.",
+      "privacyLine": "Vos fichiers sont imposés en toute confidentialité et ne sont jamais conservés.",
+      "hint": "Fichiers PDF — plusieurs fichiers sont renvoyés dans un ZIP.",
+      "batchNote": "{{count}} fichiers sélectionnés — chacun est imposé séparément ; les résultats sont renvoyés dans un ZIP.",
+      "layout": "Disposition",
+      "layout2up": "2 par page",
+      "layout4up": "4 par page (2×2)",
+      "layout6up": "6 par page (2×3)",
+      "layout8up": "8 par page (2×4)",
+      "layout9up": "9 par page (3×3)",
+      "mode": "Mode",
+      "booklet": "Livret (piqûre à cheval)",
+      "bookletHelp": "Réorganisez les pages pour qu'une pile imprimée et pliée se lise dans l'ordre.",
+      "submit": "Imposer",
+      "loading": "Imposition en cours…"
     },
     "toPdf": {
       "title": "Vers PDF",

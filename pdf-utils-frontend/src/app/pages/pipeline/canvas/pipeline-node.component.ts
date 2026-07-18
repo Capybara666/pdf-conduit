@@ -21,6 +21,7 @@ const KIND_TO_OP: Record<string, string> = {
   UNLOCK: 'unlock',
   METADATA: 'metadata',
   WATERMARK: 'watermark',
+  NUP: 'nup',
   TO_IMAGES: 'to-images',
   TO_TEXT: 'to-text',
 };

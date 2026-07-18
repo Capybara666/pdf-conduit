@@ -17,6 +17,7 @@ public enum NodeKind {
     METADATA("Metadata", OperationType.METADATA),
     WATERMARK("Watermark", OperationType.WATERMARK),
     CROP("Crop", OperationType.CROP),
+    NUP("N-up", OperationType.NUP),
     // Terminal exports — output is not a PDF, so they cannot feed downstream nodes.
     TO_IMAGES("To Images", OperationType.PDF_TO_IMAGES),
     TO_TEXT("To Text", OperationType.PDF_TO_TEXT);

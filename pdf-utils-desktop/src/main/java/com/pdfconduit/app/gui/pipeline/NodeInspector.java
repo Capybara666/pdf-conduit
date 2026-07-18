@@ -79,6 +79,7 @@ class NodeInspector extends FlowPane {
             case METADATA -> buildMetadata(node);
             case WATERMARK -> buildWatermark(node);
             case CROP -> buildCrop(node);
+            case NUP -> buildNup(node);
             case TO_IMAGES -> buildToImages(node);
             case TO_TEXT -> buildToText(node);
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
@@ -199,6 +200,29 @@ class NodeInspector extends FlowPane {
         box.setValue(node.pageSize);
         box.valueProperty().addListener((o, a, b) -> { if (b != null) { node.pageSize = b; canvas.refreshNode(node); } });
         getChildren().add(group("pipeline.node.pagesize", box));
+    }
+
+    private void buildNup(PipelineNode node) {
+        ComboBox<com.pdfconduit.core.model.NupLayout> layout =
+            new ComboBox<>(FXCollections.observableArrayList(com.pdfconduit.core.model.NupLayout.values()));
+        layout.setValue(node.nupLayout);
+        layout.setConverter(new javafx.util.StringConverter<>() {
+            @Override public String toString(com.pdfconduit.core.model.NupLayout l) {
+                return l == null ? "" : I18n.t("nup.layout." + l.id());
+            }
+            @Override public com.pdfconduit.core.model.NupLayout fromString(String s) { return null; }
+        });
+        layout.setPrefWidth(120);
+        layout.setMinWidth(Region.USE_PREF_SIZE);
+        layout.valueProperty().addListener((o, a, b) -> { if (b != null) { node.nupLayout = b; canvas.refreshNode(node); } });
+
+        CheckBox booklet = new CheckBox(I18n.t("nup.booklet"));
+        booklet.setSelected(node.nupBooklet);
+        booklet.setMinWidth(Region.USE_PREF_SIZE);
+        layout.disableProperty().bind(booklet.selectedProperty());
+        booklet.selectedProperty().addListener((o, a, b) -> { node.nupBooklet = b; canvas.refreshNode(node); });
+
+        getChildren().addAll(group("nup.layout.label", layout), booklet);
     }
 
     private void buildToImages(PipelineNode node) {

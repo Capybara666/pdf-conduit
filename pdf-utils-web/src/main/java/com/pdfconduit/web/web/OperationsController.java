@@ -270,6 +270,19 @@ public class OperationsController {
         List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
             () -> ops.crop(inputs, t, r, b, l, mm));
         return Responses.batch("crop", results, MediaType.APPLICATION_PDF);
+    // ---------------------------------------------------------------------- NUP
+
+    @PostMapping(value = "/nup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> nup(@RequestParam("files") List<MultipartFile> files,
+                                      @RequestParam(required = false) String layout,
+                                      @RequestParam(defaultValue = "false") boolean booklet)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        guardCount(files, maxFiles);
+        var nupLayout = com.pdfconduit.core.model.NupLayout.fromId(layout);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
+            () -> ops.nup(inputs, nupLayout, booklet));
+        return Responses.batch("nup", results, MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------- REDACT

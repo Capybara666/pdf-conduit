@@ -46,6 +46,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/arrange/arrange.page').then((m) => m.ArrangePage),
   },
   {
+    path: 'nup',
+    data: { titleKey: 'op.nup.label' },
+    loadComponent: () => import('./pages/nup/nup.page').then((m) => m.NupPage),
+  },
+  {
     path: 'to-pdf',
     data: { titleKey: 'op.to-pdf.label' },
     loadComponent: () => import('./pages/to-pdf/to-pdf.page').then((m) => m.ToPdfPage),

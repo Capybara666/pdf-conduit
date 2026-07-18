@@ -148,6 +148,7 @@ public class MainWindow {
             case COMPRESS -> new CompressPanel();
             case ROTATE   -> new RotatePanel();
             case ARRANGE  -> new ArrangePanel();
+            case NUP      -> new NupPanel();
             case IMAGES   -> new ImagesToPdfPanel();
             case TO_IMAGES -> new PdfToImagesPanel();
             case TO_TEXT  -> new PdfToTextPanel();

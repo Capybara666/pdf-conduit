@@ -177,6 +177,9 @@ class NodeView extends HBox {
                 fmt(node.cropTop) + "/" + fmt(node.cropRight) + "/"
                     + fmt(node.cropBottom) + "/" + fmt(node.cropLeft),
                 node.cropMm ? "mm" : "pt");
+            case NUP -> node.nupBooklet
+                ? I18n.t("nup.booklet")
+                : I18n.t("nup.layout." + node.nupLayout.id());
             case TO_IMAGES -> node.imageFormat + "  ·  " + node.imageDpi + " DPI";
             case TO_TEXT -> "." + node.textFormat.extension();
         });

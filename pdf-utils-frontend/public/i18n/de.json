@@ -71,6 +71,10 @@
       "label": "Anordnen",
       "description": "Seiten neu ordnen, umkehren oder duplizieren."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Mehrere Seiten pro Blatt platzieren oder eine Broschüre falzen."
+    },
     "compress": {
       "label": "Komprimieren",
       "description": "Ein PDF auf eine Zielgröße verkleinern."
@@ -402,6 +406,24 @@
       "orderHelp3": "Wiederholungen duplizieren",
       "submit": "Anordnen",
       "loading": "Wird angeordnet…"
+    },
+    "nup": {
+      "title": "N-up / Broschüre",
+      "description": "Mehrere Seiten pro Blatt platzieren oder eine Broschüre mit Rückenheftung falzen.",
+      "privacyLine": "Ihre Dateien werden privat ausgeschossen und niemals gespeichert.",
+      "hint": "PDF-Dateien – mehrere Dateien werden als ZIP zurückgegeben.",
+      "batchNote": "{{count}} Dateien ausgewählt – jede wird separat ausgeschossen; die Ergebnisse werden als ZIP zurückgegeben.",
+      "layout": "Layout",
+      "layout2up": "2 pro Seite",
+      "layout4up": "4 pro Seite (2×2)",
+      "layout6up": "6 pro Seite (2×3)",
+      "layout8up": "8 pro Seite (2×4)",
+      "layout9up": "9 pro Seite (3×3)",
+      "mode": "Modus",
+      "booklet": "Broschüre (Rückenheftung)",
+      "bookletHelp": "Seiten so anordnen, dass ein gedruckter, gefalzter Stapel in der richtigen Reihenfolge lesbar ist.",
+      "submit": "Ausschießen",
+      "loading": "Wird ausgeschossen…"
     },
     "toPdf": {
       "title": "In PDF",

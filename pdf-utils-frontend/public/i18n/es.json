@@ -71,6 +71,10 @@
       "label": "Ordenar",
       "description": "Reordena, invierte o duplica páginas."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Coloca varias páginas por hoja o dobla un cuadernillo."
+    },
     "compress": {
       "label": "Comprimir",
       "description": "Reduce un PDF hasta un tamaño objetivo."
@@ -402,6 +406,24 @@
       "orderHelp3": "repetir duplica",
       "submit": "Ordenar",
       "loading": "Ordenando…"
+    },
+    "nup": {
+      "title": "N-up / Cuadernillo",
+      "description": "Coloca varias páginas por hoja o dobla un cuadernillo cosido a caballete.",
+      "privacyLine": "Tus archivos se imponen de forma privada y nunca se almacenan.",
+      "hint": "Archivos PDF: varios archivos se devuelven como ZIP.",
+      "batchNote": "{{count}} archivos seleccionados: cada uno se impone por separado; los resultados se devuelven como ZIP.",
+      "layout": "Disposición",
+      "layout2up": "2 por página",
+      "layout4up": "4 por página (2×2)",
+      "layout6up": "6 por página (2×3)",
+      "layout8up": "8 por página (2×4)",
+      "layout9up": "9 por página (3×3)",
+      "mode": "Modo",
+      "booklet": "Cuadernillo (cosido a caballete)",
+      "bookletHelp": "Reordena las páginas para que una pila impresa y doblada se lea en orden.",
+      "submit": "Imponer",
+      "loading": "Imponiendo…"
     },
     "toPdf": {
       "title": "A PDF",

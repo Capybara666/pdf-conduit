@@ -71,6 +71,10 @@
       "label": "Schikken",
       "description": "Herschik, keer om of dupliceer pagina's."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Plaats meerdere pagina's per vel of vouw een boekje."
+    },
     "compress": {
       "label": "Comprimeren",
       "description": "Verklein een PDF naar een doelgrootte."
@@ -402,6 +406,24 @@
       "orderHelp3": "herhalingen dupliceren",
       "submit": "Schikken",
       "loading": "Schikken…"
+    },
+    "nup": {
+      "title": "N-up / Boekje",
+      "description": "Plaats meerdere pagina's per vel of vouw een boekje met rugnietje.",
+      "privacyLine": "Uw bestanden worden privé geïmposeerd en nooit opgeslagen.",
+      "hint": "PDF-bestanden — meerdere bestanden komen terug als ZIP.",
+      "batchNote": "{{count}} bestanden geselecteerd — elk wordt afzonderlijk geïmposeerd; de resultaten komen terug als ZIP.",
+      "layout": "Lay-out",
+      "layout2up": "2 per pagina",
+      "layout4up": "4 per pagina (2×2)",
+      "layout6up": "6 per pagina (2×3)",
+      "layout8up": "8 per pagina (2×4)",
+      "layout9up": "9 per pagina (3×3)",
+      "mode": "Modus",
+      "booklet": "Boekje (rugnietje)",
+      "bookletHelp": "Herschik pagina's zodat een gedrukte, gevouwen stapel op volgorde leest.",
+      "submit": "Imposeren",
+      "loading": "Imposeren…"
     },
     "toPdf": {
       "title": "Naar PDF",

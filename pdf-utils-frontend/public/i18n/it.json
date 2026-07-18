@@ -71,6 +71,10 @@
       "label": "Riordina",
       "description": "Riordina, inverti o duplica le pagine."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "Disponi più pagine per foglio o piega un opuscolo."
+    },
     "compress": {
       "label": "Comprimi",
       "description": "Riduci un PDF verso una dimensione desiderata."
@@ -402,6 +406,24 @@
       "orderHelp3": "le ripetizioni duplicano",
       "submit": "Riordina",
       "loading": "Riordino in corso…"
+    },
+    "nup": {
+      "title": "N-up / Opuscolo",
+      "description": "Disponi più pagine per foglio o piega un opuscolo con punto metallico a sella.",
+      "privacyLine": "I tuoi file vengono imposti in privato e non vengono mai memorizzati.",
+      "hint": "File PDF: più file vengono restituiti come ZIP.",
+      "batchNote": "{{count}} file selezionati: ciascuno viene imposto separatamente; i risultati vengono restituiti come ZIP.",
+      "layout": "Layout",
+      "layout2up": "2 per pagina",
+      "layout4up": "4 per pagina (2×2)",
+      "layout6up": "6 per pagina (2×3)",
+      "layout8up": "8 per pagina (2×4)",
+      "layout9up": "9 per pagina (3×3)",
+      "mode": "Modalità",
+      "booklet": "Opuscolo (punto metallico a sella)",
+      "bookletHelp": "Riordina le pagine in modo che una pila stampata e piegata si legga in ordine.",
+      "submit": "Imponi",
+      "loading": "Imposizione in corso…"
     },
     "toPdf": {
       "title": "In PDF",

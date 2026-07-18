@@ -71,6 +71,10 @@
       "label": "정렬",
       "description": "페이지 순서를 바꾸거나, 뒤집거나, 복제합니다."
     },
+    "nup": {
+      "label": "N-up",
+      "description": "여러 페이지를 한 장에 배치하거나 소책자로 접습니다."
+    },
     "compress": {
       "label": "압축",
       "description": "PDF를 목표 크기에 맞춰 줄입니다."
@@ -402,6 +406,24 @@
       "orderHelp3": "반복으로 복제",
       "submit": "정렬",
       "loading": "정렬 중…"
+    },
+    "nup": {
+      "title": "N-up / 소책자",
+      "description": "여러 페이지를 한 장에 배치하거나 중철 소책자로 접습니다.",
+      "privacyLine": "파일은 비공개로 배치되며 저장되지 않습니다.",
+      "hint": "PDF 파일 — 여러 파일은 ZIP으로 반환됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨 — 각 파일이 개별적으로 배치되며 결과는 ZIP으로 반환됩니다.",
+      "layout": "레이아웃",
+      "layout2up": "한 장에 2쪽",
+      "layout4up": "한 장에 4쪽 (2×2)",
+      "layout6up": "한 장에 6쪽 (2×3)",
+      "layout8up": "한 장에 8쪽 (2×4)",
+      "layout9up": "한 장에 9쪽 (3×3)",
+      "mode": "모드",
+      "booklet": "소책자 (중철)",
+      "bookletHelp": "인쇄해 접은 묶음이 순서대로 읽히도록 페이지를 재배열합니다.",
+      "submit": "배치",
+      "loading": "배치 중…"
     },
     "toPdf": {
       "title": "PDF로 변환",

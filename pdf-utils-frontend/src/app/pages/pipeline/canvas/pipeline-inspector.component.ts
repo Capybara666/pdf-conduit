@@ -16,6 +16,7 @@ const KIND_TO_OP: Record<string, string> = {
   UNLOCK: 'unlock',
   METADATA: 'metadata',
   WATERMARK: 'watermark',
+  NUP: 'nup',
   TO_IMAGES: 'to-images',
   TO_TEXT: 'to-text',
 };
@@ -146,6 +147,19 @@ const KIND_TO_OP: Record<string, string> = {
           <div class="field"><label>{{ 'pages.pipeline.fieldOpacity' | transloco }}</label><input type="number" min="0.05" max="1" step="0.05" [value]="node.wmOpacity" (input)="emit('wmOpacity', +$any($event.target).value)" /></div>
           <div class="field"><label>{{ 'pages.pipeline.fieldRotation' | transloco }}</label><input type="number" min="0" max="360" step="5" [value]="node.wmRotation" (input)="emit('wmRotation', +$any($event.target).value)" /></div>
           <div class="field"><label>{{ 'pages.pipeline.fieldScale' | transloco }}</label><input type="number" min="0.1" max="1" step="0.05" [value]="node.wmScale" (input)="emit('wmScale', +$any($event.target).value)" /></div>
+        }
+        @case ('NUP') {
+          <div class="field">
+            <label>{{ 'pages.nup.layout' | transloco }}</label>
+            <select [value]="node.nupLayout" [disabled]="node.nupBooklet" (change)="emit('nupLayout', $any($event.target).value)">
+              <option value="TWO_UP">{{ 'pages.nup.layout2up' | transloco }}</option>
+              <option value="FOUR_UP">{{ 'pages.nup.layout4up' | transloco }}</option>
+              <option value="SIX_UP">{{ 'pages.nup.layout6up' | transloco }}</option>
+              <option value="EIGHT_UP">{{ 'pages.nup.layout8up' | transloco }}</option>
+              <option value="NINE_UP">{{ 'pages.nup.layout9up' | transloco }}</option>
+            </select>
+          </div>
+          <label class="check"><input type="checkbox" [checked]="node.nupBooklet" (change)="emit('nupBooklet', $any($event.target).checked)" /> {{ 'pages.nup.booklet' | transloco }}</label>
         }
         @case ('TO_IMAGES') {
           <div class="field">

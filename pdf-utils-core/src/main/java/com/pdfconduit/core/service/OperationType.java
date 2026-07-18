@@ -18,6 +18,7 @@ public enum OperationType {
     WATERMARK     ("watermark",  "_watermarked", Cardinality.MAP,    false),
     CROP          ("crop",       "_cropped",     Cardinality.MAP,    false),
     REDACT        ("redact",     "_redacted",    Cardinality.MAP,    false),
+    NUP           ("nup",        "_nup",         Cardinality.MAP,    false),
     // Terminal exports: output is not a PDF. They appear as terminal-only pipeline nodes.
     PDF_TO_IMAGES ("to-images",  "_images",      Cardinality.MAP,    true),
     PDF_TO_TEXT   ("to-text",    "_text",        Cardinality.MAP,    false);
