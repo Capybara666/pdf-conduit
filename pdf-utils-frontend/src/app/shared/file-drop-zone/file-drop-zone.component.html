@@ -5,12 +5,22 @@
   (dragleave)="onDragLeave($event)"
   (drop)="onDrop($event)"
 >
-  <label class="target">
+  <div
+    class="target"
+    role="button"
+    tabindex="0"
+    [attr.aria-label]="label || ('dropzone.defaultLabel' | transloco)"
+    (click)="fileInput.click()"
+    (keydown.enter)="fileInput.click()"
+    (keydown.space)="fileInput.click(); $event.preventDefault()"
+  >
     <input
+      #fileInput
       type="file"
       [multiple]="multiple"
       [accept]="accept"
       (change)="onSelect($event)"
+      tabindex="-1"
       hidden
     />
     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -27,8 +37,47 @@
     @if (hint) {
       <span class="hint">{{ hint }}</span>
     }
-  </label>
+    @if (constraintsText) {
+      <span class="constraints">{{ constraintsText }}</span>
+    }
+  </div>
 </div>
+
+@if (rejections().length) {
+  <div class="rejections" role="alert">
+    <div class="rejections-head">
+      <span class="rejections-title">{{ 'dropzone.rejectedTitle' | transloco }}</span>
+      <button
+        type="button"
+        class="rejections-dismiss"
+        (click)="dismissRejections()"
+        [attr.aria-label]="'dropzone.dismiss' | transloco"
+      >
+        ✕
+      </button>
+    </div>
+    <ul>
+      @for (rejection of rejections(); track $index) {
+        <li>
+          <span class="name" [title]="rejection.file.name">{{ rejection.file.name }}</span>
+          <span class="reason">
+            @switch (rejection.reason) {
+              @case ('size') {
+                {{ 'dropzone.reason.size' | transloco: { size: maxFileSizeMb } }}
+              }
+              @case ('count') {
+                {{ 'dropzone.reason.count' | transloco: { count: maxFiles } }}
+              }
+              @default {
+                {{ 'dropzone.reason.type' | transloco }}
+              }
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  </div>
+}
 
 @if (showList && _files().length) {
   <ul class="file-list">
@@ -47,4 +96,22 @@
       </li>
     }
   </ul>
+}
+
+@if (pageDrop && pageDragging()) {
+  <div class="page-overlay">
+    <div class="page-overlay-inner">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M12 16V4 M8 8l4-4 4 4 M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span>{{ 'dropzone.pageOverlay' | transloco }}</span>
+    </div>
+  </div>
 }

@@ -7,4 +7,9 @@
 export const environment = {
   production: false,
   apiBase: '',
+  /**
+   * Client-side upload cap (MB) shown in and enforced by the shared drop zone.
+   * Mirror this to the backend free-tier limit when it lands.
+   */
+  maxUploadMb: 20,
 };
