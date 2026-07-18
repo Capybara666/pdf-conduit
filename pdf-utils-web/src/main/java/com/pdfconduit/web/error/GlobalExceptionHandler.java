@@ -43,6 +43,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({PdfOperationException.class, PipelineException.class})
     public ResponseEntity<ApiError> onOperationFailed(Exception e) {
+        // The message is already sanitised at the source (core strips LibreOffice stderr / temp
+        // paths); log the full cause server-side so operators keep the diagnostics clients don't get.
+        log.warn("Operation failed", e);
         return body(HttpStatus.UNPROCESSABLE_ENTITY, "operation_failed", e.getMessage());
     }
 

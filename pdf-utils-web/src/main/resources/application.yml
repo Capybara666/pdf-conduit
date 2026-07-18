@@ -59,6 +59,15 @@ pdfconduit:
     # PDF-bomb guard: reject PDFs whose page count exceeds this ceiling.
     pdf:
       max-pages: ${PDFCONDUIT_WEB_PDF_MAX_PAGES:3000}
+    # Raster-render guards (render / to-images / redact): cap requested DPI and per-page output
+    # pixels so a huge dpi/dimension request can't allocate gigabytes and OOM the JVM.
+    render:
+      max-dpi: ${PDFCONDUIT_WEB_RENDER_MAX_DPI:300}
+      max-output-pixels: ${PDFCONDUIT_WEB_RENDER_MAX_OUTPUT_PIXELS:60000000}
+    # Proxies (CIDRs) trusted to set X-Forwarded-For. The real client IP is resolved as the
+    # rightmost address NOT in this list; a forged XFF from an untrusted peer is ignored. Defaults
+    # cover loopback + RFC-1918 private ranges (the docker-compose bridge subnet). Comma-separated.
+    trusted-proxies: ${PDFCONDUIT_WEB_TRUSTED_PROXIES:127.0.0.1/32,::1/128,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
 
 logging:
   level:

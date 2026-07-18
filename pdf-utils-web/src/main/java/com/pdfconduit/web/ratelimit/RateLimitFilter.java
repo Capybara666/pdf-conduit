@@ -51,14 +51,16 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private final int heavyPerMinute;
 
     private final ConcurrentHashMap<String, Buckets> store = new ConcurrentHashMap<>();
+    private final ClientIp clientIp;
     private ScheduledExecutorService cleaner;
 
-    public RateLimitFilter(WebProperties props) {
+    public RateLimitFilter(WebProperties props, ClientIp clientIp) {
         WebProperties.RateLimit rl = props.ratelimit();
         this.enabled = rl.enabled();
         this.burst = rl.burst();
         this.requestsPerMinute = rl.requestsPerMinute();
         this.heavyPerMinute = rl.heavyPerMinute();
+        this.clientIp = clientIp;
     }
 
     @PostConstruct
@@ -87,7 +89,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        Buckets buckets = bucketsFor(ClientIp.resolve(request));
+        Buckets buckets = bucketsFor(clientIp.resolve(request));
 
         ConsumptionProbe general = buckets.general.tryConsumeAndReturnRemaining(1);
         response.setHeader("X-RateLimit-Limit", Integer.toString(burst));
@@ -116,11 +118,38 @@ public class RateLimitFilter extends OncePerRequestFilter {
             Map.of("retryAfterSeconds", retryAfter));
     }
 
+    /** Cap the entries scanned per hot-path eviction so a flood can't turn each request into an O(map) sweep. */
+    private static final int MAX_EVICT_SCAN = 2_048;
+
     private Buckets bucketsFor(String ip) {
-        if (store.size() > MAX_ENTRIES) evictIdle();
+        // Existing keys never trigger eviction; only admitting a brand-new IP when the map is full
+        // does, and then only a bounded scan (the scheduled cleaner does the full sweep off-thread).
+        Buckets existing = store.get(ip);
+        if (existing != null) {
+            existing.lastAccess = System.currentTimeMillis();
+            return existing;
+        }
+        if (store.size() >= MAX_ENTRIES) {
+            evictIdleBounded();
+            if (store.size() >= MAX_ENTRIES) {
+                // Still full after a bounded sweep — shed rather than grow unbounded; reuse a
+                // transient bucket that is not retained, so the map stays capped.
+                return new Buckets(newGeneral(), newHeavy());
+            }
+        }
         Buckets b = store.computeIfAbsent(ip, k -> new Buckets(newGeneral(), newHeavy()));
         b.lastAccess = System.currentTimeMillis();
         return b;
+    }
+
+    /** Removes idle entries but scans at most {@link #MAX_EVICT_SCAN} of them, bounding per-call cost. */
+    private void evictIdleBounded() {
+        long cutoff = System.currentTimeMillis() - IDLE_TTL_MS;
+        int scanned = 0;
+        var it = store.entrySet().iterator();
+        while (it.hasNext() && scanned++ < MAX_EVICT_SCAN) {
+            if (it.next().getValue().lastAccess < cutoff) it.remove();
+        }
     }
 
     private Bucket newGeneral() {

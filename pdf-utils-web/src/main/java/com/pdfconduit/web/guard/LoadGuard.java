@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,6 +21,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -31,9 +32,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * deadline; on timeout the client is shed (503) and the future cancelled.
  *
  * <p>PDFBox work may not honour thread interruption immediately, so {@link Future#cancel(boolean)}
- * only guarantees the caller is released — a stuck task can keep running. The concurrency permit
- * is released as soon as we stop waiting, and a cached thread pool means stuck threads don't block
- * new admissions; combined with the byte cap this bounds how much runaway work can pile up.
+ * only guarantees the <em>caller</em> is released — a stuck task can keep running. Crucially the
+ * concurrency permit and in-flight-byte reservation are released only when the task <em>actually
+ * completes</em> (not when the caller times out), and the executor is bounded to {@code
+ * max-heavy-ops} threads. So a runaway task keeps holding its slot: new admissions are shed (503)
+ * until it finishes, and stuck work can never pile up beyond the fixed thread/permit count.
  */
 @Component
 public class LoadGuard {
@@ -61,7 +64,9 @@ public class LoadGuard {
                 return t;
             }
         };
-        this.executor = Executors.newCachedThreadPool(tf);
+        // Bounded to the permit count: a runaway task ties up one thread AND one permit until it
+        // finishes, so stuck work can never spawn threads without limit.
+        this.executor = Executors.newFixedThreadPool(props.concurrency().maxHeavyOps(), tf);
     }
 
     /** A unit of heavy work, throwing the checked exceptions the controllers already declare. */
@@ -89,30 +94,46 @@ public class LoadGuard {
         }
         if (!acquired) throw new ServerBusyException();
 
-        boolean reserved = false;
-        try {
-            long now = inFlightBytes.addAndGet(bytes);
-            reserved = true;
-            if (now > maxInFlightBytes) {
-                throw new ServerBusyException("Server busy (memory pressure), try again shortly.");
+        // The permit + byte reservation are released exactly once, when the task actually finishes
+        // (see releaseOnce, wired to the future's completion) — NOT in a caller-side finally. A
+        // timed-out caller returns 503 while the task keeps its slot until it truly ends.
+        AtomicBoolean released = new AtomicBoolean();
+        Runnable releaseOnce = () -> {
+            if (released.compareAndSet(false, true)) {
+                inFlightBytes.addAndGet(-bytes);
+                permits.release();
             }
-            Callable<T> callable = task::get;
-            Future<T> future = executor.submit(callable);
+        };
+
+        long now = inFlightBytes.addAndGet(bytes);
+        if (now > maxInFlightBytes) {
+            releaseOnce.run();  // nothing submitted yet; give the reservation straight back
+            throw new ServerBusyException("Server busy (memory pressure), try again shortly.");
+        }
+
+        CompletableFuture<T> result = new CompletableFuture<>();
+        Future<?> running = executor.submit(() -> {
             try {
-                return future.get(timeoutSeconds, TimeUnit.SECONDS);
-            } catch (TimeoutException e) {
-                future.cancel(true);
-                throw new ProcessingTimeoutException();
-            } catch (InterruptedException e) {
-                future.cancel(true);
-                Thread.currentThread().interrupt();
-                throw new ProcessingTimeoutException();
-            } catch (ExecutionException e) {
-                throw rethrow(e.getCause());
+                result.complete(task.get());
+            } catch (Throwable t) {
+                result.completeExceptionally(t);
             }
-        } finally {
-            if (reserved) inFlightBytes.addAndGet(-bytes);
-            permits.release();
+        });
+        // Release the slot the moment the underlying work terminates (success, failure, or a late
+        // interrupt), regardless of whether the caller already timed out and walked away.
+        result.whenComplete((r, e) -> releaseOnce.run());
+
+        try {
+            return result.get(timeoutSeconds, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            running.cancel(true);  // best-effort interrupt; slot frees only once the task really ends
+            throw new ProcessingTimeoutException();
+        } catch (InterruptedException e) {
+            running.cancel(true);
+            Thread.currentThread().interrupt();
+            throw new ProcessingTimeoutException();
+        } catch (ExecutionException e) {
+            throw rethrow(e.getCause());
         }
     }
 

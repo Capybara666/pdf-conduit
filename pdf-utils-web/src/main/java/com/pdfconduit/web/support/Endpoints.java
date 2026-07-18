@@ -23,12 +23,24 @@ public final class Endpoints {
         "/api/pipeline/validate",
         "/api/metadata/read");
 
-    /** Expensive endpoints: subject to the heavy rate bucket and the load-guard/timeout wrapper. */
+    /**
+     * Expensive endpoints: subject to the heavy rate bucket and the load-guard (concurrency /
+     * in-flight-byte / processing-timeout) wrapper. This is every operation endpoint — each one
+     * parses and re-renders arbitrary PDFs, so all must run under the anti-OOM/timeout guard.
+     * Only the read-only / catalog endpoints in {@link #CHEAP} (and metadata/read) are excluded.
+     */
     private static final Set<String> HEAVY = Set.of(
         "/api/compress",
         "/api/merge",
+        "/api/extract",
+        "/api/rotate",
+        "/api/arrange",
         "/api/to-images",
         "/api/to-pdf",
+        "/api/to-text",
+        "/api/protect",
+        "/api/unlock",
+        "/api/metadata",
         "/api/watermark",
         "/api/redact",
         "/api/pipeline/run",

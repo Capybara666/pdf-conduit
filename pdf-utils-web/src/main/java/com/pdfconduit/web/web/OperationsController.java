@@ -89,10 +89,13 @@ public class OperationsController {
                                           @RequestParam(defaultValue = "false") boolean separate)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         NamedBytes in = uploads.read(file);
+        long bytes = in.data().length;
         if (separate) {
-            return Responses.zip(ops.extractSeparate(in, pages), "extract_results.zip");
+            return Responses.zip(loadGuard.execute(bytes, () -> ops.extractSeparate(in, pages)),
+                "extract_results.zip");
         }
-        return Responses.file(ops.extractCombine(in, pages), MediaType.APPLICATION_PDF);
+        return Responses.file(loadGuard.execute(bytes, () -> ops.extractCombine(in, pages)),
+            MediaType.APPLICATION_PDF);
     }
 
     // ----------------------------------------------------------------- COMPRESS
@@ -131,8 +134,10 @@ public class OperationsController {
                                          @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
-        return Responses.batch("rotate", ops.rotate(uploads.readAll(files), pages, angle),
-            MediaType.APPLICATION_PDF);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
+            () -> ops.rotate(inputs, pages, angle));
+        return Responses.batch("rotate", results, MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------ ARRANGE
@@ -142,7 +147,9 @@ public class OperationsController {
                                           @RequestParam String order)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         Params.require(order, "order");
-        return Responses.file(ops.arrange(uploads.read(file), order), MediaType.APPLICATION_PDF);
+        NamedBytes in = uploads.read(file);
+        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.arrange(in, order));
+        return Responses.file(result, MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------- TO-PDF
@@ -164,11 +171,13 @@ public class OperationsController {
     public ResponseEntity<byte[]> protect(@RequestParam("files") List<MultipartFile> files,
                                           @RequestParam String userPassword,
                                           @RequestParam(required = false) String ownerPassword)
-            throws IOException, PdfOperationException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         Params.require(userPassword, "userPassword");
-        return Responses.batch("protect", ops.protect(uploads.readAll(files), userPassword, ownerPassword),
-            MediaType.APPLICATION_PDF);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
+            () -> ops.protect(inputs, userPassword, ownerPassword));
+        return Responses.batch("protect", results, MediaType.APPLICATION_PDF);
     }
 
     // ------------------------------------------------------------------- UNLOCK
@@ -176,11 +185,13 @@ public class OperationsController {
     @PostMapping(value = "/unlock", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> unlock(@RequestParam("files") List<MultipartFile> files,
                                          @RequestParam String password)
-            throws IOException, PdfOperationException {
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         Params.require(password, "password");
-        return Responses.batch("unlock", ops.unlock(uploads.readAll(files), password),
-            MediaType.APPLICATION_PDF);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
+            () -> ops.unlock(inputs, password));
+        return Responses.batch("unlock", results, MediaType.APPLICATION_PDF);
     }
 
     // ---------------------------------------------------------------- WATERMARK
@@ -262,7 +273,8 @@ public class OperationsController {
                                          @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         TextFormat fmt = Params.textFormat(format, TextFormat.TXT);
-        NamedBytes out = ops.toText(uploads.read(file), fmt, pages);
+        NamedBytes in = uploads.read(file);
+        NamedBytes out = loadGuard.execute(in.data().length, () -> ops.toText(in, fmt, pages));
         MediaType type = fmt == TextFormat.TXT
             ? new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8)
             : DOCX;

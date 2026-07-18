@@ -35,13 +35,15 @@ import java.util.Map;
 public class QuotaInterceptor implements HandlerInterceptor {
 
     private final QuotaService quota;
+    private final ClientIp clientIp;
     private final boolean quotaEnabled;
     private final int freeMaxFiles;
     private final long freeMaxFileBytes;
     private final int hardMaxFiles;
 
-    public QuotaInterceptor(QuotaService quota, WebProperties props) {
+    public QuotaInterceptor(QuotaService quota, ClientIp clientIp, WebProperties props) {
         this.quota = quota;
+        this.clientIp = clientIp;
         this.quotaEnabled = props.quota().enabled();
         this.freeMaxFiles = props.quota().freeMaxFiles();
         DataSize freeSize = props.quota().freeMaxFileSize();
@@ -79,7 +81,7 @@ public class QuotaInterceptor implements HandlerInterceptor {
         }
 
         // Daily free quota.
-        String ip = ClientIp.resolve(request);
+        String ip = clientIp.resolve(request);
         long used = quota.used(ip);
         boolean exhausted = used >= quota.dailyLimit();
         // The header must reflect POST-request state: a request that proceeds here will be counted
@@ -106,7 +108,7 @@ public class QuotaInterceptor implements HandlerInterceptor {
         if (!Endpoints.isQuotaOp(Endpoints.path(request))) return;
         int status = response.getStatus();
         if (status >= 200 && status < 300) {
-            quota.increment(ClientIp.resolve(request));
+            quota.increment(clientIp.resolve(request));
         }
     }
 

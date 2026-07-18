@@ -77,9 +77,20 @@ public class QuotaService {
         return LocalDate.now(ZoneOffset.UTC).plusDays(1).atStartOfDay(ZoneOffset.UTC).toEpochSecond();
     }
 
+    /** Cap the entries scanned per hot-path eviction so a flood can't turn each request into an O(map) sweep. */
+    private static final int MAX_EVICT_SCAN = 2_048;
+
     private DayCount entry(String ip) {
-        if (store.size() > MAX_ENTRIES) evictStale();
         long today = LocalDate.now(ZoneOffset.UTC).toEpochDay();
+        DayCount existing = store.get(ip);
+        if (existing == null && store.size() >= MAX_ENTRIES) {
+            evictStaleBounded(today);
+            if (store.size() >= MAX_ENTRIES) {
+                // Still full after a bounded sweep — return a transient counter that is not retained
+                // so the map stays capped (the scheduled hourly cleaner does the full sweep).
+                return new DayCount(today);
+            }
+        }
         DayCount dc = store.computeIfAbsent(ip, k -> new DayCount(today));
         if (dc.epochDay != today) {
             synchronized (dc) {
@@ -95,6 +106,15 @@ public class QuotaService {
     private void evictStale() {
         long today = LocalDate.now(ZoneOffset.UTC).toEpochDay();
         store.entrySet().removeIf(e -> e.getValue().epochDay != today);
+    }
+
+    /** Removes stale (previous-day) counters but scans at most {@link #MAX_EVICT_SCAN}, bounding per-call cost. */
+    private void evictStaleBounded(long today) {
+        int scanned = 0;
+        var it = store.entrySet().iterator();
+        while (it.hasNext() && scanned++ < MAX_EVICT_SCAN) {
+            if (it.next().getValue().epochDay != today) it.remove();
+        }
     }
 
     private static final class DayCount {

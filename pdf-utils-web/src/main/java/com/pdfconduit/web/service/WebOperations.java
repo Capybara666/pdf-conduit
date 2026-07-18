@@ -28,9 +28,13 @@ import com.pdfconduit.core.service.OperationType;
 import com.pdfconduit.core.util.PageOrderParser;
 import com.pdfconduit.core.util.PageRangeParser;
 import com.pdfconduit.core.util.PdfLoader;
+import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.error.OfficeDisabledException;
 import com.pdfconduit.web.guard.OfficeGuard;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -53,10 +57,16 @@ public class WebOperations {
 
     private final OfficeGuard officeGuard;
     private final int maxPages;
+    private final int maxDpi;
+    private final long maxOutputPixels;
+    private final boolean officeEnabled;
 
     public WebOperations(OfficeGuard officeGuard, WebProperties props) {
         this.officeGuard = officeGuard;
         this.maxPages = props.pdf().maxPages();
+        this.maxDpi = props.render().maxDpi();
+        this.maxOutputPixels = props.render().maxOutputPixels();
+        this.officeEnabled = props.officeEnabled();
     }
 
     // ------------------------------------------------------------------ MERGE
@@ -158,9 +168,14 @@ public class WebOperations {
 
     public List<NamedBytes> unlock(List<NamedBytes> inputs, String password)
             throws PdfOperationException {
-        // Unlock operates on the raw (still-encrypted) upload; office/page guards don't apply here.
+        // Unlock operates on the raw (still-encrypted) upload, so the page-count guard can only be
+        // applied AFTER decryption — enforce it on the unlocked result to keep the PDF-bomb ceiling.
         return MemoryOperations.runBatch(OperationType.UNLOCK, data(inputs), names(inputs),
-            pdf -> PdfUnlocker.executeBytes(pdf, password));
+            pdf -> {
+                byte[] out = PdfUnlocker.executeBytes(pdf, password);
+                guardPageCount(out);
+                return out;
+            });
     }
 
     // ---------------------------------------------------------------- METADATA
@@ -190,7 +205,10 @@ public class WebOperations {
 
     public NamedBytes redact(NamedBytes in, List<RedactRegion> regions, int dpi)
             throws PdfOperationException {
-        byte[] out = PdfRedactor.executeBytes(toPdf(in), regions, dpi);
+        byte[] pdf = toPdf(in);
+        // dpi <= 0 means "core default" (PdfRedactor.DEFAULT_DPI); guard against the effective value.
+        guardRender(pdf, dpi > 0 ? dpi : PdfRedactor.DEFAULT_DPI);
+        byte[] out = PdfRedactor.executeBytes(pdf, regions, dpi);
         return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
     }
 
@@ -201,6 +219,7 @@ public class WebOperations {
                                      float jpegQuality)
             throws PdfOperationException, InvalidPageRangeException {
         byte[] pdf = toPdf(in);
+        guardRender(pdf, dpi);
         List<byte[]> images = PdfToImageConverter.executeBytes(pdf, format, dpi,
             range(pagesExpr, pdf), jpegQuality);
         return nameMulti(OperationType.PDF_TO_IMAGES, in.filename(), images, format.extension());
@@ -210,6 +229,11 @@ public class WebOperations {
 
     public NamedBytes toText(NamedBytes in, TextFormat format, String pagesExpr)
             throws PdfOperationException, InvalidPageRangeException {
+        // DOCX output needs LibreOffice (txt→docx); reject up front when office is disabled so the
+        // output-side conversion never fires an ungated soffice, mirroring the input-side 415.
+        if (format == TextFormat.DOCX && !officeEnabled) {
+            throw new OfficeDisabledException(in.filename());
+        }
         byte[] pdf = toPdf(in);
         byte[] out = PdfTextExporter.toTextBytes(pdf, format, range(pagesExpr, pdf));
         String name = stem(in.filename()) + OperationType.PDF_TO_TEXT.suffix() + "." + format.extension();
@@ -222,6 +246,7 @@ public class WebOperations {
     public byte[] renderPage(NamedBytes in, int pageIndex, int dpi)
             throws PdfOperationException, InvalidPageRangeException {
         byte[] pdf = toPdf(in);
+        guardRender(pdf, dpi);
         PageRange page = PageRangeParser.parse(String.valueOf(pageIndex + 1), pageCount(pdf));
         List<byte[]> images = PdfToImageConverter.executeBytes(pdf, ImageFormat.PNG, dpi, page, 1f);
         return images.get(0);
@@ -250,6 +275,35 @@ public class WebOperations {
         List<byte[]> out = new ArrayList<>(inputs.size());
         for (NamedBytes in : inputs) out.add(toPdf(in));
         return out;
+    }
+
+    /**
+     * Raster-render guard (render / to-images / redact): reject a DPI above the configured ceiling
+     * (→ 400) and any page whose rendered pixel area would exceed {@code maxOutputPixels} (→ 422),
+     * BEFORE any page is rasterised. Together these bound the memory a single render can allocate,
+     * so a huge {@code dpi} or an enormous page cannot OOM the JVM. {@code dpi} is the effective
+     * (already-defaulted, positive) value.
+     */
+    private void guardRender(byte[] pdf, int dpi) throws PdfOperationException {
+        if (maxDpi > 0 && dpi > maxDpi) {
+            throw new IllegalArgumentException(
+                "Requested DPI " + dpi + " exceeds the maximum allowed (" + maxDpi + ").");
+        }
+        if (maxOutputPixels <= 0) return;
+        try (PDDocument doc = PdfLoader.load(pdf)) {
+            for (PDPage page : doc.getPages()) {
+                PDRectangle box = page.getCropBox();
+                double widthPx = box.getWidth() / 72.0 * dpi;
+                double heightPx = box.getHeight() / 72.0 * dpi;
+                if (widthPx * heightPx > maxOutputPixels) {
+                    throw new PdfOperationException(
+                        "Rendering this document at " + dpi + " DPI would exceed the output-size "
+                        + "limit; choose a lower DPI.");
+                }
+            }
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
     }
 
     /** PDF-bomb guard: reject a PDF whose page count exceeds the configured ceiling (→ 422). */

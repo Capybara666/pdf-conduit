@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -137,7 +138,8 @@ public final class DocumentConverter {
         try {
             dir = Files.createTempDirectory("pdfconduit-mem-");
         } catch (IOException e) {
-            throw new PdfOperationException("Cannot create temp dir: " + e.getMessage(), e);
+            // Keep the raw temp path / OS error out of the client-visible message.
+            throw new PdfOperationException("Cannot prepare document conversion.", e);
         }
         try {
             Path in = dir.resolve(sanitize(filename));
@@ -146,7 +148,8 @@ public final class DocumentConverter {
             convertWithLibreOffice(in, out);
             return Files.readAllBytes(out);
         } catch (IOException e) {
-            throw new PdfOperationException("Document conversion failed: " + e.getMessage(), e);
+            // e.getMessage() can contain the temp working directory path — do not surface it.
+            throw new PdfOperationException("Document conversion failed for " + sanitize(filename) + ".", e);
         } finally {
             deleteRecursively(dir);
         }
@@ -192,6 +195,38 @@ public final class DocumentConverter {
     private static volatile boolean sofficeSearched;
     private static volatile String sofficePath;
     private static volatile String sofficeOverride;   // user-supplied path, tried first
+
+    /**
+     * Bounds how many headless LibreOffice conversions run at once, process-wide. LibreOffice is
+     * heavy and each conversion spawns an external process; without a cap a burst of office/text
+     * requests can spawn an unbounded number of {@code soffice} processes and exhaust the host.
+     * Replaced wholesale by {@link #setMaxConcurrentConversions(int)} (the web layer aligns this
+     * with {@code pdfconduit.web.office.max-concurrent}); in-flight conversions release to the
+     * semaphore they acquired, so a resize never loses a permit.
+     */
+    private static final int DEFAULT_MAX_CONVERSIONS = 4;
+    private static volatile Semaphore conversionPermits = new Semaphore(DEFAULT_MAX_CONVERSIONS, true);
+
+    /** Hard wall-clock timeout for a single {@code soffice} invocation (best-effort; process is killed). */
+    private static final int DEFAULT_CONVERSION_TIMEOUT_SECONDS = 120;
+    private static volatile int conversionTimeoutSeconds = DEFAULT_CONVERSION_TIMEOUT_SECONDS;
+
+    /**
+     * Caps the number of concurrent LibreOffice conversions across the whole JVM. Values &lt; 1 are
+     * clamped to 1. Called by the web backend at startup to match its office concurrency setting.
+     */
+    public static void setMaxConcurrentConversions(int max) {
+        conversionPermits = new Semaphore(Math.max(1, max), true);
+    }
+
+    /**
+     * Sets the per-conversion wall-clock timeout (seconds); on expiry the {@code soffice} process
+     * is force-killed. Values &lt; 1 are clamped to 1. Kept at or below the caller's own processing
+     * deadline so a stuck conversion cannot outlive the request that started it.
+     */
+    public static void setConversionTimeoutSeconds(int seconds) {
+        conversionTimeoutSeconds = Math.max(1, seconds);
+    }
 
     private static String findSoffice() {
         if (sofficeSearched) return sofficePath;
@@ -257,31 +292,53 @@ public final class DocumentConverter {
                 + "to convert documents.");
         }
 
+        // Bound how many soffice processes run at once, JVM-wide. Interruptible so a caller that
+        // times out (Future.cancel(true)) is released rather than blocking forever on the permit.
+        Semaphore permits = conversionPermits;
+        try {
+            permits.acquire();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PdfOperationException("Document conversion was interrupted.", e);
+        }
+        try {
+            runLibreOfficeLocked(soffice, source, targetFormat, targetExt, target);
+        } finally {
+            permits.release();
+        }
+    }
+
+    private static void runLibreOfficeLocked(String soffice, Path source, String targetFormat,
+                                             String targetExt, Path target) throws PdfOperationException {
         Path workDir;
         try {
             workDir = Files.createTempDirectory("pdfconduit-lo-");
         } catch (IOException e) {
-            throw new PdfOperationException("Cannot create temp dir: " + e.getMessage(), e);
+            // Do not surface the raw temp path / OS error to callers (it can reach an API client).
+            throw new PdfOperationException("Cannot prepare document conversion.", e);
         }
 
+        Process p = null;
         try {
             // A per-call user profile lets conversions run even while another
             // LibreOffice instance is open, and lets several run concurrently.
             Path profile = workDir.resolve("profile");
-            Process p = new ProcessBuilder(
+            p = new ProcessBuilder(
                 soffice, "--headless", "--norestore", "--nolockcheck",
                 "-env:UserInstallation=file://" + profile.toAbsolutePath(),
                 "--convert-to", targetFormat, "--outdir", workDir.toString(), source.toString())
                 .redirectErrorStream(true).start();
             String log = new String(p.getInputStream().readAllBytes());
-            if (!p.waitFor(180, TimeUnit.SECONDS)) {
+            if (!p.waitFor(conversionTimeoutSeconds, TimeUnit.SECONDS)) {
                 p.destroyForcibly();
+                p.waitFor(5, TimeUnit.SECONDS);
                 throw new PdfOperationException("LibreOffice timed out converting "
                     + source.getFileName());
             }
             if (p.exitValue() != 0) {
-                throw new PdfOperationException("LibreOffice failed converting "
-                    + source.getFileName() + (log.isBlank() ? "" : " — " + log.strip()));
+                // The soffice stderr/stdout (`log`) can leak temp paths / library diagnostics — keep
+                // it out of the client-visible message; the exception itself carries no secrets.
+                throw new PdfOperationException("LibreOffice failed converting " + source.getFileName());
             }
 
             Path produced = locateProduced(workDir, source, targetExt);
@@ -292,8 +349,10 @@ public final class DocumentConverter {
             OutputPaths.ensureParentDir(target);
             Files.move(produced, target, REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new PdfOperationException("Document conversion failed: " + e.getMessage(), e);
+            // e.getMessage() can contain the temp working directory path — do not surface it.
+            throw new PdfOperationException("Document conversion failed for " + source.getFileName() + ".", e);
         } catch (InterruptedException e) {
+            if (p != null) p.destroyForcibly();
             Thread.currentThread().interrupt();
             throw new PdfOperationException("Document conversion was interrupted.", e);
         } finally {

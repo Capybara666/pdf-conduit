@@ -1,8 +1,12 @@
 package com.pdfconduit.web.web;
 
+import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.PdfMetadata;
+import com.pdfconduit.core.pipeline.PipelineException;
+import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.dto.MetadataDto;
+import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Responses;
 import com.pdfconduit.web.support.Uploads;
@@ -23,10 +27,12 @@ public class MetadataController {
 
     private final WebOperations ops;
     private final Uploads uploads;
+    private final LoadGuard loadGuard;
 
-    public MetadataController(WebOperations ops, Uploads uploads) {
+    public MetadataController(WebOperations ops, Uploads uploads, LoadGuard loadGuard) {
         this.ops = ops;
         this.uploads = uploads;
+        this.loadGuard = loadGuard;
     }
 
     @PostMapping(value = "/metadata/read", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -43,9 +49,10 @@ public class MetadataController {
                                        @RequestParam(required = false) String subject,
                                        @RequestParam(required = false) String keywords,
                                        @RequestParam(defaultValue = "false") boolean strip)
-            throws IOException, PdfOperationException {
-        return Responses.file(
-            ops.editMetadata(uploads.read(file), title, author, subject, keywords, strip),
-            MediaType.APPLICATION_PDF);
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        NamedBytes in = uploads.read(file);
+        NamedBytes result = loadGuard.execute(in.data().length,
+            () -> ops.editMetadata(in, title, author, subject, keywords, strip));
+        return Responses.file(result, MediaType.APPLICATION_PDF);
     }
 }

@@ -25,11 +25,17 @@ import java.util.List;
  * @param concurrency        heavy-op concurrency + in-flight-byte anti-OOM guard
  * @param processing         per-operation processing timeout
  * @param pdf                PDF-bomb guards (max page count)
+ * @param render             raster-render guards (max DPI + total output-pixel ceiling)
+ * @param trustedProxies     CIDRs of proxies allowed to set {@code X-Forwarded-For} (client-IP trust)
  */
 @ConfigurationProperties("pdfconduit.web")
 public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Office office, Cors cors,
                             RateLimit ratelimit, Quota quota, Concurrency concurrency,
-                            Processing processing, Pdf pdf) {
+                            Processing processing, Pdf pdf, Render render, List<String> trustedProxies) {
+
+    /** Loopback + RFC-1918 private ranges (covers the docker-compose bridge subnet) trusted by default. */
+    private static final List<String> DEFAULT_TRUSTED_PROXIES =
+        List.of("127.0.0.1/32", "::1/128", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16");
 
     public WebProperties {
         if (maxFilesPerRequest == null || maxFilesPerRequest < 1) maxFilesPerRequest = 50;
@@ -42,6 +48,8 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
         if (concurrency == null) concurrency = new Concurrency(null, null);
         if (processing == null) processing = new Processing(null);
         if (pdf == null) pdf = new Pdf(null);
+        if (render == null) render = new Render(null, null);
+        if (trustedProxies == null || trustedProxies.isEmpty()) trustedProxies = DEFAULT_TRUSTED_PROXIES;
     }
 
     /**
@@ -107,6 +115,20 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
     public record Pdf(Integer maxPages) {
         public Pdf {
             if (maxPages == null || maxPages < 1) maxPages = 3000;
+        }
+    }
+
+    /**
+     * Raster-render guards for the page → image endpoints (render / to-images / redact). {@code
+     * maxDpi} caps the requested DPI (a request above it is rejected, not silently clamped), and
+     * {@code maxOutputPixels} rejects any single page whose rendered pixel area (page inches × DPI,
+     * squared) would exceed the ceiling — the two together bound a render's memory footprint so a
+     * single request cannot OOM the JVM.
+     */
+    public record Render(Integer maxDpi, Long maxOutputPixels) {
+        public Render {
+            if (maxDpi == null || maxDpi < 1) maxDpi = 300;
+            if (maxOutputPixels == null || maxOutputPixels < 1) maxOutputPixels = 60_000_000L; // ~60 MP/page
         }
     }
 

@@ -79,7 +79,7 @@ public final class PdfRedactor {
      */
     private static Counts redact(PDDocument src, PDDocument out, List<RedactRegion> regions, int dpiIn)
             throws IOException {
-        int dpi = dpiIn > 0 ? dpiIn : DEFAULT_DPI;
+        int dpi = Math.min(PdfToImageConverter.MAX_RENDER_DPI, dpiIn > 0 ? dpiIn : DEFAULT_DPI);
 
         // Group non-empty regions by page; a zero-area rectangle is a no-op.
         Map<Integer, List<RedactRegion>> byPage = new LinkedHashMap<>();

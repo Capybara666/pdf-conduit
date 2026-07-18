@@ -39,7 +39,9 @@ public class OfficeGuard {
 
     public OfficeGuard(WebProperties props) {
         this.permits = new Semaphore(props.office().maxConcurrent(), true);
-        this.timeoutSeconds = props.office().timeoutSeconds();
+        // Never let an office conversion outlive the request's own processing deadline: on timeout
+        // we interrupt the core conversion thread, which force-kills the soffice process.
+        this.timeoutSeconds = Math.min(props.office().timeoutSeconds(), props.processing().timeoutSeconds());
         ThreadFactory tf = new ThreadFactory() {
             private final AtomicLong n = new AtomicLong();
             @Override public Thread newThread(Runnable r) {

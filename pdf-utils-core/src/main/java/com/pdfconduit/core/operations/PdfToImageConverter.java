@@ -34,6 +34,14 @@ public final class PdfToImageConverter {
 
     private PdfToImageConverter() {}
 
+    /**
+     * Absolute hard ceiling on render DPI, applied regardless of caller input as a last line of
+     * defence against an out-of-memory raster (a page rendered at, say, 60000 DPI would allocate
+     * hundreds of gigabytes). Surfaces that enforce a tighter, configurable cap should still do so
+     * before calling in; this only guarantees a single request cannot exhaust the JVM heap.
+     */
+    public static final int MAX_RENDER_DPI = 1200;
+
     public static PdfToImageResult execute(PdfToImageOptions opts) throws PdfOperationException {
         try (PDDocument doc = PdfLoader.load(opts.input())) {
             int total = doc.getNumberOfPages();
@@ -42,7 +50,7 @@ public final class PdfToImageConverter {
                 : opts.pages().pageNumbers();
 
             PDFRenderer renderer = new PDFRenderer(doc);
-            int dpi = Math.max(1, opts.dpi());
+            int dpi = Math.min(MAX_RENDER_DPI, Math.max(1, opts.dpi()));
             int width = Integer.toString(total).length();
             Files.createDirectories(opts.outputDir());
 
@@ -76,7 +84,7 @@ public final class PdfToImageConverter {
                 : pages.pageNumbers();
 
             PDFRenderer renderer = new PDFRenderer(doc);
-            int renderDpi = Math.max(1, dpi);
+            int renderDpi = Math.min(MAX_RENDER_DPI, Math.max(1, dpi));
             List<byte[]> outputs = new ArrayList<>(pageNums.size());
             for (int pageNum : pageNums) {
                 BufferedImage img = renderer.renderImageWithDPI(pageNum - 1, renderDpi, ImageType.RGB);

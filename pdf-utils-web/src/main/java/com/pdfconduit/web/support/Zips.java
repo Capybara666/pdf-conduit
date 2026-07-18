@@ -22,7 +22,7 @@ public final class Zips {
         Set<String> used = new HashSet<>();
         try (ZipOutputStream zip = new ZipOutputStream(buffer)) {
             for (NamedBytes e : entries) {
-                zip.putNextEntry(new ZipEntry(uniqueEntry(used, e.filename())));
+                zip.putNextEntry(new ZipEntry(uniqueEntry(used, sanitize(e.filename()))));
                 zip.write(e.data());
                 zip.closeEntry();
             }
@@ -30,6 +30,22 @@ public final class Zips {
             throw new UncheckedIOException("Failed to build ZIP", e);
         }
         return buffer.toByteArray();
+    }
+
+    /**
+     * Reduces an entry name to a safe basename: any path is stripped ({@code /} and {@code \}), and
+     * any residual {@code ..} segment neutralised — so a crafted upload filename cannot write
+     * outside the archive root when the ZIP is later extracted (zip-slip).
+     */
+    static String sanitize(String name) {
+        if (name == null || name.isBlank()) return "file";
+        String n = name.replace('\\', '/');
+        int slash = n.lastIndexOf('/');
+        if (slash >= 0) n = n.substring(slash + 1);
+        n = n.strip();
+        // Drop leading dots so "..", "..." collapse to a harmless name; keep normal dotted names.
+        while (n.startsWith(".")) n = n.substring(1);
+        return n.isBlank() ? "file" : n;
     }
 
     private static String uniqueEntry(Set<String> used, String name) {
