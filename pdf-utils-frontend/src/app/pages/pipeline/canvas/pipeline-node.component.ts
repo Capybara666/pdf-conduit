@@ -101,6 +101,9 @@ const KIND_TO_OP: Record<string, string> = {
         box-shadow: var(--shadow);
         user-select: none;
         touch-action: none;
+        transition:
+          border-color var(--dur-fast, 120ms) var(--ease-standard, ease),
+          box-shadow var(--dur-fast, 120ms) var(--ease-standard, ease);
       }
       .pl-node.selected {
         border-color: var(--accent);
@@ -164,6 +167,10 @@ const KIND_TO_OP: Record<string, string> = {
         border: 2px solid var(--border-strong);
         transform: translate(-50%, -50%);
         z-index: 2;
+        transition:
+          border-color var(--dur-fast, 120ms) var(--ease-standard, ease),
+          background-color var(--dur-fast, 120ms) var(--ease-standard, ease),
+          box-shadow var(--dur-fast, 120ms) var(--ease-standard, ease);
       }
       .pl-port-in {
         left: 0;

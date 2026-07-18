@@ -46,7 +46,9 @@ import { Point, wirePath } from './pipeline-geometry';
         stroke: var(--accent);
         stroke-width: 2;
         pointer-events: none;
-        transition: stroke 0.1s, stroke-width 0.1s;
+        transition:
+          stroke var(--dur-fast, 120ms) var(--ease-standard, ease),
+          stroke-width var(--dur-fast, 120ms) var(--ease-standard, ease);
       }
       /* Emphasise the whole wire on hover (colour unchanged — already accent). */
       :host(:hover) .wire {
@@ -68,7 +70,7 @@ import { Point, wirePath } from './pipeline-geometry';
       .wire-del {
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.1s;
+        transition: opacity var(--dur-fast, 120ms) var(--ease-standard, ease);
       }
       :host(:hover) .wire-del {
         opacity: 1;
