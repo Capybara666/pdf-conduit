@@ -1,4 +1,36 @@
 <header class="app-header">
+  <button
+    #menuButton
+    type="button"
+    class="menu-toggle"
+    (click)="menuToggle.emit()"
+    [attr.aria-expanded]="menuOpen"
+    aria-controls="app-sidebar"
+    [attr.aria-label]="'nav.menuToggle' | transloco"
+  >
+    @if (menuOpen) {
+      <!-- close (X) -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M6 6l12 12 M18 6 6 18"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+    } @else {
+      <!-- hamburger -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M4 7h16 M4 12h16 M4 17h16"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+    }
+  </button>
+
   <a class="brand" routerLink="/" [attr.aria-label]="'header.brandHome' | transloco">
     <svg class="logo" viewBox="0 0 24 24" aria-hidden="true">
       <path

@@ -1,4 +1,15 @@
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription, switchMap, timer } from 'rxjs';
@@ -27,8 +38,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
   protected readonly quota = inject(QuotaService);
   protected readonly language = inject(LanguageService);
 
+  /** Reflects the mobile drawer's open state (drives the hamburger's icon/ARIA). */
+  @Input() menuOpen = false;
+  /** Emitted when the hamburger is activated; the shell owns the drawer state. */
+  @Output() menuToggle = new EventEmitter<void>();
+
+  @ViewChild('menuButton') private menuButton?: ElementRef<HTMLButtonElement>;
+
   readonly health = signal<HealthState>('unknown');
   private sub?: Subscription;
+
+  /** Return focus to the hamburger when the drawer closes. */
+  focusMenu(): void {
+    this.menuButton?.nativeElement.focus();
+  }
 
   /** State of the quota chip: normal / low / spent — drives its styling. */
   get quotaState(): 'ok' | 'low' | 'spent' {

@@ -1,8 +1,10 @@
 <div class="shell">
-  <app-header></app-header>
-  <div class="body">
-    <app-sidebar></app-sidebar>
-    <main class="content">
+  <a class="skip-link" href="#content">{{ 'a11y.skipToContent' | transloco }}</a>
+  <app-header [menuOpen]="drawerOpen()" (menuToggle)="toggleDrawer()"></app-header>
+  <div class="body" [class.drawer-open]="drawerOpen()">
+    <div class="scrim" aria-hidden="true" (click)="closeDrawer()"></div>
+    <app-sidebar [class.open]="drawerOpen()"></app-sidebar>
+    <main id="content" class="content" tabindex="-1" #content>
       <router-outlet></router-outlet>
     </main>
   </div>

@@ -12,6 +12,32 @@
   border-bottom: 1px solid var(--border);
 }
 
+/* Mobile-only drawer toggle; hidden on desktop where the rail is permanent. */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-right: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+
+  svg {
+    width: 1.35rem;
+    height: 1.35rem;
+    fill: none;
+  }
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -179,6 +205,12 @@
   &:hover {
     border-color: var(--accent);
     color: var(--accent);
+  }
+}
+
+@media (max-width: 820px) {
+  .menu-toggle {
+    display: inline-flex;
   }
 }
 

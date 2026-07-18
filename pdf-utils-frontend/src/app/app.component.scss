@@ -4,12 +4,36 @@
 }
 
 .shell {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
+/* Visually hidden until focused; first focusable element in the shell. */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  z-index: 100;
+  padding: 0.5rem 0.9rem;
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transform: translateY(calc(-100% - 1rem));
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
 .body {
+  position: relative;
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
   flex: 1;
@@ -22,11 +46,46 @@
   background: var(--bg);
 }
 
+/* Scrim behind the mobile drawer — only rendered below the breakpoint. */
+.scrim {
+  display: none;
+}
+
 @media (max-width: 820px) {
+  /* Content spans the full width; the sidebar becomes an off-canvas drawer. */
   .body {
-    grid-template-columns: var(--sidebar-width-collapsed) 1fr;
+    grid-template-columns: 1fr;
   }
+
   .content {
     padding: 1.25rem 1rem;
+  }
+
+  .scrim {
+    display: block;
+    position: fixed;
+    inset: var(--header-height) 0 0 0;
+    z-index: 30;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease;
+  }
+
+  .body.drawer-open .scrim {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Lock the page behind the open drawer. */
+  .body.drawer-open .content {
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link,
+  .scrim {
+    transition: none;
   }
 }
