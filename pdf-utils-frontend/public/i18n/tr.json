@@ -365,7 +365,15 @@
       "loading": "Sıkıştırılıyor…",
       "noopWarning": "Hedef ≥ dosya boyutu — küçülmez",
       "blankWarning": "Sıkıştırmak için bir hedef boyut girin.",
-      "allNoopWarning": "Hedef her dosyanın boyutuna eşit veya daha büyük — küçültülecek bir şey yok."
+      "allNoopWarning": "Hedef her dosyanın boyutuna eşit veya daha büyük — küçültülecek bir şey yok.",
+      "dpi": "Görüntü çözünürlüğü",
+      "dpiHelp": "Daha fazla tasarruf için gömülü görüntüleri bu çözünürlükle sınırlayın.",
+      "dpiNone": "Orijinal (sınır yok)",
+      "dpiScreen": "Ekran (72 DPI)",
+      "dpiEbook": "E-kitap (150 DPI)",
+      "dpiPrint": "Baskı (300 DPI)",
+      "grayscale": "Görüntüleri gri tonlamaya dönüştür",
+      "grayscaleHelp": "Daha küçük dosyalar için görüntüleri renksiz yeniden kodlar."
     },
     "rotate": {
       "title": "Döndür",

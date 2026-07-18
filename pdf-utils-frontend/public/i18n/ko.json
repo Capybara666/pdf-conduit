@@ -365,7 +365,15 @@
       "loading": "압축 중…",
       "noopWarning": "목표 ≥ 파일 크기 — 줄어들지 않음",
       "blankWarning": "압축할 목표 크기를 입력하세요.",
-      "allNoopWarning": "목표가 모든 파일 크기 이상입니다 — 줄일 것이 없습니다."
+      "allNoopWarning": "목표가 모든 파일 크기 이상입니다 — 줄일 것이 없습니다.",
+      "dpi": "이미지 해상도",
+      "dpiHelp": "포함된 이미지를 이 해상도로 제한하여 더 많이 줄입니다.",
+      "dpiNone": "원본 (제한 없음)",
+      "dpiScreen": "화면 (72 DPI)",
+      "dpiEbook": "전자책 (150 DPI)",
+      "dpiPrint": "인쇄 (300 DPI)",
+      "grayscale": "이미지를 흑백으로 변환",
+      "grayscaleHelp": "이미지를 색상 없이 다시 인코딩하여 파일을 줄입니다."
     },
     "rotate": {
       "title": "회전",

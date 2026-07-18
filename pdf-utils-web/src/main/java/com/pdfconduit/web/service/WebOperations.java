@@ -6,6 +6,7 @@ import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.CompressBytesResult;
+import com.pdfconduit.core.model.CompressOptions;
 import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PageSize;
@@ -141,18 +142,26 @@ public class WebOperations {
 
     // --------------------------------------------------------------- COMPRESS
 
-    /** Compress a single input to (at most) {@code targetBytes}; full metrics returned. */
-    public CompressBytesResult compress(NamedBytes in, long targetBytes) throws PdfOperationException {
+    /**
+     * Compress a single input to (at most) {@code targetBytes}; full metrics returned. When
+     * {@code targetDpi} is not {@link CompressOptions.DpiPreset#NONE} images are additionally capped
+     * to that resolution, and {@code grayscale} re-encodes images in grayscale for extra savings.
+     */
+    public CompressBytesResult compress(NamedBytes in, long targetBytes,
+                                        CompressOptions.DpiPreset targetDpi, boolean grayscale)
+            throws PdfOperationException {
         // Single-parse: skip the separate page-count-guard parse and fold the guard into the
         // document the compressor's lossless pass already opens (see PdfCompressor.PageCountGuard).
-        return PdfCompressor.compressBytes(routeToPdf(in), targetBytes, this::guardPageCountValue);
+        return PdfCompressor.compressBytes(routeToPdf(in), targetBytes, targetDpi, grayscale,
+            this::guardPageCountValue);
     }
 
-    /** Batch-compress every input to (at most) {@code targetBytes}. */
-    public List<NamedBytes> compressBatch(List<NamedBytes> inputs, long targetBytes)
+    /** Batch-compress every input to (at most) {@code targetBytes}, with the same DPI/grayscale opts. */
+    public List<NamedBytes> compressBatch(List<NamedBytes> inputs, long targetBytes,
+                                          CompressOptions.DpiPreset targetDpi, boolean grayscale)
             throws PdfOperationException {
         return MemoryOperations.runBatch(OperationType.COMPRESS, pdfData(inputs), names(inputs),
-            pdf -> PdfCompressor.compressBytes(pdf, targetBytes).bytes());
+            pdf -> PdfCompressor.compressBytes(pdf, targetBytes, targetDpi, grayscale, null).bytes());
     }
 
     // ----------------------------------------------------------------- ROTATE

@@ -365,7 +365,15 @@
       "loading": "Compression en cours…",
       "noopWarning": "Cible ≥ taille du fichier — pas de réduction",
       "blankWarning": "Saisissez une taille cible pour compresser.",
-      "allNoopWarning": "La cible est ≥ à la taille de chaque fichier — rien à réduire."
+      "allNoopWarning": "La cible est ≥ à la taille de chaque fichier — rien à réduire.",
+      "dpi": "Résolution d’image",
+      "dpiHelp": "Limitez les images intégrées à cette résolution pour économiser davantage.",
+      "dpiNone": "Original (sans limite)",
+      "dpiScreen": "Écran (72 PPP)",
+      "dpiEbook": "Liseuse (150 PPP)",
+      "dpiPrint": "Impression (300 PPP)",
+      "grayscale": "Convertir les images en niveaux de gris",
+      "grayscaleHelp": "Réencode les images sans couleur pour des fichiers plus petits."
     },
     "rotate": {
       "title": "Pivoter",

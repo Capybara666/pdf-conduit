@@ -365,7 +365,15 @@
       "loading": "压缩中…",
       "noopWarning": "目标 ≥ 文件大小 — 不会缩小",
       "blankWarning": "请输入用于压缩的目标大小。",
-      "allNoopWarning": "目标不小于每个文件的大小 — 无需压缩。"
+      "allNoopWarning": "目标不小于每个文件的大小 — 无需压缩。",
+      "dpi": "图像分辨率",
+      "dpiHelp": "将嵌入图像限制为此分辨率以进一步节省空间。",
+      "dpiNone": "原始(不限制)",
+      "dpiScreen": "屏幕(72 DPI)",
+      "dpiEbook": "电子书(150 DPI)",
+      "dpiPrint": "打印(300 DPI)",
+      "grayscale": "将图像转换为灰度",
+      "grayscaleHelp": "以无颜色重新编码图像以缩小文件。"
     },
     "rotate": {
       "title": "旋转",

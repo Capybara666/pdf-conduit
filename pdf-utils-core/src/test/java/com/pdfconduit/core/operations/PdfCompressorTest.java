@@ -11,7 +11,9 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
+import com.pdfconduit.core.model.CompressBytesResult;
 import com.pdfconduit.core.model.CompressOptions;
+import com.pdfconduit.core.model.CompressOptions.DpiPreset;
 import com.pdfconduit.core.model.CompressResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,6 +73,123 @@ class PdfCompressorTest {
         assertTrue(result.resultBytes() <= target);
         assertEquals(1200, firstImageWidth(out),
             "a modest target must be met by lowering quality, not by downscaling the image");
+    }
+
+    // ----------------------------------------------------------- DPI presets + grayscale
+
+    @Test
+    void printPresetCapsResolutionAndShrinks() throws Exception {
+        // A 1200 px image displayed across 144 pt (2 in) ⇒ 600 DPI.
+        Path src = createHighDpiImagePdf(1200, 144f);
+        long original = src.toFile().length();
+        Path out = tmp.resolve("print.pdf");
+
+        // Generous target (= original) so size is not the binding constraint — the DPI cap is.
+        CompressResult r = PdfCompressor.execute(
+            new CompressOptions(src, original, out, DpiPreset.PRINT, false));
+
+        assertTrue(out.toFile().exists());
+        assertTrue(isValidPdf(out), "PRINT-preset output must be a valid PDF");
+        assertTrue(r.resultBytes() < original, "capping 600 DPI to 300 must shrink the file");
+        // 300 / 600 = 0.5 ⇒ half the pixel width.
+        assertEquals(600, firstImageWidth(out), "PRINT (300 DPI) should halve a 600 DPI image");
+    }
+
+    @Test
+    void ebookPresetDownscalesMoreThanPrint() throws Exception {
+        Path src = createHighDpiImagePdf(1200, 144f); // 600 DPI
+        long original = src.toFile().length();
+        Path ebook = tmp.resolve("ebook.pdf");
+        Path print = tmp.resolve("print2.pdf");
+
+        CompressResult e = PdfCompressor.execute(
+            new CompressOptions(src, original, ebook, DpiPreset.EBOOK, false));
+        CompressResult p = PdfCompressor.execute(
+            new CompressOptions(src, original, print, DpiPreset.PRINT, false));
+
+        assertEquals(300, firstImageWidth(ebook), "EBOOK (150 DPI) should quarter a 600 DPI image");
+        assertEquals(600, firstImageWidth(print));
+        assertTrue(e.resultBytes() < p.resultBytes(), "EBOOK must be smaller than PRINT");
+    }
+
+    @Test
+    void grayscaleProducesValidSingleComponentOutput() throws Exception {
+        Path src = createHighDpiImagePdf(800, 200f);
+        long original = src.toFile().length();
+        Path out = tmp.resolve("gray.pdf");
+
+        CompressResult r = PdfCompressor.execute(
+            new CompressOptions(src, original, out, DpiPreset.NONE, true));
+
+        assertTrue(isValidPdf(out), "grayscale output must be a valid PDF");
+        assertTrue(r.resultBytes() <= original, "grayscale output must never be larger than input");
+        assertEquals(1, firstImageComponents(out),
+            "grayscale re-encode should leave a single-component (DeviceGray) image");
+    }
+
+    @Test
+    void compressBytesHonoursDpiPreset() throws Exception {
+        byte[] input = Files.readAllBytes(createHighDpiImagePdf(1200, 144f)); // 600 DPI
+        CompressBytesResult r = PdfCompressor.compressBytes(
+            input, input.length, DpiPreset.PRINT, false, null);
+
+        assertTrue(r.bytes().length <= input.length);
+        try (PDDocument doc = Loader.loadPDF(r.bytes())) {
+            assertEquals(600, firstImageWidth(doc), "bytes API PRINT preset should halve a 600 DPI image");
+        }
+    }
+
+    private boolean isValidPdf(Path pdf) {
+        try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
+            return doc.getNumberOfPages() > 0;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /** Number of colour components of the first embedded image (1 ⇒ grayscale). */
+    private int firstImageComponents(Path pdf) throws IOException {
+        try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
+            PDResources res = doc.getPage(0).getResources();
+            for (COSName name : res.getXObjectNames()) {
+                if (res.getXObject(name) instanceof PDImageXObject img) {
+                    return img.getColorSpace().getNumberOfComponents();
+                }
+            }
+        }
+        return -1;
+    }
+
+    private int firstImageWidth(PDDocument doc) throws IOException {
+        PDResources res = doc.getPage(0).getResources();
+        for (COSName name : res.getXObjectNames()) {
+            if (res.getXObject(name) instanceof PDImageXObject img) return img.getWidth();
+        }
+        return -1;
+    }
+
+    /** An A4 page with a {@code px}×{@code px} smooth image drawn across {@code drawPoints} pt. */
+    private Path createHighDpiImagePdf(int px, float drawPoints) throws IOException {
+        Path path = tmp.resolve("highdpi-" + px + "-" + drawPoints + ".pdf");
+        BufferedImage img = new BufferedImage(px, px, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < px; y++) {
+            for (int x = 0; x < px; x++) {
+                int r = (int) ((Math.sin(x * 0.04) + 1) * 120);
+                int g = (int) ((Math.sin(y * 0.05) + 1) * 120);
+                int b = (int) ((Math.sin((x + y) * 0.03) + 1) * 120);
+                img.setRGB(x, y, (r << 16) | (g << 8) | b);
+            }
+        }
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+            PDImageXObject pdfImg = LosslessFactory.createFromImage(doc, img);
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
+                cs.drawImage(pdfImg, 50, 50, drawPoints, drawPoints);
+            }
+            doc.save(path.toFile());
+        }
+        return path;
     }
 
     /** Width (in pixels) of the first image embedded on page 1 of {@code pdf}. */

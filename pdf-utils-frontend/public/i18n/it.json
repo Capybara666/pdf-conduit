@@ -365,7 +365,15 @@
       "loading": "Compressione in corso…",
       "noopWarning": "Obiettivo ≥ dimensione file — nessuna riduzione",
       "blankWarning": "Inserisci una dimensione obiettivo per comprimere.",
-      "allNoopWarning": "L'obiettivo è pari o superiore a ogni file — niente da ridurre."
+      "allNoopWarning": "L'obiettivo è pari o superiore a ogni file — niente da ridurre.",
+      "dpi": "Risoluzione immagine",
+      "dpiHelp": "Limita le immagini incorporate a questa risoluzione per risparmiare di più.",
+      "dpiNone": "Originale (senza limite)",
+      "dpiScreen": "Schermo (72 DPI)",
+      "dpiEbook": "E-book (150 DPI)",
+      "dpiPrint": "Stampa (300 DPI)",
+      "grayscale": "Converti le immagini in scala di grigi",
+      "grayscaleHelp": "Ricodifica le immagini senza colore per file più piccoli."
     },
     "rotate": {
       "title": "Ruota",

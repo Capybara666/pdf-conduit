@@ -365,7 +365,15 @@
       "loading": "Compressing…",
       "noopWarning": "Target ≥ file size — won't shrink",
       "blankWarning": "Enter a target size to compress.",
-      "allNoopWarning": "Target is at or above every file's size — nothing to shrink."
+      "allNoopWarning": "Target is at or above every file's size — nothing to shrink.",
+      "dpi": "Image resolution",
+      "dpiHelp": "Cap embedded images to this resolution for extra savings.",
+      "dpiNone": "Original (no cap)",
+      "dpiScreen": "Screen (72 DPI)",
+      "dpiEbook": "E-book (150 DPI)",
+      "dpiPrint": "Print (300 DPI)",
+      "grayscale": "Convert images to grayscale",
+      "grayscaleHelp": "Re-encode images without colour for smaller files."
     },
     "rotate": {
       "title": "Rotate",

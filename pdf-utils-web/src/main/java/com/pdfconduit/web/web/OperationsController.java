@@ -6,6 +6,7 @@ import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.pipeline.PipelineException;
 import com.pdfconduit.core.model.CompressBytesResult;
+import com.pdfconduit.core.model.CompressOptions;
 import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.RedactRegion;
@@ -105,15 +106,21 @@ public class OperationsController {
 
     @PostMapping(value = "/compress", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> compress(@RequestParam("files") List<MultipartFile> files,
-                                           @RequestParam String targetSize)
+                                           @RequestParam String targetSize,
+                                           @RequestParam(required = false) String dpi,
+                                           @RequestParam(defaultValue = "false") boolean grayscale)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         long target = Params.parseSize(targetSize);
+        // Optional image-resolution ceiling: SCREEN/EBOOK/PRINT (unknown/blank ⇒ NONE = no cap).
+        CompressOptions.DpiPreset preset =
+            parseEnum(CompressOptions.DpiPreset.class, dpi, CompressOptions.DpiPreset.NONE);
         List<NamedBytes> inputs = uploads.readAll(files);
         long bytes = totalBytes(inputs);
         if (inputs.size() == 1) {
             NamedBytes in = inputs.get(0);
-            CompressBytesResult r = loadGuard.execute(bytes, () -> ops.compress(in, target));
+            CompressBytesResult r =
+                loadGuard.execute(bytes, () -> ops.compress(in, target, preset, grayscale));
             String name = MemoryOperations.outputName(OperationType.COMPRESS, in.filename());
             return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
@@ -124,7 +131,8 @@ public class OperationsController {
                 .contentLength(r.bytes().length)
                 .body(r.bytes());
         }
-        List<NamedBytes> results = loadGuard.execute(bytes, () -> ops.compressBatch(inputs, target));
+        List<NamedBytes> results =
+            loadGuard.execute(bytes, () -> ops.compressBatch(inputs, target, preset, grayscale));
         return Responses.zip(results, "compress_results.zip");
     }
 

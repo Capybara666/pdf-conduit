@@ -365,7 +365,15 @@
       "loading": "Wird komprimiert…",
       "noopWarning": "Ziel ≥ Dateigröße — keine Verkleinerung",
       "blankWarning": "Zielgröße zum Komprimieren eingeben.",
-      "allNoopWarning": "Ziel ist ≥ Größe jeder Datei — nichts zu verkleinern."
+      "allNoopWarning": "Ziel ist ≥ Größe jeder Datei — nichts zu verkleinern.",
+      "dpi": "Bildauflösung",
+      "dpiHelp": "Eingebettete Bilder auf diese Auflösung begrenzen, um mehr zu sparen.",
+      "dpiNone": "Original (ohne Begrenzung)",
+      "dpiScreen": "Bildschirm (72 DPI)",
+      "dpiEbook": "E-Book (150 DPI)",
+      "dpiPrint": "Druck (300 DPI)",
+      "grayscale": "Bilder in Graustufen umwandeln",
+      "grayscaleHelp": "Bilder ohne Farbe neu kodieren für kleinere Dateien."
     },
     "rotate": {
       "title": "Drehen",

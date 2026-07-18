@@ -81,6 +81,25 @@ function parseSizeToBytes(text: string): number | null {
             <span class="err">{{ 'pages.compress.allNoopWarning' | transloco }}</span>
           }
         </div>
+
+        <div class="field">
+          <label for="cp-dpi">{{ 'pages.compress.dpi' | transloco }}</label>
+          <select id="cp-dpi" [formControl]="dpi">
+            <option value="none">{{ 'pages.compress.dpiNone' | transloco }}</option>
+            <option value="screen">{{ 'pages.compress.dpiScreen' | transloco }}</option>
+            <option value="ebook">{{ 'pages.compress.dpiEbook' | transloco }}</option>
+            <option value="print">{{ 'pages.compress.dpiPrint' | transloco }}</option>
+          </select>
+          <span class="help">{{ 'pages.compress.dpiHelp' | transloco }}</span>
+        </div>
+
+        <div class="field">
+          <label class="check">
+            <input type="checkbox" [formControl]="grayscale" />
+            {{ 'pages.compress.grayscale' | transloco }}
+          </label>
+          <span class="help">{{ 'pages.compress.grayscaleHelp' | transloco }}</span>
+        </div>
       </div>
 
       <div class="btn-row">
@@ -145,6 +164,12 @@ export class CompressPage {
     nonNullable: true,
     validators: [Validators.required, Validators.pattern(/^\s*\d+(\.\d+)?\s*(b|kb|mb|gb)?\s*$/i)],
   });
+  /** Optional image-resolution ceiling: 'none' (default), 'screen', 'ebook', 'print'. */
+  protected readonly dpi = new FormControl<'none' | 'screen' | 'ebook' | 'print'>('none', {
+    nonNullable: true,
+  });
+  /** Re-encode images as grayscale for extra savings. */
+  protected readonly grayscale = new FormControl(false, { nonNullable: true });
   protected readonly state = new OperationState();
 
   /** Live target value as a signal so warnings react to typing. */
@@ -179,6 +204,8 @@ export class CompressPage {
     const fd = new FormData();
     for (const f of this.files()) fd.append('files', f, f.name);
     fd.append('targetSize', this.targetSize.value.trim());
+    if (this.dpi.value !== 'none') fd.append('dpi', this.dpi.value);
+    if (this.grayscale.value) fd.append('grayscale', 'true');
     this.state.run(this.api.compress(fd));
   }
 }

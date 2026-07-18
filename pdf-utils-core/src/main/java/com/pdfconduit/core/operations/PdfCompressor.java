@@ -1,6 +1,13 @@
 package com.pdfconduit.core.operations;
 
 import com.pdfconduit.core.util.PdfLoader;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.state.Concatenate;
+import org.apache.pdfbox.contentstream.operator.state.Restore;
+import org.apache.pdfbox.contentstream.operator.state.Save;
+import org.apache.pdfbox.contentstream.operator.state.SetGraphicsStateParameters;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -9,9 +16,11 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.util.Matrix;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.CompressBytesResult;
 import com.pdfconduit.core.model.CompressOptions;
+import com.pdfconduit.core.model.CompressOptions.DpiPreset;
 import com.pdfconduit.core.model.CompressResult;
 import com.pdfconduit.core.util.OutputPaths;
 import com.pdfconduit.core.util.PdfLoader;
@@ -33,6 +42,18 @@ public final class PdfCompressor {
 
     /** One rung of the compression ladder: scale the images, then JPEG-encode at {@code quality}. */
     private record Step(float scale, float quality) {}
+
+    /**
+     * How images should be re-encoded, on top of the size-driven ladder: an optional per-image
+     * resolution ceiling and an optional grayscale conversion. {@link #NONE} preserves the original
+     * behaviour (no DPI cap, colour preserved).
+     */
+    private record ImageMode(DpiPreset targetDpi, boolean grayscale) {
+        static final ImageMode NONE = new ImageMode(DpiPreset.NONE, false);
+        boolean isActive() {
+            return targetDpi != DpiPreset.NONE || grayscale;
+        }
+    }
 
     /**
      * Tried in order, gentlest first. The full-resolution rungs (scale 1.0) come
@@ -63,6 +84,7 @@ public final class PdfCompressor {
     private PdfCompressor() {}
 
     public static CompressResult execute(CompressOptions opts) throws PdfOperationException {
+        ImageMode mode = new ImageMode(opts.targetDpi(), opts.grayscale());
         try {
             long originalSize = opts.input().toFile().length();
             OutputPaths.ensureParentDir(opts.output());
@@ -76,7 +98,10 @@ public final class PdfCompressor {
                 doc.save(opts.output().toFile());
             }
             long losslessBytes = opts.output().toFile().length();
-            if (losslessBytes <= opts.targetSizeBytes()) {
+            // The lossless copy already meets the target — but if an image mode (DPI cap /
+            // grayscale) was requested we still owe that transform, so only short-circuit when
+            // no image mode is active.
+            if (losslessBytes <= opts.targetSizeBytes() && !mode.isActive()) {
                 return new CompressResult(opts.output(), originalSize, losslessBytes, true);
             }
 
@@ -87,8 +112,11 @@ public final class PdfCompressor {
                     Files.copy(opts.input(), opts.output(), StandardCopyOption.REPLACE_EXISTING);
                 }
                 return new CompressResult(opts.output(), originalSize,
-                    opts.output().toFile().length(), false);
+                    opts.output().toFile().length(), losslessBytes <= opts.targetSizeBytes());
             }
+
+            // Effective per-image downscale needed to honour the DPI ceiling (null ⇒ no DPI cap).
+            Map<Integer, Map<String, Float>> dpiScale = dpiScaleFromPath(opts.input(), mode.targetDpi());
 
             // 3) Lossy image ladder, gentlest first; stop as soon as the target is met.
             //    Each rung reloads a pristine copy of the PDF (so orphaned objects never
@@ -99,7 +127,7 @@ public final class PdfCompressor {
             DecodeCache decodeCache = new DecodeCache();
             for (Step step : STEPS) {
                 try (PDDocument compressed = PdfLoader.load(opts.input())) {
-                    recompressImages(compressed, step.scale(), step.quality(), decodeCache);
+                    recompressImages(compressed, step.scale(), step.quality(), mode, dpiScale, decodeCache);
                     if (SizeEstimator.estimateBytes(compressed) <= opts.targetSizeBytes()) {
                         compressed.save(opts.output().toFile());
                         return new CompressResult(opts.output(), originalSize,
@@ -111,7 +139,7 @@ public final class PdfCompressor {
             // 4) Target unreachable — save the most-compressed version, but never larger than original.
             try (PDDocument compressed = PdfLoader.load(opts.input())) {
                 Step strongest = STEPS.get(STEPS.size() - 1);
-                recompressImages(compressed, strongest.scale(), strongest.quality(), decodeCache);
+                recompressImages(compressed, strongest.scale(), strongest.quality(), mode, dpiScale, decodeCache);
                 if (SizeEstimator.estimateBytes(compressed) < originalSize) {
                     compressed.save(opts.output().toFile());
                 } else {
@@ -145,6 +173,20 @@ public final class PdfCompressor {
     public static CompressBytesResult compressBytes(byte[] input, long targetSizeBytes,
                                                     PageCountGuard pageCountGuard)
             throws PdfOperationException {
+        return compressBytes(input, targetSizeBytes, DpiPreset.NONE, false, pageCountGuard);
+    }
+
+    /**
+     * As {@link #compressBytes(byte[], long, PageCountGuard)}, but additionally applies an image
+     * resolution ceiling ({@code targetDpi}; {@link DpiPreset#NONE} disables it) and an optional
+     * {@code grayscale} conversion. Both are extra constraints layered on top of the size-driven
+     * ladder — the "never larger than the input" guarantee is unchanged.
+     */
+    public static CompressBytesResult compressBytes(byte[] input, long targetSizeBytes,
+                                                    DpiPreset targetDpi, boolean grayscale,
+                                                    PageCountGuard pageCountGuard)
+            throws PdfOperationException {
+        ImageMode mode = new ImageMode(targetDpi == null ? DpiPreset.NONE : targetDpi, grayscale);
         long originalSize = input.length;
         try {
             // 1) Lossless pass: re-save with object-stream compression.
@@ -155,15 +197,20 @@ public final class PdfCompressor {
                 hasImages = hasImages(doc);
                 lossless = PdfLoader.toBytes(doc);
             }
-            if (lossless.length <= targetSizeBytes) {
+            // Short-circuit only when the lossless copy meets the target AND no image transform
+            // (DPI cap / grayscale) was requested — otherwise we still owe that transform.
+            if (lossless.length <= targetSizeBytes && !mode.isActive()) {
                 return new CompressBytesResult(lossless, originalSize, lossless.length, true);
             }
 
             // 2) Nothing to downsample: the lossless copy is the best we can do.
             if (!hasImages) {
                 byte[] best = lossless.length > originalSize ? input : lossless;
-                return new CompressBytesResult(best, originalSize, best.length, false);
+                return new CompressBytesResult(best, originalSize, best.length,
+                    best.length <= targetSizeBytes);
             }
+
+            Map<Integer, Map<String, Float>> dpiScale = dpiScaleFromBytes(input, mode.targetDpi());
 
             // 3) Lossy image ladder, gentlest first; stop as soon as the target is met.
             //    Reload a pristine copy per rung (identical output to before), but decode each
@@ -171,7 +218,7 @@ public final class PdfCompressor {
             DecodeCache decodeCache = new DecodeCache();
             for (Step step : STEPS) {
                 try (PDDocument compressed = PdfLoader.load(input)) {
-                    recompressImages(compressed, step.scale(), step.quality(), decodeCache);
+                    recompressImages(compressed, step.scale(), step.quality(), mode, dpiScale, decodeCache);
                     if (SizeEstimator.estimateBytes(compressed) <= targetSizeBytes) {
                         byte[] out = PdfLoader.toBytes(compressed);
                         return new CompressBytesResult(out, originalSize, out.length, true);
@@ -182,7 +229,7 @@ public final class PdfCompressor {
             // 4) Target unreachable — most-compressed version, but never larger than original.
             try (PDDocument compressed = PdfLoader.load(input)) {
                 Step strongest = STEPS.get(STEPS.size() - 1);
-                recompressImages(compressed, strongest.scale(), strongest.quality(), decodeCache);
+                recompressImages(compressed, strongest.scale(), strongest.quality(), mode, dpiScale, decodeCache);
                 byte[] out = SizeEstimator.estimateBytes(compressed) < originalSize
                     ? PdfLoader.toBytes(compressed) : input;
                 return new CompressBytesResult(out, originalSize, out.length, false);
@@ -201,6 +248,91 @@ public final class PdfCompressor {
             }
         }
         return false;
+    }
+
+    // ---------------------------------------------------------------- DPI ceiling
+
+    private static Map<Integer, Map<String, Float>> dpiScaleFromPath(java.nio.file.Path input,
+                                                                     DpiPreset preset)
+            throws IOException, PdfOperationException {
+        if (preset == DpiPreset.NONE) return null;
+        try (PDDocument doc = PdfLoader.load(input)) {
+            return computeDpiScale(doc, preset.dpi());
+        }
+    }
+
+    private static Map<Integer, Map<String, Float>> dpiScaleFromBytes(byte[] input, DpiPreset preset)
+            throws IOException, PdfOperationException {
+        if (preset == DpiPreset.NONE) return null;
+        try (PDDocument doc = PdfLoader.load(input)) {
+            return computeDpiScale(doc, preset.dpi());
+        }
+    }
+
+    /**
+     * Walks each page's content stream to find where every page-level image is drawn, and from the
+     * draw's transformation matrix computes the image's effective resolution (pixels ÷ displayed
+     * inches). Returns, per {@code pageIndex → xobject-name}, the scale factor (≤ 1) needed so the
+     * image ends at or below {@code targetDpi}. An image drawn at several placements uses its
+     * highest effective DPI (smallest placement), guaranteeing every placement lands ≤ target.
+     * Images at or below the target keep scale 1.0 and appear absent (treated as no cap).
+     */
+    private static Map<Integer, Map<String, Float>> computeDpiScale(PDDocument doc, int targetDpi)
+            throws IOException {
+        Map<Integer, Map<String, Float>> byPage = new HashMap<>();
+        int pageIndex = 0;
+        for (PDPage page : doc.getPages()) {
+            ImagePlacementEngine engine = new ImagePlacementEngine();
+            engine.processPage(page);
+            Map<String, Float> scales = new HashMap<>();
+            for (Map.Entry<String, Float> e : engine.maxDpiByName.entrySet()) {
+                float dpi = e.getValue();
+                if (dpi > targetDpi) {
+                    scales.put(e.getKey(), targetDpi / dpi);
+                }
+            }
+            if (!scales.isEmpty()) byPage.put(pageIndex, scales);
+            pageIndex++;
+        }
+        return byPage;
+    }
+
+    /**
+     * A minimal content-stream engine that tracks the graphics-state CTM and, on each image draw
+     * ({@code Do} of a {@link PDImageXObject}), records the image's highest effective DPI seen.
+     * Form XObjects are deliberately not recursed into — only page-level images are recompressed,
+     * so only their placements matter and nested names must not leak into the page-level map.
+     */
+    private static final class ImagePlacementEngine extends PDFStreamEngine {
+        final Map<String, Float> maxDpiByName = new HashMap<>();
+
+        ImagePlacementEngine() {
+            addOperator(new Concatenate(this));            // cm
+            addOperator(new Save(this));                   // q
+            addOperator(new Restore(this));                // Q
+            addOperator(new SetGraphicsStateParameters(this)); // gs
+        }
+
+        @Override
+        protected void processOperator(Operator operator, List<COSBase> operands) throws IOException {
+            if ("Do".equals(operator.getName()) && !operands.isEmpty()
+                    && operands.get(0) instanceof COSName name) {
+                PDXObject xobj = getResources().getXObject(name);
+                if (xobj instanceof PDImageXObject image) {
+                    Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+                    float widthPt = ctm.getScalingFactorX();
+                    float heightPt = ctm.getScalingFactorY();
+                    if (widthPt > 0.01f && heightPt > 0.01f) {
+                        float dpiX = image.getWidth() * 72f / widthPt;
+                        float dpiY = image.getHeight() * 72f / heightPt;
+                        maxDpiByName.merge(name.getName(), Math.max(dpiX, dpiY), Math::max);
+                    }
+                }
+                // Do not recurse into form XObjects (see class doc).
+                return;
+            }
+            super.processOperator(operator, operands);
+        }
     }
 
     /**
@@ -249,11 +381,17 @@ public final class PdfCompressor {
      * it by {@code scale} (1.0 keeps the pixel dimensions but still re-encodes —
      * which is what shrinks losslessly-stored images). Images are never upscaled.
      *
+     * <p>When {@code mode} carries a DPI ceiling, {@code dpiScale} supplies a per-image cap on the
+     * downscale so the image lands ≤ the target resolution; the effective scale is the gentler of
+     * the ladder scale and that cap. When {@code mode.grayscale()} is set, images are re-encoded in
+     * a {@code TYPE_BYTE_GRAY} raster (a grayscale JPEG) for extra savings.
+     *
      * <p>{@code decodeCache} supplies each source image's decoded raster, rasterising it only the
      * first time it is seen and reusing it on later rungs. The cached raster is only ever read
      * (drawn from), never mutated, so reuse yields byte-for-byte the same JPEG a fresh decode would.
      */
-    private static void recompressImages(PDDocument doc, float scale, float quality,
+    private static void recompressImages(PDDocument doc, float scale, float quality, ImageMode mode,
+                                         Map<Integer, Map<String, Float>> dpiScale,
                                          DecodeCache decodeCache)
             throws IOException {
         decodeCache.beginRung();
@@ -262,12 +400,18 @@ public final class PdfCompressor {
             int currentPage = pageIndex++;
             PDResources resources = page.getResources();
             if (resources == null) continue;
+            Map<String, Float> pageDpiScale = dpiScale == null ? null : dpiScale.get(currentPage);
             for (COSName name : resources.getXObjectNames()) {
                 PDXObject xobj = resources.getXObject(name);
                 if (!(xobj instanceof PDImageXObject image)) continue;
 
-                int newW = clampDimension(image.getWidth(), scale);
-                int newH = clampDimension(image.getHeight(), scale);
+                float effectiveScale = scale;
+                if (pageDpiScale != null) {
+                    Float cap = pageDpiScale.get(name.getName());
+                    if (cap != null) effectiveScale = Math.min(effectiveScale, cap);
+                }
+                int newW = clampDimension(image.getWidth(), effectiveScale);
+                int newH = clampDimension(image.getHeight(), effectiveScale);
 
                 BufferedImage source;
                 if (decodeCache.shouldCache(resources, name)) {
@@ -282,14 +426,16 @@ public final class PdfCompressor {
                     source = image.getImage();
                 }
 
-                BufferedImage rgb = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
-                Graphics2D g = rgb.createGraphics();
+                int imageType = mode.grayscale()
+                    ? BufferedImage.TYPE_BYTE_GRAY : BufferedImage.TYPE_INT_RGB;
+                BufferedImage target = new BufferedImage(newW, newH, imageType);
+                Graphics2D g = target.createGraphics();
                 g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
                 g.drawImage(source, 0, 0, newW, newH, null);
                 g.dispose();
 
-                resources.put(name, JPEGFactory.createFromImage(doc, rgb, quality));
+                resources.put(name, JPEGFactory.createFromImage(doc, target, quality));
             }
         }
     }

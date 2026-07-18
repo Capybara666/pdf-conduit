@@ -365,7 +365,15 @@
       "loading": "Comprimiendo…",
       "noopWarning": "Objetivo ≥ tamaño del archivo — no se reducirá",
       "blankWarning": "Introduce un tamaño objetivo para comprimir.",
-      "allNoopWarning": "El objetivo es igual o mayor que cada archivo — no hay nada que reducir."
+      "allNoopWarning": "El objetivo es igual o mayor que cada archivo — no hay nada que reducir.",
+      "dpi": "Resolución de imagen",
+      "dpiHelp": "Limita las imágenes incrustadas a esta resolución para ahorrar más.",
+      "dpiNone": "Original (sin límite)",
+      "dpiScreen": "Pantalla (72 PPP)",
+      "dpiEbook": "Libro electrónico (150 PPP)",
+      "dpiPrint": "Impresión (300 PPP)",
+      "grayscale": "Convertir imágenes a escala de grises",
+      "grayscaleHelp": "Recodifica las imágenes sin color para archivos más pequeños."
     },
     "rotate": {
       "title": "Rotar",

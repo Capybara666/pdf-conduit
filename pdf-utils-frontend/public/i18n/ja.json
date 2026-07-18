@@ -365,7 +365,15 @@
       "loading": "圧縮中…",
       "noopWarning": "目標 ≥ ファイルサイズ — 縮小されません",
       "blankWarning": "圧縮する目標サイズを入力してください。",
-      "allNoopWarning": "目標がすべてのファイルのサイズ以上です — 縮小するものがありません。"
+      "allNoopWarning": "目標がすべてのファイルのサイズ以上です — 縮小するものがありません。",
+      "dpi": "画像解像度",
+      "dpiHelp": "埋め込み画像をこの解像度に制限してさらに縮小します。",
+      "dpiNone": "オリジナル(制限なし)",
+      "dpiScreen": "画面(72 DPI)",
+      "dpiEbook": "電子書籍(150 DPI)",
+      "dpiPrint": "印刷(300 DPI)",
+      "grayscale": "画像をグレースケールに変換",
+      "grayscaleHelp": "画像を色なしで再エンコードしてファイルを小さくします。"
     },
     "rotate": {
       "title": "回転",

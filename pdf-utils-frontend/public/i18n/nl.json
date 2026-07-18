@@ -365,7 +365,15 @@
       "loading": "Comprimeren…",
       "noopWarning": "Doel ≥ bestandsgrootte — wordt niet kleiner",
       "blankWarning": "Voer een doelgrootte in om te comprimeren.",
-      "allNoopWarning": "Doel is gelijk aan of groter dan elk bestand — niets te verkleinen."
+      "allNoopWarning": "Doel is gelijk aan of groter dan elk bestand — niets te verkleinen.",
+      "dpi": "Beeldresolutie",
+      "dpiHelp": "Beperk ingesloten afbeeldingen tot deze resolutie voor extra besparing.",
+      "dpiNone": "Origineel (geen limiet)",
+      "dpiScreen": "Scherm (72 DPI)",
+      "dpiEbook": "E-book (150 DPI)",
+      "dpiPrint": "Afdruk (300 DPI)",
+      "grayscale": "Afbeeldingen naar grijstinten converteren",
+      "grayscaleHelp": "Hercodeer afbeeldingen zonder kleur voor kleinere bestanden."
     },
     "rotate": {
       "title": "Draaien",

@@ -365,7 +365,15 @@
       "loading": "A comprimir…",
       "noopWarning": "Alvo ≥ tamanho do arquivo — não será reduzido",
       "blankWarning": "Insira um tamanho alvo para comprimir.",
-      "allNoopWarning": "O alvo é igual ou maior que cada arquivo — nada a reduzir."
+      "allNoopWarning": "O alvo é igual ou maior que cada arquivo — nada a reduzir.",
+      "dpi": "Resolução da imagem",
+      "dpiHelp": "Limite as imagens incorporadas a esta resolução para economizar mais.",
+      "dpiNone": "Original (sem limite)",
+      "dpiScreen": "Tela (72 DPI)",
+      "dpiEbook": "E-book (150 DPI)",
+      "dpiPrint": "Impressão (300 DPI)",
+      "grayscale": "Converter imagens em tons de cinza",
+      "grayscaleHelp": "Recodifica as imagens sem cor para arquivos menores."
     },
     "rotate": {
       "title": "Rodar",

@@ -365,7 +365,15 @@
       "loading": "Kompresowanie…",
       "noopWarning": "Cel ≥ rozmiar pliku — bez zmniejszenia",
       "blankWarning": "Podaj docelowy rozmiar, aby skompresować.",
-      "allNoopWarning": "Cel jest równy lub większy od każdego pliku — nie ma czego zmniejszać."
+      "allNoopWarning": "Cel jest równy lub większy od każdego pliku — nie ma czego zmniejszać.",
+      "dpi": "Rozdzielczość obrazu",
+      "dpiHelp": "Ogranicz osadzone obrazy do tej rozdzielczości, aby zaoszczędzić więcej.",
+      "dpiNone": "Oryginał (bez limitu)",
+      "dpiScreen": "Ekran (72 DPI)",
+      "dpiEbook": "E-book (150 DPI)",
+      "dpiPrint": "Druk (300 DPI)",
+      "grayscale": "Konwertuj obrazy na skalę szarości",
+      "grayscaleHelp": "Ponownie koduje obrazy bez koloru, aby zmniejszyć pliki."
     },
     "rotate": {
       "title": "Obróć",
