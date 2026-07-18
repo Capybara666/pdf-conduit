@@ -85,6 +85,7 @@ const ICONS: Record<string, string> = {
       <span
         class="pl-port pl-port-out"
         [class.connected]="outConnected"
+        [class.active]="outActive"
         [style.top.px]="portTop"
         [attr.aria-label]="'pipeline.canvas.outPort' | transloco"
         (pointerdown)="onPortDown($event)"
@@ -174,7 +175,10 @@ const ICONS: Record<string, string> = {
         left: 100%;
         cursor: crosshair;
       }
-      .pl-port-out:hover {
+      .pl-port-out:hover,
+      .pl-port-out.active {
+        border-color: var(--accent);
+        background: var(--accent);
         box-shadow: 0 0 0 3px var(--accent-soft);
       }
       .pl-port.connected {
@@ -206,6 +210,8 @@ export class PipelineNodeComponent {
   /** Whether each port currently has a wire attached — accent when connected, plain otherwise. */
   @Input() inConnected = false;
   @Input() outConnected = false;
+  /** True while a connection is being dragged out of this node's output port. */
+  @Input() outActive = false;
 
   @Output() select = new EventEmitter<string>();
   @Output() delete = new EventEmitter<string>();

@@ -87,6 +87,7 @@ interface Wire {
             [inInvalid]="n.id === hoverTargetId() && !hoverValid()"
             [inConnected]="inConnectedIds().has(n.id)"
             [outConnected]="outConnectedIds().has(n.id)"
+            [outActive]="pendingFrom() === n.id"
             (select)="selectNode($event)"
             (delete)="removeNode($event)"
             (move)="onNodeMove($event)"
@@ -177,8 +178,8 @@ export class PipelineCanvasComponent {
 
   private seq = 0;
 
-  // Pending connection gesture.
-  private pendingFrom: string | null = null;
+  // Pending connection gesture (signal so the source port can light up while dragging).
+  readonly pendingFrom = signal<string | null>(null);
   readonly hoverTargetId = signal<string | null>(null);
   readonly hoverValid = signal(false);
   private readonly tempEnd = signal<Point | null>(null);
@@ -211,8 +212,9 @@ export class PipelineCanvasComponent {
 
   readonly tempWire = computed(() => {
     const end = this.tempEnd();
-    if (!this.pendingFrom || !end) return null;
-    const f = this.nodes().find((n) => n.id === this.pendingFrom);
+    const from = this.pendingFrom();
+    if (!from || !end) return null;
+    const f = this.nodes().find((n) => n.id === from);
     return f ? wirePath(outPortCenter(f), end) : null;
   });
 
@@ -377,7 +379,7 @@ export class PipelineCanvasComponent {
   // --- connection gesture ------------------------------------------------
 
   onConnectStart(ev: { id: string; clientX: number; clientY: number }): void {
-    this.pendingFrom = ev.id;
+    this.pendingFrom.set(ev.id);
     this.selectedId.set(ev.id);
     this.updateTemp(ev.clientX, ev.clientY);
     window.addEventListener('pointermove', this.onConnMove);
@@ -393,13 +395,14 @@ export class PipelineCanvasComponent {
     window.removeEventListener('pointermove', this.onConnMove);
     window.removeEventListener('pointerup', this.onConnUp);
     const target = this.nearestInput(e.clientX, e.clientY);
-    if (this.pendingFrom && target && this.canConnect(this.pendingFrom, target)) {
+    const from = this.pendingFrom();
+    if (from && target && this.canConnect(from, target)) {
       this.connections.set([
         ...this.connections(),
-        { fromNodeId: this.pendingFrom, toNodeId: target },
+        { fromNodeId: from, toNodeId: target },
       ]);
     }
-    this.pendingFrom = null;
+    this.pendingFrom.set(null);
     this.tempEnd.set(null);
     this.hoverTargetId.set(null);
     this.hoverValid.set(false);
@@ -410,7 +413,8 @@ export class PipelineCanvasComponent {
     this.tempEnd.set(p);
     const target = this.nearestInput(clientX, clientY);
     this.hoverTargetId.set(target);
-    this.hoverValid.set(target != null && this.pendingFrom != null && this.canConnect(this.pendingFrom, target));
+    const from = this.pendingFrom();
+    this.hoverValid.set(target != null && from != null && this.canConnect(from, target));
   }
 
   private toContent(clientX: number, clientY: number): Point {
