@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -113,6 +114,8 @@ export class WatermarkPage {
   protected readonly files = signal<File[]>([]);
   protected readonly mode = signal<Mode>('text');
   protected readonly text = new FormControl('', { nonNullable: true });
+  /** FormControls aren't signals; mirror the value so computed() reacts to typing. */
+  private readonly textValue = toSignal(this.text.valueChanges, { initialValue: this.text.value });
   protected readonly image = signal<File | null>(null);
   protected readonly opacity = signal(0.3);
   protected readonly rotation = signal(45);
@@ -120,7 +123,7 @@ export class WatermarkPage {
   protected readonly state = new OperationState();
 
   protected readonly hasContent = computed(() =>
-    this.mode() === 'text' ? this.text.value.trim().length > 0 : this.image() !== null,
+    this.mode() === 'text' ? this.textValue().trim().length > 0 : this.image() !== null,
   );
   protected readonly canSubmit = computed(() => this.files().length > 0 && this.hasContent());
 
