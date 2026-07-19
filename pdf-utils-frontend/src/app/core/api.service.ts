@@ -148,6 +148,7 @@ export class ApiService {
   }
   crop(formData: FormData): Observable<RunResult> {
     return this.runOperation('crop', formData);
+  }
   pageMarks(formData: FormData): Observable<RunResult> {
     return this.runOperation('page-marks', formData);
   }
@@ -156,6 +157,7 @@ export class ApiService {
   }
   nup(formData: FormData): Observable<RunResult> {
     return this.runOperation('nup', formData);
+  }
   sign(formData: FormData): Observable<RunResult> {
     return this.runOperation('sign', formData);
   }

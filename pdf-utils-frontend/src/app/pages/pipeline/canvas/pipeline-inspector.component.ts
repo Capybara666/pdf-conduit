@@ -161,6 +161,7 @@ const KIND_TO_OP: Record<string, string> = {
             </select>
           </div>
           <label class="check"><input type="checkbox" [checked]="node.nupBooklet" (change)="emit('nupBooklet', $any($event.target).checked)" /> {{ 'pages.nup.booklet' | transloco }}</label>
+        }
         @case ('PAGE_MARKS') {
           <div class="field"><label>{{ 'pages.pipeline.fieldHeaderCenter' | transloco }}</label><input type="text" [value]="node.pmHeaderCenter" (input)="emit('pmHeaderCenter', $any($event.target).value)" placeholder="{{ '{page} / {pages}' }}" /></div>
           <div class="field"><label>{{ 'pages.pipeline.fieldFooterCenter' | transloco }}</label><input type="text" [value]="node.pmFooterCenter" (input)="emit('pmFooterCenter', $any($event.target).value)" placeholder="{{ '{page} / {pages}' }}" /></div>
