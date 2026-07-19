@@ -173,6 +173,14 @@ export const OP_ICONS: Record<string, string> = {
       '<path d="M7 15.8 H15 V18 H7 Z"/>',
   ),
 
+  ocr: g(
+    '<path d="M5 3 H14 L17 6 V21 H5 Z"/>' +
+      '<path d="M14 3 V6 H17"/>' +
+      '<path d="M7.5 9 H14.5 V18 H7.5 Z" fill="currentColor" stroke="none" opacity=".18"/>' +
+      '<path d="M8.8 16 L11 10.5 L13.2 16"/>' +
+      '<path d="M9.6 14.2 H12.4"/>',
+  ),
+
   // Pipeline SOURCE node (not an operation) — a plain page glyph.
   source: g('<path d="M6 2h9l5 5v15H6z M15 2v5h5"/>'),
 };
@@ -251,7 +259,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'OCR',
     description: 'Make a scanned PDF searchable with OCR.',
     group: 'convert',
-    icon: 'M6 3h12v18H6z M9 8h5 M9 11h4 M11.8 16a2.2 2.2 0 1 0 4.4 0 a2.2 2.2 0 1 0 -4.4 0 M15.6 17.6l1.9 1.9',
+    icon: OP_ICONS['ocr'],
   },
 
   // Secure
