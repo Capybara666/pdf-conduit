@@ -384,6 +384,9 @@ class NodeInspector extends FlowPane {
                 canvas.refreshNode(node);
             } catch (NumberFormatException ignored) {}
         });
+        return f;
+    }
+
     private void buildPageMarks(PipelineNode node) {
         TextField hc = pmField(node.pmHeaderCenter, v -> node.pmHeaderCenter = v, node);
         TextField fc = pmField(node.pmFooterCenter, v -> node.pmFooterCenter = v, node);

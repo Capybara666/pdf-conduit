@@ -274,6 +274,8 @@ public class OperationsController {
         List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
             () -> ops.crop(inputs, t, r, b, l, mm));
         return Responses.batch("crop", results, MediaType.APPLICATION_PDF);
+    }
+
     // ---------------------------------------------------------------------- NUP
 
     @PostMapping(value = "/nup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -287,6 +289,8 @@ public class OperationsController {
         List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
             () -> ops.nup(inputs, nupLayout, booklet));
         return Responses.batch("nup", results, MediaType.APPLICATION_PDF);
+    }
+
     // --------------------------------------------------------------- PAGE-MARKS
 
     @PostMapping(value = "/page-marks", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
