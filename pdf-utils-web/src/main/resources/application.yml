@@ -13,6 +13,11 @@ server:
     # Cap how many bytes of a rejected (oversize) upload Tomcat will swallow, so an
     # over-limit request isn't fully read into the server before being refused.
     max-swallow-size: ${PDFCONDUIT_WEB_MAX_SWALLOW_SIZE:2MB}
+    # Tomcat 10.1.42 defaults the multipart part count to 10; several operations post more
+    # form fields than that (e.g. page-marks = 1 file + 11 text params = 12 parts), which
+    # otherwise fails with FileCountLimitExceededException → 500. Raise to a safe ceiling
+    # (still far below any DoS concern for a bounded form).
+    max-part-count: ${PDFCONDUIT_WEB_MAX_PART_COUNT:256}
 
 # Management / observability endpoints live on a DISTINCT internal port (default 8081),
 # NEVER on the public 8080. Only publish/expose 8081 on the internal network (see
