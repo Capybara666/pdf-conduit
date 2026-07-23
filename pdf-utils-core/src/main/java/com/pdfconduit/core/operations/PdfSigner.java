@@ -164,8 +164,9 @@ public final class PdfSigner {
      * Stamps one image at {@code p}. The content stream's coordinate system is transformed so that,
      * after the transform, drawing in <em>displayed</em> space (top-left origin as the user sees the
      * page) produces the right result on the page's un-rotated user space — including 90/180/270°
-     * rotated pages. The transform is rotation-only (no scale), so the image aspect is exactly the
-     * placement box the user drew.
+     * rotated pages. The image is fitted <em>inside</em> the placement box preserving its intrinsic
+     * aspect ratio (letterbox) and centred, so a box whose aspect differs from the image never
+     * distorts the signature.
      */
     private static void drawPlacement(PDDocument doc, PDPage page, PDImageXObject img, SignPlacement p)
             throws IOException {
@@ -187,10 +188,15 @@ public final class PdfSigner {
         };
 
         // Placement box in displayed-bottom-left coords (flip the top-left y).
-        float left = (float) p.x();
-        float bottom = displayedH - (float) p.y() - (float) p.height();
-        float dw = (float) p.width();
-        float dh = (float) p.height();
+        float boxLeft = (float) p.x();
+        float boxBottom = displayedH - (float) p.y() - (float) p.height();
+        float boxW = (float) p.width();
+        float boxH = (float) p.height();
+
+        // Fit the image INSIDE the box preserving its intrinsic aspect ratio (letterbox),
+        // then centre it — so differing box/image aspect ratios never distort the signature.
+        float[] fit = fitInside(img.getWidth(), img.getHeight(), boxLeft, boxBottom, boxW, boxH);
+        float left = fit[0], bottom = fit[1], dw = fit[2], dh = fit[3];
 
         try (PDPageContentStream cs =
                  new PDPageContentStream(doc, page, AppendMode.APPEND, true, true)) {
@@ -199,6 +205,25 @@ public final class PdfSigner {
             cs.drawImage(img, left, bottom, dw, dh);
             cs.restoreGraphicsState();
         }
+    }
+
+    /**
+     * Fits an image of intrinsic pixel size {@code imgW x imgH} inside the box
+     * {@code (boxLeft, boxBottom, boxW, boxH)} (bottom-left origin), preserving the image's aspect
+     * ratio (letterbox) and centring it. Returns {@code [drawLeft, drawBottom, drawWidth, drawHeight]}.
+     * The drawn region never distorts the image: its aspect ratio equals the image's.
+     */
+    static float[] fitInside(int imgW, int imgH, float boxLeft, float boxBottom,
+                             float boxW, float boxH) {
+        if (imgW <= 0 || imgH <= 0) {
+            return new float[] {boxLeft, boxBottom, boxW, boxH};
+        }
+        float scale = Math.min(boxW / imgW, boxH / imgH);
+        float drawW = imgW * scale;
+        float drawH = imgH * scale;
+        float drawLeft = boxLeft + (boxW - drawW) / 2f;
+        float drawBottom = boxBottom + (boxH - drawH) / 2f;
+        return new float[] {drawLeft, drawBottom, drawW, drawH};
     }
 
     // ------------------------------------------------------------------ images

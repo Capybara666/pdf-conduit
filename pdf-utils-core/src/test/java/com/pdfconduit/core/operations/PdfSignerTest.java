@@ -89,6 +89,31 @@ class PdfSignerTest {
             List.of(new SignPlacement(0, 5, 10, 10, 50, 50)), Map.of(), false));
     }
 
+    @Test
+    void fitInsidePreservesAspectRatioForWideImageInSquareBox() {
+        // A 2:1 image dropped into a 100x100 box must stay 2:1, not become 1:1 (no stretch).
+        float[] fit = PdfSigner.fitInside(200, 100, 10, 20, 100, 100);
+        float drawW = fit[2], drawH = fit[3];
+        assertEquals(100f, drawW, 1e-4, "wide image should span the full box width");
+        assertEquals(50f, drawH, 1e-4, "height is constrained to keep 2:1 aspect");
+        assertEquals(drawW / drawH, 200f / 100f, 1e-4, "drawn region keeps the image aspect ratio");
+        // Centred vertically within the box: (100-50)/2 = 25 above the box bottom.
+        assertEquals(10f, fit[0], 1e-4, "no horizontal letterbox for a full-width fit");
+        assertEquals(20f + 25f, fit[1], 1e-4, "letterboxed image is centred vertically");
+    }
+
+    @Test
+    void fitInsidePreservesAspectRatioForTallImageInSquareBox() {
+        // A 1:2 image into a 100x100 box stays 1:2 and is centred horizontally.
+        float[] fit = PdfSigner.fitInside(100, 200, 0, 0, 100, 100);
+        float drawW = fit[2], drawH = fit[3];
+        assertEquals(50f, drawW, 1e-4);
+        assertEquals(100f, drawH, 1e-4);
+        assertEquals(drawW / drawH, 100f / 200f, 1e-4, "drawn region keeps the image aspect ratio");
+        assertEquals(25f, fit[0], 1e-4, "letterboxed image is centred horizontally");
+        assertEquals(0f, fit[1], 1e-4, "no vertical letterbox for a full-height fit");
+    }
+
     // ------------------------------------------------------------------ helpers
 
     private static boolean hasImage(PDPage page) throws IOException {
