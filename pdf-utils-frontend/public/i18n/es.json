@@ -150,8 +150,8 @@
   "header": {
     "brandHome": "Inicio de PDF Conduit",
     "quotaFreeLeft": "gratis hoy restantes",
-    "quotaTitleSpent": "Límite diario gratuito alcanzado — consulta los planes Pro",
-    "quotaTitleLeft": "Operaciones gratuitas restantes hoy — consulta los planes Pro",
+    "quotaTitleSpent": "Límite diario gratuito alcanzado. Consulta los planes Pro",
+    "quotaTitleLeft": "Operaciones gratuitas restantes hoy. Consulta los planes Pro",
     "serverOnline": "Servidor en línea",
     "serverOffline": "Servidor fuera de línea",
     "serverChecking": "Comprobando el servidor…",
@@ -176,7 +176,7 @@
     "hero": {
       "eyebrow": "Gratis · En tu navegador",
       "title": "Todas las herramientas PDF que necesitas, en un espacio de trabajo limpio.",
-      "lede": "Combina, comprime, convierte, protege y censura PDF en segundos — procesados al instante y nunca almacenados en nuestros servidores. Sin cuenta. Sin instalaciones.",
+      "lede": "Combina, comprime, convierte, protege y censura PDF en segundos. Procesados al instante y nunca almacenados en nuestros servidores. Sin cuenta. Sin instalaciones.",
       "ctaStart": "Empieza gratis",
       "ctaExplore": "Explora las herramientas",
       "note": "Los archivos nunca se almacenan · Sin registro · Funciona en cualquier dispositivo"
@@ -184,9 +184,9 @@
     "trust": {
       "aria": "Por qué PDF Conduit",
       "memoryTitle": "Nunca se almacena",
-      "memoryDesc": "Tus archivos se procesan y luego se descartan — nunca se guardan en disco ni se conservan en nuestros servidores.",
+      "memoryDesc": "Tus archivos se procesan y luego se descartan. Nunca se guardan en disco ni se conservan en nuestros servidores.",
       "accountTitle": "Sin cuenta necesaria",
-      "accountDesc": "Empieza directamente — sin correo, sin contraseña, sin muros de seguimiento.",
+      "accountDesc": "Empieza directamente. Sin correo, sin contraseña, sin muros de seguimiento.",
       "browserTitle": "Ábrelo en tu navegador",
       "browserDesc": "Nada que instalar. Funciona en Windows, macOS, Linux y móvil."
     },
@@ -212,14 +212,14 @@
       "proName": "Pro",
       "proPrice": "TBA",
       "proPer": "/ mes",
-      "proFeat1": "<b>Archivos más grandes</b> — elimina el límite de tamaño gratuito",
+      "proFeat1": "<b>Archivos más grandes</b>: elimina el límite de tamaño gratuito",
       "proFeat2": "<b>Límites diarios más altos</b> para grandes lotes",
       "proFeat3": "<b>Acceso por lotes y API</b> para automatizar flujos de trabajo",
       "proFeat4": "<b>Procesamiento prioritario</b> incluso en horas punta",
       "proFeat5": "Todo lo de Gratis, por supuesto",
       "proCta": "Me interesa",
       "proCtaDone": "Gracias por tu interés ✓",
-      "proNote": "Las herramientas gratuitas seguirán siendo gratis, para siempre — el precio de Pro aún está por decidir.",
+      "proNote": "Las herramientas gratuitas seguirán siendo gratis, para siempre. El precio de Pro aún está por decidir.",
       "notifyTitle": "Gracias por tu interés",
       "notifyMessage": "PDF Conduit Pro llegará pronto. Las herramientas gratuitas seguirán siendo gratis igualmente."
     },
@@ -265,7 +265,7 @@
   },
   "privacy": {
     "title": "Privacidad",
-    "description": "Cómo trata PDF Conduit tus archivos — en resumen: no los conserva.",
+    "description": "Cómo trata PDF Conduit tus archivos. En resumen: no los conserva.",
     "memoryTitle": "Tus archivos nunca se almacenan",
     "memoryBody": "Tus archivos nunca se almacenan. Cada operación se realiza por completo dentro de una única solicitud: tu archivo se procesa y se te devuelve directamente, y luego se descarta en ese mismo instante. No se conserva nada y nada se utiliza jamás para ningún otro fin.",
     "exceptionTitle": "La única excepción temporal",
@@ -273,7 +273,7 @@
     "accountTitle": "Sin cuenta, sin muro de seguimiento",
     "accountBody": "No necesitas registrarte, iniciar sesión ni darnos una dirección de correo para usar las herramientas gratuitas. No requerimos información personal para procesar un archivo.",
     "limitsTitle": "Límites del plan gratuito",
-    "limitsBody1": "Para mantener el servicio gratuito disponible para todos, las solicitudes están sujetas a una cuota diaria de operaciones, un límite de tamaño por archivo y una limitación básica de frecuencia. Cuando alcanzas un límite, la aplicación te lo indica con claridad. Límites más altos, archivos más grandes y acceso por lotes/API están previstos para un futuro plan de pago — consulta el",
+    "limitsBody1": "Para mantener el servicio gratuito disponible para todos, las solicitudes están sujetas a una cuota diaria de operaciones, un límite de tamaño por archivo y una limitación básica de frecuencia. Cuando alcanzas un límite, la aplicación te lo indica con claridad. Límites más altos, archivos más grandes y acceso por lotes/API están previstos para un futuro plan de pago. Consulta el",
     "limitsLink": "planes Pro",
     "limitsBody2": "adelanto en la página de inicio.",
     "questionsTitle": "Preguntas",
@@ -288,7 +288,7 @@
     "quota_exceeded": {
       "title": "Has usado las operaciones gratuitas de hoy",
       "detail": "Por ahora se ha alcanzado el límite diario gratuito.",
-      "hint": "Con PDF Conduit Pro llegan límites diarios más altos. Se reinicia mañana — o consigue acceso anticipado abajo."
+      "hint": "Con PDF Conduit Pro llegan límites diarios más altos. Se reinicia mañana. O consigue acceso anticipado abajo."
     },
     "rate_limited": {
       "title": "Un momento, más despacio",
@@ -395,9 +395,9 @@
       "unitLabel": "Unidad",
       "submit": "Comprimir",
       "loading": "Comprimiendo…",
-      "noopWarning": "Objetivo ≥ tamaño del archivo — no se reducirá",
+      "noopWarning": "Objetivo ≥ tamaño del archivo. No se reducirá",
       "blankWarning": "Introduce un tamaño objetivo para comprimir.",
-      "allNoopWarning": "El objetivo es igual o mayor que cada archivo — no hay nada que reducir.",
+      "allNoopWarning": "El objetivo es igual o mayor que cada archivo. No hay nada que reducir.",
       "dpi": "Resolución de imagen",
       "dpiHelp": "Limita las imágenes incrustadas a esta resolución para ahorrar más.",
       "dpiNone": "Original (sin límite)",
@@ -406,7 +406,7 @@
       "dpiPrint": "Impresión (300 PPP)",
       "grayscale": "Convertir imágenes a escala de grises",
       "grayscaleHelp": "Recodifica las imágenes sin color para archivos más pequeños.",
-      "floorNotice": "El tamaño más pequeño posible para este archivo es de aproximadamente {{floor}} — no se puede alcanzar tu objetivo de {{target}}. En su lugar se guardó la versión más pequeña."
+      "floorNotice": "El tamaño más pequeño posible para este archivo es de aproximadamente {{floor}}. No se puede alcanzar tu objetivo de {{target}}. En su lugar se guardó la versión más pequeña."
     },
     "rotate": {
       "title": "Rotar",
@@ -761,8 +761,8 @@
       "title": "Recortar",
       "description": "Recorta los márgenes de cada página.",
       "privacyLine": "Tus archivos se recortan de forma privada y nunca se almacenan.",
-      "hint": "Archivos PDF — varios archivos se devuelven como ZIP.",
-      "batchNote": "{{count}} archivos seleccionados — los márgenes se aplican a cada uno; resultados en ZIP.",
+      "hint": "Archivos PDF. Varios archivos se devuelven como ZIP.",
+      "batchNote": "{{count}} archivos seleccionados. Los márgenes se aplican a cada uno; resultados en ZIP.",
       "top": "Superior",
       "right": "Derecha",
       "bottom": "Inferior",

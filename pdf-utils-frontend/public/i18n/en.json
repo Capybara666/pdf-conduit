@@ -150,8 +150,8 @@
   "header": {
     "brandHome": "PDF Conduit home",
     "quotaFreeLeft": "free left today",
-    "quotaTitleSpent": "Daily free limit reached — see Pro plans",
-    "quotaTitleLeft": "Free operations left today — see Pro plans",
+    "quotaTitleSpent": "Daily free limit reached. See Pro plans",
+    "quotaTitleLeft": "Free operations left today. See Pro plans",
     "serverOnline": "Server online",
     "serverOffline": "Server offline",
     "serverChecking": "Checking server…",
@@ -176,7 +176,7 @@
     "hero": {
       "eyebrow": "Free · In your browser",
       "title": "Every PDF tool you need, in one clean workspace.",
-      "lede": "Merge, compress, convert, protect and redact PDFs in seconds — processed instantly and never stored on our servers. No account. No installs.",
+      "lede": "Merge, compress, convert, protect and redact PDFs in seconds. Processed instantly and never stored on our servers. No account. No installs.",
       "ctaStart": "Start for free",
       "ctaExplore": "Explore the tools",
       "note": "Files are never stored · No sign-up required · Works on any device"
@@ -184,15 +184,15 @@
     "trust": {
       "aria": "Why PDF Conduit",
       "memoryTitle": "Never stored",
-      "memoryDesc": "Your files are processed and then discarded — never saved to disk or kept on our servers.",
+      "memoryDesc": "Your files are processed and then discarded. Never saved to disk or kept on our servers.",
       "accountTitle": "No account needed",
-      "accountDesc": "Jump straight in — no email, no password, no tracking wall.",
+      "accountDesc": "Jump straight in. No email, no password, no tracking wall.",
       "browserTitle": "Open in your browser",
       "browserDesc": "Nothing to install. Works on Windows, macOS, Linux and mobile."
     },
     "tools": {
       "title": "Pick a tool and go",
-      "subtitle": "Everything you need to work with PDFs — private by default.",
+      "subtitle": "Everything you need to work with PDFs. Private by default.",
       "showMore": "Show all tools",
       "showLess": "Show fewer tools"
     },
@@ -212,14 +212,14 @@
       "proName": "Pro",
       "proPrice": "TBA",
       "proPer": "/ month",
-      "proFeat1": "<b>Larger files</b> — lift the free size cap",
+      "proFeat1": "<b>Larger files</b>: lift the free size cap",
       "proFeat2": "<b>Higher daily limits</b> for big batches",
       "proFeat3": "<b>Batch &amp; API access</b> to automate workflows",
       "proFeat4": "<b>Priority processing</b> even at peak times",
       "proFeat5": "Everything in Free, of course",
       "proCta": "I'm interested",
       "proCtaDone": "Thanks for your interest ✓",
-      "proNote": "The free tools stay free, forever — Pro pricing is still to be decided.",
+      "proNote": "The free tools stay free, forever. Pro pricing is still to be decided.",
       "notifyTitle": "Thanks for your interest",
       "notifyMessage": "PDF Conduit Pro is coming soon. The free tools stay free either way."
     },
@@ -234,13 +234,13 @@
       "title": "How it works",
       "subtitle": "Three steps. No account, nothing to install.",
       "step1Title": "Pick a tool",
-      "step1Desc": "Choose what you need — merge, compress, convert, protect and more.",
+      "step1Desc": "Choose what you need: merge, compress, convert, protect and more.",
       "step2Title": "Add your file",
       "step2Desc": "Drag it in or browse to it. Your files are never stored on our servers.",
       "step3Title": "Download your result",
-      "step3Desc": "Hit go and your file is processed straight away — your finished PDF is ready to download in seconds. When you leave, nothing is left behind.",
+      "step3Desc": "Hit go and your file is processed straight away. Your finished PDF is ready to download in seconds. When you leave, nothing is left behind.",
       "wizardTitle": "New to PDF Conduit?",
-      "wizardDesc": "Let the guided Wizard walk you through selecting, arranging and exporting — one step at a time.",
+      "wizardDesc": "Let the guided Wizard walk you through selecting, arranging and exporting. One step at a time.",
       "wizardCta": "Start the guided Wizard",
       "privacyLink": "See how we keep your files private →"
     },
@@ -255,7 +255,7 @@
   "onboarding": {
     "welcome": {
       "title": "Welcome to PDF Conduit",
-      "message": "Free PDF tools that run right in your browser — your files are processed instantly and never stored. New here? The guided Wizard is the easiest way to start.",
+      "message": "Free PDF tools that run right in your browser. Your files are processed instantly and never stored. New here? The guided Wizard is the easiest way to start.",
       "cta": "Try the guided Wizard",
       "secondary": "Browse all tools",
       "dismiss": "Dismiss"
@@ -265,15 +265,15 @@
   },
   "privacy": {
     "title": "Privacy",
-    "description": "How PDF Conduit handles your files — in short: it doesn't keep them.",
+    "description": "How PDF Conduit handles your files. In short: it doesn't keep them.",
     "memoryTitle": "Your files are never stored",
-    "memoryBody": "Your files are never stored. Each operation runs entirely within a single request — your upload is processed and streamed straight back to you, then discarded the moment it's done. Nothing is kept, and nothing is ever used for anything else.",
+    "memoryBody": "Your files are never stored. Each operation runs entirely within a single request. Your upload is processed and streamed straight back to you, then discarded the moment it's done. Nothing is kept, and nothing is ever used for anything else.",
     "exceptionTitle": "The one temporary exception",
     "exceptionBody": "Converting office or text documents (for example .docx, .xlsx, .pptx) requires a headless LibreOffice. For that step only, the file is written to an isolated temporary folder that is deleted immediately after the conversion completes. Plain PDFs and images never touch the disk.",
     "accountTitle": "No account, no tracking wall",
     "accountBody": "You don't need to sign up, log in, or give us an email address to use the free tools. We don't require personal information to process a file.",
     "limitsTitle": "Free-tier limits",
-    "limitsBody1": "To keep the free service available to everyone, requests are subject to a daily operation quota, a per-file size cap and basic rate limiting. When you hit a limit, the app tells you clearly. Higher limits, larger files and batch/API access are planned for a future paid tier — see the",
+    "limitsBody1": "To keep the free service available to everyone, requests are subject to a daily operation quota, a per-file size cap and basic rate limiting. When you hit a limit, the app tells you clearly. Higher limits, larger files and batch/API access are planned for a future paid tier. See the",
     "limitsLink": "Pro plans",
     "limitsBody2": "teaser on the home page.",
     "questionsTitle": "Questions",
@@ -288,7 +288,7 @@
     "quota_exceeded": {
       "title": "You've used today's free operations",
       "detail": "The free daily limit has been reached for now.",
-      "hint": "Higher daily limits are coming with PDF Conduit Pro. It resets tomorrow — or get early access below."
+      "hint": "Higher daily limits are coming with PDF Conduit Pro. It resets tomorrow. Or get early access below."
     },
     "rate_limited": {
       "title": "Slow down a moment",
@@ -372,8 +372,8 @@
     "extract": {
       "title": "Extract",
       "description": "Pull selected pages out of a PDF.",
-      "hint": "PDF files — several files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — the page range applies to each; results come back as a ZIP.",
+      "hint": "PDF files. Several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected. The page range applies to each; results come back as a ZIP.",
       "pages": "Pages",
       "pagesPlaceholder": "e.g. 1,3,5-8",
       "pagesHelp": "Blank = all pages. Syntax:",
@@ -395,9 +395,9 @@
       "unitLabel": "Unit",
       "submit": "Compress",
       "loading": "Compressing…",
-      "noopWarning": "Target ≥ file size — won't shrink",
+      "noopWarning": "Target ≥ file size. Won't shrink",
       "blankWarning": "Enter a target size to compress.",
-      "allNoopWarning": "Target is at or above every file's size — nothing to shrink.",
+      "allNoopWarning": "Target is at or above every file's size. Nothing to shrink.",
       "dpi": "Image resolution",
       "dpiHelp": "Cap embedded images to this resolution for extra savings.",
       "dpiNone": "Original (no cap)",
@@ -406,7 +406,7 @@
       "dpiPrint": "Print (300 DPI)",
       "grayscale": "Convert images to grayscale",
       "grayscaleHelp": "Re-encode images without colour for smaller files.",
-      "floorNotice": "Smallest achievable for this file is about {{floor}} — your target of {{target}} can't be reached. The smallest version was saved instead."
+      "floorNotice": "Smallest achievable for this file is about {{floor}}. Your target of {{target}} can't be reached. The smallest version was saved instead."
     },
     "rotate": {
       "title": "Rotate",
@@ -438,8 +438,8 @@
       "title": "Pages per sheet",
       "description": "Place several pages per sheet, or fold a saddle-stitch booklet.",
       "privacyLine": "Your files are laid out privately and never stored.",
-      "hint": "PDF files — multiple files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — each is laid out separately; results come back as a ZIP.",
+      "hint": "PDF files. Multiple files come back as a ZIP.",
+      "batchNote": "{{count}} files selected. Each is laid out separately; results come back as a ZIP.",
       "layout": "Layout",
       "layout2up": "2 per page",
       "layout4up": "4 per page (2×2)",
@@ -467,8 +467,8 @@
       "title": "To Images",
       "description": "Render PDF pages to PNG or JPG.",
       "privacyLine": "Your files are converted privately and never stored.",
-      "hint": "PDF files — multiple pages or files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — the page range applies to each; results come back as a ZIP.",
+      "hint": "PDF files. Multiple pages or files come back as a ZIP.",
+      "batchNote": "{{count}} files selected. The page range applies to each; results come back as a ZIP.",
       "format": "Format",
       "dpi": "DPI",
       "dpiHelp": "Higher = sharper and larger (36–600).",
@@ -481,14 +481,14 @@
       "loading": "Rendering…",
       "color": "Color",
       "transparent": "Transparent background",
-      "transparentHelp": "PNG only — the page background stays see-through.",
+      "transparentHelp": "PNG only. The page background stays see-through.",
       "grayscale": "Grayscale"
     },
     "toText": {
       "title": "To Text",
       "description": "Extract the text content of a PDF.",
       "hint": "PDF files (several come back as a ZIP).",
-      "batchNote": "{{count}} files selected — the page range applies to each; results come back as a ZIP.",
+      "batchNote": "{{count}} files selected. The page range applies to each; results come back as a ZIP.",
       "format": "Format",
       "formatTxt": "Plain text (.txt)",
       "formatDocx": "Word document (.docx)",
@@ -499,8 +499,8 @@
     },
     "ocr": {
       "title": "OCR",
-      "description": "Make a scanned PDF searchable — add an invisible text layer.",
-      "hint": "A scanned PDF or image — the text becomes selectable.",
+      "description": "Make a scanned PDF searchable. Add an invisible text layer.",
+      "hint": "A scanned PDF or image. The text becomes selectable.",
       "languages": "Languages",
       "languagesPlaceholder": "e.g. eng or eng+deu (blank = eng)",
       "languagesHelp": "Tesseract language codes; the language pack must be installed on the server.",
@@ -552,7 +552,7 @@
     },
     "sign": {
       "title": "Fill & Sign",
-      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
+      "description": "Add a signature to your PDF and flatten it. Nothing is stored, everything runs in your session.",
       "hint": "One PDF. Then create a signature and drop it onto the page.",
       "dragHint": "Drag on a page to place your signature.",
       "chooseAnother": "Choose another PDF",
@@ -577,7 +577,7 @@
     "metadata": {
       "title": "Metadata",
       "description": "View, edit or strip document info.",
-      "hint": "PDF files — the same changes apply to each (several come back as a ZIP).",
+      "hint": "PDF files. The same changes apply to each (several come back as a ZIP).",
       "batchNote": "The same fields are applied to every file. The preview reads the first file only.",
       "readCurrent": "Read current",
       "reading": "Reading…",
@@ -725,7 +725,7 @@
         "noneExplain": "No personal data was detected in this document.",
         "lowExplain": "A single low-risk identifier was found.",
         "mediumExplain": "Several low-risk identifiers were found, but nothing financial, national-ID or special-category.",
-        "highExplain": "Financial, national-ID or special-category data is present — handle with care before sharing."
+        "highExplain": "Financial, national-ID or special-category data is present. Handle with care before sharing."
       },
       "summary": "{count, plural, one {# piece of personal data found across {pages} pages.} other {# pieces of personal data found across {pages} pages.}}",
       "summaryClean": "No personal data found across {{pages}} pages.",
@@ -742,7 +742,7 @@
         "occurrences": "Count"
       },
       "redactCta": "Redact detected data",
-      "redactHint": "Review the highlighted areas, then apply — it's free.",
+      "redactHint": "Review the highlighted areas, then apply. It's free.",
       "hintMulti": "One or more PDFs, images or office documents.",
       "submitBatch": "Scan {{count}} files",
       "highestRiskLabel": "highest risk",
@@ -754,15 +754,15 @@
       "autoRedactCta": "Auto-redact everything detected",
       "autoRedactAllCta": "Auto-redact all files",
       "autoRedactFile": "Auto-redact",
-      "autoRedactHint": "One click blacks out every detected value and downloads the file — free. Your file is never stored.",
+      "autoRedactHint": "One click blacks out every detected value and downloads the file. Free. Your file is never stored.",
       "autoRedactLoading": "Redacting…"
     },
     "crop": {
       "title": "Crop",
       "description": "Trim margins off every page.",
       "privacyLine": "Your files are cropped privately and never stored.",
-      "hint": "PDF files — several files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "hint": "PDF files. Several files come back as a ZIP.",
+      "batchNote": "{{count}} files selected. The margins apply to each; results come back as a ZIP.",
       "top": "Top",
       "right": "Right",
       "bottom": "Bottom",

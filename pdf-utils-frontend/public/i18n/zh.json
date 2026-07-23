@@ -150,8 +150,8 @@
   "header": {
     "brandHome": "PDF Conduit 首页",
     "quotaFreeLeft": "今日剩余免费次数",
-    "quotaTitleSpent": "今日免费额度已用完 — 查看 Pro 方案",
-    "quotaTitleLeft": "今日剩余免费操作次数 — 查看 Pro 方案",
+    "quotaTitleSpent": "今日免费额度已用完。查看 Pro 方案",
+    "quotaTitleLeft": "今日剩余免费操作次数。查看 Pro 方案",
     "serverOnline": "服务器在线",
     "serverOffline": "服务器离线",
     "serverChecking": "正在检查服务器…",
@@ -176,7 +176,7 @@
     "hero": {
       "eyebrow": "免费 · 在浏览器中运行",
       "title": "所需的每一款 PDF 工具，尽在一个简洁的工作区。",
-      "lede": "几秒内完成 PDF 的合并、压缩、转换、加密和涂黑 — 即时处理，绝不存储在我们的服务器上。无需账户，无需安装。",
+      "lede": "几秒内完成 PDF 的合并、压缩、转换、加密和涂黑。即时处理，绝不存储在我们的服务器上。无需账户，无需安装。",
       "ctaStart": "免费开始",
       "ctaExplore": "浏览工具",
       "note": "文件绝不存储 · 无需注册 · 适用于任何设备"
@@ -184,9 +184,9 @@
     "trust": {
       "aria": "为何选择 PDF Conduit",
       "memoryTitle": "绝不存储",
-      "memoryDesc": "您的文件处理完毕后即被丢弃 — 绝不写入磁盘，也不会保留在我们的服务器上。",
+      "memoryDesc": "您的文件处理完毕后即被丢弃。绝不写入磁盘，也不会保留在我们的服务器上。",
       "accountTitle": "无需账户",
-      "accountDesc": "直接开始 — 无需邮箱、无需密码、无需跨过跟踪墙。",
+      "accountDesc": "直接开始。无需邮箱、无需密码、无需跨过跟踪墙。",
       "browserTitle": "在浏览器中打开",
       "browserDesc": "无需安装。适用于 Windows、macOS、Linux 和移动设备。"
     },
@@ -212,14 +212,14 @@
       "proName": "Pro",
       "proPrice": "TBA",
       "proPer": "／月",
-      "proFeat1": "<b>更大的文件</b> — 解除免费版大小上限",
+      "proFeat1": "<b>更大的文件</b>：解除免费版大小上限",
       "proFeat2": "<b>更高的每日限额</b>，适用于大批量处理",
       "proFeat3": "<b>批处理与 API 访问</b>，实现工作流自动化",
       "proFeat4": "<b>优先处理</b>，即使在高峰时段",
       "proFeat5": "当然，包含免费版的一切",
       "proCta": "我有兴趣",
       "proCtaDone": "感谢您的关注 ✓",
-      "proNote": "免费工具永久免费 — Pro 价格尚未确定。",
+      "proNote": "免费工具永久免费。Pro 价格尚未确定。",
       "notifyTitle": "感谢您的关注",
       "notifyMessage": "PDF Conduit Pro 即将推出。无论如何，免费工具都将保持免费。"
     },
@@ -234,7 +234,7 @@
       "title": "使用方法",
       "subtitle": "三步搞定。无需账户，无需安装。",
       "step1Title": "选择工具",
-      "step1Desc": "选择您需要的功能 — 合并、压缩、转换、加密等等。",
+      "step1Desc": "选择您需要的功能：合并、压缩、转换、加密等等。",
       "step2Title": "添加文件",
       "step2Desc": "拖入或浏览选择。您的文件绝不会保存在我们的服务器上。",
       "step3Title": "下载结果",
@@ -255,7 +255,7 @@
   "onboarding": {
     "welcome": {
       "title": "欢迎使用 PDF Conduit",
-      "message": "在浏览器中即可使用的免费 PDF 工具 — 您的文件会被即时处理，绝不会保存。第一次使用？向导是最简单的入门方式。",
+      "message": "在浏览器中即可使用的免费 PDF 工具。您的文件会被即时处理，绝不会保存。第一次使用？向导是最简单的入门方式。",
       "cta": "试用向导",
       "secondary": "浏览所有工具",
       "dismiss": "关闭"
@@ -265,7 +265,7 @@
   },
   "privacy": {
     "title": "隐私",
-    "description": "PDF Conduit 如何处理您的文件 — 简而言之：它不会留存文件。",
+    "description": "PDF Conduit 如何处理您的文件。简而言之：它不会留存文件。",
     "memoryTitle": "您的文件绝不存储",
     "memoryBody": "您的文件绝不会被保存。每一次操作都在一次请求中完整完成：您上传的文件经过处理后直接返回给您，随后即被立即丢弃。任何内容都不会保留，也绝不会用于任何其他用途。",
     "exceptionTitle": "唯一的临时例外",
@@ -273,7 +273,7 @@
     "accountTitle": "无账户，无跟踪墙",
     "accountBody": "使用免费工具无需注册、登录或提供邮箱地址。我们不需要个人信息即可处理文件。",
     "limitsTitle": "免费版限制",
-    "limitsBody1": "为了让每个人都能使用免费服务，请求会受到每日操作配额、单个文件大小上限和基本速率限制的约束。当您达到限制时，应用会明确提示。更高的限额、更大的文件以及批处理／API 访问已计划在未来的付费版中提供 — 请参阅首页上的",
+    "limitsBody1": "为了让每个人都能使用免费服务，请求会受到每日操作配额、单个文件大小上限和基本速率限制的约束。当您达到限制时，应用会明确提示。更高的限额、更大的文件以及批处理／API 访问已计划在未来的付费版中提供。请参阅首页上的",
     "limitsLink": "Pro 方案",
     "limitsBody2": "预告。",
     "questionsTitle": "疑问",
@@ -288,7 +288,7 @@
     "quota_exceeded": {
       "title": "您已用完今日的免费操作",
       "detail": "目前已达到每日免费限额。",
-      "hint": "PDF Conduit Pro 将带来更高的每日限额。额度将于明天重置 — 或在下方获取抢先体验。"
+      "hint": "PDF Conduit Pro 将带来更高的每日限额。额度将于明天重置。或在下方获取抢先体验。"
     },
     "rate_limited": {
       "title": "请稍慢一点",
@@ -372,8 +372,8 @@
     "extract": {
       "title": "提取",
       "description": "从 PDF 中提取所选页面。",
-      "hint": "PDF 文件 — 多个文件将以 ZIP 返回。",
-      "batchNote": "已选择 {{count}} 个文件 — 页码范围将应用于每个文件，结果以 ZIP 返回。",
+      "hint": "PDF 文件。多个文件将以 ZIP 返回。",
+      "batchNote": "已选择 {{count}} 个文件。页码范围将应用于每个文件，结果以 ZIP 返回。",
       "pages": "页面",
       "pagesPlaceholder": "例如 1,3,5-8",
       "pagesHelp": "留空 = 所有页面。语法：",
@@ -395,9 +395,9 @@
       "unitLabel": "单位",
       "submit": "压缩",
       "loading": "压缩中…",
-      "noopWarning": "目标 ≥ 文件大小 — 不会缩小",
+      "noopWarning": "目标 ≥ 文件大小。不会缩小",
       "blankWarning": "请输入用于压缩的目标大小。",
-      "allNoopWarning": "目标不小于每个文件的大小 — 无需压缩。",
+      "allNoopWarning": "目标不小于每个文件的大小。无需压缩。",
       "dpi": "图像分辨率",
       "dpiHelp": "将嵌入图像限制为此分辨率以进一步节省空间。",
       "dpiNone": "原始(不限制)",
@@ -406,7 +406,7 @@
       "dpiPrint": "打印(300 DPI)",
       "grayscale": "将图像转换为灰度",
       "grayscaleHelp": "以无颜色重新编码图像以缩小文件。",
-      "floorNotice": "该文件可达到的最小大小约为 {{floor}} — 无法达到您设定的 {{target}} 目标。已改为保存最小的版本。"
+      "floorNotice": "该文件可达到的最小大小约为 {{floor}}。无法达到您设定的 {{target}} 目标。已改为保存最小的版本。"
     },
     "rotate": {
       "title": "旋转",
@@ -438,8 +438,8 @@
       "title": "每张多页",
       "description": "在一张纸上放置多页，或折叠成骑马订小册子。",
       "privacyLine": "您的文件以私密方式拼版，绝不会被存储。",
-      "hint": "PDF 文件 — 多个文件将以 ZIP 返回。",
-      "batchNote": "已选择 {{count}} 个文件 — 每个文件单独拼版，结果以 ZIP 返回。",
+      "hint": "PDF 文件。多个文件将以 ZIP 返回。",
+      "batchNote": "已选择 {{count}} 个文件。每个文件单独拼版，结果以 ZIP 返回。",
       "layout": "版式",
       "layout2up": "每张 2 页",
       "layout4up": "每张 4 页 (2×2)",
@@ -467,8 +467,8 @@
       "title": "转为图片",
       "description": "将 PDF 页面渲染为 PNG 或 JPG。",
       "privacyLine": "您的文件以私密方式转换，绝不会被存储。",
-      "hint": "PDF 文件 — 多页或多个文件将以 ZIP 返回。",
-      "batchNote": "已选择 {{count}} 个文件 — 页码范围将应用于每个文件，结果以 ZIP 返回。",
+      "hint": "PDF 文件。多页或多个文件将以 ZIP 返回。",
+      "batchNote": "已选择 {{count}} 个文件。页码范围将应用于每个文件，结果以 ZIP 返回。",
       "format": "格式",
       "dpi": "DPI",
       "dpiHelp": "越高 = 越清晰、文件越大（36–600）。",
@@ -481,14 +481,14 @@
       "loading": "渲染中…",
       "color": "颜色",
       "transparent": "透明背景",
-      "transparentHelp": "仅限 PNG — 页面背景保持透明。",
+      "transparentHelp": "仅限 PNG。页面背景保持透明。",
       "grayscale": "灰度"
     },
     "toText": {
       "title": "转为文本",
       "description": "提取 PDF 的文本内容。",
       "hint": "PDF 文件（多个将以 ZIP 返回）。",
-      "batchNote": "已选择 {{count}} 个文件 — 页码范围将应用于每个文件，结果以 ZIP 返回。",
+      "batchNote": "已选择 {{count}} 个文件。页码范围将应用于每个文件，结果以 ZIP 返回。",
       "format": "格式",
       "formatTxt": "纯文本（.txt）",
       "formatDocx": "Word 文档（.docx）",
@@ -499,8 +499,8 @@
     },
     "ocr": {
       "title": "OCR",
-      "description": "让扫描版 PDF 可搜索 — 添加隐藏的文本层。",
-      "hint": "扫描版 PDF 或图片 — 文本将变得可选择。",
+      "description": "让扫描版 PDF 可搜索。添加隐藏的文本层。",
+      "hint": "扫描版 PDF 或图片。文本将变得可选择。",
       "languages": "语言",
       "languagesPlaceholder": "例如 eng 或 eng+deu（留空 = eng）",
       "languagesHelp": "Tesseract 语言代码；服务器上必须安装相应语言包。",
@@ -552,7 +552,7 @@
     },
     "sign": {
       "title": "填写和签名",
-      "description": "为 PDF 添加签名并将其扁平化——不存储任何内容，全部在您的会话中完成。",
+      "description": "为 PDF 添加签名并将其扁平化。不存储任何内容，全部在您的会话中完成。",
       "hint": "一个 PDF。然后创建签名并将其放到页面上。",
       "dragHint": "在页面上拖动以放置您的签名。",
       "chooseAnother": "选择其他 PDF",
@@ -577,7 +577,7 @@
     "metadata": {
       "title": "元数据",
       "description": "查看、编辑或清除文档信息。",
-      "hint": "PDF 文件 — 相同的更改会应用到每个文件（多个将以 ZIP 返回）。",
+      "hint": "PDF 文件。相同的更改会应用到每个文件（多个将以 ZIP 返回）。",
       "batchNote": "相同的字段会应用到每个文件。预览仅读取第一个文件。",
       "readCurrent": "读取当前值",
       "reading": "读取中…",
@@ -725,7 +725,7 @@
         "noneExplain": "未在此文档中检测到个人数据。",
         "lowExplain": "发现了一个低风险标识符。",
         "mediumExplain": "发现了多个低风险标识符，但没有金融、国家身份或特殊类别的数据。",
-        "highExplain": "包含金融、国家身份或特殊类别数据——分享前请谨慎处理。"
+        "highExplain": "包含金融、国家身份或特殊类别数据。分享前请谨慎处理。"
       },
       "summary": "{count, plural, other {在 {pages} 页中发现 # 项个人数据。}}",
       "summaryClean": "在 {{pages}} 页中未发现个人数据。",
@@ -754,15 +754,15 @@
       "autoRedactCta": "自动涂黑所有检测到的内容",
       "autoRedactAllCta": "自动涂黑所有文件",
       "autoRedactFile": "自动涂黑",
-      "autoRedactHint": "一键涂黑每个检测到的值并下载文件——免费。您的文件绝不会被存储。",
+      "autoRedactHint": "一键涂黑每个检测到的值并下载文件。免费。您的文件绝不会被存储。",
       "autoRedactLoading": "正在涂黑…"
     },
     "crop": {
       "title": "裁剪",
       "description": "裁去每页的页边距。",
       "privacyLine": "您的文件将被私密裁剪，绝不存储。",
-      "hint": "PDF 文件 — 多个文件将以 ZIP 返回。",
-      "batchNote": "已选择 {{count}} 个文件 — 页边距应用于每个文件；结果以 ZIP 返回。",
+      "hint": "PDF 文件。多个文件将以 ZIP 返回。",
+      "batchNote": "已选择 {{count}} 个文件。页边距应用于每个文件；结果以 ZIP 返回。",
       "top": "上",
       "right": "右",
       "bottom": "下",

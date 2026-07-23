@@ -150,8 +150,8 @@
   "header": {
     "brandHome": "PDF Conduit 홈",
     "quotaFreeLeft": "오늘 남은 무료 횟수",
-    "quotaTitleSpent": "오늘의 무료 한도에 도달했습니다 — Pro 플랜 보기",
-    "quotaTitleLeft": "오늘 남은 무료 작업 — Pro 플랜 보기",
+    "quotaTitleSpent": "오늘의 무료 한도에 도달했습니다. Pro 플랜 보기",
+    "quotaTitleLeft": "오늘 남은 무료 작업. Pro 플랜 보기",
     "serverOnline": "서버 온라인",
     "serverOffline": "서버 오프라인",
     "serverChecking": "서버 확인 중…",
@@ -176,7 +176,7 @@
     "hero": {
       "eyebrow": "무료 · 브라우저에서",
       "title": "필요한 모든 PDF 도구를 하나의 깔끔한 작업 공간에서.",
-      "lede": "PDF를 병합, 압축, 변환, 보호, 블랙아웃까지 몇 초 만에 — 즉시 처리되며 서버에 절대 저장되지 않습니다. 계정 불필요. 설치 불필요.",
+      "lede": "PDF를 병합, 압축, 변환, 보호, 블랙아웃까지 몇 초 만에. 즉시 처리되며 서버에 절대 저장되지 않습니다. 계정 불필요. 설치 불필요.",
       "ctaStart": "무료로 시작하기",
       "ctaExplore": "도구 살펴보기",
       "note": "파일은 절대 저장되지 않습니다 · 가입 불필요 · 모든 기기에서 작동"
@@ -184,9 +184,9 @@
     "trust": {
       "aria": "PDF Conduit를 선택하는 이유",
       "memoryTitle": "저장되지 않음",
-      "memoryDesc": "파일은 처리된 후 즉시 삭제됩니다 — 디스크에 기록하거나 서버에 보관하지 않습니다.",
+      "memoryDesc": "파일은 처리된 후 즉시 삭제됩니다. 디스크에 기록하거나 서버에 보관하지 않습니다.",
       "accountTitle": "계정 불필요",
-      "accountDesc": "바로 시작하세요 — 이메일도, 비밀번호도, 가입 장벽도 없습니다.",
+      "accountDesc": "바로 시작하세요. 이메일도, 비밀번호도, 가입 장벽도 없습니다.",
       "browserTitle": "브라우저에서 바로 열기",
       "browserDesc": "설치할 것이 없습니다. Windows, macOS, Linux, 모바일에서 작동합니다."
     },
@@ -212,14 +212,14 @@
       "proName": "Pro",
       "proPrice": "TBA",
       "proPer": "/ 월",
-      "proFeat1": "<b>더 큰 파일</b> — 무료 크기 제한 해제",
+      "proFeat1": "<b>더 큰 파일</b>: 무료 크기 제한 해제",
       "proFeat2": "대량 작업을 위한 <b>더 높은 일일 한도</b>",
       "proFeat3": "워크플로 자동화를 위한 <b>배치 &amp; API 접근</b>",
       "proFeat4": "혼잡한 시간에도 <b>우선 처리</b>",
       "proFeat5": "물론 무료의 모든 기능 포함",
       "proCta": "관심 있어요",
       "proCtaDone": "관심 가져 주셔서 감사합니다 ✓",
-      "proNote": "무료 도구는 영원히 무료로 유지됩니다 — Pro 가격은 아직 미정입니다.",
+      "proNote": "무료 도구는 영원히 무료로 유지됩니다. Pro 가격은 아직 미정입니다.",
       "notifyTitle": "관심 가져 주셔서 감사합니다",
       "notifyMessage": "PDF Conduit Pro가 곧 출시됩니다. 무료 도구는 어느 쪽이든 무료로 유지됩니다."
     },
@@ -234,7 +234,7 @@
       "title": "이용 방법",
       "subtitle": "세 단계. 계정도, 설치도 필요 없습니다.",
       "step1Title": "도구 선택",
-      "step1Desc": "필요한 작업을 고르세요 — 병합, 압축, 변환, 보호 등.",
+      "step1Desc": "필요한 작업을 고르세요: 병합, 압축, 변환, 보호 등.",
       "step2Title": "파일 추가",
       "step2Desc": "끌어다 놓거나 찾아보세요. 파일은 저희 서버에 절대 저장되지 않습니다.",
       "step3Title": "결과 다운로드",
@@ -255,7 +255,7 @@
   "onboarding": {
     "welcome": {
       "title": "PDF Conduit에 오신 것을 환영합니다",
-      "message": "브라우저에서 바로 실행되는 무료 PDF 도구 — 파일은 즉시 처리되며 저장되지 않습니다. 처음이신가요? 가이드 마법사가 가장 쉬운 시작 방법입니다.",
+      "message": "브라우저에서 바로 실행되는 무료 PDF 도구. 파일은 즉시 처리되며 저장되지 않습니다. 처음이신가요? 가이드 마법사가 가장 쉬운 시작 방법입니다.",
       "cta": "가이드 마법사 사용해 보기",
       "secondary": "모든 도구 살펴보기",
       "dismiss": "닫기"
@@ -265,7 +265,7 @@
   },
   "privacy": {
     "title": "개인정보",
-    "description": "PDF Conduit가 파일을 다루는 방식 — 요약하자면: 보관하지 않습니다.",
+    "description": "PDF Conduit가 파일을 다루는 방식. 요약하자면: 보관하지 않습니다.",
     "memoryTitle": "파일은 절대 저장되지 않습니다",
     "memoryBody": "파일은 절대 저장되지 않습니다. 모든 작업은 하나의 요청 안에서 완결됩니다. 업로드한 파일은 처리되어 곧바로 사용자에게 반환된 뒤 그 즉시 삭제됩니다. 어떤 것도 보관되지 않으며, 다른 용도로 사용되는 일도 결코 없습니다.",
     "exceptionTitle": "단 하나의 임시 예외",
@@ -273,7 +273,7 @@
     "accountTitle": "계정도, 가입 장벽도 없음",
     "accountBody": "무료 도구를 사용하는 데 가입, 로그인, 이메일 주소 제공이 필요하지 않습니다. 파일을 처리하는 데 개인정보를 요구하지 않습니다.",
     "limitsTitle": "무료 등급 한도",
-    "limitsBody1": "무료 서비스를 모두에게 제공하기 위해 요청에는 일일 작업 할당량, 파일당 크기 제한, 기본 속도 제한이 적용됩니다. 한도에 도달하면 앱이 명확하게 알려줍니다. 더 높은 한도, 더 큰 파일, 배치/API 접근은 향후 유료 등급에서 제공될 예정입니다 —",
+    "limitsBody1": "무료 서비스를 모두에게 제공하기 위해 요청에는 일일 작업 할당량, 파일당 크기 제한, 기본 속도 제한이 적용됩니다. 한도에 도달하면 앱이 명확하게 알려줍니다. 더 높은 한도, 더 큰 파일, 배치/API 접근은 향후 유료 등급에서 제공될 예정입니다.",
     "limitsLink": "Pro 플랜",
     "limitsBody2": "홈페이지의 티저를 참고하세요.",
     "questionsTitle": "문의",
@@ -288,7 +288,7 @@
     "quota_exceeded": {
       "title": "오늘의 무료 작업을 모두 사용했습니다",
       "detail": "현재 무료 일일 한도에 도달했습니다.",
-      "hint": "더 높은 일일 한도가 PDF Conduit Pro와 함께 제공될 예정입니다. 내일 초기화됩니다 — 또는 아래에서 미리 사용해 보세요."
+      "hint": "더 높은 일일 한도가 PDF Conduit Pro와 함께 제공될 예정입니다. 내일 초기화됩니다. 또는 아래에서 미리 사용해 보세요."
     },
     "rate_limited": {
       "title": "잠시 천천히 진행해 주세요",
@@ -372,8 +372,8 @@
     "extract": {
       "title": "추출",
       "description": "PDF에서 선택한 페이지를 뽑아냅니다.",
-      "hint": "PDF 파일 — 여러 파일은 ZIP으로 반환됩니다.",
-      "batchNote": "{{count}}개 파일 선택됨 — 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
+      "hint": "PDF 파일. 여러 파일은 ZIP으로 반환됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨. 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
       "pages": "페이지",
       "pagesPlaceholder": "예: 1,3,5-8",
       "pagesHelp": "비워 두면 = 모든 페이지. 문법:",
@@ -395,9 +395,9 @@
       "unitLabel": "단위",
       "submit": "압축",
       "loading": "압축 중…",
-      "noopWarning": "목표 ≥ 파일 크기 — 줄어들지 않음",
+      "noopWarning": "목표 ≥ 파일 크기. 줄어들지 않음",
       "blankWarning": "압축할 목표 크기를 입력하세요.",
-      "allNoopWarning": "목표가 모든 파일 크기 이상입니다 — 줄일 것이 없습니다.",
+      "allNoopWarning": "목표가 모든 파일 크기 이상입니다. 줄일 것이 없습니다.",
       "dpi": "이미지 해상도",
       "dpiHelp": "포함된 이미지를 이 해상도로 제한하여 더 많이 줄입니다.",
       "dpiNone": "원본 (제한 없음)",
@@ -406,7 +406,7 @@
       "dpiPrint": "인쇄 (300 DPI)",
       "grayscale": "이미지를 흑백으로 변환",
       "grayscaleHelp": "이미지를 색상 없이 다시 인코딩하여 파일을 줄입니다.",
-      "floorNotice": "이 파일에서 도달 가능한 최소 크기는 약 {{floor}} 입니다 — 목표한 {{target}} 에 도달할 수 없습니다. 대신 가장 작은 버전이 저장되었습니다."
+      "floorNotice": "이 파일에서 도달 가능한 최소 크기는 약 {{floor}} 입니다. 목표한 {{target}} 에 도달할 수 없습니다. 대신 가장 작은 버전이 저장되었습니다."
     },
     "rotate": {
       "title": "회전",
@@ -438,8 +438,8 @@
       "title": "한 장에 여러 페이지",
       "description": "여러 페이지를 한 장에 배치하거나 중철 소책자로 접습니다.",
       "privacyLine": "파일은 비공개로 배치되며 저장되지 않습니다.",
-      "hint": "PDF 파일 — 여러 파일은 ZIP으로 반환됩니다.",
-      "batchNote": "{{count}}개 파일 선택됨 — 각 파일이 개별적으로 배치되며 결과는 ZIP으로 반환됩니다.",
+      "hint": "PDF 파일. 여러 파일은 ZIP으로 반환됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨. 각 파일이 개별적으로 배치되며 결과는 ZIP으로 반환됩니다.",
       "layout": "레이아웃",
       "layout2up": "한 장에 2쪽",
       "layout4up": "한 장에 4쪽 (2×2)",
@@ -467,8 +467,8 @@
       "title": "이미지로 변환",
       "description": "PDF 페이지를 PNG 또는 JPG로 렌더링합니다.",
       "privacyLine": "파일은 비공개로 변환되며 저장되지 않습니다.",
-      "hint": "PDF 파일 — 여러 페이지나 여러 파일은 ZIP으로 반환됩니다.",
-      "batchNote": "{{count}}개 파일 선택됨 — 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
+      "hint": "PDF 파일. 여러 페이지나 여러 파일은 ZIP으로 반환됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨. 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
       "format": "형식",
       "dpi": "DPI",
       "dpiHelp": "높을수록 = 더 선명하고 더 큼 (36–600).",
@@ -481,14 +481,14 @@
       "loading": "렌더링 중…",
       "color": "색상",
       "transparent": "투명 배경",
-      "transparentHelp": "PNG 전용 — 페이지 배경이 투명하게 유지됩니다.",
+      "transparentHelp": "PNG 전용. 페이지 배경이 투명하게 유지됩니다.",
       "grayscale": "회색조"
     },
     "toText": {
       "title": "텍스트로 변환",
       "description": "PDF의 텍스트 내용을 추출합니다.",
       "hint": "PDF 파일 (여러 개면 ZIP으로 반환됩니다).",
-      "batchNote": "{{count}}개 파일 선택됨 — 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨. 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
       "format": "형식",
       "formatTxt": "일반 텍스트 (.txt)",
       "formatDocx": "Word 문서 (.docx)",
@@ -499,8 +499,8 @@
     },
     "ocr": {
       "title": "OCR",
-      "description": "스캔한 PDF를 검색 가능하게 — 보이지 않는 텍스트 레이어를 추가합니다.",
-      "hint": "스캔한 PDF 또는 이미지 — 텍스트를 선택할 수 있게 됩니다.",
+      "description": "스캔한 PDF를 검색 가능하게. 보이지 않는 텍스트 레이어를 추가합니다.",
+      "hint": "스캔한 PDF 또는 이미지. 텍스트를 선택할 수 있게 됩니다.",
       "languages": "언어",
       "languagesPlaceholder": "예: eng 또는 eng+deu (비우면 eng)",
       "languagesHelp": "Tesseract 언어 코드입니다. 언어 팩이 서버에 설치되어 있어야 합니다.",
@@ -552,7 +552,7 @@
     },
     "sign": {
       "title": "작성 및 서명",
-      "description": "PDF에 서명을 추가하고 병합하세요 — 아무것도 저장되지 않으며 모든 작업은 세션 내에서 실행됩니다.",
+      "description": "PDF에 서명을 추가하고 병합하세요. 아무것도 저장되지 않으며 모든 작업은 세션 내에서 실행됩니다.",
       "hint": "PDF 한 개. 서명을 만든 다음 페이지에 놓으세요.",
       "dragHint": "페이지에서 드래그하여 서명을 배치하세요.",
       "chooseAnother": "다른 PDF 선택",
@@ -577,7 +577,7 @@
     "metadata": {
       "title": "메타데이터",
       "description": "문서 정보를 보거나, 편집하거나, 삭제합니다.",
-      "hint": "PDF 파일 — 동일한 변경 사항이 각 파일에 적용됩니다 (여러 개면 ZIP으로 반환됩니다).",
+      "hint": "PDF 파일. 동일한 변경 사항이 각 파일에 적용됩니다 (여러 개면 ZIP으로 반환됩니다).",
       "batchNote": "동일한 필드가 모든 파일에 적용됩니다. 미리 보기는 첫 번째 파일만 읽습니다.",
       "readCurrent": "현재 값 읽기",
       "reading": "읽는 중…",
@@ -742,7 +742,7 @@
         "occurrences": "횟수"
       },
       "redactCta": "감지된 데이터 마스킹",
-      "redactHint": "강조된 영역을 확인한 후 적용하세요 — 무료입니다.",
+      "redactHint": "강조된 영역을 확인한 후 적용하세요. 무료입니다.",
       "hintMulti": "하나 이상의 PDF, 이미지 또는 오피스 문서.",
       "submitBatch": "파일 {{count}}개 스캔",
       "highestRiskLabel": "최고 위험",
@@ -761,8 +761,8 @@
       "title": "자르기",
       "description": "모든 페이지의 여백을 잘라냅니다.",
       "privacyLine": "파일은 비공개로 잘리며 저장되지 않습니다.",
-      "hint": "PDF 파일 — 여러 파일은 ZIP으로 반환됩니다.",
-      "batchNote": "{{count}}개 파일 선택됨 — 여백이 각 파일에 적용되며, 결과는 ZIP으로 반환됩니다.",
+      "hint": "PDF 파일. 여러 파일은 ZIP으로 반환됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨. 여백이 각 파일에 적용되며, 결과는 ZIP으로 반환됩니다.",
       "top": "위",
       "right": "오른쪽",
       "bottom": "아래",

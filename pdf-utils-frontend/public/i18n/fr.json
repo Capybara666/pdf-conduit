@@ -150,8 +150,8 @@
   "header": {
     "brandHome": "Accueil de PDF Conduit",
     "quotaFreeLeft": "gratuites restantes aujourd'hui",
-    "quotaTitleSpent": "Limite gratuite quotidienne atteinte — découvrez les offres Pro",
-    "quotaTitleLeft": "Opérations gratuites restantes aujourd'hui — découvrez les offres Pro",
+    "quotaTitleSpent": "Limite gratuite quotidienne atteinte. Découvrez les offres Pro",
+    "quotaTitleLeft": "Opérations gratuites restantes aujourd'hui. Découvrez les offres Pro",
     "serverOnline": "Serveur en ligne",
     "serverOffline": "Serveur hors ligne",
     "serverChecking": "Vérification du serveur…",
@@ -176,7 +176,7 @@
     "hero": {
       "eyebrow": "Gratuit · Dans votre navigateur",
       "title": "Tous les outils PDF dont vous avez besoin, dans un espace de travail épuré.",
-      "lede": "Fusionnez, compressez, convertissez, protégez et caviardez vos PDF en quelques secondes — traités instantanément et jamais stockés sur nos serveurs. Sans compte. Sans installation.",
+      "lede": "Fusionnez, compressez, convertissez, protégez et caviardez vos PDF en quelques secondes. Traités instantanément et jamais stockés sur nos serveurs. Sans compte. Sans installation.",
       "ctaStart": "Commencer gratuitement",
       "ctaExplore": "Explorer les outils",
       "note": "Vos fichiers ne sont jamais stockés · Aucune inscription requise · Fonctionne sur tous les appareils"
@@ -184,9 +184,9 @@
     "trust": {
       "aria": "Pourquoi PDF Conduit",
       "memoryTitle": "Jamais stocké",
-      "memoryDesc": "Vos fichiers sont traités puis supprimés — jamais écrits sur disque ni conservés sur nos serveurs.",
+      "memoryDesc": "Vos fichiers sont traités puis supprimés. Jamais écrits sur disque ni conservés sur nos serveurs.",
       "accountTitle": "Aucun compte requis",
-      "accountDesc": "Lancez-vous directement — sans e-mail, sans mot de passe, sans mur de suivi.",
+      "accountDesc": "Lancez-vous directement. Sans e-mail, sans mot de passe, sans mur de suivi.",
       "browserTitle": "S'ouvre dans votre navigateur",
       "browserDesc": "Rien à installer. Fonctionne sous Windows, macOS, Linux et sur mobile."
     },
@@ -212,14 +212,14 @@
       "proName": "Pro",
       "proPrice": "TBA",
       "proPer": "/ mois",
-      "proFeat1": "<b>Fichiers plus volumineux</b> — supprimez le plafond de taille gratuit",
+      "proFeat1": "<b>Fichiers plus volumineux</b> : supprimez le plafond de taille gratuit",
       "proFeat2": "<b>Limites quotidiennes plus élevées</b> pour les gros lots",
       "proFeat3": "<b>Accès par lots &amp; API</b> pour automatiser vos flux de travail",
       "proFeat4": "<b>Traitement prioritaire</b> même aux heures de pointe",
       "proFeat5": "Tout ce que contient l'offre Gratuite, bien sûr",
       "proCta": "Ça m'intéresse",
       "proCtaDone": "Merci de votre intérêt ✓",
-      "proNote": "Les outils gratuits restent gratuits, pour toujours — le tarif Pro reste à définir.",
+      "proNote": "Les outils gratuits restent gratuits, pour toujours. Le tarif Pro reste à définir.",
       "notifyTitle": "Merci de votre intérêt",
       "notifyMessage": "PDF Conduit Pro arrive bientôt. Les outils gratuits restent gratuits dans tous les cas."
     },
@@ -265,7 +265,7 @@
   },
   "privacy": {
     "title": "Confidentialité",
-    "description": "Comment PDF Conduit traite vos fichiers — en bref : il ne les conserve pas.",
+    "description": "Comment PDF Conduit traite vos fichiers. En bref : il ne les conserve pas.",
     "memoryTitle": "Vos fichiers ne sont jamais stockés",
     "memoryBody": "Vos fichiers ne sont jamais stockés. Chaque opération se déroule entièrement au sein d'une seule requête : votre fichier est traité puis renvoyé directement, avant d'être supprimé dans l'instant. Rien n'est conservé et rien n'est jamais utilisé à d'autres fins.",
     "exceptionTitle": "La seule exception temporaire",
@@ -273,7 +273,7 @@
     "accountTitle": "Aucun compte, aucun mur de suivi",
     "accountBody": "Vous n'avez pas besoin de vous inscrire, de vous connecter ni de nous fournir une adresse e-mail pour utiliser les outils gratuits. Nous n'exigeons aucune information personnelle pour traiter un fichier.",
     "limitsTitle": "Limites de l'offre gratuite",
-    "limitsBody1": "Pour garder le service gratuit accessible à tous, les requêtes sont soumises à un quota d'opérations quotidien, à un plafond de taille par fichier et à une limitation de débit de base. Lorsque vous atteignez une limite, l'application vous l'indique clairement. Des limites plus élevées, des fichiers plus volumineux et un accès par lots/API sont prévus pour une future offre payante — voir le",
+    "limitsBody1": "Pour garder le service gratuit accessible à tous, les requêtes sont soumises à un quota d'opérations quotidien, à un plafond de taille par fichier et à une limitation de débit de base. Lorsque vous atteignez une limite, l'application vous l'indique clairement. Des limites plus élevées, des fichiers plus volumineux et un accès par lots/API sont prévus pour une future offre payante. Voir le",
     "limitsLink": "les offres Pro",
     "limitsBody2": "en aperçu sur la page d'accueil.",
     "questionsTitle": "Questions",
@@ -288,7 +288,7 @@
     "quota_exceeded": {
       "title": "Vous avez utilisé vos opérations gratuites du jour",
       "detail": "La limite gratuite quotidienne est atteinte pour le moment.",
-      "hint": "Des limites quotidiennes plus élevées arrivent avec PDF Conduit Pro. Elle se réinitialise demain — ou obtenez un accès anticipé ci-dessous."
+      "hint": "Des limites quotidiennes plus élevées arrivent avec PDF Conduit Pro. Elle se réinitialise demain. Ou obtenez un accès anticipé ci-dessous."
     },
     "rate_limited": {
       "title": "Ralentissez un instant",
@@ -372,8 +372,8 @@
     "extract": {
       "title": "Extraire",
       "description": "Extrayez des pages sélectionnées d'un PDF.",
-      "hint": "Fichiers PDF — plusieurs fichiers sont renvoyés dans un ZIP.",
-      "batchNote": "{{count}} fichiers sélectionnés — la plage de pages s'applique à chacun ; les résultats sont renvoyés dans un ZIP.",
+      "hint": "Fichiers PDF. Plusieurs fichiers sont renvoyés dans un ZIP.",
+      "batchNote": "{{count}} fichiers sélectionnés. La plage de pages s'applique à chacun ; les résultats sont renvoyés dans un ZIP.",
       "pages": "Pages",
       "pagesPlaceholder": "ex. 1,3,5-8",
       "pagesHelp": "Vide = toutes les pages. Syntaxe :",
@@ -395,9 +395,9 @@
       "unitLabel": "Unité",
       "submit": "Compresser",
       "loading": "Compression en cours…",
-      "noopWarning": "Cible ≥ taille du fichier — pas de réduction",
+      "noopWarning": "Cible ≥ taille du fichier. Pas de réduction",
       "blankWarning": "Saisissez une taille cible pour compresser.",
-      "allNoopWarning": "La cible est ≥ à la taille de chaque fichier — rien à réduire.",
+      "allNoopWarning": "La cible est ≥ à la taille de chaque fichier. Rien à réduire.",
       "dpi": "Résolution d’image",
       "dpiHelp": "Limitez les images intégrées à cette résolution pour économiser davantage.",
       "dpiNone": "Original (sans limite)",
@@ -406,7 +406,7 @@
       "dpiPrint": "Impression (300 PPP)",
       "grayscale": "Convertir les images en niveaux de gris",
       "grayscaleHelp": "Réencode les images sans couleur pour des fichiers plus petits.",
-      "floorNotice": "La plus petite taille possible pour ce fichier est d'environ {{floor}} — votre cible de {{target}} ne peut pas être atteinte. La version la plus petite a été enregistrée à la place."
+      "floorNotice": "La plus petite taille possible pour ce fichier est d'environ {{floor}}. Votre cible de {{target}} ne peut pas être atteinte. La version la plus petite a été enregistrée à la place."
     },
     "rotate": {
       "title": "Pivoter",
@@ -438,8 +438,8 @@
       "title": "Pages par feuille",
       "description": "Placez plusieurs pages par feuille ou pliez un livret piqué à cheval.",
       "privacyLine": "Vos fichiers sont mis en page en toute confidentialité et ne sont jamais conservés.",
-      "hint": "Fichiers PDF — plusieurs fichiers sont renvoyés dans un ZIP.",
-      "batchNote": "{{count}} fichiers sélectionnés — chacun est mis en page séparément ; les résultats sont renvoyés dans un ZIP.",
+      "hint": "Fichiers PDF. Plusieurs fichiers sont renvoyés dans un ZIP.",
+      "batchNote": "{{count}} fichiers sélectionnés. Chacun est mis en page séparément ; les résultats sont renvoyés dans un ZIP.",
       "layout": "Disposition",
       "layout2up": "2 par page",
       "layout4up": "4 par page (2×2)",
@@ -467,8 +467,8 @@
       "title": "Vers images",
       "description": "Convertissez les pages d'un PDF en PNG ou JPG.",
       "privacyLine": "Vos fichiers sont convertis en toute confidentialité et ne sont jamais conservés.",
-      "hint": "Fichiers PDF — plusieurs pages ou fichiers sont renvoyés dans un ZIP.",
-      "batchNote": "{{count}} fichiers sélectionnés — la plage de pages s'applique à chacun ; les résultats sont renvoyés dans un ZIP.",
+      "hint": "Fichiers PDF. Plusieurs pages ou fichiers sont renvoyés dans un ZIP.",
+      "batchNote": "{{count}} fichiers sélectionnés. La plage de pages s'applique à chacun ; les résultats sont renvoyés dans un ZIP.",
       "format": "Format",
       "dpi": "DPI",
       "dpiHelp": "Plus élevé = plus net et plus volumineux (36–600).",
@@ -481,14 +481,14 @@
       "loading": "Génération en cours…",
       "color": "Couleur",
       "transparent": "Arrière-plan transparent",
-      "transparentHelp": "PNG uniquement — l'arrière-plan de la page reste transparent.",
+      "transparentHelp": "PNG uniquement. L'arrière-plan de la page reste transparent.",
       "grayscale": "Niveaux de gris"
     },
     "toText": {
       "title": "Vers texte",
       "description": "Extrayez le contenu textuel d'un PDF.",
       "hint": "Fichiers PDF (plusieurs sont renvoyés dans un ZIP).",
-      "batchNote": "{{count}} fichiers sélectionnés — la plage de pages s'applique à chacun ; les résultats sont renvoyés dans un ZIP.",
+      "batchNote": "{{count}} fichiers sélectionnés. La plage de pages s'applique à chacun ; les résultats sont renvoyés dans un ZIP.",
       "format": "Format",
       "formatTxt": "Texte brut (.txt)",
       "formatDocx": "Document Word (.docx)",
@@ -499,8 +499,8 @@
     },
     "ocr": {
       "title": "OCR",
-      "description": "Rendre un PDF numérisé consultable — ajouter une couche de texte invisible.",
-      "hint": "Un PDF numérisé ou une image — le texte devient sélectionnable.",
+      "description": "Rendre un PDF numérisé consultable. Ajouter une couche de texte invisible.",
+      "hint": "Un PDF numérisé ou une image. Le texte devient sélectionnable.",
       "languages": "Langues",
       "languagesPlaceholder": "ex. eng ou eng+deu (vide = eng)",
       "languagesHelp": "Codes de langue Tesseract ; le pack doit être installé sur le serveur.",
@@ -552,7 +552,7 @@
     },
     "sign": {
       "title": "Remplir et signer",
-      "description": "Ajoutez une signature à votre PDF et aplatissez-le — rien n'est stocké, tout se déroule dans votre session.",
+      "description": "Ajoutez une signature à votre PDF et aplatissez-le. Rien n'est stocké, tout se déroule dans votre session.",
       "hint": "Un seul PDF. Créez ensuite une signature et déposez-la sur la page.",
       "dragHint": "Faites glisser sur une page pour placer votre signature.",
       "chooseAnother": "Choisir un autre PDF",
@@ -577,7 +577,7 @@
     "metadata": {
       "title": "Métadonnées",
       "description": "Consultez, modifiez ou supprimez les informations du document.",
-      "hint": "Fichiers PDF — les mêmes modifications s'appliquent à chacun (plusieurs sont renvoyés dans un ZIP).",
+      "hint": "Fichiers PDF. Les mêmes modifications s'appliquent à chacun (plusieurs sont renvoyés dans un ZIP).",
       "batchNote": "Les mêmes champs sont appliqués à chaque fichier. L'aperçu ne lit que le premier fichier.",
       "readCurrent": "Lire les valeurs actuelles",
       "reading": "Lecture en cours…",
@@ -725,7 +725,7 @@
         "noneExplain": "Aucune donnée personnelle détectée dans ce document.",
         "lowExplain": "Un seul identifiant à faible risque a été trouvé.",
         "mediumExplain": "Plusieurs identifiants à faible risque ont été trouvés, mais rien de financier, d’identification nationale ni de catégorie particulière.",
-        "highExplain": "Des données financières, d’identification nationale ou de catégorie particulière sont présentes — à manipuler avec précaution avant tout partage."
+        "highExplain": "Des données financières, d’identification nationale ou de catégorie particulière sont présentes. À manipuler avec précaution avant tout partage."
       },
       "summary": "{count, plural, one {# donnée personnelle trouvée sur {pages} pages.} other {# données personnelles trouvées sur {pages} pages.}}",
       "summaryClean": "Aucune donnée personnelle trouvée sur {{pages}} pages.",
@@ -742,7 +742,7 @@
         "occurrences": "Nombre"
       },
       "redactCta": "Caviarder les données détectées",
-      "redactHint": "Vérifiez les zones surlignées, puis appliquez — c'est gratuit.",
+      "redactHint": "Vérifiez les zones surlignées, puis appliquez. C'est gratuit.",
       "hintMulti": "Un ou plusieurs PDF, images ou documents bureautiques.",
       "submitBatch": "Analyser {{count}} fichiers",
       "highestRiskLabel": "risque le plus élevé",
@@ -761,8 +761,8 @@
       "title": "Rogner",
       "description": "Rognez les marges de chaque page.",
       "privacyLine": "Vos fichiers sont rognés en privé et jamais conservés.",
-      "hint": "Fichiers PDF — plusieurs fichiers reviennent en ZIP.",
-      "batchNote": "{{count}} fichiers sélectionnés — les marges s’appliquent à chacun ; résultats en ZIP.",
+      "hint": "Fichiers PDF. Plusieurs fichiers reviennent en ZIP.",
+      "batchNote": "{{count}} fichiers sélectionnés. Les marges s’appliquent à chacun ; résultats en ZIP.",
       "top": "Haut",
       "right": "Droite",
       "bottom": "Bas",

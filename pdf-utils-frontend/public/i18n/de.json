@@ -150,8 +150,8 @@
   "header": {
     "brandHome": "PDF Conduit-Startseite",
     "quotaFreeLeft": "heute noch kostenlos",
-    "quotaTitleSpent": "Kostenloses Tageslimit erreicht — Pro-Tarife ansehen",
-    "quotaTitleLeft": "Heute noch verbleibende kostenlose Vorgänge — Pro-Tarife ansehen",
+    "quotaTitleSpent": "Kostenloses Tageslimit erreicht. Pro-Tarife ansehen",
+    "quotaTitleLeft": "Heute noch verbleibende kostenlose Vorgänge. Pro-Tarife ansehen",
     "serverOnline": "Server online",
     "serverOffline": "Server offline",
     "serverChecking": "Server wird geprüft…",
@@ -175,8 +175,8 @@
   "home": {
     "hero": {
       "eyebrow": "Kostenlos · In Ihrem Browser",
-      "title": "Alle PDF-Werkzeuge, die Sie brauchen — in einem aufgeräumten Arbeitsbereich.",
-      "lede": "PDFs in Sekunden zusammenführen, komprimieren, umwandeln, schützen und schwärzen — sofort verarbeitet und niemals auf unseren Servern gespeichert. Kein Konto. Keine Installation.",
+      "title": "Alle PDF-Werkzeuge, die Sie brauchen. In einem aufgeräumten Arbeitsbereich.",
+      "lede": "PDFs in Sekunden zusammenführen, komprimieren, umwandeln, schützen und schwärzen. Sofort verarbeitet und niemals auf unseren Servern gespeichert. Kein Konto. Keine Installation.",
       "ctaStart": "Kostenlos starten",
       "ctaExplore": "Werkzeuge entdecken",
       "note": "Dateien werden nie gespeichert · Keine Anmeldung nötig · Funktioniert auf jedem Gerät"
@@ -184,9 +184,9 @@
     "trust": {
       "aria": "Warum PDF Conduit",
       "memoryTitle": "Nie gespeichert",
-      "memoryDesc": "Ihre Dateien werden verarbeitet und danach verworfen — nie auf die Festplatte geschrieben oder auf unseren Servern aufbewahrt.",
+      "memoryDesc": "Ihre Dateien werden verarbeitet und danach verworfen. Nie auf die Festplatte geschrieben oder auf unseren Servern aufbewahrt.",
       "accountTitle": "Kein Konto nötig",
-      "accountDesc": "Direkt loslegen — keine E-Mail, kein Passwort, keine Tracking-Hürde.",
+      "accountDesc": "Direkt loslegen. Keine E-Mail, kein Passwort, keine Tracking-Hürde.",
       "browserTitle": "Öffnen im Browser",
       "browserDesc": "Nichts zu installieren. Funktioniert unter Windows, macOS, Linux und mobil."
     },
@@ -212,14 +212,14 @@
       "proName": "Pro",
       "proPrice": "TBA",
       "proPer": "/ Monat",
-      "proFeat1": "<b>Größere Dateien</b> — die kostenlose Größenobergrenze aufheben",
+      "proFeat1": "<b>Größere Dateien</b>: die kostenlose Größenobergrenze aufheben",
       "proFeat2": "<b>Höhere Tageslimits</b> für große Stapel",
       "proFeat3": "<b>Stapel- &amp; API-Zugriff</b> zur Automatisierung von Abläufen",
       "proFeat4": "<b>Bevorzugte Verarbeitung</b> auch zu Spitzenzeiten",
       "proFeat5": "Alles aus Kostenlos, natürlich",
       "proCta": "Ich habe Interesse",
       "proCtaDone": "Danke für Ihr Interesse ✓",
-      "proNote": "Die kostenlosen Werkzeuge bleiben für immer kostenlos — der Pro-Preis steht noch nicht fest.",
+      "proNote": "Die kostenlosen Werkzeuge bleiben für immer kostenlos. Der Pro-Preis steht noch nicht fest.",
       "notifyTitle": "Danke für Ihr Interesse",
       "notifyMessage": "PDF Conduit Pro ist bald verfügbar. Die kostenlosen Werkzeuge bleiben so oder so kostenlos."
     },
@@ -265,7 +265,7 @@
   },
   "privacy": {
     "title": "Datenschutz",
-    "description": "Wie PDF Conduit mit Ihren Dateien umgeht — kurz gesagt: Es behält sie nicht.",
+    "description": "Wie PDF Conduit mit Ihren Dateien umgeht. Kurz gesagt: Es behält sie nicht.",
     "memoryTitle": "Ihre Dateien werden nie gespeichert",
     "memoryBody": "Ihre Dateien werden niemals gespeichert. Jede Operation läuft vollständig innerhalb einer einzigen Anfrage ab – Ihr Upload wird verarbeitet und direkt an Sie zurückgesendet und danach im selben Moment verworfen. Nichts bleibt erhalten und nichts wird jemals für andere Zwecke verwendet.",
     "exceptionTitle": "Die eine vorübergehende Ausnahme",
@@ -273,7 +273,7 @@
     "accountTitle": "Kein Konto, keine Tracking-Hürde",
     "accountBody": "Sie müssen sich nicht registrieren, anmelden oder uns eine E-Mail-Adresse geben, um die kostenlosen Werkzeuge zu nutzen. Wir verlangen keine persönlichen Daten, um eine Datei zu verarbeiten.",
     "limitsTitle": "Grenzen der kostenlosen Version",
-    "limitsBody1": "Damit der kostenlose Dienst für alle verfügbar bleibt, unterliegen Anfragen einem täglichen Vorgangskontingent, einer Obergrenze für die Dateigröße pro Datei und einer grundlegenden Ratenbegrenzung. Wenn Sie ein Limit erreichen, sagt es Ihnen die App klar. Höhere Limits, größere Dateien und Stapel-/API-Zugriff sind für einen künftigen kostenpflichtigen Tarif geplant — siehe den",
+    "limitsBody1": "Damit der kostenlose Dienst für alle verfügbar bleibt, unterliegen Anfragen einem täglichen Vorgangskontingent, einer Obergrenze für die Dateigröße pro Datei und einer grundlegenden Ratenbegrenzung. Wenn Sie ein Limit erreichen, sagt es Ihnen die App klar. Höhere Limits, größere Dateien und Stapel-/API-Zugriff sind für einen künftigen kostenpflichtigen Tarif geplant. Siehe den",
     "limitsLink": "Pro-Tarife",
     "limitsBody2": "-Teaser auf der Startseite.",
     "questionsTitle": "Fragen",
@@ -288,7 +288,7 @@
     "quota_exceeded": {
       "title": "Sie haben die kostenlosen Vorgänge für heute aufgebraucht",
       "detail": "Das kostenlose Tageslimit ist vorerst erreicht.",
-      "hint": "Höhere Tageslimits kommen mit PDF Conduit Pro. Es wird morgen zurückgesetzt — oder sichern Sie sich unten frühzeitigen Zugang."
+      "hint": "Höhere Tageslimits kommen mit PDF Conduit Pro. Es wird morgen zurückgesetzt. Oder sichern Sie sich unten frühzeitigen Zugang."
     },
     "rate_limited": {
       "title": "Einen Moment langsamer",
@@ -395,9 +395,9 @@
       "unitLabel": "Einheit",
       "submit": "Komprimieren",
       "loading": "Wird komprimiert…",
-      "noopWarning": "Ziel ≥ Dateigröße — keine Verkleinerung",
+      "noopWarning": "Ziel ≥ Dateigröße. Keine Verkleinerung",
       "blankWarning": "Zielgröße zum Komprimieren eingeben.",
-      "allNoopWarning": "Ziel ist ≥ Größe jeder Datei — nichts zu verkleinern.",
+      "allNoopWarning": "Ziel ist ≥ Größe jeder Datei. Nichts zu verkleinern.",
       "dpi": "Bildauflösung",
       "dpiHelp": "Eingebettete Bilder auf diese Auflösung begrenzen, um mehr zu sparen.",
       "dpiNone": "Original (ohne Begrenzung)",
@@ -406,7 +406,7 @@
       "dpiPrint": "Druck (300 DPI)",
       "grayscale": "Bilder in Graustufen umwandeln",
       "grayscaleHelp": "Bilder ohne Farbe neu kodieren für kleinere Dateien.",
-      "floorNotice": "Die kleinstmögliche Größe für diese Datei beträgt etwa {{floor}} — Ihr Ziel von {{target}} kann nicht erreicht werden. Stattdessen wurde die kleinste Version gespeichert."
+      "floorNotice": "Die kleinstmögliche Größe für diese Datei beträgt etwa {{floor}}. Ihr Ziel von {{target}} kann nicht erreicht werden. Stattdessen wurde die kleinste Version gespeichert."
     },
     "rotate": {
       "title": "Drehen",
@@ -552,7 +552,7 @@
     },
     "sign": {
       "title": "Ausfüllen & Signieren",
-      "description": "Füge deinem PDF eine Signatur hinzu und fixiere sie — nichts wird gespeichert, alles läuft in deiner Sitzung.",
+      "description": "Füge deinem PDF eine Signatur hinzu und fixiere sie. Nichts wird gespeichert, alles läuft in deiner Sitzung.",
       "hint": "Ein PDF. Erstelle dann eine Signatur und ziehe sie auf die Seite.",
       "dragHint": "Ziehe auf einer Seite, um deine Signatur zu platzieren.",
       "chooseAnother": "Anderes PDF wählen",
@@ -761,8 +761,8 @@
       "title": "Zuschneiden",
       "description": "Ränder von jeder Seite entfernen.",
       "privacyLine": "Ihre Dateien werden privat zugeschnitten und niemals gespeichert.",
-      "hint": "PDF-Dateien — mehrere Dateien kommen als ZIP zurück.",
-      "batchNote": "{{count}} Dateien ausgewählt — die Ränder gelten für jede; Ergebnisse als ZIP.",
+      "hint": "PDF-Dateien. Mehrere Dateien kommen als ZIP zurück.",
+      "batchNote": "{{count}} Dateien ausgewählt. Die Ränder gelten für jede; Ergebnisse als ZIP.",
       "top": "Oben",
       "right": "Rechts",
       "bottom": "Unten",

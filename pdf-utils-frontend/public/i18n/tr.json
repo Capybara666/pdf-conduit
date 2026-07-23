@@ -150,8 +150,8 @@
   "header": {
     "brandHome": "PDF Conduit ana sayfası",
     "quotaFreeLeft": "bugün için ücretsiz kaldı",
-    "quotaTitleSpent": "Günlük ücretsiz sınıra ulaşıldı — Pro planlarına bakın",
-    "quotaTitleLeft": "Bugün kalan ücretsiz işlemler — Pro planlarına bakın",
+    "quotaTitleSpent": "Günlük ücretsiz sınıra ulaşıldı. Pro planlarına bakın",
+    "quotaTitleLeft": "Bugün kalan ücretsiz işlemler. Pro planlarına bakın",
     "serverOnline": "Sunucu çevrimiçi",
     "serverOffline": "Sunucu çevrimdışı",
     "serverChecking": "Sunucu kontrol ediliyor…",
@@ -176,7 +176,7 @@
     "hero": {
       "eyebrow": "Ücretsiz · Tarayıcınızda",
       "title": "İhtiyacınız olan tüm PDF araçları, tek bir temiz çalışma alanında.",
-      "lede": "PDF'leri saniyeler içinde birleştirin, sıkıştırın, dönüştürün, koruyun ve karartın — anında işlenir ve sunucularımızda hiçbir zaman saklanmaz. Hesap yok. Kurulum yok.",
+      "lede": "PDF'leri saniyeler içinde birleştirin, sıkıştırın, dönüştürün, koruyun ve karartın. Anında işlenir ve sunucularımızda hiçbir zaman saklanmaz. Hesap yok. Kurulum yok.",
       "ctaStart": "Ücretsiz başlayın",
       "ctaExplore": "Araçları keşfedin",
       "note": "Dosyalar asla saklanmaz · Kayıt gerekmez · Her cihazda çalışır"
@@ -184,15 +184,15 @@
     "trust": {
       "aria": "Neden PDF Conduit",
       "memoryTitle": "Asla saklanmaz",
-      "memoryDesc": "Dosyalarınız işlenir ve ardından silinir — asla diske yazılmaz veya sunucularımızda tutulmaz.",
+      "memoryDesc": "Dosyalarınız işlenir ve ardından silinir. Asla diske yazılmaz veya sunucularımızda tutulmaz.",
       "accountTitle": "Hesap gerekmez",
-      "accountDesc": "Doğrudan başlayın — e-posta yok, parola yok, takip duvarı yok.",
+      "accountDesc": "Doğrudan başlayın. E-posta yok, parola yok, takip duvarı yok.",
       "browserTitle": "Tarayıcınızda açın",
       "browserDesc": "Kurulacak bir şey yok. Windows, macOS, Linux ve mobilde çalışır."
     },
     "tools": {
       "title": "Bir araç seçin ve başlayın",
-      "subtitle": "PDF'lerle çalışmak için ihtiyacınız olan her şey — varsayılan olarak gizli.",
+      "subtitle": "PDF'lerle çalışmak için ihtiyacınız olan her şey. Varsayılan olarak gizli.",
       "showMore": "Tüm araçları göster",
       "showLess": "Daha az göster"
     },
@@ -212,14 +212,14 @@
       "proName": "Pro",
       "proPrice": "TBA",
       "proPer": "/ ay",
-      "proFeat1": "<b>Daha büyük dosyalar</b> — ücretsiz boyut sınırını kaldırın",
+      "proFeat1": "<b>Daha büyük dosyalar</b>: ücretsiz boyut sınırını kaldırın",
       "proFeat2": "Büyük gruplar için <b>daha yüksek günlük sınırlar</b>",
       "proFeat3": "İş akışlarını otomatikleştirmek için <b>toplu &amp; API erişimi</b>",
       "proFeat4": "Yoğun zamanlarda bile <b>öncelikli işleme</b>",
       "proFeat5": "Elbette Ücretsiz'deki her şey",
       "proCta": "İlgileniyorum",
       "proCtaDone": "İlginiz için teşekkürler ✓",
-      "proNote": "Ücretsiz araçlar sonsuza dek ücretsiz kalır — Pro fiyatı henüz belirlenmedi.",
+      "proNote": "Ücretsiz araçlar sonsuza dek ücretsiz kalır. Pro fiyatı henüz belirlenmedi.",
       "notifyTitle": "İlginiz için teşekkürler",
       "notifyMessage": "PDF Conduit Pro yakında geliyor. Ücretsiz araçlar her hâlükârda ücretsiz kalır."
     },
@@ -234,11 +234,11 @@
       "title": "Nasıl çalışır",
       "subtitle": "Üç adım. Hesap yok, kurulacak bir şey yok.",
       "step1Title": "Bir araç seçin",
-      "step1Desc": "İhtiyacınız olanı seçin — birleştirme, sıkıştırma, dönüştürme, koruma ve daha fazlası.",
+      "step1Desc": "İhtiyacınız olanı seçin: birleştirme, sıkıştırma, dönüştürme, koruma ve daha fazlası.",
       "step2Title": "Dosyanızı ekleyin",
       "step2Desc": "Sürükleyin ya da göz atın. Dosyalarınız sunucularımızda asla saklanmaz.",
       "step3Title": "Sonucunuzu indirin",
-      "step3Desc": "Başlatın; dosyanız hemen işlenir — tamamlanan PDF'niz saniyeler içinde indirmeye hazır olur. Ayrıldığınızda geride hiçbir şey kalmaz.",
+      "step3Desc": "Başlatın; dosyanız hemen işlenir. Tamamlanan PDF'niz saniyeler içinde indirmeye hazır olur. Ayrıldığınızda geride hiçbir şey kalmaz.",
       "wizardTitle": "PDF Conduit'te yeni misiniz?",
       "wizardDesc": "Rehberli Sihirbaz seçme, düzenleme ve dışa aktarma adımlarında size adım adım eşlik etsin.",
       "wizardCta": "Rehberli Sihirbazı başlat",
@@ -255,7 +255,7 @@
   "onboarding": {
     "welcome": {
       "title": "PDF Conduit'e hoş geldiniz",
-      "message": "Doğrudan tarayıcınızda çalışan ücretsiz PDF araçları — dosyalarınız anında işlenir ve asla saklanmaz. Yeni misiniz? Başlamanın en kolay yolu rehberli Sihirbazdır.",
+      "message": "Doğrudan tarayıcınızda çalışan ücretsiz PDF araçları. Dosyalarınız anında işlenir ve asla saklanmaz. Yeni misiniz? Başlamanın en kolay yolu rehberli Sihirbazdır.",
       "cta": "Rehberli Sihirbazı deneyin",
       "secondary": "Tüm araçlara göz atın",
       "dismiss": "Kapat"
@@ -265,7 +265,7 @@
   },
   "privacy": {
     "title": "Gizlilik",
-    "description": "PDF Conduit dosyalarınızı nasıl işler — kısacası: onları saklamaz.",
+    "description": "PDF Conduit dosyalarınızı nasıl işler. Kısacası: onları saklamaz.",
     "memoryTitle": "Dosyalarınız asla saklanmaz",
     "memoryBody": "Dosyalarınız asla saklanmaz. Her işlem tamamen tek bir istek içinde gerçekleşir: yüklediğiniz dosya işlenir, doğrudan size geri gönderilir ve hemen ardından silinir. Hiçbir şey tutulmaz ve hiçbir şey asla başka bir amaçla kullanılmaz.",
     "exceptionTitle": "Tek geçici istisna",
@@ -273,7 +273,7 @@
     "accountTitle": "Hesap yok, takip duvarı yok",
     "accountBody": "Ücretsiz araçları kullanmak için kaydolmanız, oturum açmanız veya bize bir e-posta adresi vermeniz gerekmez. Bir dosyayı işlemek için kişisel bilgi talep etmiyoruz.",
     "limitsTitle": "Ücretsiz katman sınırları",
-    "limitsBody1": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır — ana sayfadaki",
+    "limitsBody1": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır. Ana sayfadaki",
     "limitsLink": "Pro planları",
     "limitsBody2": "tanıtımına bakın.",
     "questionsTitle": "Sorular",
@@ -288,7 +288,7 @@
     "quota_exceeded": {
       "title": "Bugünkü ücretsiz işlemlerinizi kullandınız",
       "detail": "Ücretsiz günlük sınıra şimdilik ulaşıldı.",
-      "hint": "Daha yüksek günlük sınırlar PDF Conduit Pro ile geliyor. Yarın sıfırlanır — ya da aşağıdan erken erişim alın."
+      "hint": "Daha yüksek günlük sınırlar PDF Conduit Pro ile geliyor. Yarın sıfırlanır. Ya da aşağıdan erken erişim alın."
     },
     "rate_limited": {
       "title": "Biraz yavaşlayın",
@@ -372,8 +372,8 @@
     "extract": {
       "title": "Ayıkla",
       "description": "Seçili sayfaları bir PDF'ten çıkarın.",
-      "hint": "PDF dosyaları — birden fazla dosya ZIP olarak döner.",
-      "batchNote": "{{count}} dosya seçildi — sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
+      "hint": "PDF dosyaları. Birden fazla dosya ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi. Sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
       "pages": "Sayfalar",
       "pagesPlaceholder": "örn. 1,3,5-8",
       "pagesHelp": "Boş = tüm sayfalar. Söz dizimi:",
@@ -395,9 +395,9 @@
       "unitLabel": "Birim",
       "submit": "Sıkıştır",
       "loading": "Sıkıştırılıyor…",
-      "noopWarning": "Hedef ≥ dosya boyutu — küçülmez",
+      "noopWarning": "Hedef ≥ dosya boyutu. Küçülmez",
       "blankWarning": "Sıkıştırmak için bir hedef boyut girin.",
-      "allNoopWarning": "Hedef her dosyanın boyutuna eşit veya daha büyük — küçültülecek bir şey yok.",
+      "allNoopWarning": "Hedef her dosyanın boyutuna eşit veya daha büyük. Küçültülecek bir şey yok.",
       "dpi": "Görüntü çözünürlüğü",
       "dpiHelp": "Daha fazla tasarruf için gömülü görüntüleri bu çözünürlükle sınırlayın.",
       "dpiNone": "Orijinal (sınır yok)",
@@ -406,7 +406,7 @@
       "dpiPrint": "Baskı (300 DPI)",
       "grayscale": "Görüntüleri gri tonlamaya dönüştür",
       "grayscaleHelp": "Daha küçük dosyalar için görüntüleri renksiz yeniden kodlar.",
-      "floorNotice": "Bu dosya için ulaşılabilecek en küçük boyut yaklaşık {{floor}} — hedefiniz olan {{target}} boyutuna ulaşılamıyor. Bunun yerine en küçük sürüm kaydedildi."
+      "floorNotice": "Bu dosya için ulaşılabilecek en küçük boyut yaklaşık {{floor}}. Hedefiniz olan {{target}} boyutuna ulaşılamıyor. Bunun yerine en küçük sürüm kaydedildi."
     },
     "rotate": {
       "title": "Döndür",
@@ -438,8 +438,8 @@
       "title": "Yaprak başına sayfa",
       "description": "Bir yaprağa birden fazla sayfa yerleştirin veya tel dikişli bir kitapçık katlayın.",
       "privacyLine": "Dosyalarınız gizli şekilde montajlanır ve asla saklanmaz.",
-      "hint": "PDF dosyaları — birden fazla dosya ZIP olarak döner.",
-      "batchNote": "{{count}} dosya seçildi — her biri ayrı ayrı montajlanır; sonuçlar ZIP olarak döner.",
+      "hint": "PDF dosyaları. Birden fazla dosya ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi. Her biri ayrı ayrı montajlanır; sonuçlar ZIP olarak döner.",
       "layout": "Düzen",
       "layout2up": "sayfa başına 2",
       "layout4up": "sayfa başına 4 (2×2)",
@@ -467,8 +467,8 @@
       "title": "Görsele",
       "description": "PDF sayfalarını PNG veya JPG olarak oluşturun.",
       "privacyLine": "Dosyalarınız gizli şekilde dönüştürülür ve asla saklanmaz.",
-      "hint": "PDF dosyaları — birden fazla sayfa veya dosya ZIP olarak döner.",
-      "batchNote": "{{count}} dosya seçildi — sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
+      "hint": "PDF dosyaları. Birden fazla sayfa veya dosya ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi. Sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
       "format": "Biçim",
       "dpi": "DPI",
       "dpiHelp": "Daha yüksek = daha keskin ve daha büyük (36–600).",
@@ -481,14 +481,14 @@
       "loading": "Oluşturuluyor…",
       "color": "Renk",
       "transparent": "Saydam arka plan",
-      "transparentHelp": "Yalnızca PNG — sayfa arka planı saydam kalır.",
+      "transparentHelp": "Yalnızca PNG. Sayfa arka planı saydam kalır.",
       "grayscale": "Gri tonlama"
     },
     "toText": {
       "title": "Metne",
       "description": "Bir PDF'in metin içeriğini ayıklayın.",
       "hint": "PDF dosyaları (birden fazlası ZIP olarak döner).",
-      "batchNote": "{{count}} dosya seçildi — sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi. Sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
       "format": "Biçim",
       "formatTxt": "Düz metin (.txt)",
       "formatDocx": "Word belgesi (.docx)",
@@ -499,8 +499,8 @@
     },
     "ocr": {
       "title": "OCR",
-      "description": "Taranmış bir PDF’i aranabilir yapın — görünmez bir metin katmanı ekler.",
-      "hint": "Taranmış bir PDF veya görüntü — metin seçilebilir hale gelir.",
+      "description": "Taranmış bir PDF’i aranabilir yapın. Görünmez bir metin katmanı ekler.",
+      "hint": "Taranmış bir PDF veya görüntü. Metin seçilebilir hale gelir.",
       "languages": "Diller",
       "languagesPlaceholder": "örn. eng veya eng+deu (boş = eng)",
       "languagesHelp": "Tesseract dil kodları; dil paketi sunucuda kurulu olmalıdır.",
@@ -552,7 +552,7 @@
     },
     "sign": {
       "title": "Doldur ve imzala",
-      "description": "PDF'nize imza ekleyin ve düzleştirin — hiçbir şey saklanmaz, her şey oturumunuzda çalışır.",
+      "description": "PDF'nize imza ekleyin ve düzleştirin. Hiçbir şey saklanmaz, her şey oturumunuzda çalışır.",
       "hint": "Tek bir PDF. Ardından bir imza oluşturup sayfaya bırakın.",
       "dragHint": "İmzanızı yerleştirmek için sayfada sürükleyin.",
       "chooseAnother": "Başka bir PDF seçin",
@@ -577,7 +577,7 @@
     "metadata": {
       "title": "Meta veri",
       "description": "Belge bilgilerini görüntüleyin, düzenleyin veya kaldırın.",
-      "hint": "PDF dosyaları — aynı değişiklikler her dosyaya uygulanır (birden fazlası ZIP olarak döner).",
+      "hint": "PDF dosyaları. Aynı değişiklikler her dosyaya uygulanır (birden fazlası ZIP olarak döner).",
       "batchNote": "Aynı alanlar her dosyaya uygulanır. Önizleme yalnızca ilk dosyayı okur.",
       "readCurrent": "Mevcut olanı oku",
       "reading": "Okunuyor…",
@@ -725,7 +725,7 @@
         "noneExplain": "Bu belgede kişisel veri tespit edilmedi.",
         "lowExplain": "Düşük riskli tek bir tanımlayıcı bulundu.",
         "mediumExplain": "Birkaç düşük riskli tanımlayıcı bulundu, ancak finansal, ulusal kimlik veya özel kategori verisi yok.",
-        "highExplain": "Finansal, ulusal kimlik veya özel kategori verisi mevcut — paylaşmadan önce dikkatli olun."
+        "highExplain": "Finansal, ulusal kimlik veya özel kategori verisi mevcut. Paylaşmadan önce dikkatli olun."
       },
       "summary": "{count, plural, one {{pages} sayfada # kişisel veri bulundu.} other {{pages} sayfada # kişisel veri bulundu.}}",
       "summaryClean": "{{pages}} sayfada kişisel veri bulunamadı.",
@@ -742,7 +742,7 @@
         "occurrences": "Sayı"
       },
       "redactCta": "Algılanan verileri karart",
-      "redactHint": "Vurgulanan alanları gözden geçirip uygulayın — ücretsiz.",
+      "redactHint": "Vurgulanan alanları gözden geçirip uygulayın. Ücretsiz.",
       "hintMulti": "Bir veya daha fazla PDF, görsel ya da ofis belgesi.",
       "submitBatch": "{{count}} dosyayı tara",
       "highestRiskLabel": "en yüksek risk",
@@ -754,15 +754,15 @@
       "autoRedactCta": "Algılanan her şeyi otomatik karart",
       "autoRedactAllCta": "Tüm dosyaları otomatik karart",
       "autoRedactFile": "Otomatik karart",
-      "autoRedactHint": "Tek tıkla algılanan her değer karartılır ve dosya indirilir — ücretsiz. Dosyanız asla saklanmaz.",
+      "autoRedactHint": "Tek tıkla algılanan her değer karartılır ve dosya indirilir. Ücretsiz. Dosyanız asla saklanmaz.",
       "autoRedactLoading": "Karartılıyor…"
     },
     "crop": {
       "title": "Kırp",
       "description": "Her sayfanın kenar boşluklarını kırpın.",
       "privacyLine": "Dosyalarınız gizli olarak kırpılır ve asla saklanmaz.",
-      "hint": "PDF dosyaları — birden fazla dosya ZIP olarak döner.",
-      "batchNote": "{{count}} dosya seçildi — kenar boşlukları her birine uygulanır; sonuçlar ZIP olarak döner.",
+      "hint": "PDF dosyaları. Birden fazla dosya ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi. Kenar boşlukları her birine uygulanır; sonuçlar ZIP olarak döner.",
       "top": "Üst",
       "right": "Sağ",
       "bottom": "Alt",

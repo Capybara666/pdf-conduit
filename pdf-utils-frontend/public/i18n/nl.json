@@ -150,8 +150,8 @@
   "header": {
     "brandHome": "PDF Conduit-startpagina",
     "quotaFreeLeft": "vandaag nog gratis over",
-    "quotaTitleSpent": "Dagelijkse gratis limiet bereikt — bekijk Pro-abonnementen",
-    "quotaTitleLeft": "Gratis bewerkingen vandaag nog over — bekijk Pro-abonnementen",
+    "quotaTitleSpent": "Dagelijkse gratis limiet bereikt. Bekijk Pro-abonnementen",
+    "quotaTitleLeft": "Gratis bewerkingen vandaag nog over. Bekijk Pro-abonnementen",
     "serverOnline": "Server online",
     "serverOffline": "Server offline",
     "serverChecking": "Server controleren…",
@@ -176,7 +176,7 @@
     "hero": {
       "eyebrow": "Gratis · In je browser",
       "title": "Elke PDF-tool die je nodig hebt, in één overzichtelijke werkruimte.",
-      "lede": "Voeg samen, comprimeer, converteer, beveilig en redigeer PDF's in seconden — direct verwerkt en nooit opgeslagen op onze servers. Geen account. Geen installaties.",
+      "lede": "Voeg samen, comprimeer, converteer, beveilig en redigeer PDF's in seconden. Direct verwerkt en nooit opgeslagen op onze servers. Geen account. Geen installaties.",
       "ctaStart": "Gratis beginnen",
       "ctaExplore": "Verken de tools",
       "note": "Bestanden worden nooit opgeslagen · Geen registratie nodig · Werkt op elk apparaat"
@@ -184,9 +184,9 @@
     "trust": {
       "aria": "Waarom PDF Conduit",
       "memoryTitle": "Nooit opgeslagen",
-      "memoryDesc": "Je bestanden worden verwerkt en daarna weggegooid — nooit naar schijf geschreven of op onze servers bewaard.",
+      "memoryDesc": "Je bestanden worden verwerkt en daarna weggegooid. Nooit naar schijf geschreven of op onze servers bewaard.",
       "accountTitle": "Geen account nodig",
-      "accountDesc": "Meteen aan de slag — geen e-mail, geen wachtwoord, geen trackingmuur.",
+      "accountDesc": "Meteen aan de slag. Geen e-mail, geen wachtwoord, geen trackingmuur.",
       "browserTitle": "Open in je browser",
       "browserDesc": "Niets te installeren. Werkt op Windows, macOS, Linux en mobiel."
     },
@@ -212,14 +212,14 @@
       "proName": "Pro",
       "proPrice": "TBA",
       "proPer": "/ maand",
-      "proFeat1": "<b>Grotere bestanden</b> — verhoog de gratis groottelimiet",
+      "proFeat1": "<b>Grotere bestanden</b>: verhoog de gratis groottelimiet",
       "proFeat2": "<b>Hogere daglimieten</b> voor grote batches",
       "proFeat3": "<b>Batch- &amp; API-toegang</b> om workflows te automatiseren",
       "proFeat4": "<b>Prioriteitsverwerking</b> zelfs tijdens piekmomenten",
       "proFeat5": "Uiteraard alles uit Gratis",
       "proCta": "Ik heb interesse",
       "proCtaDone": "Bedankt voor je interesse ✓",
-      "proNote": "De gratis tools blijven voor altijd gratis — de Pro-prijs moet nog worden bepaald.",
+      "proNote": "De gratis tools blijven voor altijd gratis. De Pro-prijs moet nog worden bepaald.",
       "notifyTitle": "Bedankt voor je interesse",
       "notifyMessage": "PDF Conduit Pro komt binnenkort. De gratis tools blijven hoe dan ook gratis."
     },
@@ -234,7 +234,7 @@
       "title": "Zo werkt het",
       "subtitle": "Drie stappen. Geen account, niets te installeren.",
       "step1Title": "Kies een tool",
-      "step1Desc": "Kies wat u nodig hebt — samenvoegen, comprimeren, converteren, beveiligen en meer.",
+      "step1Desc": "Kies wat u nodig hebt: samenvoegen, comprimeren, converteren, beveiligen en meer.",
       "step2Title": "Voeg uw bestand toe",
       "step2Desc": "Sleep het erin of blader. Uw bestanden worden nooit opgeslagen op onze servers.",
       "step3Title": "Download uw resultaat",
@@ -255,7 +255,7 @@
   "onboarding": {
     "welcome": {
       "title": "Welkom bij PDF Conduit",
-      "message": "Gratis PDF-tools die direct in uw browser draaien — uw bestanden worden direct verwerkt en nooit opgeslagen. Nieuw hier? De begeleide Wizard is de makkelijkste manier om te beginnen.",
+      "message": "Gratis PDF-tools die direct in uw browser draaien. Uw bestanden worden direct verwerkt en nooit opgeslagen. Nieuw hier? De begeleide Wizard is de makkelijkste manier om te beginnen.",
       "cta": "Begeleide Wizard proberen",
       "secondary": "Alle tools bekijken",
       "dismiss": "Sluiten"
@@ -265,7 +265,7 @@
   },
   "privacy": {
     "title": "Privacy",
-    "description": "Hoe PDF Conduit met je bestanden omgaat — kort gezegd: het bewaart ze niet.",
+    "description": "Hoe PDF Conduit met je bestanden omgaat. Kort gezegd: het bewaart ze niet.",
     "memoryTitle": "Je bestanden worden nooit opgeslagen",
     "memoryBody": "Uw bestanden worden nooit opgeslagen. Elke bewerking verloopt volledig binnen één enkel verzoek: uw bestand wordt verwerkt en rechtstreeks aan u teruggestuurd, en daarna direct weggegooid. Er wordt niets bewaard en niets wordt ooit voor iets anders gebruikt.",
     "exceptionTitle": "De enige tijdelijke uitzondering",
@@ -273,7 +273,7 @@
     "accountTitle": "Geen account, geen trackingmuur",
     "accountBody": "Je hoeft je niet te registreren, in te loggen of ons een e-mailadres te geven om de gratis tools te gebruiken. We vragen geen persoonlijke gegevens om een bestand te verwerken.",
     "limitsTitle": "Limieten van de gratis versie",
-    "limitsBody1": "Om de gratis dienst voor iedereen beschikbaar te houden, gelden voor verzoeken een dagelijkse bewerkingslimiet, een limiet voor de bestandsgrootte en basissnelheidsbeperking. Wanneer je een limiet bereikt, laat de app dat duidelijk weten. Hogere limieten, grotere bestanden en batch-/API-toegang zijn gepland voor een toekomstige betaalde versie — zie de",
+    "limitsBody1": "Om de gratis dienst voor iedereen beschikbaar te houden, gelden voor verzoeken een dagelijkse bewerkingslimiet, een limiet voor de bestandsgrootte en basissnelheidsbeperking. Wanneer je een limiet bereikt, laat de app dat duidelijk weten. Hogere limieten, grotere bestanden en batch-/API-toegang zijn gepland voor een toekomstige betaalde versie. Zie de",
     "limitsLink": "Pro-abonnementen",
     "limitsBody2": "teaser op de startpagina.",
     "questionsTitle": "Vragen",
@@ -288,7 +288,7 @@
     "quota_exceeded": {
       "title": "Je hebt de gratis bewerkingen van vandaag opgebruikt",
       "detail": "De gratis daglimiet is voorlopig bereikt.",
-      "hint": "Hogere daglimieten komen eraan met PDF Conduit Pro. Morgen wordt de limiet gereset — of krijg hieronder vroege toegang."
+      "hint": "Hogere daglimieten komen eraan met PDF Conduit Pro. Morgen wordt de limiet gereset. Of krijg hieronder vroege toegang."
     },
     "rate_limited": {
       "title": "Rustig aan",
@@ -372,8 +372,8 @@
     "extract": {
       "title": "Extraheren",
       "description": "Haal geselecteerde pagina's uit een PDF.",
-      "hint": "PDF-bestanden — meerdere bestanden komen terug als ZIP.",
-      "batchNote": "{{count}} bestanden geselecteerd — het paginabereik geldt voor elk; de resultaten komen terug als ZIP.",
+      "hint": "PDF-bestanden. Meerdere bestanden komen terug als ZIP.",
+      "batchNote": "{{count}} bestanden geselecteerd. Het paginabereik geldt voor elk; de resultaten komen terug als ZIP.",
       "pages": "Pagina's",
       "pagesPlaceholder": "bijv. 1,3,5-8",
       "pagesHelp": "Leeg = alle pagina's. Syntaxis:",
@@ -395,9 +395,9 @@
       "unitLabel": "Eenheid",
       "submit": "Comprimeren",
       "loading": "Comprimeren…",
-      "noopWarning": "Doel ≥ bestandsgrootte — wordt niet kleiner",
+      "noopWarning": "Doel ≥ bestandsgrootte. Wordt niet kleiner",
       "blankWarning": "Voer een doelgrootte in om te comprimeren.",
-      "allNoopWarning": "Doel is gelijk aan of groter dan elk bestand — niets te verkleinen.",
+      "allNoopWarning": "Doel is gelijk aan of groter dan elk bestand. Niets te verkleinen.",
       "dpi": "Beeldresolutie",
       "dpiHelp": "Beperk ingesloten afbeeldingen tot deze resolutie voor extra besparing.",
       "dpiNone": "Origineel (geen limiet)",
@@ -406,7 +406,7 @@
       "dpiPrint": "Afdruk (300 DPI)",
       "grayscale": "Afbeeldingen naar grijstinten converteren",
       "grayscaleHelp": "Hercodeer afbeeldingen zonder kleur voor kleinere bestanden.",
-      "floorNotice": "De kleinst haalbare grootte voor dit bestand is ongeveer {{floor}} — je doel van {{target}} kan niet worden bereikt. In plaats daarvan is de kleinste versie opgeslagen."
+      "floorNotice": "De kleinst haalbare grootte voor dit bestand is ongeveer {{floor}}. Je doel van {{target}} kan niet worden bereikt. In plaats daarvan is de kleinste versie opgeslagen."
     },
     "rotate": {
       "title": "Draaien",
@@ -438,8 +438,8 @@
       "title": "Pagina's per vel",
       "description": "Plaats meerdere pagina's per vel of vouw een boekje met rugnietje.",
       "privacyLine": "Uw bestanden worden privé geïmposeerd en nooit opgeslagen.",
-      "hint": "PDF-bestanden — meerdere bestanden komen terug als ZIP.",
-      "batchNote": "{{count}} bestanden geselecteerd — elk wordt afzonderlijk geïmposeerd; de resultaten komen terug als ZIP.",
+      "hint": "PDF-bestanden. Meerdere bestanden komen terug als ZIP.",
+      "batchNote": "{{count}} bestanden geselecteerd. Elk wordt afzonderlijk geïmposeerd; de resultaten komen terug als ZIP.",
       "layout": "Lay-out",
       "layout2up": "2 per pagina",
       "layout4up": "4 per pagina (2×2)",
@@ -467,8 +467,8 @@
       "title": "Naar afbeeldingen",
       "description": "Zet PDF-pagina's om naar PNG of JPG.",
       "privacyLine": "Uw bestanden worden privé omgezet en nooit opgeslagen.",
-      "hint": "PDF-bestanden — meerdere pagina's of bestanden komen terug als ZIP.",
-      "batchNote": "{{count}} bestanden geselecteerd — het paginabereik geldt voor elk; de resultaten komen terug als ZIP.",
+      "hint": "PDF-bestanden. Meerdere pagina's of bestanden komen terug als ZIP.",
+      "batchNote": "{{count}} bestanden geselecteerd. Het paginabereik geldt voor elk; de resultaten komen terug als ZIP.",
       "format": "Formaat",
       "dpi": "DPI",
       "dpiHelp": "Hoger = scherper en groter (36–600).",
@@ -481,14 +481,14 @@
       "loading": "Weergeven…",
       "color": "Kleur",
       "transparent": "Transparante achtergrond",
-      "transparentHelp": "Alleen PNG — de paginaachtergrond blijft doorzichtig.",
+      "transparentHelp": "Alleen PNG. De paginaachtergrond blijft doorzichtig.",
       "grayscale": "Grijswaarden"
     },
     "toText": {
       "title": "Naar tekst",
       "description": "Extraheer de tekstinhoud van een PDF.",
       "hint": "PDF-bestanden (meerdere komen terug als ZIP).",
-      "batchNote": "{{count}} bestanden geselecteerd — het paginabereik geldt voor elk; de resultaten komen terug als ZIP.",
+      "batchNote": "{{count}} bestanden geselecteerd. Het paginabereik geldt voor elk; de resultaten komen terug als ZIP.",
       "format": "Formaat",
       "formatTxt": "Platte tekst (.txt)",
       "formatDocx": "Word-document (.docx)",
@@ -499,8 +499,8 @@
     },
     "ocr": {
       "title": "OCR",
-      "description": "Maak een gescande PDF doorzoekbaar — voeg een onzichtbare tekstlaag toe.",
-      "hint": "Een gescande PDF of afbeelding — de tekst wordt selecteerbaar.",
+      "description": "Maak een gescande PDF doorzoekbaar. Voeg een onzichtbare tekstlaag toe.",
+      "hint": "Een gescande PDF of afbeelding. De tekst wordt selecteerbaar.",
       "languages": "Talen",
       "languagesPlaceholder": "bijv. eng of eng+deu (leeg = eng)",
       "languagesHelp": "Tesseract-taalcodes; het taalpakket moet op de server geïnstalleerd zijn.",
@@ -552,7 +552,7 @@
     },
     "sign": {
       "title": "Invullen en ondertekenen",
-      "description": "Voeg een handtekening toe aan je PDF en maak deze plat — er wordt niets opgeslagen, alles gebeurt in je sessie.",
+      "description": "Voeg een handtekening toe aan je PDF en maak deze plat. Er wordt niets opgeslagen, alles gebeurt in je sessie.",
       "hint": "Eén PDF. Maak vervolgens een handtekening en plaats deze op de pagina.",
       "dragHint": "Sleep op een pagina om je handtekening te plaatsen.",
       "chooseAnother": "Kies een andere PDF",
@@ -577,7 +577,7 @@
     "metadata": {
       "title": "Metagegevens",
       "description": "Bekijk, bewerk of verwijder documentgegevens.",
-      "hint": "PDF-bestanden — dezelfde wijzigingen gelden voor elk bestand (meerdere komen terug als ZIP).",
+      "hint": "PDF-bestanden. Dezelfde wijzigingen gelden voor elk bestand (meerdere komen terug als ZIP).",
       "batchNote": "Dezelfde velden worden op elk bestand toegepast. Het voorbeeld leest alleen het eerste bestand.",
       "readCurrent": "Huidige lezen",
       "reading": "Lezen…",
@@ -725,7 +725,7 @@
         "noneExplain": "Er zijn geen persoonsgegevens in dit document aangetroffen.",
         "lowExplain": "Er is één identificator met laag risico gevonden.",
         "mediumExplain": "Er zijn meerdere identificatoren met laag risico gevonden, maar niets financieels, nationaal-ID of bijzondere categorie.",
-        "highExplain": "Er zijn financiële, nationaal-ID- of bijzondere-categoriegegevens aanwezig — ga er zorgvuldig mee om voordat je deelt."
+        "highExplain": "Er zijn financiële, nationaal-ID- of bijzondere-categoriegegevens aanwezig. Ga er zorgvuldig mee om voordat je deelt."
       },
       "summary": "{count, plural, one {# persoonsgegeven gevonden op {pages} pagina's.} other {# persoonsgegevens gevonden op {pages} pagina's.}}",
       "summaryClean": "Geen persoonsgegevens gevonden op {{pages}} pagina's.",
@@ -742,7 +742,7 @@
         "occurrences": "Aantal"
       },
       "redactCta": "Gedetecteerde gegevens redigeren",
-      "redactHint": "Controleer de gemarkeerde gebieden en pas toe — het is gratis.",
+      "redactHint": "Controleer de gemarkeerde gebieden en pas toe. Het is gratis.",
       "hintMulti": "Een of meer PDF's, afbeeldingen of office-documenten.",
       "submitBatch": "{{count}} bestanden scannen",
       "highestRiskLabel": "hoogste risico",
@@ -754,15 +754,15 @@
       "autoRedactCta": "Alles wat is gedetecteerd automatisch zwart maken",
       "autoRedactAllCta": "Alle bestanden automatisch zwart maken",
       "autoRedactFile": "Automatisch zwart maken",
-      "autoRedactHint": "Eén klik maakt elke gedetecteerde waarde zwart en downloadt het bestand — gratis. Uw bestand wordt nooit opgeslagen.",
+      "autoRedactHint": "Eén klik maakt elke gedetecteerde waarde zwart en downloadt het bestand. Gratis. Uw bestand wordt nooit opgeslagen.",
       "autoRedactLoading": "Bezig met zwart maken…"
     },
     "crop": {
       "title": "Bijsnijden",
       "description": "Snijd de marges van elke pagina bij.",
       "privacyLine": "Je bestanden worden privé bijgesneden en nooit opgeslagen.",
-      "hint": "PDF-bestanden — meerdere bestanden komen terug als ZIP.",
-      "batchNote": "{{count}} bestanden geselecteerd — de marges gelden voor elk bestand; resultaten komen terug als ZIP.",
+      "hint": "PDF-bestanden. Meerdere bestanden komen terug als ZIP.",
+      "batchNote": "{{count}} bestanden geselecteerd. De marges gelden voor elk bestand; resultaten komen terug als ZIP.",
       "top": "Boven",
       "right": "Rechts",
       "bottom": "Onder",
