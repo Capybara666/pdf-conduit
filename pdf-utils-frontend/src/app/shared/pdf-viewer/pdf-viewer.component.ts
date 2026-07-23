@@ -241,7 +241,22 @@ export class PdfViewerComponent implements AfterViewInit, OnDestroy {
   private ptSizes: { n: number; w: number; h: number }[] = [];
   private maxPtWidth = 0;
   private range: { first: number; last: number } = { first: 1, last: 1 };
-  private resizeObserver?: ResizeObserver;
+  /** Last container width (CSS px) a fit was applied for. Guards against
+   *  re-fitting when the available width hasn't actually changed, so once the
+   *  preview settles no further scale changes/repaints fire. -1 = not yet fit. */
+  private lastFitWidth = -1;
+  /** Pending rAF id for the debounced window-resize refit (0 = none). */
+  private resizeRaf = 0;
+  /** Debounced window-resize handler: coalesces bursts into one rAF-timed refit.
+   *  Re-fits ONLY on genuine window resizes — never observes a content-affected
+   *  element, so a repaint can never feed back and shrink the preview. */
+  private readonly onWindowResize = (): void => {
+    if (this.resizeRaf) return;
+    this.resizeRaf = requestAnimationFrame(() => {
+      this.resizeRaf = 0;
+      this.refitToWidth();
+    });
+  };
 
   regionsFor(pageIndex: number): RegionRect[] {
     return this.regions().filter((r) => r.pageIndex === pageIndex);
@@ -277,18 +292,19 @@ export class PdfViewerComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // Re-measure once real layout width is available (the file may have been set
-    // before the viewer was laid out — e.g. mounted into a lightbox that hadn't
-    // sized yet) and on every later resize, so a wide page re-fits to the width
-    // and a page that was rendered before a valid width existed corrects itself.
-    if (typeof ResizeObserver !== 'undefined') {
-      this.resizeObserver = new ResizeObserver(() => this.refitToWidth());
-      this.resizeObserver.observe(this.host.nativeElement as HTMLElement);
-    }
+    // A ResizeObserver on the host (or any content-affected element) fed back:
+    // fit → shrink content → host shrinks → fit smaller → … an infinite shrink.
+    // Instead we fit ONCE after layout (a single rAF here, plus the one-shot in
+    // reload()) and thereafter only on a genuine WINDOW resize. `refitToWidth`
+    // bails unless the measured available width actually changed, so the preview
+    // settles to one stable size and never continuously shrinks.
+    requestAnimationFrame(() => this.refitToWidth());
+    window.addEventListener('resize', this.onWindowResize);
   }
 
   ngOnDestroy(): void {
-    this.resizeObserver?.disconnect();
+    window.removeEventListener('resize', this.onWindowResize);
+    if (this.resizeRaf) cancelAnimationFrame(this.resizeRaf);
     void this.doc?.destroy();
   }
 
@@ -332,20 +348,17 @@ export class PdfViewerComponent implements AfterViewInit, OnDestroy {
       // First layout at the requested scale (full size) — deliberately NOT from a
       // measurement here, because the file may have been set before the viewer
       // was laid out, and a 0/tiny width at this moment would collapse the scale.
-      // `fitScale()` then narrows it only if a VALID width proves overflow.
+      // `applyFitScale()` then narrows it only if a VALID width proves overflow.
       this.renderScale.set(this.scale);
+      this.lastFitWidth = -1; // new document: force the next fit to measure fresh
       this.layoutPages();
       this.loaded.emit({ pages: doc.numPages });
 
       // Let the template create the <canvas> elements (and the container gain
-      // layout width), then measure and fit-to-width before the single paint.
+      // layout width), then measure and fit-to-width ONCE before the single paint.
       await new Promise<void>((resolve) => setTimeout(resolve, 0));
       if (token !== this.renderToken) return;
-      const eff = this.fitScale();
-      if (eff !== this.renderScale()) {
-        this.renderScale.set(eff);
-        this.layoutPages();
-      }
+      this.applyFitScale();
       await this.paint(doc, first, last, token);
     } catch (e) {
       const msg =
@@ -378,8 +391,7 @@ export class PdfViewerComponent implements AfterViewInit, OnDestroy {
    * portrait/normal page is never shrunk and an unmeasured (0-width) container
    * can never drive the scale toward 0. Every division is guarded.
    */
-  private fitScale(): number {
-    const cw = this.measureContainerWidth();
+  private fitScale(cw: number): number {
     if (cw > 0 && this.maxPtWidth > 0) {
       const fit = cw / this.maxPtWidth; // px-per-point that makes the widest page fit
       if (fit > 0 && fit < this.scale) return fit; // only ever downscale
@@ -388,17 +400,35 @@ export class PdfViewerComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Recompute the fit-to-width scale after a layout/resize and repaint if it
-   * changed. Called from the ResizeObserver so that once a real width is known
-   * (or the container is resized) wide pages re-fit and any page rendered before
-   * a valid width existed corrects itself. No-op until a document is loaded.
+   * Measure the available (content-independent) width once and apply the
+   * fit-to-width scale if it changed. Returns true when the render scale was
+   * updated (a repaint is then needed). A 0/invalid width is a no-op that KEEPS
+   * the requested scale (never scales toward 0). Records `lastFitWidth` so a
+   * later refit at the same width bails — this is what makes the preview settle.
+   */
+  private applyFitScale(): boolean {
+    const cw = this.measureContainerWidth();
+    if (cw <= 0) return false; // no valid width — keep the requested scale
+    this.lastFitWidth = cw;
+    const eff = this.fitScale(cw);
+    if (Math.abs(eff - this.renderScale()) < 0.001) return false;
+    this.renderScale.set(eff);
+    this.layoutPages();
+    return true;
+  }
+
+  /**
+   * Re-fit after a genuine WINDOW resize (or the one-shot post-layout rAF). Bails
+   * unless a document is loaded AND the measured available width actually changed
+   * vs the last applied width — so once settled, no further refits/repaints fire
+   * and there is no self-observing feedback loop. Repaints only when the scale
+   * changed. No-op until a document is loaded.
    */
   private refitToWidth(): void {
     if (!this.ptSizes.length || !this.doc) return;
-    const eff = this.fitScale();
-    if (Math.abs(eff - this.renderScale()) < 0.001) return;
-    this.renderScale.set(eff);
-    this.layoutPages();
+    const cw = this.measureContainerWidth();
+    if (cw <= 0 || cw === this.lastFitWidth) return; // settled / no valid width
+    if (!this.applyFitScale()) return;
     const doc = this.doc;
     const token = this.renderToken;
     // Let the new page-box sizes settle, then repaint the canvases at the new scale.
