@@ -36,7 +36,11 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
 
       @if (files().length) {
-        <ul class="reorder-list">
+        <ul
+          class="reorder-list"
+          (dragover)="onContainerDragOver($event)"
+          (drop)="onDrop($event)"
+        >
           @for (f of files(); track f; let i = $index) {
             @if (dragIndex() !== null && dropIndex() === i) {
               <li class="drop-marker" aria-hidden="true"></li>
@@ -44,7 +48,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             <li
               [class.dragging]="dragIndex() === i"
               draggable="true"
-              (dragstart)="onDragStart(i)"
+              (dragstart)="onDragStart($event, i)"
               (dragover)="onDragOver($event, i)"
               (drop)="onDrop($event)"
               (dragend)="onDragEnd()"
@@ -128,6 +132,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         border-radius: 2px;
         background: var(--accent);
         box-shadow: 0 0 0 1px var(--accent-soft);
+        /* Let the cursor pass through the thin marker to the row/container
+           beneath, so releasing on it is still a valid drop (not a no-op). */
+        pointer-events: none;
       }
     `,
   ],
@@ -171,8 +178,25 @@ export class MergePage {
     this.files.set(next);
   }
 
-  onDragStart(i: number): void {
+  onDragStart(ev: DragEvent, i: number): void {
     this.dragIndex.set(i);
+    // Populate dataTransfer so Firefox reliably initiates the drag, and flag it
+    // as a move (reorder), not a copy.
+    if (ev.dataTransfer) {
+      ev.dataTransfer.effectAllowed = 'move';
+      ev.dataTransfer.setData('text/plain', String(i));
+    }
+  }
+
+  /**
+   * Container-level dragover: preventDefault so a release ANYWHERE inside the
+   * list (a gap, the thin insertion marker) is a valid drop and the following
+   * `drop` fires. It never moves the marker — the per-row dragover owns that;
+   * this only keeps the drop alive when the pointer isn't over a row.
+   */
+  onContainerDragOver(ev: DragEvent): void {
+    if (this.dragIndex() === null) return;
+    ev.preventDefault();
   }
 
   /**

@@ -209,6 +209,22 @@ export class FileDropZoneComponent implements OnInit, OnDestroy {
     this.dropIndex.set(leading ? over : over + 1);
   }
 
+  /**
+   * Container-level dragover: preventDefault so a release ANYWHERE inside the
+   * list (a gap, the thin insertion marker) is a valid drop and the following
+   * `drop` fires. It never moves the marker — the per-row dragover owns that;
+   * this only keeps the drop alive when the pointer isn't over a row.
+   */
+  onListDragOver(event: DragEvent): void {
+    if (this.dragIndex() === null) {
+      return;
+    }
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+  }
+
   onRowDrop(event: DragEvent): void {
     if (this.dragIndex() === null) {
       return;

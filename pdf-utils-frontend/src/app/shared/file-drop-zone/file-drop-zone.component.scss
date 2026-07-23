@@ -213,6 +213,9 @@
   background: var(--accent);
   box-shadow: 0 0 0 1px var(--accent-soft);
   list-style: none;
+  /* Let the cursor pass through the thin marker to the row/container beneath so
+     releasing on it is still a valid drop (not a silent no-op). */
+  pointer-events: none;
 }
 
 .name {

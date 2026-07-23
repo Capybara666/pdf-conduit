@@ -80,7 +80,11 @@
 }
 
 @if (showList && _files().length) {
-  <ul class="file-list">
+  <ul
+    class="file-list"
+    (dragover)="onListDragOver($event)"
+    (drop)="onRowDrop($event)"
+  >
     @for (file of _files(); track file; let i = $index) {
       @if (dragIndex() !== null && dropIndex() === i) {
         <li class="drop-marker" aria-hidden="true"></li>

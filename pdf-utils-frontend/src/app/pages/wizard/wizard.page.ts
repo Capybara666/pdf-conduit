@@ -79,7 +79,12 @@ const STEP_KEYS = [
         @if (step() === 1) {
           <h2 class="step-h">{{ 'pages.wizard.arrangeTitle' | transloco }}</h2>
           <p class="hint-note">{{ 'pages.wizard.arrangeHint' | transloco }}</p>
-          <ul class="file-list" role="list">
+          <ul
+            class="file-list"
+            role="list"
+            (dragover)="onContainerDragOver($event)"
+            (drop)="onDrop($event)"
+          >
             @for (it of items(); track it.file; let i = $index) {
               @if (dragIndex() !== null && dropIndex() === i) {
                 <li class="drop-marker" aria-hidden="true"></li>
@@ -94,7 +99,7 @@ const STEP_KEYS = [
                 <div
                   class="file-head"
                   draggable="true"
-                  (dragstart)="dragIndex.set(i)"
+                  (dragstart)="onDragStart($event, i)"
                   (dragend)="dragEnd()"
                 >
                   <span class="grip" aria-hidden="true">⠿</span>
@@ -332,6 +337,9 @@ const STEP_KEYS = [
         border-radius: 2px;
         background: var(--accent);
         box-shadow: 0 0 0 1px var(--accent-soft);
+        /* Let the cursor pass through the thin marker to the row/container
+           beneath so releasing on it is still a valid drop (not a no-op). */
+        pointer-events: none;
       }
       .file-head {
         display: flex;
@@ -644,6 +652,27 @@ export class WizardPage implements OnDestroy {
    * top half of a row inserts BEFORE it, bottom half AFTER it. The list only
    * reorders on drop, so the marker unambiguously previews the outcome.
    */
+  onDragStart(ev: DragEvent, i: number): void {
+    this.dragIndex.set(i);
+    // Populate dataTransfer so Firefox reliably initiates the drag, and flag it
+    // as a move (reorder), not a copy.
+    if (ev.dataTransfer) {
+      ev.dataTransfer.effectAllowed = 'move';
+      ev.dataTransfer.setData('text/plain', String(i));
+    }
+  }
+
+  /**
+   * Container-level dragover: preventDefault so a release ANYWHERE inside the
+   * list (a gap, the thin insertion marker) is a valid drop and the following
+   * `drop` fires. It never moves the marker — the per-row dragover owns that;
+   * this only keeps the drop alive when the pointer isn't over a row.
+   */
+  onContainerDragOver(ev: DragEvent): void {
+    if (this.dragIndex() === null) return;
+    ev.preventDefault();
+  }
+
   onDragOver(ev: DragEvent, over: number): void {
     ev.preventDefault();
     if (this.dragIndex() === null) return;
