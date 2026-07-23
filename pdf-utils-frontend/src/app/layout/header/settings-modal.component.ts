@@ -6,7 +6,6 @@ import {
   OnDestroy,
   Output,
   ViewChild,
-  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -15,7 +14,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { LanguageService } from '../../core/i18n/language.service';
 import { Theme, ThemeService } from '../../core/theme.service';
-import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.component';
 
 /**
  * Mobile settings sheet. Below the rail breakpoint the header hides its inline
@@ -28,11 +26,19 @@ import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.com
  * button all dismiss, and the page is scroll-locked (`drawer-scroll-lock`, the
  * same root class the nav drawer uses) while it is open. The host owns the open
  * state and only renders this component while open, so mount = open.
+ *
+ * The theme + language pickers are rendered as INLINE controls (a wrap of theme
+ * chips and a scrollable radio-style language list) rather than popup dropdowns:
+ * a popup inside a bottom sheet either overflows the viewport (drop-down) or is
+ * clipped by the sheet (drop-up). Inline controls live in normal flow, so they
+ * can never be clipped — if the combined content exceeds the sheet height the
+ * modal body itself scrolls (`overflow-y: auto` on `.settings-panel`), keeping
+ * every option reachable.
  */
 @Component({
   selector: 'app-settings-modal',
   standalone: true,
-  imports: [TranslocoModule, HeaderDropdownComponent],
+  imports: [TranslocoModule],
   template: `
     <div class="settings-backdrop" (click)="requestClose()"></div>
 
@@ -65,51 +71,71 @@ import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.com
       </div>
 
       <div class="settings-body">
-        <div class="settings-row">
-          <span class="settings-label">{{ 'header.languageLabel' | transloco }}</span>
-          <app-header-dropdown
-            [options]="langOptions"
-            [value]="language.active()"
-            [ariaLabel]="'header.languageLabel' | transloco"
-            [dropUp]="true"
-            (valueChange)="onLangChange($event)"
-          >
-            <svg ddIcon viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5" />
-              <path
-                d="M3 12h18 M12 3c3 3 3 15 0 18 M12 3c-3 3-3 15 0 18"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.3"
-                stroke-linecap="round"
-              />
-            </svg>
-          </app-header-dropdown>
-        </div>
-
-        <div class="settings-row">
+        <!--
+          Theme: an inline wrap of chips (one per theme). No popup, so it can
+          never overflow the viewport or be clipped by the sheet. The active
+          chip is highlighted and marked aria-pressed.
+        -->
+        <section class="settings-group" role="group" [attr.aria-label]="'theme.label' | transloco">
           <span class="settings-label">{{ 'theme.label' | transloco }}</span>
-          <app-header-dropdown
-            [options]="themeOptions()"
-            [value]="themeService.theme()"
-            [ariaLabel]="'theme.label' | transloco"
-            [dropUp]="true"
-            (valueChange)="onThemeChange($event)"
-          >
-            <svg ddIcon viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M12 3a9 9 0 1 0 0 18 2 2 0 0 0 2-2 2 2 0 0 1 2-2h1a4 4 0 0 0 4-4 9 9 0 0 0-9-8z"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linejoin="round"
-              />
-              <circle cx="8" cy="10" r="1" fill="currentColor" />
-              <circle cx="12" cy="7.5" r="1" fill="currentColor" />
-              <circle cx="16" cy="10" r="1" fill="currentColor" />
-            </svg>
-          </app-header-dropdown>
-        </div>
+          <div class="theme-chips">
+            @for (t of themeService.themes; track t) {
+              <button
+                type="button"
+                class="theme-chip"
+                [class.active]="themeService.theme() === t"
+                [attr.aria-pressed]="themeService.theme() === t"
+                (click)="onThemeChange(t)"
+              >
+                <span class="theme-swatch" [attr.data-theme]="t" aria-hidden="true">
+                  <span class="dot dot-bg"></span>
+                  <span class="dot dot-accent"></span>
+                </span>
+                <span class="theme-chip-label">{{ themeLabel(t) }}</span>
+              </button>
+            }
+          </div>
+        </section>
+
+        <!--
+          Language: an inline, vertically-scrollable radio-style list (one row
+          per language, endonyms). Inline in normal flow — if the list is taller
+          than its cap it scrolls internally; if the whole sheet is too tall the
+          modal body scrolls. Either way nothing pops out to be clipped.
+        -->
+        <section
+          class="settings-group"
+          role="radiogroup"
+          [attr.aria-label]="'header.languageLabel' | transloco"
+        >
+          <span class="settings-label">{{ 'header.languageLabel' | transloco }}</span>
+          <div class="lang-list">
+            @for (l of language.languages; track l.code) {
+              <button
+                type="button"
+                class="lang-option"
+                role="radio"
+                [class.active]="language.active() === l.code"
+                [attr.aria-checked]="language.active() === l.code"
+                (click)="onLangChange(l.code)"
+              >
+                <span class="lang-name">{{ l.name }}</span>
+                @if (language.active() === l.code) {
+                  <svg class="lang-check" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M5 12.5l4.5 4.5L19 7"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                }
+              </button>
+            }
+          </div>
+        </section>
       </div>
     </div>
   `,
@@ -198,20 +224,164 @@ import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.com
       .settings-body {
         display: flex;
         flex-direction: column;
-        gap: 1.1rem;
+        gap: 1.5rem;
       }
 
-      .settings-row {
+      .settings-group {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
+        flex-direction: column;
+        gap: 0.6rem;
       }
 
       .settings-label {
         font-size: 0.9rem;
         font-weight: 600;
         color: var(--text);
+      }
+
+      /* Theme chips — inline wrap, no popup so nothing can be clipped. */
+      .theme-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .theme-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.7rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) - 4px);
+        background: var(--surface-2);
+        color: var(--text);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color var(--dur-base) var(--ease-standard),
+          color var(--dur-base) var(--ease-standard),
+          background var(--dur-base) var(--ease-standard);
+      }
+
+      .theme-chip:hover,
+      .theme-chip:focus-visible {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .theme-chip.active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 12%, var(--surface-2));
+      }
+
+      .theme-swatch {
+        position: relative;
+        display: inline-block;
+        width: 1.1rem;
+        height: 1.1rem;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        flex: none;
+      }
+
+      .theme-swatch .dot {
+        position: absolute;
+        inset: 0;
+        display: block;
+      }
+
+      .theme-swatch .dot-accent {
+        left: 50%;
+      }
+
+      /* Per-theme swatch preview colours (background + accent halves). */
+      .theme-swatch[data-theme='light'] .dot-bg {
+        background: #ffffff;
+      }
+      .theme-swatch[data-theme='light'] .dot-accent {
+        background: #2563eb;
+      }
+      .theme-swatch[data-theme='dark'] .dot-bg {
+        background: #1e2430;
+      }
+      .theme-swatch[data-theme='dark'] .dot-accent {
+        background: #60a5fa;
+      }
+      .theme-swatch[data-theme='nord'] .dot-bg {
+        background: #2e3440;
+      }
+      .theme-swatch[data-theme='nord'] .dot-accent {
+        background: #88c0d0;
+      }
+      .theme-swatch[data-theme='dracula'] .dot-bg {
+        background: #282a36;
+      }
+      .theme-swatch[data-theme='dracula'] .dot-accent {
+        background: #bd93f9;
+      }
+      .theme-swatch[data-theme='solarized'] .dot-bg {
+        background: #fdf6e3;
+      }
+      .theme-swatch[data-theme='solarized'] .dot-accent {
+        background: #268bd2;
+      }
+      .theme-swatch[data-theme='sunset'] .dot-bg {
+        background: #2b1b2e;
+      }
+      .theme-swatch[data-theme='sunset'] .dot-accent {
+        background: #ff7e5f;
+      }
+
+      /* Language list — inline, vertically scrollable; never a popup. */
+      .lang-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        max-height: 40vh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) - 4px);
+        padding: 0.25rem;
+      }
+
+      .lang-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0.55rem 0.7rem;
+        border: 1px solid transparent;
+        border-radius: calc(var(--radius) - 6px);
+        background: transparent;
+        color: var(--text);
+        font-size: 0.9rem;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color var(--dur-base) var(--ease-standard),
+          color var(--dur-base) var(--ease-standard),
+          background var(--dur-base) var(--ease-standard);
+      }
+
+      .lang-option:hover,
+      .lang-option:focus-visible {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .lang-option.active {
+        color: var(--accent);
+        font-weight: 700;
+        background: color-mix(in srgb, var(--accent) 12%, transparent);
+      }
+
+      .lang-check {
+        width: 1.1rem;
+        height: 1.1rem;
+        flex: none;
       }
     `,
   ],
@@ -227,24 +397,21 @@ export class SettingsModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('panel') private panel?: ElementRef<HTMLElement>;
   @ViewChild('closeBtn') private closeBtn?: ElementRef<HTMLButtonElement>;
 
-  /** Language options (endonyms, so language-agnostic). */
-  readonly langOptions: DropdownOption[] = this.language.languages.map((l) => ({
-    value: l.code,
-    label: l.name,
-  }));
-
+  /**
+   * Translated theme display names, kept as a signal that updates when the
+   * locale dictionary finishes loading AND on every language switch.
+   * `selectTranslate*` is reactive (unlike the synchronous `translate()`, which
+   * returns the raw key if read before the async dictionary has loaded).
+   */
   private readonly themeLabels = toSignal(
     this.transloco.selectTranslateObject<Record<string, string>>('theme.name'),
     { initialValue: {} as Record<string, string> },
   );
 
-  readonly themeOptions = computed<DropdownOption[]>(() => {
-    const labels = this.themeLabels();
-    return this.themeService.themes.map((t) => ({
-      value: t,
-      label: labels[t] ?? t,
-    }));
-  });
+  /** Human name for a theme chip, falling back to the id before dictionaries load. */
+  themeLabel(theme: Theme): string {
+    return this.themeLabels()[theme] ?? theme;
+  }
 
   private readonly wasLocked = signal(false);
 
