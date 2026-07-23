@@ -44,9 +44,14 @@ public final class DocumentConverter {
     public static final List<String> IMAGE_GLOBS = List.of(
         "*.png", "*.jpg", "*.jpeg", "*.webp", "*.tif", "*.tiff", "*.bmp", "*.gif");
     public static final List<String> OFFICE_GLOBS = List.of(
-        "*.doc", "*.docx", "*.odt", "*.rtf", "*.txt", "*.md",
+        "*.doc", "*.docx", "*.odt", "*.rtf", "*.txt", "*.md", "*.markdown",
         "*.xls", "*.xlsx", "*.ods", "*.csv",
         "*.ppt", "*.pptx", "*.odp", "*.html", "*.htm");
+
+    // Markdown gets rendered to HTML before the LibreOffice HTML→PDF leg (LibreOffice would
+    // otherwise import raw .md as unformatted plain text). Kept classified as OFFICE so the same
+    // gating (pdfconduit.web.office.enabled) and concurrency guards still apply.
+    private static final Set<String> MARKDOWN_EXTS = Set.of("md", "markdown");
 
     /** Everything that {@link #ensurePdf} can turn into a PDF. */
     public static final List<String> ALL_GLOBS = concat(PDF_GLOBS, IMAGE_GLOBS, OFFICE_GLOBS);
@@ -107,7 +112,7 @@ public final class DocumentConverter {
             }
             case IMAGE -> ImageToPdfConverter.execute(new ImageToPdfOptions(
                 List.of(source), imageSize == null ? PageSize.FIT : imageSize, targetPdf));
-            case OFFICE -> convertWithLibreOffice(source, targetPdf);
+            case OFFICE -> convertOfficeSource(source, targetPdf);
             case UNSUPPORTED -> throw new PdfOperationException(
                 "Unsupported file type: " + source.getFileName());
         }
@@ -148,9 +153,18 @@ public final class DocumentConverter {
             throw new PdfOperationException("Cannot prepare document conversion.", e);
         }
         try {
-            Path in = dir.resolve(sanitize(filename));
             Path out = dir.resolve("output.pdf");
-            Files.write(in, data);
+            Path in;
+            if (isMarkdown(filename)) {
+                // Render Markdown → HTML first, then let LibreOffice import the HTML (preserving
+                // headings/lists/tables) rather than the raw .md as unformatted plain text.
+                String html = MarkdownConverter.toHtml(new String(data, java.nio.charset.StandardCharsets.UTF_8));
+                in = dir.resolve("input.html");
+                Files.writeString(in, html);
+            } else {
+                in = dir.resolve(sanitize(filename));
+                Files.write(in, data);
+            }
             convertWithLibreOffice(in, out);
             return Files.readAllBytes(out);
         } catch (IOException e) {
@@ -305,6 +319,40 @@ public final class DocumentConverter {
             return "pdf:calc_pdf_Export:{\"SinglePageSheets\":{\"type\":\"boolean\",\"value\":\"true\"}}";
         }
         return "pdf";
+    }
+
+    /** True for a Markdown source (by extension); rendered to HTML before the soffice PDF leg. */
+    static boolean isMarkdown(String filename) {
+        return filename != null && MARKDOWN_EXTS.contains(extensionOf(Path.of(filename)));
+    }
+
+    /**
+     * Converts an OFFICE-classified {@code source} to PDF. Markdown is first rendered to a
+     * self-contained HTML file (in an isolated temp dir) and that HTML is handed to LibreOffice —
+     * so headings/lists/tables/code survive instead of arriving as raw plain text; every other
+     * office/text type goes straight to LibreOffice.
+     */
+    private static void convertOfficeSource(Path source, Path target) throws PdfOperationException {
+        if (!isMarkdown(source.getFileName().toString())) {
+            convertWithLibreOffice(source, target);
+            return;
+        }
+        Path dir;
+        try {
+            dir = Files.createTempDirectory("pdfconduit-md-");
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot prepare document conversion.", e);
+        }
+        try {
+            String html = MarkdownConverter.toHtml(Files.readString(source));
+            Path htmlFile = dir.resolve(stem(source) + ".html");
+            Files.writeString(htmlFile, html);
+            convertWithLibreOffice(htmlFile, target);
+        } catch (IOException e) {
+            throw new PdfOperationException("Document conversion failed for " + source.getFileName() + ".", e);
+        } finally {
+            deleteRecursively(dir);
+        }
     }
 
     /**

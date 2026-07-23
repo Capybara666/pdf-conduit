@@ -25,6 +25,7 @@
         <junit.version>5.11.4</junit.version>
         <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
         <gson.version>2.11.0</gson.version>
+        <commonmark.version>0.24.0</commonmark.version>
     </properties>
 
     <dependencyManagement>
@@ -65,6 +66,17 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
+            </dependency>
+            <!-- Pure-Java Markdown → HTML (CommonMark + GFM tables), for .md/.markdown to PDF -->
+            <dependency>
+                <groupId>org.commonmark</groupId>
+                <artifactId>commonmark</artifactId>
+                <version>${commonmark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.commonmark</groupId>
+                <artifactId>commonmark-ext-gfm-tables</artifactId>
+                <version>${commonmark.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>

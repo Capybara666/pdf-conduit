@@ -23,7 +23,7 @@ type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
 
       <app-file-drop-zone
         [multiple]="true"
-        accept="image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx,.pdf"
+        accept="image/*,.docx,.odt,.rtf,.txt,.md,.markdown,.html,.htm,.xlsx,.pptx,.pdf"
         [hint]="'pages.toPdf.hint' | transloco"
         (filesChange)="files.set($event)"
       />
