@@ -11,11 +11,11 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.util.Matrix;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -33,6 +33,9 @@ import java.time.format.DateTimeFormatter;
 public final class PdfPageMarker {
 
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    /** Bundled Unicode font (covers Latin + Polish diacritics), embedded/subset once per document. */
+    private static final String FONT_RESOURCE = "/fonts/DejaVuSans.ttf";
 
     private PdfPageMarker() {}
 
@@ -83,7 +86,7 @@ public final class PdfPageMarker {
 
         float fontSize = fontSizeIn > 0 ? fontSizeIn : 10f;
         float margin = marginIn >= 0 ? marginIn : 36f;
-        PDFont font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+        PDFont font = loadFont(doc);
         int totalPages = doc.getNumberOfPages();
         String date = LocalDate.now().format(DATE);
         String prefix = numberPrefix == null ? "" : numberPrefix.trim();
@@ -94,7 +97,8 @@ public final class PdfPageMarker {
             if (skipFirstPage && index == 0) continue;
 
             String number = renderNumber(prefix, startNumber + index);
-            String total = renderNumber(prefix, startNumber + totalPages - 1);
+            // {pages} is the plain total page count — never Bates-prefixed or zero-padded.
+            String total = Integer.toString(totalPages);
 
             PDRectangle box = page.getCropBox();
             int rot = ((page.getRotation() % 360) + 360) % 360;
@@ -137,9 +141,7 @@ public final class PdfPageMarker {
                                  Align align, float visibleW, float margin, float baseline)
             throws IOException {
         if (text == null || text.isEmpty()) return;
-        String safe = sanitize(text, font);
-        if (safe.isEmpty()) return;
-        float textWidth = font.getStringWidth(safe) / 1000f * fontSize;
+        float textWidth = font.getStringWidth(text) / 1000f * fontSize;
         float x = switch (align) {
             case LEFT -> margin;
             case CENTER -> (visibleW - textWidth) / 2f;
@@ -148,7 +150,7 @@ public final class PdfPageMarker {
         cs.beginText();
         cs.setFont(font, fontSize);
         cs.newLineAtOffset(x, baseline);
-        cs.showText(safe);
+        cs.showText(text);
         cs.endText();
     }
 
@@ -181,23 +183,18 @@ public final class PdfPageMarker {
         return prefix + String.format("%06d", value);
     }
 
-    /** Replaces characters the standard font cannot encode with '?', so drawing never throws. */
-    private static String sanitize(String text, PDFont font) {
-        try {
-            font.getStringWidth(text);
-            return text;
-        } catch (IllegalArgumentException | IOException e) {
-            StringBuilder sb = new StringBuilder(text.length());
-            for (int i = 0; i < text.length(); i++) {
-                String ch = text.substring(i, i + 1);
-                try {
-                    font.getStringWidth(ch);
-                    sb.append(ch);
-                } catch (IllegalArgumentException | IOException ex) {
-                    sb.append('?');
-                }
+    /**
+     * Loads the bundled Unicode TrueType font, embedded as a subset once per document, so page
+     * marks render real Unicode text (e.g. Polish {@code ąćęłńóśźż}) instead of {@code ?} fallbacks.
+     */
+    private static PDFont loadFont(PDDocument doc) throws PdfOperationException {
+        try (InputStream in = PdfPageMarker.class.getResourceAsStream(FONT_RESOURCE)) {
+            if (in == null) {
+                throw new PdfOperationException("Page-marks font resource missing: " + FONT_RESOURCE);
             }
-            return sb.toString();
+            return PDType0Font.load(doc, in, true);   // embed a subset
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot load page-marks font: " + e.getMessage(), e);
         }
     }
 
