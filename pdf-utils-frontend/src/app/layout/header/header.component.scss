@@ -59,8 +59,19 @@
 .header-actions {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+}
+
+/* Inner action group. On desktop this mirrors `.op-page` (same max-width +
+   inline padding, centred) so the controls' right edge lands exactly on the
+   content column's right edge; here it just lays the controls out in a single
+   right-aligned, non-wrapping row (shared by desktop + mobile). */
+.actions-inner {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
   gap: 1rem;
+  width: 100%;
 }
 
 .health {
@@ -256,6 +267,52 @@
   }
 }
 
+/* Desktop (rail permanent): lay the bar out on the SAME grid as the app shell
+   (`sidebar var(--sidebar-width) | content 1fr`). The logo sits in column 1 at
+   the sidebar's own left gutter (pinned far-left, NOT indented by the rail);
+   the actions occupy column 2, wrapped so they mirror `.content` + `.op-page` —
+   the right edge of the controls lands exactly on the op-page content's right
+   edge, and because the inner wrapper's max-width is `--content-max` it tracks
+   the fixed↔wide toggle automatically. The full-bleed background/border stay on
+   `.app-header`, which still spans the whole viewport. */
+@media (min-width: 821px) {
+  .app-header {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    align-items: center;
+    /* Columns own the gutters now; drop the flex side padding so column 1
+       starts at the viewport edge (like the sidebar). */
+    padding: 0;
+  }
+
+  /* Column 1: logo left-aligned at the sidebar's content gutter (0.75rem panel
+     + 0.75rem item padding = 1.5rem). */
+  .brand {
+    padding-left: 1.5rem;
+  }
+
+  /* Column 2 = mirror of `.content`: same side gutter (2rem fixed). */
+  .header-actions {
+    min-width: 0;
+    padding: 0 2rem;
+  }
+
+  /* Inner = mirror of `.op-page`: same max-width, centred, same inline padding,
+     with the controls flush to its right edge. */
+  .actions-inner {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* WIDE mode: match `.content`'s widened side gutter so column 2 stays aligned
+     with the wider content column (the max-width already flips via the token). */
+  :root[data-width='wide'] .header-actions {
+    padding-left: max(2rem, 3vw);
+    padding-right: max(2rem, 3vw);
+  }
+}
+
 @media (max-width: 820px) {
   .menu-toggle {
     display: inline-flex;
@@ -281,13 +338,15 @@
     display: inline-flex;
   }
 
-  /* Burger stays pinned left (the .app-header is space-between); group the rest
-     of the controls at the right edge, on a single non-wrapping row. */
+  /* Burger stays pinned left (the .app-header is space-between); let the actions
+     group take the remaining row and pin its contents to the right edge, on a
+     single non-wrapping row. */
   .header-actions {
     flex: 1;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    align-items: center;
+    min-width: 0;
+  }
+
+  .actions-inner {
     gap: 0.6rem;
   }
 }
@@ -300,9 +359,8 @@
   }
 
   /* Tighten the row; remaining icon controls stay grouped at the right edge. */
-  .header-actions {
+  .actions-inner {
     gap: 0.5rem;
-    justify-content: flex-end;
   }
 
   /* Icon-only: keep it square so the accessible name lives on the title. */

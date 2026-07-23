@@ -55,6 +55,7 @@
   </a>
 
   <div class="header-actions">
+    <div class="actions-inner">
     <span class="health" [attr.data-state]="health()" [title]="healthKey | transloco">
       <span class="dot" aria-hidden="true"></span>
       <span class="health-text">{{ healthKey | transloco }}</span>
@@ -180,6 +181,7 @@
         />
       </svg>
     </button>
+    </div>
   </div>
 
   @if (settingsOpen()) {
