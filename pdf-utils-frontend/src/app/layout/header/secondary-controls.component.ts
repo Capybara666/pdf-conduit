@@ -94,12 +94,26 @@ export class SecondaryControlsComponent {
     { initialValue: {} as Record<string, string> },
   );
 
+  /**
+   * Per-theme two-tone swatch colours `[background, accent]`, kept identical to
+   * the mobile settings sheet's theme-chip swatches so desktop and mobile match.
+   */
+  private static readonly THEME_SWATCHES: Record<string, [string, string]> = {
+    light: ['#ffffff', '#2563eb'],
+    dark: ['#1e2430', '#60a5fa'],
+    nord: ['#2e3440', '#88c0d0'],
+    dracula: ['#282a36', '#bd93f9'],
+    solarized: ['#fdf6e3', '#268bd2'],
+    sunset: ['#2b1b2e', '#ff7e5f'],
+  };
+
   /** Theme options for the custom dropdown; labels track the active UI language. */
   readonly themeOptions = computed<DropdownOption[]>(() => {
     const labels = this.themeLabels();
     return this.themeService.themes.map((t) => ({
       value: t,
       label: labels[t] ?? t,
+      swatch: SecondaryControlsComponent.THEME_SWATCHES[t],
     }));
   });
 

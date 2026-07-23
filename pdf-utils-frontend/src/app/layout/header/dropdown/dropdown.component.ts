@@ -17,6 +17,13 @@ import {
 export interface DropdownOption {
   value: string;
   label: string;
+  /**
+   * Optional decorative two-tone colour swatch `[background, accent]`, rendered
+   * as a small rounded pill split down the middle (left = background half,
+   * right = accent half) before the label — matching the mobile settings sheet
+   * theme chips. Omit it (e.g. the language dropdown) and no swatch is drawn.
+   */
+  swatch?: [string, string];
 }
 
 /**
@@ -54,6 +61,12 @@ export interface DropdownOption {
       (keydown)="onTriggerKeydown($event)"
     >
       <span class="dd-icon" aria-hidden="true"><ng-content select="[ddIcon]"></ng-content></span>
+      @if (selectedSwatch(); as sw) {
+        <span class="dd-swatch" aria-hidden="true">
+          <span class="dd-dot" [style.background]="sw[0]"></span>
+          <span class="dd-dot dd-dot-accent" [style.background]="sw[1]"></span>
+        </span>
+      }
       <span class="dd-label">{{ selectedLabel() }}</span>
       <svg class="dd-caret" viewBox="0 0 24 24" aria-hidden="true">
         <path
@@ -98,6 +111,12 @@ export interface DropdownOption {
                 />
               }
             </svg>
+            @if (opt.swatch; as sw) {
+              <span class="dd-swatch" aria-hidden="true">
+                <span class="dd-dot" [style.background]="sw[0]"></span>
+                <span class="dd-dot dd-dot-accent" [style.background]="sw[1]"></span>
+              </span>
+            }
             <span class="dd-option-label">{{ opt.label }}</span>
           </li>
         }
@@ -227,6 +246,30 @@ export interface DropdownOption {
       .dd-option-label {
         flex: 1;
       }
+
+      /* Optional two-tone theme swatch — a small rounded pill split down the
+         middle (left = background half, right = accent half), matching the
+         mobile settings sheet theme chips. Purely decorative (aria-hidden). */
+      .dd-swatch {
+        position: relative;
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        flex: none;
+      }
+
+      .dd-swatch .dd-dot {
+        position: absolute;
+        inset: 0;
+        display: block;
+      }
+
+      .dd-swatch .dd-dot-accent {
+        left: 50%;
+      }
     `,
   ],
 })
@@ -259,6 +302,12 @@ export class HeaderDropdownComponent {
   readonly selectedLabel = computed(() => {
     const v = this.value;
     return this.options.find((o) => o.value === v)?.label ?? v ?? '';
+  });
+
+  /** Two-tone swatch of the selected option, if it carries one (else null). */
+  readonly selectedSwatch = computed<[string, string] | null>(() => {
+    const v = this.value;
+    return this.options.find((o) => o.value === v)?.swatch ?? null;
   });
 
   toggle(): void {
