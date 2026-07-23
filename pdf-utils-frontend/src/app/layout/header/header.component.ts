@@ -7,17 +7,20 @@ import {
   OnInit,
   Output,
   ViewChild,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription, switchMap, timer } from 'rxjs';
 
 import { ApiService } from '../../core/api.service';
 import { LanguageService } from '../../core/i18n/language.service';
 import { QuotaService } from '../../core/quota.service';
 import { Theme, ThemeService } from '../../core/theme.service';
+import { WidthMode, WidthService } from '../../core/width.service';
+import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.component';
 
 type HealthState = 'unknown' | 'up' | 'down';
 
@@ -29,7 +32,7 @@ type HealthState = 'unknown' | 'up' | 'down';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, TranslocoModule],
+  imports: [RouterLink, TranslocoModule, HeaderDropdownComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -38,6 +41,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
   protected readonly themeService = inject(ThemeService);
   protected readonly quota = inject(QuotaService);
   protected readonly language = inject(LanguageService);
+  protected readonly widthService = inject(WidthService);
+  private readonly transloco = inject(TranslocoService);
+
+  /** Language options for the custom dropdown (endonyms, so language-agnostic). */
+  readonly langOptions: DropdownOption[] = this.language.languages.map((l) => ({
+    value: l.code,
+    label: l.name,
+  }));
+
+  /** Theme options for the custom dropdown; labels track the active UI language. */
+  readonly themeOptions = computed<DropdownOption[]>(() => {
+    // Depend on the active language so labels re-translate on switch.
+    this.language.active();
+    return this.themeService.themes.map((t) => ({
+      value: t,
+      label: this.transloco.translate('theme.name.' + t),
+    }));
+  });
 
   /** Reflects the mobile drawer's open state (drives the hamburger's icon/ARIA). */
   @Input() menuOpen = false;
@@ -75,12 +96,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  onThemeChange(event: Event): void {
-    this.themeService.set((event.target as HTMLSelectElement).value as Theme);
+  onThemeChange(value: string): void {
+    this.themeService.set(value as Theme);
   }
 
-  onLangChange(event: Event): void {
-    this.language.setLang((event.target as HTMLSelectElement).value);
+  onLangChange(value: string): void {
+    this.language.setLang(value);
+  }
+
+  /** Toggle the global content width mode (fixed ↔ wide). */
+  setWidth(mode: WidthMode): void {
+    this.widthService.set(mode);
   }
 
   /** i18n key for the current backend-health label. */

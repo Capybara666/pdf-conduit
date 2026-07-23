@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "レイアウト幅",
+    "fixed": "固定",
+    "wide": "ワイド"
+  },
   "common": {
     "download": "ダウンロード",
     "downloadZip": "ZIP をダウンロード",

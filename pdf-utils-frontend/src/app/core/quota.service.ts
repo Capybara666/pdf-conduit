@@ -13,8 +13,11 @@ import { QuotaSnapshot } from './api.models';
  */
 @Injectable({ providedIn: 'root' })
 export class QuotaService {
-  /** Latest snapshot; null until the first API response arrives. */
-  readonly snapshot = signal<QuotaSnapshot | null>(null);
+  /** localStorage key holding the last-seen quota snapshot (rehydrated on load). */
+  private static readonly STORAGE_KEY = 'pdf-conduit.quota';
+
+  /** Latest snapshot; rehydrated from localStorage on load, else null. */
+  readonly snapshot = signal<QuotaSnapshot | null>(this.restore());
 
   /** Free operations remaining today, or null if the header was absent. */
   readonly remaining = computed(() => this.snapshot()?.quotaRemaining ?? null);
@@ -75,6 +78,45 @@ export class QuotaService {
 
     if (changed) {
       this.snapshot.set(next);
+      this.persist(next);
+    }
+  }
+
+  /**
+   * Rehydrate the last-seen snapshot so the header quota chip can render a
+   * sensible value on the very first paint after a page refresh — otherwise the
+   * count stays hidden until the first operation response arrives (the backend
+   * only emits `X-Quota-*` on operation POSTs, never on a plain page load).
+   *
+   * The next real API response overwrites this hint. A snapshot whose daily
+   * quota window has already elapsed (`quotaReset` in the past) is treated as a
+   * fresh day: remaining is reset to the daily limit so we never persist a stale
+   * "0 left" across the reset boundary.
+   */
+  private restore(): QuotaSnapshot | null {
+    try {
+      const raw = localStorage.getItem(QuotaService.STORAGE_KEY);
+      if (!raw) return null;
+      const snap = JSON.parse(raw) as QuotaSnapshot;
+      if (!snap || typeof snap !== 'object') return null;
+      if (
+        snap.quotaReset != null &&
+        snap.quotaLimit != null &&
+        Date.now() / 1000 >= snap.quotaReset
+      ) {
+        snap.quotaRemaining = snap.quotaLimit;
+      }
+      return snap;
+    } catch {
+      return null;
+    }
+  }
+
+  private persist(snap: QuotaSnapshot): void {
+    try {
+      localStorage.setItem(QuotaService.STORAGE_KEY, JSON.stringify(snap));
+    } catch {
+      // localStorage may be unavailable (private mode); ignore.
     }
   }
 }

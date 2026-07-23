@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "레이아웃 너비",
+    "fixed": "고정",
+    "wide": "넓게"
+  },
   "common": {
     "download": "다운로드",
     "downloadZip": "ZIP 다운로드",

@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Layout-Breite",
+    "fixed": "Fest",
+    "wide": "Breit"
+  },
   "common": {
     "download": "Herunterladen",
     "downloadZip": "ZIP herunterladen",

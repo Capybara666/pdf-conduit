@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Szerokość układu",
+    "fixed": "Stała",
+    "wide": "Szeroka"
+  },
   "common": {
     "download": "Pobierz",
     "downloadZip": "Pobierz ZIP",

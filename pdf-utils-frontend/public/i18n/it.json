@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Larghezza layout",
+    "fixed": "Fissa",
+    "wide": "Ampia"
+  },
   "common": {
     "download": "Scarica",
     "downloadZip": "Scarica ZIP",

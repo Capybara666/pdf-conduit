@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "布局宽度",
+    "fixed": "固定",
+    "wide": "宽屏"
+  },
   "common": {
     "download": "下载",
     "downloadZip": "下载 ZIP",

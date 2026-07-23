@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Lay-outbreedte",
+    "fixed": "Vast",
+    "wide": "Breed"
+  },
   "common": {
     "download": "Downloaden",
     "downloadZip": "ZIP downloaden",

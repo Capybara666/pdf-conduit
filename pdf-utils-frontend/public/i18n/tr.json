@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Düzen genişliği",
+    "fixed": "Sabit",
+    "wide": "Geniş"
+  },
   "common": {
     "download": "İndir",
     "downloadZip": "ZIP indir",

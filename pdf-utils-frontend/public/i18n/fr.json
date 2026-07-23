@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Largeur de mise en page",
+    "fixed": "Fixe",
+    "wide": "Large"
+  },
   "common": {
     "download": "Télécharger",
     "downloadZip": "Télécharger le ZIP",

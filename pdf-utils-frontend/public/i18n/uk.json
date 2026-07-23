@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Ширина макета",
+    "fixed": "Фіксована",
+    "wide": "Широка"
+  },
   "common": {
     "download": "Завантажити",
     "downloadZip": "Завантажити ZIP",

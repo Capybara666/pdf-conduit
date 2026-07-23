@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Layout width",
+    "fixed": "Fixed",
+    "wide": "Wide"
+  },
   "common": {
     "download": "Download",
     "downloadZip": "Download ZIP",

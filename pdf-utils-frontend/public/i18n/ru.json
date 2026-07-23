@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Ширина макета",
+    "fixed": "Фиксированная",
+    "wide": "Широкая"
+  },
   "common": {
     "download": "Скачать",
     "downloadZip": "Скачать ZIP",

@@ -95,9 +95,67 @@
       <span class="help-text">{{ 'onboarding.help' | transloco }}</span>
     </a>
 
-    <label class="lang-picker">
-      <span class="sr-only">{{ 'header.languageLabel' | transloco }}</span>
-      <svg class="lang-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <div
+      class="width-toggle"
+      role="group"
+      [attr.aria-label]="'width.label' | transloco"
+      [title]="'width.label' | transloco"
+    >
+      <button
+        type="button"
+        class="width-btn"
+        [class.active]="widthService.width() === 'fixed'"
+        [attr.aria-pressed]="widthService.width() === 'fixed'"
+        (click)="setWidth('fixed')"
+        [attr.aria-label]="'width.fixed' | transloco"
+        [title]="'width.fixed' | transloco"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect
+            x="7"
+            y="5"
+            width="10"
+            height="14"
+            rx="1.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+          />
+        </svg>
+        <span class="width-btn-text">{{ 'width.fixed' | transloco }}</span>
+      </button>
+      <button
+        type="button"
+        class="width-btn"
+        [class.active]="widthService.width() === 'wide'"
+        [attr.aria-pressed]="widthService.width() === 'wide'"
+        (click)="setWidth('wide')"
+        [attr.aria-label]="'width.wide' | transloco"
+        [title]="'width.wide' | transloco"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect
+            x="3"
+            y="5"
+            width="18"
+            height="14"
+            rx="1.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+          />
+        </svg>
+        <span class="width-btn-text">{{ 'width.wide' | transloco }}</span>
+      </button>
+    </div>
+
+    <app-header-dropdown
+      [options]="langOptions"
+      [value]="language.active()"
+      [ariaLabel]="'header.languageLabel' | transloco"
+      (valueChange)="onLangChange($event)"
+    >
+      <svg ddIcon viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5" />
         <path
           d="M3 12h18 M12 3c3 3 3 15 0 18 M12 3c-3 3-3 15 0 18"
@@ -107,22 +165,16 @@
           stroke-linecap="round"
         />
       </svg>
-      <select
-        class="lang-select"
-        [value]="language.active()"
-        (change)="onLangChange($event)"
-        [attr.aria-label]="'header.languageLabel' | transloco"
-      >
-        @for (lang of language.languages; track lang.code) {
-          <option [value]="lang.code">{{ lang.name }}</option>
-        }
-      </select>
-    </label>
+    </app-header-dropdown>
 
-    <label class="theme-picker">
-      <span class="sr-only">{{ 'theme.label' | transloco }}</span>
+    <app-header-dropdown
+      [options]="themeOptions()"
+      [value]="themeService.theme()"
+      [ariaLabel]="'theme.label' | transloco"
+      (valueChange)="onThemeChange($event)"
+    >
       <!-- palette / swatch icon -->
-      <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <svg ddIcon viewBox="0 0 24 24" aria-hidden="true">
         <path
           d="M12 3a9 9 0 1 0 0 18 2 2 0 0 0 2-2 2 2 0 0 1 2-2h1a4 4 0 0 0 4-4 9 9 0 0 0-9-8z"
           fill="none"
@@ -134,16 +186,6 @@
         <circle cx="12" cy="7.5" r="1" fill="currentColor" />
         <circle cx="16" cy="10" r="1" fill="currentColor" />
       </svg>
-      <select
-        class="theme-select"
-        [value]="themeService.theme()"
-        (change)="onThemeChange($event)"
-        [attr.aria-label]="'theme.label' | transloco"
-      >
-        @for (t of themeService.themes; track t) {
-          <option [value]="t">{{ 'theme.name.' + t | transloco }}</option>
-        }
-      </select>
-    </label>
+    </app-header-dropdown>
   </div>
 </header>

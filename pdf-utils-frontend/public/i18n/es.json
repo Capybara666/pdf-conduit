@@ -1,4 +1,9 @@
 {
+  "width": {
+    "label": "Ancho del diseño",
+    "fixed": "Fijo",
+    "wide": "Ancho"
+  },
   "common": {
     "download": "Descargar",
     "downloadZip": "Descargar ZIP",
