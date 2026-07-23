@@ -5,7 +5,14 @@
 
 .sidebar {
   height: 100%;
+  /* Own scroll region: a long op list (plus the mobile drawer-extras footer)
+     scrolls INSIDE the panel, never the whole page. `overscroll-behavior:
+     contain` stops the scroll gesture from chaining to the body/document once
+     this region hits its top/bottom edge. Applies on desktop (sidebar is a
+     full-height grid cell) and mobile (off-canvas drawer) alike. */
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 1rem 0.75rem;
   background: var(--surface);
   border-right: 1px solid var(--border);
@@ -88,6 +95,11 @@ a {
     top: var(--header-height);
     left: 0;
     bottom: 0;
+    /* Let top+bottom define the height (viewport minus the header). Without
+       this, the base `:host { height: 100% }` over-constrains the fixed box to
+       100vh anchored below the header, so its bottom (and the drawer-extras
+       footer) spill off-screen and the internal scroll math is wrong. */
+    height: auto;
     z-index: 40;
     width: min(80vw, 300px);
     transform: translateX(-100%);

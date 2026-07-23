@@ -242,6 +242,16 @@ app-root {
   height: 100%;
 }
 
+/* Freeze page scrolling while the mobile off-canvas drawer is open (toggled by
+   the app shell on <html>). Combined with `overscroll-behavior: contain` on the
+   drawer's own scroll region, this stops a scroll gesture inside the nav from
+   chaining through to the page. Removed on close, restoring normal scrolling. */
+:root.drawer-scroll-lock,
+:root.drawer-scroll-lock body {
+  overflow: hidden;
+  touch-action: none;
+}
+
 a {
   color: var(--accent);
 }

@@ -72,7 +72,7 @@ const KIND_TO_OP: Record<string, string> = {
     PipelineInspectorComponent,
   ],
   template: `
-    <section class="op-page">
+    <section class="op-page pl-page">
       <app-page-header
         [title]="'pages.pipeline.title' | transloco"
         [description]="'pages.pipeline.description' | transloco"
@@ -188,6 +188,20 @@ const KIND_TO_OP: Record<string, string> = {
   `,
   styles: [
     `
+      /* Pipeline is a canvas TOOL that needs horizontal room for the node
+         surface + the side-docked inspector drawer. The shared '.op-page'
+         container is capped at a narrow reading width (~860px) in the global
+         FIXED width mode, which is too tight for canvas + 300px drawer and
+         forces the drawer to overlap the canvas. Override the cap here so the
+         pipeline always gets a GENEROUS width regardless of the global
+         data-width toggle — this rule is component-scoped (Angular emulated
+         encapsulation), and '.op-page.pl-page' outranks the global '.op-page'
+         / '.op-page.wide' selectors, so it wins in both fixed and wide modes
+         and affects ONLY this page. The canvas (minmax(0,1fr)) then keeps the
+         freed width with the dock beside it. */
+      .op-page.pl-page {
+        max-width: min(96vw, 1600px);
+      }
       .pl-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;

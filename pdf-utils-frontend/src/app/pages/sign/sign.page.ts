@@ -62,7 +62,7 @@ type SigMode = 'draw' | 'type' | 'upload';
               [file]="file()"
               [drawable]="!!signature()"
               [scale]="1.3"
-              (regionsChange)="regions.set($event)"
+              (regionsChange)="onRegions($event)"
             />
           </div>
 
@@ -361,6 +361,13 @@ export class SignPage {
   protected readonly signature = signal<{ file: File; url: string } | null>(null);
   protected readonly state = new OperationState();
 
+  /** Aspect ratio (width / height) of the loaded signature image, or null until
+   *  it has decoded. Every placement box is constrained to this so the drawn box
+   *  always matches the signature's shape (no distortion, no letterbox gap). */
+  private readonly sigAspect = signal<number | null>(null);
+  /** Guards the re-entrant `regionsChange` the viewer fires from `setRegions`. */
+  private snapping = false;
+
   private drawing = false;
   private last: { x: number; y: number } | null = null;
   private padDirty = false;
@@ -380,9 +387,70 @@ export class SignPage {
     this.file.set(f);
     this.regions.set([]);
     this.signature.set(null);
+    this.sigAspect.set(null);
     this.typed.set('');
     this.flatten.set(false);
     this.state.reset();
+  }
+
+  // ---- Placement aspect constraint --------------------------------------
+
+  /**
+   * Every box the viewer emits is constrained to the signature image's aspect
+   * ratio, then pushed BACK into the viewer via `setRegions` so the on-screen
+   * overlay AND the submitted region are identical, aspect-correct rectangles
+   * (matching the backend's fit-inside render — no distortion, no letterbox).
+   */
+  onRegions(rs: RegionRect[]): void {
+    if (this.snapping) return; // ignore the re-entrant emit from setRegions
+    const aspect = this.sigAspect();
+    if (!aspect || !rs.length) {
+      this.regions.set(rs);
+      return;
+    }
+    const snapped = rs.map((r) => this.snapToAspect(r, aspect));
+    this.regions.set(snapped);
+    if (this.regionsChanged(rs, snapped)) {
+      this.snapping = true;
+      this.viewer?.setRegions(snapped);
+      this.snapping = false;
+    }
+  }
+
+  /** Fit an aspect-correct rectangle inside the drawn box, anchored top-left. */
+  private snapToAspect(r: RegionRect, aspect: number): RegionRect {
+    if (!(aspect > 0) || r.width <= 0 || r.height <= 0) return r;
+    let width = r.width;
+    let height = r.height;
+    if (r.width / r.height > aspect) {
+      width = r.height * aspect; // too wide → height is limiting
+    } else {
+      height = r.width / aspect; // too tall → width is limiting
+    }
+    return { ...r, width: +width.toFixed(2), height: +height.toFixed(2) };
+  }
+
+  private regionsChanged(a: RegionRect[], b: RegionRect[]): boolean {
+    if (a.length !== b.length) return true;
+    for (let i = 0; i < a.length; i++) {
+      if (Math.abs(a[i].width - b[i].width) > 0.05 || Math.abs(a[i].height - b[i].height) > 0.05) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Re-constrain existing placements after the signature (aspect) changes. */
+  private resnapAll(): void {
+    const aspect = this.sigAspect();
+    const cur = this.regions();
+    if (!aspect || !cur.length) return;
+    const snapped = cur.map((r) => this.snapToAspect(r, aspect));
+    if (!this.regionsChanged(cur, snapped)) return;
+    this.regions.set(snapped);
+    this.snapping = true;
+    this.viewer?.setRegions(snapped);
+    this.snapping = false;
   }
 
   reset(): void {
@@ -504,6 +572,18 @@ export class SignPage {
     const prev = this.signature();
     if (prev && prev.url.startsWith('blob:')) URL.revokeObjectURL(prev.url);
     this.signature.set({ file, url });
+    // Decode the image to learn its aspect ratio, then constrain the placement
+    // boxes to it. Reset first so a stale aspect never applies to the new image.
+    this.sigAspect.set(null);
+    const img = new Image();
+    img.onload = () => {
+      if (this.signature()?.url !== url) return; // superseded by a newer signature
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        this.sigAspect.set(img.naturalWidth / img.naturalHeight);
+        this.resnapAll();
+      }
+    };
+    img.src = url;
   }
 
   submit(): void {

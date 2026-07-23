@@ -76,6 +76,8 @@ export class AppComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.navSub.unsubscribe();
     this.mql?.removeEventListener('change', this.onMqlChange);
+    // Never leave the page scroll-locked if the shell is torn down mid-open.
+    this.setBodyScrollLock(false);
   }
 
   toggleDrawer(): void {
@@ -84,6 +86,9 @@ export class AppComponent implements OnDestroy {
 
   openDrawer(): void {
     this.drawerOpen.set(true);
+    // Lock the underlying page so scrolling the drawer's nav can't chain
+    // through to the body once the nav hits its scroll edge.
+    this.setBodyScrollLock(true);
     // Move focus into the drawer once it has rendered/opened.
     setTimeout(() => this.focusFirstInDrawer());
   }
@@ -95,7 +100,19 @@ export class AppComponent implements OnDestroy {
   closeDrawer(returnFocus = true): void {
     if (!this.drawerOpen()) return;
     this.drawerOpen.set(false);
+    // Restore normal page scrolling.
+    this.setBodyScrollLock(false);
     if (returnFocus) this.header?.focusMenu();
+  }
+
+  /**
+   * Toggle a root class that freezes body scrolling while the mobile drawer is
+   * open, so a scroll gesture inside the nav never leaks to the page. Paired
+   * with `overscroll-behavior: contain` on the nav's own scroll region.
+   */
+  private setBodyScrollLock(locked: boolean): void {
+    if (typeof document === 'undefined') return;
+    document.documentElement.classList.toggle('drawer-scroll-lock', locked);
   }
 
   @HostListener('document:keydown', ['$event'])
