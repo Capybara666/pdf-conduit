@@ -19,13 +19,19 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <pdfbox.version>3.0.4</pdfbox.version>
+        <!-- Aligned with io.github.openhtmltopdf 1.1.60 (built against PDFBox 3.0.7) so the
+             HTML/Markdown renderer runs on the exact API it was compiled against; a safe patch
+             bump from 3.0.4 for every existing PDFBox-based operation. -->
+        <pdfbox.version>3.0.7</pdfbox.version>
         <javafx.version>21.0.6</javafx.version>
         <picocli.version>4.7.6</picocli.version>
         <junit.version>5.11.4</junit.version>
         <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
         <gson.version>2.11.0</gson.version>
         <commonmark.version>0.24.0</commonmark.version>
+        <!-- Pure-Java XHTML+CSS → PDF (via PDFBox 3), no external binary — high-fidelity md/html. -->
+        <openhtmltopdf.version>1.1.60</openhtmltopdf.version>
+        <jsoup.version>1.18.1</jsoup.version>
     </properties>
 
     <dependencyManagement>
@@ -33,6 +39,12 @@
             <dependency>
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <!-- Kept in lock-step with pdfbox so openhtmltopdf's transitive xmpbox can't drift. -->
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>xmpbox</artifactId>
                 <version>${pdfbox.version}</version>
             </dependency>
             <dependency>
@@ -77,6 +89,23 @@
                 <groupId>org.commonmark</groupId>
                 <artifactId>commonmark-ext-gfm-tables</artifactId>
                 <version>${commonmark.version}</version>
+            </dependency>
+            <!-- High-fidelity XHTML+CSS → PDF renderer (PDFBox 3 backend), for md/html to PDF -->
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-core</artifactId>
+                <version>${openhtmltopdf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-pdfbox</artifactId>
+                <version>${openhtmltopdf.version}</version>
+            </dependency>
+            <!-- Cleans arbitrary HTML into well-formed XHTML for the renderer -->
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>

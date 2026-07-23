@@ -28,7 +28,10 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  *   <li><b>PDF</b> — passed through unchanged.</li>
  *   <li><b>Images</b> (png/jpg/webp/tiff/bmp/gif) — rendered to a PDF with
  *       {@link ImageToPdfConverter}.</li>
- *   <li><b>Office &amp; text documents</b> (doc/docx/odt/rtf/txt/xls/xlsx/…)
+ *   <li><b>Markdown &amp; HTML</b> (md/markdown/html/htm) — rendered high-fidelity in-JVM by
+ *       {@link HtmlPdfRenderer} (OpenHTMLtoPDF, GitHub-style CSS, embedded Unicode font); no
+ *       external binary. Falls back to LibreOffice only if that renderer fails.</li>
+ *   <li><b>Other office &amp; text documents</b> (doc/docx/odt/rtf/txt/xls/xlsx/…)
  *       — converted with a headless LibreOffice, if one is installed.</li>
  * </ul>
  *
@@ -48,10 +51,12 @@ public final class DocumentConverter {
         "*.xls", "*.xlsx", "*.ods", "*.csv",
         "*.ppt", "*.pptx", "*.odp", "*.html", "*.htm");
 
-    // Markdown gets rendered to HTML before the LibreOffice HTML→PDF leg (LibreOffice would
-    // otherwise import raw .md as unformatted plain text). Kept classified as OFFICE so the same
-    // gating (pdfconduit.web.office.enabled) and concurrency guards still apply.
+    // Markdown & HTML get the high-fidelity, in-JVM OpenHTMLtoPDF renderer first (GitHub-style
+    // CSS, embedded Unicode font) — no soffice needed. If that renderer throws, they fall back to
+    // the LibreOffice leg so nothing regresses. Both stay classified as OFFICE so the same gating
+    // (pdfconduit.web.office.enabled) and concurrency guards still apply.
     private static final Set<String> MARKDOWN_EXTS = Set.of("md", "markdown");
+    private static final Set<String> HTML_EXTS = Set.of("html", "htm");
 
     /** Everything that {@link #ensurePdf} can turn into a PDF. */
     public static final List<String> ALL_GLOBS = concat(PDF_GLOBS, IMAGE_GLOBS, OFFICE_GLOBS);
@@ -145,6 +150,17 @@ public final class DocumentConverter {
 
     /** Office → PDF bytes via an isolated temp dir and a headless LibreOffice; the sole disk touch. */
     private static byte[] officeToPdfBytes(byte[] data, String filename) throws PdfOperationException {
+        // Markdown / HTML first take the high-fidelity, fully in-memory OpenHTMLtoPDF path (no
+        // soffice, no disk). Only if that renderer fails do we fall through to LibreOffice.
+        if (isMarkdown(filename)) {
+            try {
+                return HtmlPdfRenderer.markdownToPdf(new String(data, java.nio.charset.StandardCharsets.UTF_8));
+            } catch (PdfOperationException hifi) { /* fall back to LibreOffice below */ }
+        } else if (isHtml(filename)) {
+            try {
+                return HtmlPdfRenderer.htmlToPdf(new String(data, java.nio.charset.StandardCharsets.UTF_8));
+            } catch (PdfOperationException hifi) { /* fall back to LibreOffice below */ }
+        }
         Path dir;
         try {
             dir = Files.createTempDirectory("pdfconduit-mem-");
@@ -321,9 +337,14 @@ public final class DocumentConverter {
         return "pdf";
     }
 
-    /** True for a Markdown source (by extension); rendered to HTML before the soffice PDF leg. */
+    /** True for a Markdown source (by extension); rendered high-fidelity before any soffice leg. */
     static boolean isMarkdown(String filename) {
         return filename != null && MARKDOWN_EXTS.contains(extensionOf(Path.of(filename)));
+    }
+
+    /** True for a raw HTML source (by extension); rendered high-fidelity before any soffice leg. */
+    static boolean isHtml(String filename) {
+        return filename != null && HTML_EXTS.contains(extensionOf(Path.of(filename)));
     }
 
     /**
@@ -333,7 +354,28 @@ public final class DocumentConverter {
      * office/text type goes straight to LibreOffice.
      */
     private static void convertOfficeSource(Path source, Path target) throws PdfOperationException {
-        if (!isMarkdown(source.getFileName().toString())) {
+        String name = source.getFileName().toString();
+
+        // High-fidelity, in-JVM OpenHTMLtoPDF path for Markdown/HTML (no soffice). On failure we
+        // fall through to the LibreOffice legs below so nothing regresses.
+        if (isMarkdown(name) || isHtml(name)) {
+            try {
+                String text = Files.readString(source);
+                byte[] pdf = isMarkdown(name)
+                    ? HtmlPdfRenderer.markdownToPdf(text)
+                    : HtmlPdfRenderer.htmlToPdf(text);
+                OutputPaths.ensureParentDir(target);
+                Files.write(target, pdf);
+                return;
+            } catch (PdfOperationException hifi) {
+                // fall through to LibreOffice
+            } catch (IOException e) {
+                throw new PdfOperationException(
+                    "Document conversion failed for " + source.getFileName() + ".", e);
+            }
+        }
+
+        if (!isMarkdown(name)) {
             convertWithLibreOffice(source, target);
             return;
         }
