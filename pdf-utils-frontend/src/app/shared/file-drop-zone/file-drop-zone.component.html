@@ -81,19 +81,38 @@
 
 @if (showList && _files().length) {
   <ul class="file-list">
-    @for (file of _files(); track $index) {
-      <li class="file">
+    @for (file of _files(); track file; let i = $index) {
+      @if (dragIndex() !== null && dropIndex() === i) {
+        <li class="drop-marker" aria-hidden="true"></li>
+      }
+      <li
+        class="file"
+        [class.dragging]="dragIndex() === i"
+        [attr.draggable]="_files().length > 1"
+        (dragstart)="onRowDragStart($event, i)"
+        (dragover)="onRowDragOver($event, i)"
+        (drop)="onRowDrop($event)"
+        (dragend)="onRowDragEnd()"
+      >
+        @if (_files().length > 1) {
+          <span class="grip" aria-hidden="true">⠿</span>
+        } @else {
+          <span class="grip grip-empty" aria-hidden="true"></span>
+        }
         <span class="name" [title]="file.name">{{ file.name }}</span>
         <span class="size">{{ formatBytes(file.size) }}</span>
         <button
           type="button"
           class="remove"
-          (click)="remove($index)"
+          (click)="remove(i)"
           [attr.aria-label]="'common.removeFile' | transloco: { name: file.name }"
         >
           ✕
         </button>
       </li>
+    }
+    @if (dragIndex() !== null && dropIndex() === _files().length) {
+      <li class="drop-marker" aria-hidden="true"></li>
     }
   </ul>
 }

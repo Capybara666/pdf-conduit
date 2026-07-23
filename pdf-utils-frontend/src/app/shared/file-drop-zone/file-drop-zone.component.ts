@@ -79,6 +79,10 @@ export class FileDropZoneComponent implements OnInit, OnDestroy {
   readonly dragging = signal(false);
   readonly rejections = signal<FileRejection[]>([]);
   readonly pageDragging = signal(false);
+  /** Index of the list row being dragged for reorder (drives the source fade). */
+  readonly dragIndex = signal<number | null>(null);
+  /** Insertion index (0..files.length) where a reorder drop would land, or null. */
+  readonly dropIndex = signal<number | null>(null);
 
   protected readonly formatBytes = formatBytes;
   private readonly isBrowser: boolean;
@@ -168,6 +172,68 @@ export class FileDropZoneComponent implements OnInit, OnDestroy {
   clear(): void {
     this._files.set([]);
     this.filesChange.emit([]);
+  }
+
+  // --- Drag-to-reorder for the built-in file list (showList) -----------------
+
+  onRowDragStart(event: DragEvent, index: number): void {
+    this.dragIndex.set(index);
+    this.dropIndex.set(index);
+    // Mark this as a move (not a copy) so the cursor/UX reads as reorder, and
+    // populate dataTransfer so Firefox actually starts the drag.
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', String(index));
+    }
+  }
+
+  /**
+   * Move the insertion marker (not the list) while dragging: the cursor in the
+   * top half of a row inserts BEFORE it, the bottom half AFTER it — so the
+   * marker can also land above the first row (index 0) and below the last
+   * (index N). The list is only committed on drop.
+   */
+  onRowDragOver(event: DragEvent, over: number): void {
+    if (this.dragIndex() === null) {
+      return;
+    }
+    // Must preventDefault on every dragover so this row is a valid drop target
+    // and the subsequent `drop` fires (a missing one is why drops silently die).
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    const el = event.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const leading = event.clientY < rect.top + rect.height / 2;
+    this.dropIndex.set(leading ? over : over + 1);
+  }
+
+  onRowDrop(event: DragEvent): void {
+    if (this.dragIndex() === null) {
+      return;
+    }
+    event.preventDefault();
+    const from = this.dragIndex();
+    const to = this.dropIndex();
+    if (from !== null && to !== null) {
+      const next = this._files().slice();
+      const [moved] = next.splice(from, 1);
+      // Same-list off-by-one: removing `from` shifts everything after it down by
+      // one, so a marker at `to` past the source maps to `to - 1`.
+      const target = to > from ? to - 1 : to;
+      if (target !== from) {
+        next.splice(target, 0, moved);
+        this._files.set(next);
+        this.filesChange.emit(next);
+      }
+    }
+    this.onRowDragEnd();
+  }
+
+  onRowDragEnd(): void {
+    this.dragIndex.set(null);
+    this.dropIndex.set(null);
   }
 
   /** Dismiss the inline rejection message. */
