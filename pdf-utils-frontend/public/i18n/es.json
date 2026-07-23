@@ -398,7 +398,8 @@
       "dpiEbook": "Libro electrónico (150 PPP)",
       "dpiPrint": "Impresión (300 PPP)",
       "grayscale": "Convertir imágenes a escala de grises",
-      "grayscaleHelp": "Recodifica las imágenes sin color para archivos más pequeños."
+      "grayscaleHelp": "Recodifica las imágenes sin color para archivos más pequeños.",
+      "floorNotice": "El tamaño más pequeño posible para este archivo es de aproximadamente {{floor}} — no se puede alcanzar tu objetivo de {{target}}. En su lugar se guardó la versión más pequeña."
     },
     "rotate": {
       "title": "Rotar",

@@ -398,7 +398,8 @@
       "dpiEbook": "E-book (150 DPI)",
       "dpiPrint": "Afdruk (300 DPI)",
       "grayscale": "Afbeeldingen naar grijstinten converteren",
-      "grayscaleHelp": "Hercodeer afbeeldingen zonder kleur voor kleinere bestanden."
+      "grayscaleHelp": "Hercodeer afbeeldingen zonder kleur voor kleinere bestanden.",
+      "floorNotice": "De kleinst haalbare grootte voor dit bestand is ongeveer {{floor}} — je doel van {{target}} kan niet worden bereikt. In plaats daarvan is de kleinste versie opgeslagen."
     },
     "rotate": {
       "title": "Draaien",

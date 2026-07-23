@@ -398,7 +398,8 @@
       "dpiEbook": "E-Book (150 DPI)",
       "dpiPrint": "Druck (300 DPI)",
       "grayscale": "Bilder in Graustufen umwandeln",
-      "grayscaleHelp": "Bilder ohne Farbe neu kodieren für kleinere Dateien."
+      "grayscaleHelp": "Bilder ohne Farbe neu kodieren für kleinere Dateien.",
+      "floorNotice": "Die kleinstmögliche Größe für diese Datei beträgt etwa {{floor}} — Ihr Ziel von {{target}} kann nicht erreicht werden. Stattdessen wurde die kleinste Version gespeichert."
     },
     "rotate": {
       "title": "Drehen",

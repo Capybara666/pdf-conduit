@@ -53,6 +53,10 @@ export interface CompressionInfo {
   originalBytes?: number;
   resultBytes?: number;
   targetReached?: boolean;
+  /** Whether the requested target size was achievable (mirrors `targetReached`). */
+  targetFeasible?: boolean;
+  /** Approximate smallest size reachable for this file, in bytes. */
+  estimatedFloorBytes?: number;
 }
 
 /** Document metadata from `POST /api/metadata/read`. Mirrors backend `MetadataDto`. */

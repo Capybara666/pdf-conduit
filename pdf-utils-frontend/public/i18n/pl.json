@@ -398,7 +398,8 @@
       "dpiEbook": "E-book (150 DPI)",
       "dpiPrint": "Druk (300 DPI)",
       "grayscale": "Konwertuj obrazy na skalę szarości",
-      "grayscaleHelp": "Ponownie koduje obrazy bez koloru, aby zmniejszyć pliki."
+      "grayscaleHelp": "Ponownie koduje obrazy bez koloru, aby zmniejszyć pliki.",
+      "floorNotice": "Najmniejszy możliwy rozmiar tego pliku to około {{floor}} — nie można osiągnąć celu {{target}}. Zamiast tego zapisano najmniejszą wersję."
     },
     "rotate": {
       "title": "Obróć",

@@ -239,6 +239,41 @@ public final class PdfCompressor {
         }
     }
 
+    /**
+     * A cheap, approximate lower bound on the size {@link #compressBytes} could plausibly reach for
+     * {@code input}, <em>without</em> walking the whole ladder. Runs only the lossless pass and —
+     * when the PDF has images — the single most aggressive rung, returning the smallest of those
+     * (never above the original). Rough by design: a signal for "is this target anywhere near
+     * achievable?", not an exact floor. Always {@code <= input.length}.
+     *
+     * <p>Lets a caller warn up front ("smallest achievable is ~X") without paying for a full
+     * compression run.
+     */
+    public static long estimateFloorBytes(byte[] input) throws PdfOperationException {
+        long originalSize = input.length;
+        try {
+            byte[] lossless;
+            boolean hasImages;
+            try (PDDocument doc = PdfLoader.load(input)) {
+                hasImages = hasImages(doc);
+                lossless = PdfLoader.toBytes(doc);
+            }
+            long floor = Math.min(lossless.length, originalSize);
+            if (!hasImages) {
+                return floor;
+            }
+            try (PDDocument compressed = PdfLoader.load(input)) {
+                Step strongest = STEPS.get(STEPS.size() - 1);
+                recompressImages(compressed, strongest.scale(), strongest.quality(),
+                    ImageMode.NONE, null, new DecodeCache());
+                floor = Math.min(floor, SizeEstimator.estimateBytes(compressed));
+            }
+            return floor;
+        } catch (IOException e) {
+            throw new PdfOperationException("Floor estimate failed: " + e.getMessage(), e);
+        }
+    }
+
     private static boolean hasImages(PDDocument doc) throws IOException {
         for (PDPage page : doc.getPages()) {
             PDResources resources = page.getResources();

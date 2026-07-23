@@ -120,6 +120,12 @@ function parseSizeToBytes(text: string): number | null {
         [result]="state.result()"
         (retry)="submit()"
       />
+
+      @if (floorNotice(); as n) {
+        <p class="floor-note card" role="note">
+          {{ 'pages.compress.floorNotice' | transloco: { floor: n.floor, target: n.target } }}
+        </p>
+      }
     </section>
   `,
   styles: [
@@ -153,6 +159,14 @@ function parseSizeToBytes(text: string): number | null {
         color: var(--danger);
         font-size: 0.8rem;
         white-space: nowrap;
+      }
+      .floor-note {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: var(--text-muted);
+        border-left: 3px solid var(--danger);
       }
     `,
   ],
@@ -191,6 +205,22 @@ export class CompressPage {
 
   protected readonly formatBytes = formatBytes;
 
+  /** The target that produced the current result (so the notice always matches it). */
+  private readonly lastTarget = signal<string | null>(null);
+
+  /**
+   * When the last run could not reach the target, a friendly heads-up: the smallest size that
+   * was actually achievable for this file, alongside the target the user asked for.
+   */
+  protected readonly floorNotice = computed(() => {
+    const c = this.state.result()?.compression;
+    if (!c || c.targetReached !== false) return null;
+    const floorBytes = c.estimatedFloorBytes ?? c.resultBytes;
+    const target = this.lastTarget();
+    if (floorBytes == null || !target) return null;
+    return { floor: formatBytes(floorBytes), target };
+  });
+
   constructor(private readonly api: ApiService) {}
 
   /** A compress target at/above the file's current size cannot shrink it. */
@@ -201,9 +231,11 @@ export class CompressPage {
 
   submit(): void {
     if (!this.files().length || this.targetSize.invalid) return;
+    const target = this.targetSize.value.trim();
+    this.lastTarget.set(target);
     const fd = new FormData();
     for (const f of this.files()) fd.append('files', f, f.name);
-    fd.append('targetSize', this.targetSize.value.trim());
+    fd.append('targetSize', target);
     if (this.dpi.value !== 'none') fd.append('dpi', this.dpi.value);
     if (this.grayscale.value) fd.append('grayscale', 'true');
     this.state.run(this.api.compress(fd));

@@ -398,7 +398,8 @@
       "dpiEbook": "E-kitap (150 DPI)",
       "dpiPrint": "Baskı (300 DPI)",
       "grayscale": "Görüntüleri gri tonlamaya dönüştür",
-      "grayscaleHelp": "Daha küçük dosyalar için görüntüleri renksiz yeniden kodlar."
+      "grayscaleHelp": "Daha küçük dosyalar için görüntüleri renksiz yeniden kodlar.",
+      "floorNotice": "Bu dosya için ulaşılabilecek en küçük boyut yaklaşık {{floor}} — hedefiniz olan {{target}} boyutuna ulaşılamıyor. Bunun yerine en küçük sürüm kaydedildi."
     },
     "rotate": {
       "title": "Döndür",

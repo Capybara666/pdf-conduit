@@ -398,7 +398,8 @@
       "dpiEbook": "E-book (150 DPI)",
       "dpiPrint": "Impressão (300 DPI)",
       "grayscale": "Converter imagens em tons de cinza",
-      "grayscaleHelp": "Recodifica as imagens sem cor para arquivos menores."
+      "grayscaleHelp": "Recodifica as imagens sem cor para arquivos menores.",
+      "floorNotice": "O menor tamanho possível para este arquivo é cerca de {{floor}} — o seu alvo de {{target}} não pode ser alcançado. Em vez disso, foi salva a versão menor."
     },
     "rotate": {
       "title": "Rodar",

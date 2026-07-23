@@ -398,7 +398,8 @@
       "dpiEbook": "电子书(150 DPI)",
       "dpiPrint": "打印(300 DPI)",
       "grayscale": "将图像转换为灰度",
-      "grayscaleHelp": "以无颜色重新编码图像以缩小文件。"
+      "grayscaleHelp": "以无颜色重新编码图像以缩小文件。",
+      "floorNotice": "该文件可达到的最小大小约为 {{floor}} — 无法达到您设定的 {{target}} 目标。已改为保存最小的版本。"
     },
     "rotate": {
       "title": "旋转",

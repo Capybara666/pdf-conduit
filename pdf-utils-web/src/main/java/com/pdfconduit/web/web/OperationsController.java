@@ -130,6 +130,8 @@ public class OperationsController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, Responses.contentDisposition(name))
                 .header("X-Target-Reached", String.valueOf(r.targetReached()))
+                .header("X-Target-Feasible", String.valueOf(r.targetReached()))
+                .header("X-Estimated-Floor-Bytes", String.valueOf(r.resultBytes()))
                 .header("X-Original-Bytes", String.valueOf(r.originalBytes()))
                 .header("X-Result-Bytes", String.valueOf(r.resultBytes()))
                 .contentLength(r.bytes().length)

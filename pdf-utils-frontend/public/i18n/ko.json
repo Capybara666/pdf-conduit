@@ -398,7 +398,8 @@
       "dpiEbook": "전자책 (150 DPI)",
       "dpiPrint": "인쇄 (300 DPI)",
       "grayscale": "이미지를 흑백으로 변환",
-      "grayscaleHelp": "이미지를 색상 없이 다시 인코딩하여 파일을 줄입니다."
+      "grayscaleHelp": "이미지를 색상 없이 다시 인코딩하여 파일을 줄입니다.",
+      "floorNotice": "이 파일에서 도달 가능한 최소 크기는 약 {{floor}} 입니다 — 목표한 {{target}} 에 도달할 수 없습니다. 대신 가장 작은 버전이 저장되었습니다."
     },
     "rotate": {
       "title": "회전",

@@ -398,7 +398,8 @@
       "dpiEbook": "E-book (150 DPI)",
       "dpiPrint": "Print (300 DPI)",
       "grayscale": "Convert images to grayscale",
-      "grayscaleHelp": "Re-encode images without colour for smaller files."
+      "grayscaleHelp": "Re-encode images without colour for smaller files.",
+      "floorNotice": "Smallest achievable for this file is about {{floor}} — your target of {{target}} can't be reached. The smallest version was saved instead."
     },
     "rotate": {
       "title": "Rotate",

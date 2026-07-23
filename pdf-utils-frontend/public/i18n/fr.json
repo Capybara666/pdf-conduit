@@ -398,7 +398,8 @@
       "dpiEbook": "Liseuse (150 PPP)",
       "dpiPrint": "Impression (300 PPP)",
       "grayscale": "Convertir les images en niveaux de gris",
-      "grayscaleHelp": "Réencode les images sans couleur pour des fichiers plus petits."
+      "grayscaleHelp": "Réencode les images sans couleur pour des fichiers plus petits.",
+      "floorNotice": "La plus petite taille possible pour ce fichier est d'environ {{floor}} — votre cible de {{target}} ne peut pas être atteinte. La version la plus petite a été enregistrée à la place."
     },
     "rotate": {
       "title": "Pivoter",

@@ -398,7 +398,8 @@
       "dpiEbook": "E-book (150 DPI)",
       "dpiPrint": "Stampa (300 DPI)",
       "grayscale": "Converti le immagini in scala di grigi",
-      "grayscaleHelp": "Ricodifica le immagini senza colore per file più piccoli."
+      "grayscaleHelp": "Ricodifica le immagini senza colore per file più piccoli.",
+      "floorNotice": "La dimensione più piccola ottenibile per questo file è circa {{floor}} — l'obiettivo di {{target}} non può essere raggiunto. È stata salvata invece la versione più piccola."
     },
     "rotate": {
       "title": "Ruota",

@@ -143,6 +143,36 @@ class InMemoryOperationsTest {
         assertEquals(3, pageCount(r.bytes()));
     }
 
+    @Test
+    void estimateFloorBytesIsRoughLowerBoundNeverAboveOriginal() throws Exception {
+        // Text-only PDF: floor is a valid bound (never larger than the original).
+        byte[] textPdf = pdfBytes(3);
+        long textFloor = PdfCompressor.estimateFloorBytes(textPdf);
+        assertTrue(textFloor <= textPdf.length, "floor must never exceed the original");
+
+        // Image-heavy PDF: the aggressive rung must estimate a floor genuinely below the original.
+        byte[] imagePdf = ImageToPdfConverter.executeBytes(
+            List.of(noisyPngBytes(800, 800)), PageSize.A4);
+        long imageFloor = PdfCompressor.estimateFloorBytes(imagePdf);
+        assertTrue(imageFloor <= imagePdf.length, "floor must never exceed the original");
+        assertTrue(imageFloor < imagePdf.length,
+            "an image-heavy PDF must have an achievable floor below its original size");
+    }
+
+    /** A random-noise image (does not compress trivially), so the source PDF is genuinely large. */
+    private static byte[] noisyPngBytes(int w, int h) throws IOException {
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        java.util.Random rnd = new java.util.Random(42);
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                img.setRGB(x, y, rnd.nextInt(0xFFFFFF));
+            }
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(img, "png", out);
+        return out.toByteArray();
+    }
+
     // --- protect + unlock round trip -------------------------------------
 
     @Test
