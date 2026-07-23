@@ -867,7 +867,7 @@
       "CONTACT": "联系方式",
       "FINANCIAL": "金融数据",
       "NATIONAL_ID": "国家身份",
-      "ONLINE_IDENTIFIER": "在线标识符",
+      "ONLINE_IDENTIFIER": "在线标识符 (IP / URL)",
       "SPECIAL_CATEGORY": "特殊类别"
     },
     "type": {

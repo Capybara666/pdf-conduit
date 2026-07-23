@@ -867,7 +867,7 @@
       "CONTACT": "Контакт",
       "FINANCIAL": "Финансовые данные",
       "NATIONAL_ID": "Национальный идентификатор",
-      "ONLINE_IDENTIFIER": "Онлайн-идентификатор",
+      "ONLINE_IDENTIFIER": "Онлайн-идентификатор (IP / URL)",
       "SPECIAL_CATEGORY": "Особая категория"
     },
     "type": {

@@ -867,7 +867,7 @@
       "CONTACT": "Contatto",
       "FINANCIAL": "Dati finanziari",
       "NATIONAL_ID": "Identificazione nazionale",
-      "ONLINE_IDENTIFIER": "Identificatore online",
+      "ONLINE_IDENTIFIER": "Identificatore online (IP / URL)",
       "SPECIAL_CATEGORY": "Categoria particolare"
     },
     "type": {

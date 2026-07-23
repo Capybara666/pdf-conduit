@@ -12,14 +12,18 @@ import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zon
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
-/** The six GDPR categories, ordered high-risk first; `high` drives the emphasis styling. */
+/**
+ * The GDPR categories the scanner can actually populate, ordered high-risk first;
+ * `high` drives the emphasis styling. The core `IDENTIFIER` category is intentionally
+ * omitted: it is reserved for future detectors and has none today, so no finding ever
+ * carries it — showing it would be a permanently-empty, misleading card.
+ */
 const CATEGORY_ORDER: readonly { key: string; high: boolean }[] = [
   { key: 'FINANCIAL', high: true },
   { key: 'NATIONAL_ID', high: true },
   { key: 'SPECIAL_CATEGORY', high: true },
   { key: 'CONTACT', high: false },
   { key: 'ONLINE_IDENTIFIER', high: false },
-  { key: 'IDENTIFIER', high: false },
 ];
 
 /** A category card: enum key, distinct-finding count, and whether it's a higher-risk category. */
@@ -245,7 +249,7 @@ export class GdprScanPage {
     this.loading.set(false);
   }
 
-  /** Map a `{category: count}` object to the fixed six-category view list, high-risk first. */
+  /** Map a `{category: count}` object to the fixed category view list, high-risk first. */
   private toCategoryViews(counts: Record<string, number>): CategoryView[] {
     return CATEGORY_ORDER.map((c) => ({ key: c.key, high: c.high, count: counts[c.key] ?? 0 }));
   }

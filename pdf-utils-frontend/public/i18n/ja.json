@@ -867,7 +867,7 @@
       "CONTACT": "連絡先",
       "FINANCIAL": "金融データ",
       "NATIONAL_ID": "国民ID",
-      "ONLINE_IDENTIFIER": "オンライン識別子",
+      "ONLINE_IDENTIFIER": "オンライン識別子 (IP / URL)",
       "SPECIAL_CATEGORY": "特別カテゴリー"
     },
     "type": {

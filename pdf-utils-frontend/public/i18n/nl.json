@@ -867,7 +867,7 @@
       "CONTACT": "Contact",
       "FINANCIAL": "Financiële gegevens",
       "NATIONAL_ID": "Nationaal ID",
-      "ONLINE_IDENTIFIER": "Online-identificator",
+      "ONLINE_IDENTIFIER": "Online-identificator (IP / URL)",
       "SPECIAL_CATEGORY": "Bijzondere categorie"
     },
     "type": {

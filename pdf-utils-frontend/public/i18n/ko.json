@@ -867,7 +867,7 @@
       "CONTACT": "연락처",
       "FINANCIAL": "금융 정보",
       "NATIONAL_ID": "국가 ID",
-      "ONLINE_IDENTIFIER": "온라인 식별자",
+      "ONLINE_IDENTIFIER": "온라인 식별자 (IP / URL)",
       "SPECIAL_CATEGORY": "특별 범주"
     },
     "type": {

@@ -867,7 +867,7 @@
       "CONTACT": "İletişim",
       "FINANCIAL": "Finansal veri",
       "NATIONAL_ID": "Ulusal kimlik",
-      "ONLINE_IDENTIFIER": "Çevrimiçi tanımlayıcı",
+      "ONLINE_IDENTIFIER": "Çevrimiçi tanımlayıcı (IP / URL)",
       "SPECIAL_CATEGORY": "Özel kategori"
     },
     "type": {
