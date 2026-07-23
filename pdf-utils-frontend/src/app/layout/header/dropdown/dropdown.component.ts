@@ -8,7 +8,6 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
-  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -61,13 +60,13 @@ export interface DropdownOption {
       (keydown)="onTriggerKeydown($event)"
     >
       <span class="dd-icon" aria-hidden="true"><ng-content select="[ddIcon]"></ng-content></span>
-      @if (selectedSwatch(); as sw) {
+      @if (selectedSwatch; as sw) {
         <span class="dd-swatch" aria-hidden="true">
           <span class="dd-dot" [style.background]="sw[0]"></span>
           <span class="dd-dot dd-dot-accent" [style.background]="sw[1]"></span>
         </span>
       }
-      <span class="dd-label">{{ selectedLabel() }}</span>
+      <span class="dd-label">{{ selectedLabel }}</span>
       <svg class="dd-caret" viewBox="0 0 24 24" aria-hidden="true">
         <path
           d="M6 9l6 6 6-6"
@@ -161,6 +160,14 @@ export interface DropdownOption {
         display: inline-flex;
         align-items: center;
         color: var(--text-muted);
+      }
+
+      /* Collapse the icon slot entirely when no icon is projected (e.g. the
+         theme dropdown, whose swatch now conveys "theme"). Without this an
+         empty flex child would still contribute the trigger's 0.35rem gap,
+         leaving a dead space before the swatch. */
+      .dd-icon:empty {
+        display: none;
       }
 
       .dd-icon ::ng-deep svg {
@@ -298,17 +305,30 @@ export class HeaderDropdownComponent {
   readonly open = signal(false);
   readonly activeIndex = signal(-1);
 
-  /** Label of the selected option (falls back to the raw value). */
-  readonly selectedLabel = computed(() => {
+  /**
+   * Label of the selected option (falls back to the raw value).
+   *
+   * A plain getter — NOT a `computed()` — so it re-evaluates on every change
+   * detection pass and therefore tracks the `value`/`options` @Input properties
+   * (which are plain properties, not signals, and so are invisible to
+   * `computed`). This mirrors how the option rows read `opt.label` directly.
+   */
+  get selectedLabel(): string {
     const v = this.value;
     return this.options.find((o) => o.value === v)?.label ?? v ?? '';
-  });
+  }
 
-  /** Two-tone swatch of the selected option, if it carries one (else null). */
-  readonly selectedSwatch = computed<[string, string] | null>(() => {
+  /**
+   * Two-tone swatch of the selected option, if it carries one (else null).
+   *
+   * Also a plain getter (see {@link selectedLabel}) so the trigger swatch
+   * reactively reflects the CURRENT `value` — a `computed()` here would stay
+   * pinned to the first-rendered theme because @Input changes don't notify it.
+   */
+  get selectedSwatch(): [string, string] | null {
     const v = this.value;
     return this.options.find((o) => o.value === v)?.swatch ?? null;
-  });
+  }
 
   toggle(): void {
     this.open() ? this.close() : this.openMenu();

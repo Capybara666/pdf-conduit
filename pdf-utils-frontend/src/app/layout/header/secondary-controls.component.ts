@@ -40,26 +40,18 @@ import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.com
       </svg>
     </app-header-dropdown>
 
+    <!--
+      Theme dropdown: no leading icon — the two-tone colour swatch (rendered by
+      the dropdown for each themed option and on the trigger) already conveys
+      "theme", so a separate palette glyph was redundant. The empty icon slot
+      collapses via .dd-icon:empty, so the trigger stays tight to the swatch.
+    -->
     <app-header-dropdown
       [options]="themeOptions()"
       [value]="themeService.theme()"
       [ariaLabel]="'theme.label' | transloco"
       (valueChange)="onThemeChange($event)"
-    >
-      <!-- palette / swatch icon -->
-      <svg ddIcon viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M12 3a9 9 0 1 0 0 18 2 2 0 0 0 2-2 2 2 0 0 1 2-2h1a4 4 0 0 0 4-4 9 9 0 0 0-9-8z"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linejoin="round"
-        />
-        <circle cx="8" cy="10" r="1" fill="currentColor" />
-        <circle cx="12" cy="7.5" r="1" fill="currentColor" />
-        <circle cx="16" cy="10" r="1" fill="currentColor" />
-      </svg>
-    </app-header-dropdown>
+    ></app-header-dropdown>
   `,
   styles: [
     `
