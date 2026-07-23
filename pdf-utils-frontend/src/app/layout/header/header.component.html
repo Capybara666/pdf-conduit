@@ -55,6 +55,11 @@
   </a>
 
   <div class="header-actions">
+    <span class="health" [attr.data-state]="health()" [title]="healthKey | transloco">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="health-text">{{ healthKey | transloco }}</span>
+    </span>
+
     @if (quota.remaining() !== null) {
       <a
         class="quota"
@@ -69,11 +74,6 @@
         <span class="quota-text">{{ 'header.quotaFreeLeft' | transloco }}</span>
       </a>
     }
-
-    <span class="health" [attr.data-state]="health()" [title]="healthKey | transloco">
-      <span class="dot" aria-hidden="true"></span>
-      <span class="health-text">{{ healthKey | transloco }}</span>
-    </span>
 
     <a
       class="help-link"
