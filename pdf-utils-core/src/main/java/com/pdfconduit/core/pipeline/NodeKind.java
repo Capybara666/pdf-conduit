@@ -20,6 +20,8 @@ public enum NodeKind {
     NUP("N-up", OperationType.NUP),
     PAGE_MARKS("Page Marks", OperationType.PAGE_MARKS),
     OCR("OCR", OperationType.OCR),
+    // Scan the PDF for GDPR/PII values and permanently redact every detected region in one step.
+    GDPR_REDACT("GDPR Redact", OperationType.GDPR_REDACT),
     // Terminal exports — output is not a PDF, so they cannot feed downstream nodes.
     TO_IMAGES("To Images", OperationType.PDF_TO_IMAGES),
     TO_TEXT("To Text", OperationType.PDF_TO_TEXT);

@@ -83,6 +83,9 @@ class NodeInspector extends FlowPane {
             case TO_IMAGES -> buildToImages(node);
             case TO_TEXT -> buildToText(node);
             case OCR -> buildOcr(node);
+            // No parameters — the node scans for PII and redacts every detected value.
+            // TODO(i18n): add key pipeline.gdprredact.hint.
+            case GDPR_REDACT -> getChildren().add(hint("Scans for personal data and permanently redacts every detected value."));
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
         }
 

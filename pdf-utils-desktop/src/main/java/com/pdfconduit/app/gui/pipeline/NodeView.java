@@ -190,6 +190,8 @@ class NodeView extends HBox {
             case TO_TEXT -> "." + node.textFormat.extension();
             case OCR -> (node.ocrLanguages == null || node.ocrLanguages.isBlank()
                 ? "eng" : node.ocrLanguages) + "  ·  " + node.ocrDpi + " DPI";
+            // TODO(i18n): add key pipeline.summary.gdprredact ("auto-redact detected PII").
+            case GDPR_REDACT -> "auto-redact detected PII";
         });
     }
 

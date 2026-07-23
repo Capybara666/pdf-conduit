@@ -22,6 +22,7 @@ public enum OperationType {
     NUP           ("nup",        "_nup",         Cardinality.MAP,    false),
     SIGN          ("sign",       "_signed",      Cardinality.MAP,    false),
     OCR           ("ocr",        "_ocr",         Cardinality.MAP,    false),
+    GDPR_REDACT   ("gdpr-redact","_gdpr_redacted",Cardinality.MAP,   false),
     // Terminal exports: output is not a PDF. They appear as terminal-only pipeline nodes.
     PDF_TO_IMAGES ("to-images",  "_images",      Cardinality.MAP,    true),
     PDF_TO_TEXT   ("to-text",    "_text",        Cardinality.MAP,    false);

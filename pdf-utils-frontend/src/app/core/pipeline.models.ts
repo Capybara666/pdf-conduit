@@ -28,6 +28,7 @@ export type NodeKindName =
   | 'NUP'
   | 'PAGE_MARKS'
   | 'CROP'
+  | 'GDPR_REDACT'
   | 'TO_IMAGES'
   | 'TO_TEXT';
 

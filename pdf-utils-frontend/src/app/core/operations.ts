@@ -133,6 +133,12 @@ export const OP_ICONS: Record<string, string> = {
       '<path d="M7.5 12.4 H14.5 V14.8 H7.5 Z" fill="currentColor"/>' +
       '<path d="M8 17.4 H11.5"/>',
   ),
+  // GDPR scan (shield) + a redaction bar struck through it: scan for PII, then black it out.
+  'gdpr-redact': g(
+    '<path d="M12 3 L19 6 V11 C19 15.5 16 18.6 12 20.2 C8 18.6 5 15.5 5 11 V6 Z"/>' +
+      '<path d="M8 10.4 H16"/>' +
+      '<path d="M7.6 12.6 H16.4 V15 H7.6 Z" fill="currentColor"/>',
+  ),
   sign: g(
     '<path d="M15 4.2 L19.8 9 L10.6 18.2 L5.8 18.4 L6 13.6 Z" fill="currentColor" stroke="none" opacity=".18"/>' +
       '<path d="M15 4.2 L19.8 9 L10.6 18.2 L5.8 18.4 L6 13.6 Z"/>' +

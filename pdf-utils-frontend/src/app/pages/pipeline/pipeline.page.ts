@@ -30,6 +30,8 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
   { name: 'WATERMARK', label: 'Watermark', isSource: false, isReduce: false, isExport: false },
   { name: 'NUP', label: 'N-up', isSource: false, isReduce: false, isExport: false },
   { name: 'PAGE_MARKS', label: 'Page Marks', isSource: false, isReduce: false, isExport: false },
+  // TODO(i18n): op.gdpr-redact.label — palette/inspector label for the GDPR-scan→redact node.
+  { name: 'GDPR_REDACT', label: 'GDPR Redact', isSource: false, isReduce: false, isExport: false },
   { name: 'TO_IMAGES', label: 'To Images', isSource: false, isReduce: false, isExport: true },
   { name: 'TO_TEXT', label: 'To Text', isSource: false, isReduce: false, isExport: true },
 ];
@@ -49,6 +51,7 @@ const KIND_TO_OP: Record<string, string> = {
   WATERMARK: 'watermark',
   NUP: 'nup',
   PAGE_MARKS: 'page-marks',
+  GDPR_REDACT: 'gdpr-redact',
   TO_IMAGES: 'to-images',
   TO_TEXT: 'to-text',
 };

@@ -2,6 +2,10 @@ package com.pdfconduit.core.pipeline;
 
 import com.pdfconduit.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import com.pdfconduit.core.analyze.PiiFinding;
+import com.pdfconduit.core.analyze.PiiRegion;
+import com.pdfconduit.core.analyze.PiiScanResult;
+import com.pdfconduit.core.analyze.PiiScanner;
 import com.pdfconduit.core.pipeline.Document.DocType;
 import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.exception.PdfOperationException;
@@ -15,6 +19,7 @@ import com.pdfconduit.core.operations.PdfNupImposer;
 import com.pdfconduit.core.operations.PdfPageMarker;
 import com.pdfconduit.core.operations.PdfOcr;
 import com.pdfconduit.core.operations.PdfProtector;
+import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.core.operations.PdfRotator;
 import com.pdfconduit.core.operations.PdfSplitter;
 import com.pdfconduit.core.operations.PdfTextExporter;
@@ -266,6 +271,8 @@ public final class PipelineExecutor {
                         (float) n.pmFontSize, (float) n.pmMargin, n.pmSkipFirst,
                         n.pmStartNumber, n.pmPrefix, out));
                     case OCR -> PdfOcr.execute(new OcrOptions(src, n.ocrLanguages, n.ocrDpi, out));
+                    case GDPR_REDACT -> PdfRedactor.execute(
+                        new RedactOptions(src, redactRegions(PiiScanner.scan(src)), 0, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
@@ -363,6 +370,22 @@ public final class PipelineExecutor {
 
     private static List<Integer> order(String expr, Path pdf) throws Exception {
         return PageOrderParser.parse(expr, pageCount(pdf));
+    }
+
+    /**
+     * Collects the on-page redaction rectangles from a PII scan — one per occurrence of every
+     * concrete value finding. The scanner's regions already live in the redactor's coordinate
+     * space, so this is a coordinate-compatible hand-off (mirrors the web /auto-redact endpoint).
+     * Special-category keyword flags carry no regions, so nothing is blacked out for them.
+     */
+    private static List<RedactRegion> redactRegions(PiiScanResult scan) {
+        List<RedactRegion> regions = new ArrayList<>();
+        for (PiiFinding f : scan.findings()) {
+            for (PiiRegion r : f.regions()) {
+                regions.add(new RedactRegion(r.page(), r.x(), r.y(), r.width(), r.height()));
+            }
+        }
+        return regions;
     }
 
     /** Blank → null (a metadata field left empty means "leave unchanged"). */
@@ -580,6 +603,9 @@ public final class PipelineExecutor {
                     (float) n.pmFontSize, (float) n.pmMargin, n.pmSkipFirst,
                     n.pmStartNumber, n.pmPrefix);
                 case OCR       -> PdfOcr.executeBytes(pdf, n.ocrLanguages, n.ocrDpi);
+                // Scan for PII and feed every detected value's region straight into the redactor —
+                // the same one-click scan→auto-redact hand-off exposed by the web /auto-redact endpoint.
+                case GDPR_REDACT -> PdfRedactor.executeBytes(pdf, redactRegions(PiiScanner.scanBytes(pdf)), 0);
                 default -> throw new PipelineException("Not a map node: " + n.kind);
             };
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));

@@ -144,6 +144,7 @@ public final class Icons {
             case CROP          -> CROP;
             case PAGE_MARKS    -> PAGE_MARKS;
             case OCR           -> OCR;
+            case GDPR_REDACT   -> REDACT;
             case TO_IMAGES     -> TO_IMAGES;
             case TO_TEXT       -> TO_TEXT;
         }, size);

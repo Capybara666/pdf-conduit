@@ -201,6 +201,11 @@ const KIND_TO_OP: Record<string, string> = {
             </select>
           </div>
         }
+        @case ('GDPR_REDACT') {
+          <!-- No parameters — scans for PII and permanently redacts every detected value. -->
+          <!-- TODO(i18n): pipeline.canvas.gdprRedactHint -->
+          <p class="hint-note">Scans for personal data and permanently redacts every detected value.</p>
+        }
         @default {
           <p class="hint-note">{{ 'pipeline.canvas.noParams' | transloco }}</p>
         }
