@@ -1,11 +1,12 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -25,6 +26,31 @@ type Position = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-ri
     FileDropZoneComponent,
     PageHeaderComponent,
     ResultPanelComponent,
+  ],
+  styles: [
+    `
+      /* Segmented controls sit inside a flex-column .field, whose default
+         align-items:stretch stretched the bordered .seg frame to the full
+         field width — leaving a wide empty gap to the right of the buttons.
+         Hug the content instead so the frame wraps the buttons tightly
+         (matching the type toggle above, which lives in the block-level card),
+         and keep the buttons from stretching absurdly on wide screens.
+         max-width:100% lets it clamp + wrap on narrow screens. */
+      .field > .seg {
+        align-self: flex-start;
+        max-width: 100%;
+      }
+
+      /* Opacity / Rotation / Scale sit together on one 3-across row (spanning
+         the full form-grid width), collapsing to fewer columns on narrow
+         screens. Color then falls onto its own row below. */
+      .opts-row {
+        grid-column: 1 / -1;
+        display: grid;
+        gap: 1.1rem 1.25rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+    `,
   ],
   template: `
     <section class="op-page">
@@ -81,17 +107,44 @@ type Position = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-ri
           </div>
 
           @if (layout() === 'single') {
-            <div class="field">
-              <label for="wm-position">{{ 'pages.watermark.position' | transloco }}</label>
-              <select id="wm-position" [value]="position()" (change)="position.set($any($event.target).value)">
-                <option value="center">{{ 'pages.watermark.positionCenter' | transloco }}</option>
-                <option value="top-left">{{ 'pages.watermark.positionTopLeft' | transloco }}</option>
-                <option value="top-right">{{ 'pages.watermark.positionTopRight' | transloco }}</option>
-                <option value="bottom-left">{{ 'pages.watermark.positionBottomLeft' | transloco }}</option>
-                <option value="bottom-right">{{ 'pages.watermark.positionBottomRight' | transloco }}</option>
-              </select>
+            <div class="field full">
+              <label>{{ 'pages.watermark.position' | transloco }}</label>
+              <div class="seg" role="group" [attr.aria-label]="'pages.watermark.position' | transloco" style="flex-wrap:wrap">
+                <button type="button" [class.active]="position() === 'center'" [attr.aria-pressed]="position() === 'center'" (click)="position.set('center')">{{ 'pages.watermark.positionCenter' | transloco }}</button>
+                <button type="button" [class.active]="position() === 'top-left'" [attr.aria-pressed]="position() === 'top-left'" (click)="position.set('top-left')">{{ 'pages.watermark.positionTopLeft' | transloco }}</button>
+                <button type="button" [class.active]="position() === 'top-right'" [attr.aria-pressed]="position() === 'top-right'" (click)="position.set('top-right')">{{ 'pages.watermark.positionTopRight' | transloco }}</button>
+                <button type="button" [class.active]="position() === 'bottom-left'" [attr.aria-pressed]="position() === 'bottom-left'" (click)="position.set('bottom-left')">{{ 'pages.watermark.positionBottomLeft' | transloco }}</button>
+                <button type="button" [class.active]="position() === 'bottom-right'" [attr.aria-pressed]="position() === 'bottom-right'" (click)="position.set('bottom-right')">{{ 'pages.watermark.positionBottomRight' | transloco }}</button>
+              </div>
             </div>
           }
+
+          <div class="opts-row">
+            <div class="field">
+              <label for="wm-opacity">{{ 'pages.watermark.opacity' | transloco }} <span class="hint-note">{{ opacity() | number: '1.2-2' }}</span></label>
+              <div class="range-row">
+                <input id="wm-opacity" type="range" min="0.05" max="1" step="0.05"
+                       [value]="opacity()" (input)="opacity.set(+$any($event.target).value)" />
+                <output>{{ opacity() | number: '1.2-2' }}</output>
+              </div>
+            </div>
+            <div class="field">
+              <label for="wm-rotation">{{ 'pages.watermark.rotation' | transloco }} <span class="hint-note">{{ rotation() }}°</span></label>
+              <div class="range-row">
+                <input id="wm-rotation" type="range" min="0" max="360" step="5"
+                       [value]="rotation()" (input)="rotation.set(+$any($event.target).value)" />
+                <output>{{ rotation() }}°</output>
+              </div>
+            </div>
+            <div class="field">
+              <label for="wm-scale">{{ 'pages.watermark.scale' | transloco }} <span class="hint-note">{{ scale() | number: '1.2-2' }}</span></label>
+              <div class="range-row">
+                <input id="wm-scale" type="range" min="0.1" max="2" step="0.05"
+                       [value]="scale()" (input)="scale.set(+$any($event.target).value)" />
+                <output>{{ scale() | number: '1.2-2' }}</output>
+              </div>
+            </div>
+          </div>
 
           @if (mode() === 'text') {
             <div class="field">
@@ -99,31 +152,6 @@ type Position = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-ri
               <input id="wm-color" type="color" [value]="color()" (input)="color.set($any($event.target).value)" />
             </div>
           }
-
-          <div class="field">
-            <label for="wm-opacity">{{ 'pages.watermark.opacity' | transloco }} <span class="hint-note">{{ opacity() | number: '1.2-2' }}</span></label>
-            <div class="range-row">
-              <input id="wm-opacity" type="range" min="0.05" max="1" step="0.05"
-                     [value]="opacity()" (input)="opacity.set(+$any($event.target).value)" />
-              <output>{{ opacity() | number: '1.2-2' }}</output>
-            </div>
-          </div>
-          <div class="field">
-            <label for="wm-rotation">{{ 'pages.watermark.rotation' | transloco }} <span class="hint-note">{{ rotation() }}°</span></label>
-            <div class="range-row">
-              <input id="wm-rotation" type="range" min="0" max="360" step="5"
-                     [value]="rotation()" (input)="rotation.set(+$any($event.target).value)" />
-              <output>{{ rotation() }}°</output>
-            </div>
-          </div>
-          <div class="field">
-            <label for="wm-scale">{{ 'pages.watermark.scale' | transloco }} <span class="hint-note">{{ scale() | number: '1.2-2' }}</span></label>
-            <div class="range-row">
-              <input id="wm-scale" type="range" min="0.1" max="2" step="0.05"
-                     [value]="scale()" (input)="scale.set(+$any($event.target).value)" />
-              <output>{{ scale() | number: '1.2-2' }}</output>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -134,6 +162,7 @@ type Position = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-ri
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
         @if (files().length && !hasContent()) {
           <span class="hint-note">{{ (mode() === 'text' ? 'pages.watermark.needText' : 'pages.watermark.needImage') | transloco }}</span>
         }
@@ -168,8 +197,27 @@ export class WatermarkPage {
     this.mode() === 'text' ? this.textValue().trim().length > 0 : this.image() !== null,
   );
   protected readonly canSubmit = computed(() => this.files().length > 0 && this.hasContent());
+  private readonly workState = inject(WorkStateService);
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('watermark', {
+      mode: this.mode,
+      text: this.text,
+      opacity: this.opacity,
+      rotation: this.rotation,
+      scale: this.scale,
+      layout: this.layout,
+      position: this.position,
+      color: this.color,
+    });
+  }
+
+  clear(): void {
+    this.workState.reset('watermark');
+    this.files.set([]);
+    this.image.set(null);
+    this.state.reset();
+  }
 
   onImageFiles(files: File[]): void {
     this.image.set(files[0] ?? null);

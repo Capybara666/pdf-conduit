@@ -4,6 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { RedactHandoffService } from '../../core/redact-handoff.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
@@ -21,7 +22,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
   standalone: true,
   imports: [DecimalPipe, TranslocoModule, FileDropZoneComponent, PageHeaderComponent, PdfViewerComponent, ResultPanelComponent],
   template: `
-    <section class="op-page wide">
+    <section class="op-page">
       <app-page-header
         [title]="'pages.redact.title' | transloco"
         [description]="'pages.redact.description' | transloco"
@@ -88,6 +89,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
               >
                 {{ 'pages.redact.submit' | transloco }}
               </button>
+              <button type="button" class="btn" (click)="clearWork()">{{ 'common.clear' | transloco }}</button>
             </div>
 
             <app-result-panel
@@ -195,6 +197,7 @@ export class RedactPage implements OnInit {
   protected readonly state = new OperationState();
 
   private readonly handoff = inject(RedactHandoffService);
+  private readonly workState = inject(WorkStateService);
 
   /**
    * Regions handed off from the GDPR scan, waiting to be drawn once the viewer
@@ -204,7 +207,15 @@ export class RedactPage implements OnInit {
    */
   private pendingRegions: RegionRect[] = [];
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('redact', { reOcr: this.reOcr });
+  }
+
+  /** Explicit Clear: drop the file, regions, options and result. */
+  clearWork(): void {
+    this.workState.reset('redact');
+    this.onFile(null);
+  }
 
   ngOnInit(): void {
     const h = this.handoff.consume();

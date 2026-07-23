@@ -6,6 +6,7 @@ import { ApiService } from '../../core/api.service';
 import { ApiError } from '../../core/api.models';
 import { errorCopyKeys } from '../../core/error-copy';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -90,6 +91,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -130,8 +132,10 @@ export class MetadataPage {
   });
   protected readonly state = new OperationState();
   private readonly transloco = inject(TranslocoService);
+  private readonly workState = inject(WorkStateService);
 
   constructor(private readonly api: ApiService) {
+    this.workState.persist('metadata', { strip: this.strip, form: this.form });
     // Strip-all ignores the individual fields, so disable them (greys out the
     // inputs and blocks typing) while it's on; re-enable when it's unchecked.
     // Reactive-forms disabling is the source of truth — the inputs get the
@@ -198,6 +202,15 @@ export class MetadataPage {
 
   private clearFields(): void {
     this.form.setValue({ title: '', author: '', subject: '', keywords: '' });
+  }
+
+  clear(): void {
+    this.workState.reset('metadata');
+    this.files.set([]);
+    this.strip.set(false);
+    this.clearFields();
+    this.readError.set(null);
+    this.state.reset();
   }
 
   submit(): void {

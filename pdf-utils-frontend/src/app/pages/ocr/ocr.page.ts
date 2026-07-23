@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -59,6 +60,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         >
           {{ 'pages.ocr.submit' | transloco }}
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -76,7 +78,17 @@ export class OcrPage {
   protected readonly languages = new FormControl('', { nonNullable: true });
   protected readonly state = new OperationState();
 
-  constructor(private readonly api: ApiService) {}
+  private readonly workState = inject(WorkStateService);
+
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('ocr', { languages: this.languages });
+  }
+
+  clear(): void {
+    this.workState.reset('ocr');
+    this.files.set([]);
+    this.state.reset();
+  }
 
   submit(): void {
     const file = this.files()[0];

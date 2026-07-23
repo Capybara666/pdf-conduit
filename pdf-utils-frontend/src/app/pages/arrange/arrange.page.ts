@@ -1,9 +1,10 @@
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, ViewChild, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
@@ -78,6 +79,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         >
           {{ 'pages.arrange.submit' | transloco }}
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -97,8 +99,17 @@ export class ArrangePage {
 
   /** The thumbnail grid; its reverse/reset emit `orderStringChange` → `order`. */
   @ViewChild(PageGridComponent) private grid?: PageGridComponent;
+  private readonly workState = inject(WorkStateService);
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('arrange', { order: this.order });
+  }
+
+  clear(): void {
+    this.workState.reset('arrange');
+    this.file.set(null);
+    this.state.reset();
+  }
 
   /** One-click reverse of the current page order (grid + text stay in sync). */
   reverse(): void {

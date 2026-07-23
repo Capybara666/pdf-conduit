@@ -1,10 +1,11 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -23,6 +24,19 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     FileDropZoneComponent,
     PageHeaderComponent,
     ResultPanelComponent,
+  ],
+  styles: [
+    `
+      .group-title {
+        display: block;
+        margin: 0 0 0.6rem;
+        padding: 0;
+        color: var(--text);
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+    `,
   ],
   template: `
     <section class="op-page">
@@ -43,35 +57,39 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       <div class="card">
         <p class="hint-note">{{ 'pages.pageMarks.tokensHelp' | transloco }}</p>
 
-        <fieldset class="form-grid" style="border:0;padding:0;margin:0">
-          <legend class="field-label">{{ 'pages.pageMarks.header' | transloco }}</legend>
-          <div class="field">
-            <label for="hl">{{ 'pages.pageMarks.left' | transloco }}</label>
-            <input id="hl" type="text" [formControl]="headerLeft" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
-          </div>
-          <div class="field">
-            <label for="hc">{{ 'pages.pageMarks.center' | transloco }}</label>
-            <input id="hc" type="text" [formControl]="headerCenter" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
-          </div>
-          <div class="field">
-            <label for="hr">{{ 'pages.pageMarks.right' | transloco }}</label>
-            <input id="hr" type="text" [formControl]="headerRight" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
+        <fieldset style="border:0;padding:0;margin:0;min-inline-size:0">
+          <legend class="group-title">{{ 'pages.pageMarks.header' | transloco }}</legend>
+          <div class="form-grid">
+            <div class="field">
+              <label for="hl">{{ 'pages.pageMarks.left' | transloco }}</label>
+              <input id="hl" type="text" [formControl]="headerLeft" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
+            </div>
+            <div class="field">
+              <label for="hc">{{ 'pages.pageMarks.center' | transloco }}</label>
+              <input id="hc" type="text" [formControl]="headerCenter" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
+            </div>
+            <div class="field">
+              <label for="hr">{{ 'pages.pageMarks.right' | transloco }}</label>
+              <input id="hr" type="text" [formControl]="headerRight" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
+            </div>
           </div>
         </fieldset>
 
-        <fieldset class="form-grid" style="border:0;padding:0;margin:1rem 0 0">
-          <legend class="field-label">{{ 'pages.pageMarks.footer' | transloco }}</legend>
-          <div class="field">
-            <label for="fl">{{ 'pages.pageMarks.left' | transloco }}</label>
-            <input id="fl" type="text" [formControl]="footerLeft" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
-          </div>
-          <div class="field">
-            <label for="fc">{{ 'pages.pageMarks.center' | transloco }}</label>
-            <input id="fc" type="text" [formControl]="footerCenter" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
-          </div>
-          <div class="field">
-            <label for="fr">{{ 'pages.pageMarks.right' | transloco }}</label>
-            <input id="fr" type="text" [formControl]="footerRight" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
+        <fieldset style="border:0;padding:0;margin:1rem 0 0;min-inline-size:0">
+          <legend class="group-title">{{ 'pages.pageMarks.footer' | transloco }}</legend>
+          <div class="form-grid">
+            <div class="field">
+              <label for="fl">{{ 'pages.pageMarks.left' | transloco }}</label>
+              <input id="fl" type="text" [formControl]="footerLeft" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
+            </div>
+            <div class="field">
+              <label for="fc">{{ 'pages.pageMarks.center' | transloco }}</label>
+              <input id="fc" type="text" [formControl]="footerCenter" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
+            </div>
+            <div class="field">
+              <label for="fr">{{ 'pages.pageMarks.right' | transloco }}</label>
+              <input id="fr" type="text" [formControl]="footerRight" [placeholder]="'pages.pageMarks.slotPlaceholder' | transloco" />
+            </div>
           </div>
         </fieldset>
 
@@ -108,6 +126,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
         @if (files().length && !hasContent()) {
           <span class="hint-note">{{ 'pages.pageMarks.needSlot' | transloco }}</span>
         }
@@ -137,6 +156,7 @@ export class PageMarksPage {
   protected readonly startNumber = signal(1);
   protected readonly skipFirst = signal(false);
   protected readonly state = new OperationState();
+  private readonly workState = inject(WorkStateService);
 
   /** Mirror each slot's value so `computed()` reacts to typing. */
   private readonly slots = [
@@ -151,7 +171,27 @@ export class PageMarksPage {
   protected readonly hasContent = computed(() => this.slots.some((s) => s().trim().length > 0));
   protected readonly canSubmit = computed(() => this.files().length > 0 && this.hasContent());
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('page-marks', {
+      headerLeft: this.headerLeft,
+      headerCenter: this.headerCenter,
+      headerRight: this.headerRight,
+      footerLeft: this.footerLeft,
+      footerCenter: this.footerCenter,
+      footerRight: this.footerRight,
+      prefix: this.prefix,
+      fontSize: this.fontSize,
+      margin: this.margin,
+      startNumber: this.startNumber,
+      skipFirst: this.skipFirst,
+    });
+  }
+
+  clear(): void {
+    this.workState.reset('page-marks');
+    this.files.set([]);
+    this.state.reset();
+  }
 
   submit(): void {
     if (!this.canSubmit()) return;

@@ -1,10 +1,11 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
@@ -116,6 +117,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -144,7 +146,24 @@ export class ToImagesPage {
   protected readonly pages = new FormControl('', { nonNullable: true });
   protected readonly state = new OperationState();
 
-  constructor(private readonly api: ApiService) {}
+  private readonly workState = inject(WorkStateService);
+
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('to-images', {
+      format: this.format,
+      quality: this.quality,
+      transparentBg: this.transparentBg,
+      grayscale: this.grayscale,
+      dpi: this.dpi,
+      pages: this.pages,
+    });
+  }
+
+  clear(): void {
+    this.workState.reset('to-images');
+    this.files.set([]);
+    this.state.reset();
+  }
 
   submit(): void {
     if (!this.files().length || this.dpi.invalid) {

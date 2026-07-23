@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
@@ -38,34 +39,29 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       <div class="card form-grid">
         <div class="field">
           <span class="field-label">{{ 'pages.rotate.angle' | transloco }}</span>
-          <div class="seg" role="group" [attr.aria-label]="'pages.rotate.angleAria' | transloco">
-            <button type="button" [class.active]="angle() === 90" [attr.aria-pressed]="angle() === 90" (click)="angle.set(90)"
-                    style="display:flex;flex-direction:column;align-items:center;gap:.35rem;min-width:6.5rem">
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="9.5" y="8.5" width="5" height="7" rx="1" />
-                <path d="M12 4.5 A 7.5 7.5 0 0 1 19.5 12" />
-                <path d="M17 9.5 L19.5 12 L22 9.5" />
+          <div class="rotate-picker">
+            <div class="rotate-picker__controls">
+              <div class="seg rotate-seg" role="group" [attr.aria-label]="'pages.rotate.angleAria' | transloco">
+                <button type="button" [class.active]="angle() === 90" [attr.aria-pressed]="angle() === 90" (click)="angle.set(90)">90°</button>
+                <button type="button" [class.active]="angle() === 180" [attr.aria-pressed]="angle() === 180" (click)="angle.set(180)">180°</button>
+                <button type="button" [class.active]="angle() === 270" [attr.aria-pressed]="angle() === 270" (click)="angle.set(270)">270°</button>
+              </div>
+              <p class="rotate-caption">{{ 'pages.rotate.dir' + angle() | transloco }}</p>
+            </div>
+            <div class="rotate-preview" aria-hidden="true">
+              <svg class="rotate-glyph" viewBox="0 0 100 120" width="72" height="86"
+                   fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                   [style.transform]="'rotate(' + angle() + 'deg)'">
+                <!-- 'top' indicator (an up-arrow above the page) -->
+                <path d="M50 4 V13 M45 9 L50 4 L55 9" stroke="var(--accent)" stroke-width="3.5" />
+                <!-- portrait page with a dog-eared top-right corner -->
+                <path d="M25 18 H62 L78 34 V104 H25 Z" />
+                <path d="M62 18 V34 H78" />
+                <!-- large asymmetric 'F' marker -->
+                <text x="50" y="82" text-anchor="middle" font-size="46" font-weight="800"
+                      fill="var(--accent)" stroke="none" font-family="inherit">F</text>
               </svg>
-              <span>{{ 'pages.rotate.dir90' | transloco }}</span>
-            </button>
-            <button type="button" [class.active]="angle() === 180" [attr.aria-pressed]="angle() === 180" (click)="angle.set(180)"
-                    style="display:flex;flex-direction:column;align-items:center;gap:.35rem;min-width:6.5rem">
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="9.5" y="8.5" width="5" height="7" rx="1" />
-                <path d="M12 4.5 A 7.5 7.5 0 0 1 12 19.5" />
-                <path d="M14.5 17 L12 19.5 L14.5 22" />
-              </svg>
-              <span>{{ 'pages.rotate.dir180' | transloco }}</span>
-            </button>
-            <button type="button" [class.active]="angle() === 270" [attr.aria-pressed]="angle() === 270" (click)="angle.set(270)"
-                    style="display:flex;flex-direction:column;align-items:center;gap:.35rem;min-width:6.5rem">
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="9.5" y="8.5" width="5" height="7" rx="1" />
-                <path d="M12 4.5 A 7.5 7.5 0 0 0 4.5 12" />
-                <path d="M2 9.5 L4.5 12 L7 9.5" />
-              </svg>
-              <span>{{ 'pages.rotate.dir270' | transloco }}</span>
-            </button>
+            </div>
           </div>
         </div>
         <div class="field">
@@ -96,6 +92,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -107,14 +104,70 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
     </section>
   `,
+  styles: [
+    `
+      .rotate-picker {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .rotate-picker__controls {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        flex: 1 1 12rem;
+        min-width: 11rem;
+      }
+      /* Force the three angle segments onto one equal-width row (never 2 + 1). */
+      .rotate-seg {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+      }
+      .rotate-seg button {
+        flex: 1 1 0;
+        text-align: center;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+      .rotate-caption {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      .rotate-preview {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 6rem;
+        height: 7rem;
+        color: var(--text);
+      }
+      .rotate-glyph {
+        transform-origin: 50% 50%;
+        transition: transform 0.4s var(--ease-standard, ease);
+      }
+    `,
+  ],
 })
 export class RotatePage {
   protected readonly files = signal<File[]>([]);
   protected readonly angle = signal(90);
   protected readonly pages = new FormControl('', { nonNullable: true });
   protected readonly state = new OperationState();
+  private readonly workState = inject(WorkStateService);
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('rotate', { angle: this.angle, pages: this.pages });
+  }
+
+  clear(): void {
+    this.workState.reset('rotate');
+    this.files.set([]);
+    this.state.reset();
+  }
 
   submit(): void {
     if (!this.files().length) return;

@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -77,6 +78,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -98,7 +100,23 @@ export class CropPage {
   protected readonly left = new FormControl(0, { nonNullable: true });
   protected readonly state = new OperationState();
 
-  constructor(private readonly api: ApiService) {}
+  private readonly workState = inject(WorkStateService);
+
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('crop', {
+      unit: this.unit,
+      top: this.top,
+      right: this.right,
+      bottom: this.bottom,
+      left: this.left,
+    });
+  }
+
+  clear(): void {
+    this.workState.reset('crop');
+    this.files.set([]);
+    this.state.reset();
+  }
 
   submit(): void {
     if (!this.files().length) return;

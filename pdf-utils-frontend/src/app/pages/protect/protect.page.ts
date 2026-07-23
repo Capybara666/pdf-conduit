@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -11,8 +11,10 @@ import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { PasswordFieldComponent } from '../../shared/password-field/password-field.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
 /** Add AES password encryption to one or more PDFs. */
@@ -24,6 +26,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     TranslocoModule,
     FileDropZoneComponent,
     PageHeaderComponent,
+    PasswordFieldComponent,
     ResultPanelComponent,
   ],
   template: `
@@ -45,23 +48,11 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       <form class="card form-grid" [formGroup]="form">
         <div class="field">
           <label for="pr-user">{{ 'pages.protect.userPassword' | transloco }}</label>
-          <div class="pw-row">
-            <input
-              id="pr-user"
-              [type]="showUser() ? 'text' : 'password'"
-              formControlName="userPassword"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="btn pw-toggle"
-              [attr.aria-pressed]="showUser()"
-              [attr.aria-label]="(showUser() ? 'common.hidePassword' : 'common.showPassword') | transloco"
-              (click)="showUser.set(!showUser())"
-            >
-              {{ (showUser() ? 'common.hide' : 'common.show') | transloco }}
-            </button>
-          </div>
+          <app-password-field
+            inputId="pr-user"
+            autocomplete="new-password"
+            formControlName="userPassword"
+          />
           <span class="help">{{ 'pages.protect.userPasswordHelp' | transloco }}</span>
           @if (form.controls.userPassword.invalid && form.controls.userPassword.touched) {
             <span class="err" aria-live="polite">{{ 'pages.protect.userPasswordError' | transloco }}</span>
@@ -69,11 +60,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         </div>
         <div class="field">
           <label for="pr-confirm">{{ 'pages.protect.confirmPassword' | transloco }}</label>
-          <input
-            id="pr-confirm"
-            [type]="showUser() ? 'text' : 'password'"
-            formControlName="confirmPassword"
+          <app-password-field
+            inputId="pr-confirm"
             autocomplete="new-password"
+            formControlName="confirmPassword"
           />
           @if (form.errors?.['mismatch'] && form.controls.confirmPassword.touched) {
             <span class="err" aria-live="polite">{{ 'pages.protect.confirmError' | transloco }}</span>
@@ -81,7 +71,11 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         </div>
         <div class="field">
           <label for="pr-owner">{{ 'pages.protect.ownerPassword' | transloco }}</label>
-          <input id="pr-owner" type="password" formControlName="ownerPassword" autocomplete="new-password" />
+          <app-password-field
+            inputId="pr-owner"
+            autocomplete="new-password"
+            formControlName="ownerPassword"
+          />
           <span class="help">{{ 'pages.protect.ownerPasswordHelp' | transloco }}</span>
         </div>
         <div class="field">
@@ -106,6 +100,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -117,27 +112,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       />
     </section>
   `,
-  styles: [
-    `
-      .pw-row {
-        display: flex;
-        gap: 0.4rem;
-        align-items: stretch;
-      }
-      .pw-row input {
-        flex: 1 1 auto;
-        min-width: 0;
-      }
-      .pw-toggle {
-        flex: 0 0 auto;
-        white-space: nowrap;
-      }
-    `,
-  ],
 })
 export class ProtectPage {
   protected readonly files = signal<File[]>([]);
-  protected readonly showUser = signal(false);
   protected readonly form = new FormGroup(
     {
       userPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -148,8 +125,19 @@ export class ProtectPage {
     { validators: [passwordsMatch] },
   );
   protected readonly state = new OperationState();
+  private readonly workState = inject(WorkStateService);
 
-  constructor(private readonly api: ApiService) {}
+  // Passwords are never persisted (privacy); only the non-sensitive key length.
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('protect', { keyLength: this.form.controls.keyLength });
+  }
+
+  clear(): void {
+    this.workState.reset('protect');
+    this.form.reset();
+    this.files.set([]);
+    this.state.reset();
+  }
 
   submit(): void {
     if (!this.files().length || this.form.invalid) {

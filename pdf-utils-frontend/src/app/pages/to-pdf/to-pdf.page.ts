@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -48,6 +49,7 @@ type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -65,7 +67,17 @@ export class ToPdfPage {
   protected readonly pageSize = signal<PageSize>('FIT');
   protected readonly state = new OperationState();
 
-  constructor(private readonly api: ApiService) {}
+  private readonly workState = inject(WorkStateService);
+
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('to-pdf', { pageSize: this.pageSize });
+  }
+
+  clear(): void {
+    this.workState.reset('to-pdf');
+    this.files.set([]);
+    this.state.reset();
+  }
 
   onSize(ev: Event): void {
     this.pageSize.set((ev.target as HTMLSelectElement).value as PageSize);

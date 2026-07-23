@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -6,6 +6,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ApiService } from '../../core/api.service';
 import { formatBytes } from '../../core/download.util';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -114,6 +115,7 @@ function parseSizeToBytes(text: string): number | null {
             · {{ 'common.fileCount' | transloco: { count: files().length } }}
           }
         </button>
+        <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
       <app-result-panel
@@ -224,7 +226,21 @@ export class CompressPage {
     return { floor: formatBytes(floorBytes), target };
   });
 
-  constructor(private readonly api: ApiService) {}
+  private readonly workState = inject(WorkStateService);
+
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('compress', {
+      targetSize: this.targetSize,
+      dpi: this.dpi,
+      grayscale: this.grayscale,
+    });
+  }
+
+  clear(): void {
+    this.workState.reset('compress');
+    this.files.set([]);
+    this.state.reset();
+  }
 
   /** A compress target at/above the file's current size cannot shrink it. */
   protected isNoop(size: number): boolean {

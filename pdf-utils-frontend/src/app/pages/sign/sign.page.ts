@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { PdfViewerComponent, RegionRect } from '../../shared/pdf-viewer/pdf-viewer.component';
@@ -28,7 +29,7 @@ type SigMode = 'draw' | 'type' | 'upload';
     ResultPanelComponent,
   ],
   template: `
-    <section class="op-page wide">
+    <section class="op-page">
       <app-page-header
         [title]="'pages.sign.title' | transloco"
         [description]="'pages.sign.description' | transloco"
@@ -198,6 +199,7 @@ type SigMode = 'draw' | 'type' | 'upload';
               >
                 {{ 'pages.sign.submit' | transloco }}
               </button>
+              <button type="button" class="btn" (click)="clearWork()">{{ 'common.clear' | transloco }}</button>
             </div>
 
             <app-result-panel
@@ -362,8 +364,17 @@ export class SignPage {
   private drawing = false;
   private last: { x: number; y: number } | null = null;
   private padDirty = false;
+  private readonly workState = inject(WorkStateService);
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    this.workState.persist('sign', { mode: this.mode, flatten: this.flatten });
+  }
+
+  /** Explicit Clear: drop the file, regions, signature, options and result. */
+  clearWork(): void {
+    this.workState.reset('sign');
+    this.onFile(null);
+  }
 
   onFile(f: File | null): void {
     this.file.set(f);

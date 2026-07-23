@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { ApiError, RunResult } from '../../core/api.models';
@@ -72,7 +72,7 @@ const KIND_TO_OP: Record<string, string> = {
     PipelineInspectorComponent,
   ],
   template: `
-    <section class="op-page wide">
+    <section class="op-page">
       <app-page-header
         [title]="'pages.pipeline.title' | transloco"
         [description]="'pages.pipeline.description' | transloco"
@@ -81,19 +81,40 @@ const KIND_TO_OP: Record<string, string> = {
       <!-- Small-viewport advisory: the node canvas is pointer-oriented and reads best on a wider screen. -->
       <p class="hint-note mobile-hint">{{ 'pipeline.mobileHint' | transloco }}</p>
 
-      <!-- Palette + toolbar -->
-      <div class="card">
-        <div class="palette">
-          <span class="field-label">{{ 'pipeline.canvas.addNode' | transloco }}</span>
-          <button type="button" class="btn chip" (click)="cv.addNode('SOURCE')"><app-op-icon class="chip-ico" name="source" />{{ 'pipeline.canvas.source' | transloco }}</button>
-          @for (k of kinds(); track k.name) {
-            <button type="button" class="btn chip" (click)="cv.addNode(k.name)"><app-op-icon class="chip-ico" [name]="iconFor(k.name)" />{{ nodeLabel(k.name) }}</button>
+      <!-- Palette + file-actions toolbar. Two distinct concerns kept visually
+           apart: the node palette (adds nodes, grouped by kind) sits below a
+           header row whose right cluster holds the file actions. -->
+      <div class="card palette-card">
+        <div class="pl-toolbar">
+          <span class="pl-toolbar-h">{{ 'pipeline.canvas.addNode' | transloco }}</span>
+          <div class="file-actions" role="group" aria-label="Pipeline file actions">
+            <button type="button" class="btn btn-ghost" (click)="save()" [disabled]="!cv.nodes().length">{{ 'pipeline.canvas.save' | transloco }}</button>
+            <button type="button" class="btn btn-ghost" (click)="loadInput.click()">{{ 'pipeline.canvas.load' | transloco }}</button>
+            <button type="button" class="btn btn-ghost btn-danger" (click)="cv.clear()" [disabled]="!cv.nodes().length">{{ 'pipeline.canvas.clear' | transloco }}</button>
+            <input #loadInput type="file" accept="application/json,.json" hidden (change)="load($event)" />
+          </div>
+        </div>
+
+        <div class="palette-groups">
+          <!-- Source is always available and adds a file drop-zone node. -->
+          <div class="palette-group">
+            <!-- TODO(i18n): localize palette group label "Source". -->
+            <span class="group-label">Source</span>
+            <div class="chips">
+              <button type="button" class="btn chip" (click)="cv.addNode('SOURCE')"><app-op-icon class="chip-ico" name="source" />{{ 'pipeline.canvas.source' | transloco }}</button>
+            </div>
+          </div>
+
+          @for (g of groups(); track g.key) {
+            <div class="palette-group">
+              <span class="group-label">{{ g.label }}</span>
+              <div class="chips">
+                @for (k of g.kinds; track k.name) {
+                  <button type="button" class="btn chip" (click)="cv.addNode(k.name)"><app-op-icon class="chip-ico" [name]="iconFor(k.name)" />{{ nodeLabel(k.name) }}</button>
+                }
+              </div>
+            </div>
           }
-          <span class="tb-spacer"></span>
-          <button type="button" class="btn btn-ghost" (click)="save()" [disabled]="!cv.nodes().length">{{ 'pipeline.canvas.save' | transloco }}</button>
-          <button type="button" class="btn btn-ghost" (click)="loadInput.click()">{{ 'pipeline.canvas.load' | transloco }}</button>
-          <button type="button" class="btn btn-ghost" (click)="cv.clear()" [disabled]="!cv.nodes().length">{{ 'pipeline.canvas.clear' | transloco }}</button>
-          <input #loadInput type="file" accept="application/json,.json" hidden (change)="load($event)" />
         </div>
       </div>
 
@@ -240,11 +261,59 @@ const KIND_TO_OP: Record<string, string> = {
         margin: 0 0 0.75rem;
         font-size: 1.05rem;
       }
-      .palette {
+      /* Palette card = a header toolbar (label + file actions) above the
+         grouped node chips, separated by a hairline for clear hierarchy. */
+      .palette-card {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .pl-toolbar {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
         align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem 1rem;
+        padding-bottom: 0.85rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .pl-toolbar-h {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      /* File actions (Save / Load / Clear) — a distinct right-aligned cluster. */
+      .file-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.35rem;
+        margin-left: auto;
+      }
+      /* The node palette: kind groups laid out FlowPane-style, wrapping freely. */
+      .palette-groups {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 1.5rem;
+        align-items: flex-start;
+      }
+      .palette-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        min-width: 0;
+      }
+      .group-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
       }
       .chip {
         display: inline-flex;
@@ -257,9 +326,6 @@ const KIND_TO_OP: Record<string, string> = {
         width: 0.95rem;
         height: 0.95rem;
         flex-shrink: 0;
-      }
-      .tb-spacer {
-        flex: 1;
       }
       .canvas-help {
         margin: 0;
@@ -334,6 +400,24 @@ export class PipelinePage implements OnInit, AfterViewInit {
   @ViewChild('cv') private canvas!: PipelineCanvasComponent;
 
   protected readonly kinds = signal<NodeKindInfo[]>(FALLBACK_KINDS);
+
+  /**
+   * Palette chips grouped by node kind for a clear source → transform → combine
+   * → export hierarchy. SOURCE has its own dedicated group in the template; here
+   * we partition the remaining op kinds. Empty groups are dropped.
+   */
+  protected readonly groups = computed(() => {
+    const ks = this.kinds();
+    const transform = ks.filter((k) => !k.isReduce && !k.isExport);
+    const combine = ks.filter((k) => k.isReduce);
+    const exportKinds = ks.filter((k) => k.isExport);
+    // TODO(i18n): localize palette group labels "Transform" / "Combine" / "Export".
+    const out: { key: string; label: string; kinds: NodeKindInfo[] }[] = [];
+    if (transform.length) out.push({ key: 'transform', label: 'Transform', kinds: transform });
+    if (combine.length) out.push({ key: 'combine', label: 'Combine', kinds: combine });
+    if (exportKinds.length) out.push({ key: 'export', label: 'Export', kinds: exportKinds });
+    return out;
+  });
 
   /** Inspector/Run drawer open state — remembered across visits so the canvas can stay wide. */
   protected readonly panelOpen = signal(PipelinePage.readPanelOpen());
