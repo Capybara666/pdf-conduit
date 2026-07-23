@@ -367,13 +367,13 @@ export class PipelinePage implements OnInit, AfterViewInit {
   private static readonly PANEL_KEY = 'pl.panelOpen';
 
   /** Restore the last drawer state (defaults to open on first visit / unavailable storage). */
-  private static readonly readPanelOpen = (): boolean => {
+  private static readPanelOpen(): boolean {
     try {
       return localStorage.getItem(PipelinePage.PANEL_KEY) !== '0';
     } catch {
       return true;
     }
-  };
+  }
 
   /** Toggle the inspector/run drawer and persist the choice. */
   togglePanel(): void {
