@@ -40,28 +40,28 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         <div class="field">
           <span class="field-label">{{ 'pages.rotate.angle' | transloco }}</span>
           <div class="rotate-picker">
-            <div class="rotate-picker__controls">
+            <div class="rotate-picker__main">
               <div class="seg rotate-seg" role="group" [attr.aria-label]="'pages.rotate.angleAria' | transloco">
                 <button type="button" [class.active]="angle() === 90" [attr.aria-pressed]="angle() === 90" (click)="angle.set(90)">90°</button>
                 <button type="button" [class.active]="angle() === 180" [attr.aria-pressed]="angle() === 180" (click)="angle.set(180)">180°</button>
                 <button type="button" [class.active]="angle() === 270" [attr.aria-pressed]="angle() === 270" (click)="angle.set(270)">270°</button>
               </div>
-              <p class="rotate-caption">{{ 'pages.rotate.dir' + angle() | transloco }}</p>
+              <div class="rotate-preview" aria-hidden="true">
+                <svg class="rotate-glyph" viewBox="0 -6 100 120" width="72" height="86"
+                     fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                     [style.transform]="'rotate(' + angle() + 'deg)'">
+                  <!-- 'top' indicator (an up-arrow above the page) -->
+                  <path d="M50 4 V13 M45 9 L50 4 L55 9" stroke="var(--accent)" stroke-width="3.5" />
+                  <!-- portrait page with a dog-eared top-right corner -->
+                  <path d="M25 18 H62 L78 34 V104 H25 Z" />
+                  <path d="M62 18 V34 H78" />
+                  <!-- large asymmetric 'F' marker -->
+                  <text x="50" y="82" text-anchor="middle" font-size="46" font-weight="800"
+                        fill="var(--accent)" stroke="none" font-family="inherit">F</text>
+                </svg>
+              </div>
             </div>
-            <div class="rotate-preview" aria-hidden="true">
-              <svg class="rotate-glyph" viewBox="0 0 100 120" width="72" height="86"
-                   fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-                   [style.transform]="'rotate(' + angle() + 'deg)'">
-                <!-- 'top' indicator (an up-arrow above the page) -->
-                <path d="M50 4 V13 M45 9 L50 4 L55 9" stroke="var(--accent)" stroke-width="3.5" />
-                <!-- portrait page with a dog-eared top-right corner -->
-                <path d="M25 18 H62 L78 34 V104 H25 Z" />
-                <path d="M62 18 V34 H78" />
-                <!-- large asymmetric 'F' marker -->
-                <text x="50" y="82" text-anchor="middle" font-size="46" font-weight="800"
-                      fill="var(--accent)" stroke="none" font-family="inherit">F</text>
-              </svg>
-            </div>
+            <p class="rotate-caption">{{ 'pages.rotate.dir' + angle() | transloco }}</p>
           </div>
         </div>
         <div class="field">
@@ -108,22 +108,22 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     `
       .rotate-picker {
         display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+      /* Selector + preview share one row and one vertical centre line. */
+      .rotate-picker__main {
+        display: flex;
         align-items: center;
         gap: 1.5rem;
         flex-wrap: wrap;
-      }
-      .rotate-picker__controls {
-        display: flex;
-        flex-direction: column;
-        gap: 0.55rem;
-        flex: 1 1 12rem;
-        min-width: 11rem;
       }
       /* Force the three angle segments onto one equal-width row (never 2 + 1). */
       .rotate-seg {
         display: flex;
         flex-wrap: nowrap;
-        width: 100%;
+        flex: 1 1 12rem;
+        min-width: 11rem;
       }
       .rotate-seg button {
         flex: 1 1 0;
@@ -142,10 +142,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         align-items: center;
         justify-content: center;
         width: 6rem;
-        height: 7rem;
         color: var(--text);
       }
       .rotate-glyph {
+        display: block;
         transform-origin: 50% 50%;
         transition: transform 0.4s var(--ease-standard, ease);
       }

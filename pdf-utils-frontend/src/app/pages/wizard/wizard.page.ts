@@ -70,7 +70,6 @@ const STEP_KEYS = [
           <app-file-drop-zone
             [multiple]="true"
             accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
-            [hint]="'pages.wizard.selectHint' | transloco"
             (filesChange)="onFiles($event)"
           />
         }

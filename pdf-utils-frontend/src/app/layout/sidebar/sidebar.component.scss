@@ -71,6 +71,12 @@ a {
   }
 }
 
+/* The picker section is desktop-hidden: on wide screens the language + theme
+   controls live in the header. It only surfaces inside the mobile drawer. */
+.drawer-extras {
+  display: none;
+}
+
 /*
  * Below the breakpoint the rail becomes an off-canvas drawer (with labels),
  * slid in over a scrim. The shell toggles `.open` on the host and owns the
@@ -95,6 +101,15 @@ a {
 
   .sidebar {
     border-right: 1px solid var(--border);
+  }
+
+  /* Surface the language + theme pickers at the foot of the drawer, set off
+     from the nav list by a divider and inset to line up with the nav items. */
+  .drawer-extras {
+    display: block;
+    margin-top: 1.25rem;
+    padding: 1rem 0.75rem 0.25rem;
+    border-top: 1px solid var(--border);
   }
 }
 

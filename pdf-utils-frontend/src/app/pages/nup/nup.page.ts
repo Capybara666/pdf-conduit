@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
@@ -94,32 +94,47 @@ const round = (n: number): number => Math.round(n * 10) / 10;
       <div class="card">
         <div class="field full">
           <label id="nup-layout-label">{{ 'pages.nup.layout' | transloco }}</label>
-          <div
-            class="seg nup-seg"
-            role="group"
-            aria-labelledby="nup-layout-label"
-            style="flex-wrap:wrap"
-          >
-            @for (l of LAYOUTS; track l.value) {
-              <button
-                type="button"
-                [class.active]="layout() === l.value"
-                [attr.aria-pressed]="layout() === l.value"
-                (click)="layout.set(l.value)"
-                style="display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1"
+          <!-- Rotate-style picker: clean text segments on the left, one LARGE
+               preview of the selected layout on the right (wraps below when narrow). -->
+          <div class="nup-picker">
+            <div class="nup-picker__controls">
+              <div
+                class="seg nup-seg"
+                role="group"
+                aria-labelledby="nup-layout-label"
               >
+                @for (l of LAYOUTS; track l.value) {
+                  <button
+                    type="button"
+                    [class.active]="layout() === l.value"
+                    [attr.aria-pressed]="layout() === l.value"
+                    (click)="layout.set(l.value)"
+                  >
+                    {{ l.labelKey | transloco }}
+                  </button>
+                }
+              </div>
+              @if (layout() === 'booklet') {
+                <p class="nup-caption">{{ 'pages.nup.bookletHelp' | transloco }}</p>
+              }
+            </div>
+
+            <!-- Single large pictogram of the CURRENT layout. Keyed on value so a
+                 switch recreates the node and re-runs the subtle pop animation. -->
+            <div class="nup-preview" aria-hidden="true">
+              @for (sel of [selected()]; track sel.value) {
                 <svg
+                  class="nup-glyph"
                   viewBox="0 0 36 26"
-                  width="42"
-                  height="30"
+                  width="176"
+                  height="127"
                   fill="none"
-                  aria-hidden="true"
                   style="display:block"
                 >
-                  @if (!l.booklet && l.cells.length > 1) {
+                  @if (!sel.booklet && sel.cells.length > 1) {
                     <defs>
                       <marker
-                        [attr.id]="arrowId(l)"
+                        [attr.id]="arrowId(sel)"
                         markerWidth="4"
                         markerHeight="4"
                         refX="3"
@@ -127,19 +142,19 @@ const round = (n: number): number => Math.round(n * 10) / 10;
                         orient="auto"
                         markerUnits="userSpaceOnUse"
                       >
-                        <path d="M0,0 L4,2 L0,4 Z" fill="currentColor" stroke="none" />
+                        <path d="M0,0 L4,2 L0,4 Z" fill="var(--accent)" stroke="none" />
                       </marker>
                     </defs>
                     <polyline
-                      [attr.points]="l.order"
+                      [attr.points]="sel.order"
                       fill="none"
-                      stroke="currentColor"
+                      stroke="var(--accent)"
                       stroke-width="0.7"
-                      stroke-opacity="0.4"
-                      [attr.marker-end]="'url(#' + arrowId(l) + ')'"
+                      stroke-opacity="0.55"
+                      [attr.marker-end]="'url(#' + arrowId(sel) + ')'"
                     />
                   }
-                  @for (cell of l.cells; track cell.n) {
+                  @for (cell of sel.cells; track cell.n) {
                     <rect
                       [attr.x]="cell.x"
                       [attr.y]="cell.y"
@@ -150,7 +165,7 @@ const round = (n: number): number => Math.round(n * 10) / 10;
                       stroke="currentColor"
                       stroke-width="1"
                     />
-                    @if (!l.booklet) {
+                    @if (!sel.booklet) {
                       <text
                         [attr.x]="cell.cx"
                         [attr.y]="cell.cy"
@@ -158,12 +173,12 @@ const round = (n: number): number => Math.round(n * 10) / 10;
                         dominant-baseline="central"
                         stroke="none"
                         fill="currentColor"
-                        [attr.font-size]="l.fontSize"
+                        [attr.font-size]="sel.fontSize"
                         font-weight="600"
                       >{{ cell.n }}</text>
                     }
                   }
-                  @if (l.booklet) {
+                  @if (sel.booklet) {
                     <!-- Center saddle-stitch fold: booklet imposes its own 2-up order. -->
                     <line
                       x1="18"
@@ -177,15 +192,9 @@ const round = (n: number): number => Math.round(n * 10) / 10;
                     />
                   }
                 </svg>
-                <span>{{ l.labelKey | transloco }}</span>
-              </button>
-            }
+              }
+            </div>
           </div>
-          @if (layout() === 'booklet') {
-            <span class="help" style="margin-top:0.5rem">{{
-              'pages.nup.bookletHelp' | transloco
-            }}</span>
-          }
         </div>
       </div>
 
@@ -213,6 +222,79 @@ const round = (n: number): number => Math.round(n * 10) / 10;
       />
     </section>
   `,
+  styles: [
+    `
+      /* Mirror the Rotate picker: controls left, big preview right, centered,
+         wrapping the preview below the segments on narrow viewports. */
+      .nup-picker {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .nup-picker__controls {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        flex: 1 1 18rem;
+        min-width: 15rem;
+      }
+      .nup-seg {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        /* The global .seg only draws VERTICAL dividers (button + button
+           border-left), so when these segments wrap to a second row the rows
+           run together with no horizontal line. Use a 1px flex gap over the
+           divider colour: the container background shows through every gap,
+           giving a consistent 1px separator between BOTH columns AND wrapped
+           rows. Gaps sit only between buttons (never at the edges), so the
+           container's own border + overflow:hidden keep the outer edges and
+           rounded corners clean. */
+        gap: 1px;
+        background: var(--border-strong);
+      }
+      /* The gap now supplies the column divider too; drop the global per-button
+         left border so columns don't get a doubled 2px line (rows would be 1px). */
+      .nup-seg button + button {
+        border-left: none;
+      }
+      .nup-seg button {
+        flex: 1 1 auto;
+        text-align: center;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+      .nup-caption {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      .nup-preview {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 176px;
+        min-height: 127px;
+        color: var(--text);
+      }
+      .nup-glyph {
+        transform-origin: 50% 50%;
+        animation: nup-pop 0.35s var(--ease-standard, ease);
+      }
+      @keyframes nup-pop {
+        from {
+          opacity: 0;
+          transform: scale(0.92);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+    `,
+  ],
 })
 export class NupPage {
   protected readonly files = signal<File[]>([]);
@@ -228,6 +310,11 @@ export class NupPage {
     buildLayout('9up', 'pages.nup.layout9up', 3, 3),
     buildLayout('booklet', 'pages.nup.booklet', 2, 1, true),
   ];
+
+  /** The single layout rendered large in the preview alongside the segments. */
+  protected readonly selected = computed<LayoutOpt>(
+    () => this.LAYOUTS.find((l) => l.value === this.layout()) ?? this.LAYOUTS[0],
+  );
 
   private readonly workState = inject(WorkStateService);
 

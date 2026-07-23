@@ -231,6 +231,15 @@
   .menu-toggle {
     display: inline-flex;
   }
+
+  /* Keep the top bar to a single, non-wrapping row on mobile: the width toggle
+     (wide mode is a desktop-only feature) is dropped entirely, and the language
+     + theme pickers move into the off-canvas drawer (app-sidebar). What's left —
+     the quota chip, health dot and help link — stays compact and never wraps. */
+  .width-toggle,
+  .header-secondary {
+    display: none;
+  }
 }
 
 @media (max-width: 640px) {
@@ -240,39 +249,14 @@
     display: none;
   }
 
-  /* Tighten the row and keep wrapped actions aligned to the right edge. */
+  /* Tighten the row and keep the remaining actions aligned to the right edge. */
   .header-actions {
-    gap: 0.4rem;
+    gap: 0.5rem;
     justify-content: flex-end;
   }
 
   /* Icon-only: keep it square so the accessible name lives on the title. */
   .help-link {
     padding: 0 0.55rem;
-  }
-
-  /* Width toggle collapses to icon-only buttons (labels live on the title). */
-  .width-btn-text {
-    display: none;
-  }
-
-  .width-toggle .width-btn {
-    padding: 0 0.5rem;
-  }
-}
-
-/* Smallest phones: if the wrapped actions still can't share a line with the
-   brand, let them drop to their own full-width row below it. */
-@media (max-width: 400px) {
-  .app-header {
-    flex-wrap: wrap;
-    height: auto;
-    padding-top: 0.6rem;
-    padding-bottom: 0.6rem;
-    row-gap: 0.5rem;
-  }
-
-  .header-actions {
-    width: 100%;
   }
 }

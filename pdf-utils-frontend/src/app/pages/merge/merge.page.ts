@@ -32,7 +32,6 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         [multiple]="true"
         [showList]="false"
         accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
-        [hint]="'pages.merge.hint' | transloco"
         (filesChange)="onFiles($event)"
       />
 
