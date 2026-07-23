@@ -75,10 +75,10 @@ interface PageMeta {
                 @for (r of regionsFor(p.pageIndex); track $index) {
                   <div
                     class="region"
-                    [style.left.px]="r.x * scale"
-                    [style.top.px]="r.y * scale"
-                    [style.width.px]="r.width * scale"
-                    [style.height.px]="r.height * scale"
+                    [style.left.px]="r.x * renderScale()"
+                    [style.top.px]="r.y * renderScale()"
+                    [style.width.px]="r.width * renderScale()"
+                    [style.height.px]="r.height * renderScale()"
                   ></div>
                 }
                 @if (draft() && draft()!.pageIndex === p.pageIndex) {
@@ -147,9 +147,14 @@ interface PageMeta {
         box-shadow: var(--shadow);
         border: 1px solid var(--border);
         background: #fff;
+        /* Never let a page box exceed the wrapper width — fit-to-width sizing
+           keeps this from clipping landscape pages; this is a belt-and-braces
+           guard so an oversized ancestor with overflow:hidden can't clip. */
+        max-width: 100%;
       }
       .pdf-canvas {
         display: block;
+        max-width: 100%;
       }
       .draw-layer {
         position: absolute;
@@ -204,6 +209,15 @@ export class PdfViewerComponent implements OnDestroy {
   readonly pages = signal<PageMeta[]>([]);
   readonly loading = signal(false);
   readonly errorMsg = signal<string | null>(null);
+  /**
+   * Effective display scale (PDF points → CSS pixels) actually used to size and
+   * render pages. Equal to the requested `scale`, but capped so the widest page
+   * fits the container width (fit-to-width) — this is what keeps wide/landscape
+   * pages from overflowing and being clipped on the right. All pixel↔point math
+   * (region rendering, draw→point conversion, canvas paint) reads this, so a
+   * single conversion factor stays consistent across every page.
+   */
+  readonly renderScale = signal(this.scale);
   readonly draft = signal<{
     pageIndex: number;
     left: number;
@@ -275,19 +289,37 @@ export class PdfViewerComponent implements OnDestroy {
       }
       this.doc = doc;
 
-      const metas: PageMeta[] = [];
       const first = this.singlePage ?? 1;
       const last = this.singlePage ?? doc.numPages;
+
+      // Pass 1: collect each page's intrinsic size in PDF points (scale = 1).
+      const ptSizes: { n: number; w: number; h: number }[] = [];
+      let maxPtWidth = 0;
       for (let n = first; n <= last; n++) {
         const page = await doc.getPage(n);
-        const vp = page.getViewport({ scale: this.scale });
-        metas.push({
-          pageNumber: n,
-          pageIndex: n - 1,
-          cssWidth: Math.round(vp.width),
-          cssHeight: Math.round(vp.height),
-        });
+        const vp1 = page.getViewport({ scale: 1 });
+        ptSizes.push({ n, w: vp1.width, h: vp1.height });
+        if (vp1.width > maxPtWidth) maxPtWidth = vp1.width;
       }
+      if (token !== this.renderToken) return;
+
+      // Fit-to-width: never upscale past the requested `scale`, but shrink so the
+      // WIDEST page fits the container. This makes landscape/wide pages (e.g. the
+      // N-up result) scale down to fit instead of overflowing and being clipped
+      // on the right. A single doc-wide scale keeps region math consistent.
+      const containerWidth = this.measureContainerWidth();
+      const eff =
+        containerWidth > 0 && maxPtWidth > 0
+          ? Math.min(this.scale, containerWidth / maxPtWidth)
+          : this.scale;
+      this.renderScale.set(eff);
+
+      const metas: PageMeta[] = ptSizes.map((s) => ({
+        pageNumber: s.n,
+        pageIndex: s.n - 1,
+        cssWidth: Math.round(s.w * eff),
+        cssHeight: Math.round(s.h * eff),
+      }));
       if (token !== this.renderToken) return;
       this.pages.set(metas);
       this.loaded.emit({ pages: doc.numPages });
@@ -306,6 +338,20 @@ export class PdfViewerComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Width (CSS px) available for a page, from the scroll wrapper's content box
+   * (excludes its scrollbar). A small margin covers the `.page` border so an
+   * exactly-fitted page doesn't spill 1–2px and trigger a scroll/clip. Returns 0
+   * when the viewer isn't laid out yet (offscreen) — callers then fall back to
+   * the requested scale.
+   */
+  private measureContainerWidth(): number {
+    const root = this.host.nativeElement as HTMLElement;
+    const scroll = root.querySelector('.viewer-scroll') as HTMLElement | null;
+    const w = scroll?.clientWidth || root.clientWidth || 0;
+    return w > 0 ? Math.max(0, w - 2) : 0;
+  }
+
   private async paint(
     doc: PDFDocumentProxy,
     first: number,
@@ -322,7 +368,7 @@ export class PdfViewerComponent implements OnDestroy {
       const canvas = canvases.find((c) => c.getAttribute('data-idx') === String(n - 1));
       if (!canvas) continue;
       const page = await doc.getPage(n);
-      const vp = page.getViewport({ scale: this.scale * dpr });
+      const vp = page.getViewport({ scale: this.renderScale() * dpr });
       canvas.width = Math.round(vp.width);
       canvas.height = Math.round(vp.height);
       const ctx = canvas.getContext('2d');
@@ -364,13 +410,15 @@ export class PdfViewerComponent implements OnDestroy {
     this.dragStart = null;
     this.draft.set(null);
     if (!d || d.width < 4 || d.height < 4) return;
-    // CSS pixels → PDF points (top-left origin) by dividing out the display scale.
+    // CSS pixels → PDF points (top-left origin) by dividing out the effective
+    // display scale (fit-to-width may have shrunk it below the requested scale).
+    const s = this.renderScale();
     const region: RegionRect = {
       pageIndex: page.pageIndex,
-      x: +(d.left / this.scale).toFixed(2),
-      y: +(d.top / this.scale).toFixed(2),
-      width: +(d.width / this.scale).toFixed(2),
-      height: +(d.height / this.scale).toFixed(2),
+      x: +(d.left / s).toFixed(2),
+      y: +(d.top / s).toFixed(2),
+      width: +(d.width / s).toFixed(2),
+      height: +(d.height / s).toFixed(2),
     };
     const next = [...this.regions(), region];
     this.regions.set(next);
