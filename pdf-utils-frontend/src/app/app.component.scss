@@ -36,6 +36,14 @@
   position: relative;
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
+  /* Constrain the single grid row to the body's own height. Without an
+     explicit row track the implicit row is `auto`, which grows to fit the
+     tallest child's content — so a long sidebar list makes the row (and thus
+     the sidebar's height:100%) as tall as the content, and `overflow-y:auto`
+     never has anything to overflow. `minmax(0, 1fr)` pins the row to the
+     available height and allows it to shrink below content, giving both the
+     sidebar and the content a DEFINITE, capped height that scrolls internally. */
+  grid-template-rows: minmax(0, 1fr);
   flex: 1;
   min-height: 0;
 }

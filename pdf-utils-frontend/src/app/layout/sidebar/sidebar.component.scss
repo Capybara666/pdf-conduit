@@ -1,6 +1,10 @@
 :host {
   display: block;
   height: 100%;
+  /* Grid items default to `min-height: auto`, refusing to shrink below their
+     content — that would let the host grow past the row and defeat the
+     inner scroll. Allow it to be capped to the (now definite) grid row. */
+  min-height: 0;
 }
 
 .sidebar {
