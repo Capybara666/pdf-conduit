@@ -217,8 +217,8 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     id: 'nup',
-    label: 'N-up',
-    description: 'Place several pages per sheet, or fold a booklet.',
+    label: 'Pages per sheet',
+    description: 'Print several pages on one sheet (2/4/6-up), or fold a booklet.',
     group: 'organise',
     icon: OP_ICONS['nup'],
   },

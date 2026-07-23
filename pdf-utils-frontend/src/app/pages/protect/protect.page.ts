@@ -101,7 +101,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="!files().length || form.invalid || state.loading()"
           (click)="submit()"
         >
-          {{ 'pages.protect.submit' | transloco: { count: files().length } }}
+          {{ 'pages.protect.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 

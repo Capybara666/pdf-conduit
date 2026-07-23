@@ -18,7 +18,7 @@
 
   <app-file-drop-zone
     [multiple]="true"
-    accept=".pdf"
+    accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
     [hint]="t('pages.gdprScan.hintMulti')"
     (filesChange)="onFiles($event)"
   />
@@ -30,7 +30,7 @@
       [disabled]="!files().length || loading()"
       (click)="scan()"
     >
-      {{ files().length > 1 ? t('pages.gdprScan.submitBatch', { count: files().length }) : t('pages.gdprScan.submit') }}
+      {{ t('pages.gdprScan.submit') }}@if (files().length) { · {{ t('common.fileCount', { count: files().length }) }} }
     </button>
     @if (loading()) {
       <app-spinner [label]="t('pages.gdprScan.loading')" />

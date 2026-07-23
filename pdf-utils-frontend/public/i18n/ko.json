@@ -23,7 +23,8 @@
     "loading": "불러오는 중",
     "processing": "처리 중…",
     "moveUp": "위로 이동",
-    "moveDown": "아래로 이동"
+    "moveDown": "아래로 이동",
+    "fileCount": "{count, plural, other {파일 # 개}}"
   },
   "dropzone": {
     "defaultLabel": "여기에 파일을 놓거나 클릭하여 찾아보기",
@@ -77,7 +78,7 @@
       "description": "페이지 순서를 바꾸거나, 뒤집거나, 복제합니다."
     },
     "nup": {
-      "label": "N-up",
+      "label": "한 장에 여러 페이지",
       "description": "여러 페이지를 한 장에 배치하거나 소책자로 접습니다."
     },
     "compress": {
@@ -356,13 +357,14 @@
     "merge": {
       "title": "병합",
       "description": "여러 PDF, 이미지 또는 오피스 문서를 하나의 PDF로 합칩니다.",
-      "hint": "PDF, 이미지, 오피스 문서. 아래 목록을 드래그하여 순서를 정하세요.",
+      "hint": "PDF, 이미지, 오피스 문서.",
       "outputName": "출력 이름 (선택 사항)",
       "outputNamePlaceholder": "merged.pdf",
       "outputNameHelp": "기본값은 첫 번째 파일 이름에 “_merged” 접미사가 붙습니다.",
       "removeAria": "제거",
-      "submit": "{count, plural, other {파일 # 개 병합}}",
-      "loading": "병합 중…"
+      "submit": "병합",
+      "loading": "병합 중…",
+      "reorderHint": "아래 목록을 드래그하여 순서를 정하세요."
     },
     "extract": {
       "title": "추출",
@@ -386,7 +388,7 @@
       "targetHelp1": "허용 형식:",
       "targetHelp2": "또는 원시 바이트 수.",
       "targetError": "다음과 같은 크기를 입력하세요:",
-      "submit": "{count, plural, other {파일 # 개 압축}}",
+      "submit": "압축",
       "loading": "압축 중…",
       "noopWarning": "목표 ≥ 파일 크기 — 줄어들지 않음",
       "blankWarning": "압축할 목표 크기를 입력하세요.",
@@ -412,8 +414,7 @@
       "dir270": "270° left (counter-clockwise)",
       "pages": "페이지",
       "pagesPlaceholder": "예: 1,3,5-8 (비워 두면 = 전체)",
-      "pagesHelp": "비워 두면 = 모든 페이지.",
-      "submit": "{count, plural, other {파일 # 개 회전}}",
+      "submit": "회전",
       "loading": "회전 중…"
     },
     "arrange": {
@@ -429,7 +430,7 @@
       "loading": "정렬 중…"
     },
     "nup": {
-      "title": "N-up / 소책자",
+      "title": "한 장에 여러 페이지",
       "description": "여러 페이지를 한 장에 배치하거나 중철 소책자로 접습니다.",
       "privacyLine": "파일은 비공개로 배치되며 저장되지 않습니다.",
       "hint": "PDF 파일 — 여러 파일은 ZIP으로 반환됩니다.",
@@ -443,8 +444,8 @@
       "mode": "모드",
       "booklet": "소책자 (중철)",
       "bookletHelp": "인쇄해 접은 묶음이 순서대로 읽히도록 페이지를 재배열합니다.",
-      "submit": "배치",
-      "loading": "배치 중…"
+      "submit": "레이아웃 적용",
+      "loading": "레이아웃 적용 중…"
     },
     "toPdf": {
       "title": "PDF로 변환",
@@ -454,7 +455,7 @@
       "sizeFit": "내용에 맞춤",
       "sizeLetter": "Letter",
       "sizeHelp": "이미지 입력은 이 페이지 크기에 배치됩니다 (오피스 문서는 자체 크기를 유지합니다).",
-      "submit": "{count, plural, other {파일 # 개 변환}}",
+      "submit": "변환",
       "loading": "변환 중…"
     },
     "toImages": {
@@ -513,7 +514,7 @@
       "confirmError": "비밀번호가 일치하지 않습니다.",
       "ownerPassword": "소유자 비밀번호 (선택 사항)",
       "ownerPasswordHelp": "권한을 제어합니다. 기본값은 사용자 비밀번호입니다.",
-      "submit": "{count, plural, other {파일 # 개 보호}}",
+      "submit": "보호",
       "loading": "암호화 중…",
       "encryption": "암호화 강도",
       "encryption128": "AES-128 (호환성)",
@@ -528,7 +529,7 @@
       "password": "비밀번호",
       "passwordHelp": "PDF를 여는 데 사용하는 현재 비밀번호.",
       "passwordError": "비밀번호가 필요합니다.",
-      "submit": "{count, plural, other {파일 # 개 잠금 해제}}",
+      "submit": "잠금 해제",
       "loading": "잠금 해제 중…"
     },
     "redact": {

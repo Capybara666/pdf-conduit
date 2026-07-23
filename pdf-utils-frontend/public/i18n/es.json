@@ -23,7 +23,8 @@
     "loading": "Cargando",
     "processing": "Procesando…",
     "moveUp": "Mover arriba",
-    "moveDown": "Mover abajo"
+    "moveDown": "Mover abajo",
+    "fileCount": "{count, plural, one {# archivo} other {# archivos}}"
   },
   "dropzone": {
     "defaultLabel": "Suelta archivos aquí o haz clic para explorar",
@@ -77,7 +78,7 @@
       "description": "Reordena, invierte o duplica páginas."
     },
     "nup": {
-      "label": "N-up",
+      "label": "Páginas por hoja",
       "description": "Coloca varias páginas por hoja o dobla un cuadernillo."
     },
     "compress": {
@@ -356,13 +357,14 @@
     "merge": {
       "title": "Combinar",
       "description": "Une varios PDF, imágenes o documentos de oficina en un solo PDF.",
-      "hint": "PDF, imágenes y documentos de oficina. Arrastra la lista de abajo para fijar el orden.",
+      "hint": "PDF, imágenes y documentos de oficina.",
       "outputName": "Nombre de salida (opcional)",
       "outputNamePlaceholder": "combinado.pdf",
       "outputNameHelp": "Por defecto usa el nombre del primer archivo con el sufijo «_merged».",
       "removeAria": "Quitar",
-      "submit": "{count, plural, one {Combinar # archivo} other {Combinar # archivos}}",
-      "loading": "Combinando…"
+      "submit": "Combinar",
+      "loading": "Combinando…",
+      "reorderHint": "Arrastra la lista de abajo para fijar el orden."
     },
     "extract": {
       "title": "Extraer",
@@ -386,7 +388,7 @@
       "targetHelp1": "Acepta",
       "targetHelp2": "o un recuento de bytes sin procesar.",
       "targetError": "Introduce un tamaño como",
-      "submit": "{count, plural, one {Comprimir # archivo} other {Comprimir # archivos}}",
+      "submit": "Comprimir",
       "loading": "Comprimiendo…",
       "noopWarning": "Objetivo ≥ tamaño del archivo — no se reducirá",
       "blankWarning": "Introduce un tamaño objetivo para comprimir.",
@@ -412,8 +414,7 @@
       "dir270": "270° left (counter-clockwise)",
       "pages": "Páginas",
       "pagesPlaceholder": "p. ej. 1,3,5-8 (en blanco = todas)",
-      "pagesHelp": "En blanco = todas las páginas.",
-      "submit": "{count, plural, one {Rotar # archivo} other {Rotar # archivos}}",
+      "submit": "Rotar",
       "loading": "Rotando…"
     },
     "arrange": {
@@ -429,11 +430,11 @@
       "loading": "Ordenando…"
     },
     "nup": {
-      "title": "N-up / Cuadernillo",
+      "title": "Páginas por hoja",
       "description": "Coloca varias páginas por hoja o dobla un cuadernillo cosido a caballete.",
-      "privacyLine": "Tus archivos se imponen de forma privada y nunca se almacenan.",
+      "privacyLine": "Tus archivos se disponen de forma privada y nunca se almacenan.",
       "hint": "Archivos PDF: varios archivos se devuelven como ZIP.",
-      "batchNote": "{{count}} archivos seleccionados: cada uno se impone por separado; los resultados se devuelven como ZIP.",
+      "batchNote": "{{count}} archivos seleccionados: cada uno se dispone por separado; los resultados se devuelven como ZIP.",
       "layout": "Disposición",
       "layout2up": "2 por página",
       "layout4up": "4 por página (2×2)",
@@ -443,8 +444,8 @@
       "mode": "Modo",
       "booklet": "Cuadernillo (cosido a caballete)",
       "bookletHelp": "Reordena las páginas para que una pila impresa y doblada se lea en orden.",
-      "submit": "Imponer",
-      "loading": "Imponiendo…"
+      "submit": "Aplicar diseño",
+      "loading": "Aplicando diseño…"
     },
     "toPdf": {
       "title": "A PDF",
@@ -454,7 +455,7 @@
       "sizeFit": "Ajustar al contenido",
       "sizeLetter": "Letter",
       "sizeHelp": "Las imágenes de entrada se colocan en este tamaño de página (los documentos de oficina mantienen el suyo).",
-      "submit": "{count, plural, one {Convertir # archivo} other {Convertir # archivos}}",
+      "submit": "Convertir",
       "loading": "Convirtiendo…"
     },
     "toImages": {
@@ -513,7 +514,7 @@
       "confirmError": "Las contraseñas no coinciden.",
       "ownerPassword": "Contraseña de propietario (opcional)",
       "ownerPasswordHelp": "Controla los permisos; por defecto usa la contraseña de usuario.",
-      "submit": "{count, plural, one {Proteger # archivo} other {Proteger # archivos}}",
+      "submit": "Proteger",
       "loading": "Cifrando…",
       "encryption": "Nivel de cifrado",
       "encryption128": "AES-128 (compatible)",
@@ -528,7 +529,7 @@
       "password": "Contraseña",
       "passwordHelp": "La contraseña actual usada para abrir el o los PDF.",
       "passwordError": "Se requiere una contraseña.",
-      "submit": "{count, plural, one {Desbloquear # archivo} other {Desbloquear # archivos}}",
+      "submit": "Desbloquear",
       "loading": "Desbloqueando…"
     },
     "redact": {

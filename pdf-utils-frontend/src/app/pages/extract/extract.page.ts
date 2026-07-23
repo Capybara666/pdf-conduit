@@ -72,6 +72,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
           {{ 'pages.extract.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 

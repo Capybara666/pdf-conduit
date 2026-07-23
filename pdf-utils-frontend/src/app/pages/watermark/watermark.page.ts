@@ -130,6 +130,9 @@ type Position = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-ri
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!canSubmit() || state.loading()" (click)="submit()">
           {{ 'pages.watermark.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
         @if (files().length && !hasContent()) {
           <span class="hint-note">{{ (mode() === 'text' ? 'pages.watermark.needText' : 'pages.watermark.needImage') | transloco }}</span>

@@ -109,7 +109,10 @@ function parseSizeToBytes(text: string): number | null {
           [disabled]="!files().length || targetSize.invalid || state.loading()"
           (click)="submit()"
         >
-          {{ 'pages.compress.submit' | transloco: { count: files().length } }}
+          {{ 'pages.compress.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 

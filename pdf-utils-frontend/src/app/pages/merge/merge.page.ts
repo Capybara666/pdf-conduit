@@ -35,6 +35,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         (filesChange)="onFiles($event)"
       />
 
+      @if (files().length > 1) {
+        <p class="hint-note" role="note">{{ 'pages.merge.reorderHint' | transloco }}</p>
+      }
       @if (files().length) {
         <ul
           class="reorder-list"
@@ -105,7 +108,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="files().length < 1 || state.loading()"
           (click)="submit()"
         >
-          {{ 'pages.merge.submit' | transloco: { count: files().length } }}
+          {{ 'pages.merge.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 

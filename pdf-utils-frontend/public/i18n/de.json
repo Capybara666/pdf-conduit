@@ -23,7 +23,8 @@
     "loading": "Wird geladen",
     "processing": "Wird verarbeitet…",
     "moveUp": "Nach oben verschieben",
-    "moveDown": "Nach unten verschieben"
+    "moveDown": "Nach unten verschieben",
+    "fileCount": "{count, plural, one {# Datei} other {# Dateien}}"
   },
   "dropzone": {
     "defaultLabel": "Dateien hierher ziehen oder zum Durchsuchen klicken",
@@ -77,7 +78,7 @@
       "description": "Seiten neu ordnen, umkehren oder duplizieren."
     },
     "nup": {
-      "label": "N-up",
+      "label": "Seiten pro Blatt",
       "description": "Mehrere Seiten pro Blatt platzieren oder eine Broschüre falzen."
     },
     "compress": {
@@ -356,13 +357,14 @@
     "merge": {
       "title": "Zusammenführen",
       "description": "Mehrere PDFs, Bilder oder Office-Dokumente zu einem PDF zusammenfügen.",
-      "hint": "PDFs, Bilder und Office-Dokumente. Ziehen Sie die Liste unten, um die Reihenfolge festzulegen.",
+      "hint": "PDFs, Bilder und Office-Dokumente.",
       "outputName": "Ausgabename (optional)",
       "outputNamePlaceholder": "zusammengefuehrt.pdf",
       "outputNameHelp": "Standardmäßig der Name der ersten Datei mit dem Zusatz „_merged“.",
       "removeAria": "Entfernen",
-      "submit": "{count, plural, one {# Datei zusammenführen} other {# Dateien zusammenführen}}",
-      "loading": "Wird zusammengeführt…"
+      "submit": "Zusammenführen",
+      "loading": "Wird zusammengeführt…",
+      "reorderHint": "Ziehen Sie die Liste unten, um die Reihenfolge festzulegen."
     },
     "extract": {
       "title": "Extrahieren",
@@ -386,7 +388,7 @@
       "targetHelp1": "Akzeptiert",
       "targetHelp2": "oder eine reine Byte-Anzahl.",
       "targetError": "Geben Sie eine Größe an, etwa",
-      "submit": "{count, plural, one {# Datei komprimieren} other {# Dateien komprimieren}}",
+      "submit": "Komprimieren",
       "loading": "Wird komprimiert…",
       "noopWarning": "Ziel ≥ Dateigröße — keine Verkleinerung",
       "blankWarning": "Zielgröße zum Komprimieren eingeben.",
@@ -412,8 +414,7 @@
       "dir270": "270° left (counter-clockwise)",
       "pages": "Seiten",
       "pagesPlaceholder": "z. B. 1,3,5-8 (leer = alle)",
-      "pagesHelp": "Leer = jede Seite.",
-      "submit": "{count, plural, one {# Datei drehen} other {# Dateien drehen}}",
+      "submit": "Drehen",
       "loading": "Wird gedreht…"
     },
     "arrange": {
@@ -429,11 +430,11 @@
       "loading": "Wird angeordnet…"
     },
     "nup": {
-      "title": "N-up / Broschüre",
+      "title": "Seiten pro Blatt",
       "description": "Mehrere Seiten pro Blatt platzieren oder eine Broschüre mit Rückenheftung falzen.",
-      "privacyLine": "Ihre Dateien werden privat ausgeschossen und niemals gespeichert.",
+      "privacyLine": "Ihre Dateien werden privat angeordnet und niemals gespeichert.",
       "hint": "PDF-Dateien – mehrere Dateien werden als ZIP zurückgegeben.",
-      "batchNote": "{{count}} Dateien ausgewählt – jede wird separat ausgeschossen; die Ergebnisse werden als ZIP zurückgegeben.",
+      "batchNote": "{{count}} Dateien ausgewählt – jede wird separat angeordnet; die Ergebnisse werden als ZIP zurückgegeben.",
       "layout": "Layout",
       "layout2up": "2 pro Seite",
       "layout4up": "4 pro Seite (2×2)",
@@ -443,8 +444,8 @@
       "mode": "Modus",
       "booklet": "Broschüre (Rückenheftung)",
       "bookletHelp": "Seiten so anordnen, dass ein gedruckter, gefalzter Stapel in der richtigen Reihenfolge lesbar ist.",
-      "submit": "Ausschießen",
-      "loading": "Wird ausgeschossen…"
+      "submit": "Layout anwenden",
+      "loading": "Layout wird angewendet…"
     },
     "toPdf": {
       "title": "In PDF",
@@ -454,7 +455,7 @@
       "sizeFit": "An Inhalt anpassen",
       "sizeLetter": "Letter",
       "sizeHelp": "Bildeingaben werden auf dieser Seitengröße platziert (Office-Dokumente behalten ihre eigene).",
-      "submit": "{count, plural, one {# Datei umwandeln} other {# Dateien umwandeln}}",
+      "submit": "Umwandeln",
       "loading": "Wird umgewandelt…"
     },
     "toImages": {
@@ -513,7 +514,7 @@
       "confirmError": "Die Passwörter stimmen nicht überein.",
       "ownerPassword": "Besitzerpasswort (optional)",
       "ownerPasswordHelp": "Steuert Berechtigungen; standardmäßig das Benutzerpasswort.",
-      "submit": "{count, plural, one {# Datei schützen} other {# Dateien schützen}}",
+      "submit": "Schützen",
       "loading": "Wird verschlüsselt…",
       "encryption": "Verschlüsselungsstärke",
       "encryption128": "AES-128 (kompatibel)",
@@ -528,7 +529,7 @@
       "password": "Passwort",
       "passwordHelp": "Das aktuelle Passwort zum Öffnen des/der PDF(s).",
       "passwordError": "Ein Passwort ist erforderlich.",
-      "submit": "{count, plural, one {# Datei entsperren} other {# Dateien entsperren}}",
+      "submit": "Entsperren",
       "loading": "Wird entsperrt…"
     },
     "redact": {

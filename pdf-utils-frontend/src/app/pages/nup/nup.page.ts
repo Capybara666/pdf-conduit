@@ -71,6 +71,9 @@ type NupLayout = '2up' | '4up' | '6up' | '8up' | '9up';
           (click)="submit()"
         >
           {{ 'pages.nup.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 

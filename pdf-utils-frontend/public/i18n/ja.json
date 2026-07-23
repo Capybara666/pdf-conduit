@@ -23,7 +23,8 @@
     "loading": "読み込み中",
     "processing": "処理中…",
     "moveUp": "上へ移動",
-    "moveDown": "下へ移動"
+    "moveDown": "下へ移動",
+    "fileCount": "{count, plural, other {# 個のファイル}}"
   },
   "dropzone": {
     "defaultLabel": "ここにファイルをドロップ、またはクリックして選択",
@@ -77,7 +78,7 @@
       "description": "ページの順序変更・反転・複製を行います。"
     },
     "nup": {
-      "label": "N-up",
+      "label": "1枚に複数ページ",
       "description": "1 枚に複数ページを配置したり、小冊子に折ったりします。"
     },
     "compress": {
@@ -356,13 +357,14 @@
     "merge": {
       "title": "結合",
       "description": "複数の PDF、画像、オフィス文書を 1 つの PDF にまとめます。",
-      "hint": "PDF、画像、オフィス文書に対応。下のリストをドラッグして順序を設定します。",
+      "hint": "PDF、画像、オフィス文書に対応。",
       "outputName": "出力名（任意）",
       "outputNamePlaceholder": "merged.pdf",
       "outputNameHelp": "既定では最初のファイル名に「_merged」を付けたものになります。",
       "removeAria": "削除",
-      "submit": "{count, plural, other {# 個のファイルを結合}}",
-      "loading": "結合中…"
+      "submit": "結合",
+      "loading": "結合中…",
+      "reorderHint": "下のリストをドラッグして順序を設定します。"
     },
     "extract": {
       "title": "抽出",
@@ -386,7 +388,7 @@
       "targetHelp1": "対応形式：",
       "targetHelp2": "またはバイト数の直接指定。",
       "targetError": "次のようなサイズを入力してください：",
-      "submit": "{count, plural, other {# 個のファイルを圧縮}}",
+      "submit": "圧縮",
       "loading": "圧縮中…",
       "noopWarning": "目標 ≥ ファイルサイズ — 縮小されません",
       "blankWarning": "圧縮する目標サイズを入力してください。",
@@ -412,8 +414,7 @@
       "dir270": "270° left (counter-clockwise)",
       "pages": "ページ",
       "pagesPlaceholder": "例：1,3,5-8（空欄 = すべて）",
-      "pagesHelp": "空欄 = すべてのページ。",
-      "submit": "{count, plural, other {# 個のファイルを回転}}",
+      "submit": "回転",
       "loading": "回転中…"
     },
     "arrange": {
@@ -429,7 +430,7 @@
       "loading": "並べ替え中…"
     },
     "nup": {
-      "title": "N-up / 小冊子",
+      "title": "1枚に複数ページ",
       "description": "1 枚に複数ページを配置するか、中とじの小冊子に折ります。",
       "privacyLine": "ファイルはプライベートに面付けされ、保存されることはありません。",
       "hint": "PDF ファイル — 複数ファイルは ZIP で返されます。",
@@ -443,8 +444,8 @@
       "mode": "モード",
       "booklet": "小冊子（中とじ）",
       "bookletHelp": "印刷して折り重ねたときに順番どおりに読めるようにページを並べ替えます。",
-      "submit": "面付け",
-      "loading": "面付け中…"
+      "submit": "レイアウトを適用",
+      "loading": "レイアウトを適用中…"
     },
     "toPdf": {
       "title": "PDF に変換",
@@ -454,7 +455,7 @@
       "sizeFit": "内容に合わせる",
       "sizeLetter": "Letter",
       "sizeHelp": "画像入力はこのページサイズに配置されます（オフィス文書は独自のサイズを保持します）。",
-      "submit": "{count, plural, other {# 個のファイルを変換}}",
+      "submit": "変換",
       "loading": "変換中…"
     },
     "toImages": {
@@ -513,7 +514,7 @@
       "confirmError": "パスワードが一致しません。",
       "ownerPassword": "オーナーパスワード（任意）",
       "ownerPasswordHelp": "権限を制御します。既定ではユーザーパスワードと同じになります。",
-      "submit": "{count, plural, other {# 個のファイルを保護}}",
+      "submit": "保護",
       "loading": "暗号化中…",
       "encryption": "暗号化強度",
       "encryption128": "AES-128（互換性重視）",
@@ -528,7 +529,7 @@
       "password": "パスワード",
       "passwordHelp": "PDF を開くのに現在使用しているパスワード。",
       "passwordError": "パスワードは必須です。",
-      "submit": "{count, plural, other {# 個のファイルをロック解除}}",
+      "submit": "ロック解除",
       "loading": "ロック解除中…"
     },
     "redact": {

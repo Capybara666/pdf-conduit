@@ -73,6 +73,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           (click)="submit()"
         >
           {{ 'pages.crop.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 

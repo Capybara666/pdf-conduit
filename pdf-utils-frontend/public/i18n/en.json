@@ -23,7 +23,8 @@
     "loading": "Loading",
     "processing": "Processing…",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "fileCount": "{count, plural, one {# file} other {# files}}"
   },
   "dropzone": {
     "defaultLabel": "Drop files here or click to browse",
@@ -77,7 +78,7 @@
       "description": "Reorder, reverse or duplicate pages."
     },
     "nup": {
-      "label": "N-up",
+      "label": "Pages per sheet",
       "description": "Place several pages per sheet, or fold a booklet."
     },
     "compress": {
@@ -356,13 +357,14 @@
     "merge": {
       "title": "Merge",
       "description": "Combine several PDFs, images or office documents into one PDF.",
-      "hint": "PDFs, images and office docs. Drag the list below to set the order.",
+      "hint": "PDFs, images and office docs.",
       "outputName": "Output name (optional)",
       "outputNamePlaceholder": "merged.pdf",
       "outputNameHelp": "Defaults to the first file's name with a “_merged” suffix.",
       "removeAria": "Remove",
-      "submit": "{count, plural, one {Merge # file} other {Merge # files}}",
-      "loading": "Merging…"
+      "submit": "Merge",
+      "loading": "Merging…",
+      "reorderHint": "Drag the list below to set the order."
     },
     "extract": {
       "title": "Extract",
@@ -386,7 +388,7 @@
       "targetHelp1": "Accepts",
       "targetHelp2": "or a raw byte count.",
       "targetError": "Enter a size such as",
-      "submit": "{count, plural, one {Compress # file} other {Compress # files}}",
+      "submit": "Compress",
       "loading": "Compressing…",
       "noopWarning": "Target ≥ file size — won't shrink",
       "blankWarning": "Enter a target size to compress.",
@@ -412,8 +414,7 @@
       "dir270": "270° left (counter-clockwise)",
       "pages": "Pages",
       "pagesPlaceholder": "e.g. 1,3,5-8 (blank = all)",
-      "pagesHelp": "Blank = every page.",
-      "submit": "{count, plural, one {Rotate # file} other {Rotate # files}}",
+      "submit": "Rotate",
       "loading": "Rotating…"
     },
     "arrange": {
@@ -429,11 +430,11 @@
       "loading": "Arranging…"
     },
     "nup": {
-      "title": "N-up / Booklet",
+      "title": "Pages per sheet",
       "description": "Place several pages per sheet, or fold a saddle-stitch booklet.",
-      "privacyLine": "Your files are imposed privately and never stored.",
+      "privacyLine": "Your files are laid out privately and never stored.",
       "hint": "PDF files — multiple files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — each is imposed separately; results come back as a ZIP.",
+      "batchNote": "{{count}} files selected — each is laid out separately; results come back as a ZIP.",
       "layout": "Layout",
       "layout2up": "2 per page",
       "layout4up": "4 per page (2×2)",
@@ -443,8 +444,8 @@
       "mode": "Mode",
       "booklet": "Booklet (saddle-stitch)",
       "bookletHelp": "Reorder pages so a printed, folded stack reads in order.",
-      "submit": "Impose",
-      "loading": "Imposing…"
+      "submit": "Apply layout",
+      "loading": "Applying layout…"
     },
     "toPdf": {
       "title": "To PDF",
@@ -454,7 +455,7 @@
       "sizeFit": "Fit to content",
       "sizeLetter": "Letter",
       "sizeHelp": "Image inputs are placed on this page size (office docs keep their own).",
-      "submit": "{count, plural, one {Convert # file} other {Convert # files}}",
+      "submit": "Convert",
       "loading": "Converting…"
     },
     "toImages": {
@@ -513,7 +514,7 @@
       "confirmError": "Passwords don't match.",
       "ownerPassword": "Owner password (optional)",
       "ownerPasswordHelp": "Controls permissions; defaults to the user password.",
-      "submit": "{count, plural, one {Protect # file} other {Protect # files}}",
+      "submit": "Protect",
       "loading": "Encrypting…",
       "encryption": "Encryption strength",
       "encryption128": "AES-128 (compatible)",
@@ -528,7 +529,7 @@
       "password": "Password",
       "passwordHelp": "The current password used to open the PDF(s).",
       "passwordError": "A password is required.",
-      "submit": "{count, plural, one {Unlock # file} other {Unlock # files}}",
+      "submit": "Unlock",
       "loading": "Unlocking…"
     },
     "redact": {

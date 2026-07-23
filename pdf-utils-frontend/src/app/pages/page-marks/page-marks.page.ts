@@ -104,6 +104,9 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!canSubmit() || state.loading()" (click)="submit()">
           {{ 'pages.pageMarks.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
         @if (files().length && !hasContent()) {
           <span class="hint-note">{{ 'pages.pageMarks.needSlot' | transloco }}</span>

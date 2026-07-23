@@ -23,7 +23,8 @@
     "loading": "Laden",
     "processing": "Bezig…",
     "moveUp": "Omhoog verplaatsen",
-    "moveDown": "Omlaag verplaatsen"
+    "moveDown": "Omlaag verplaatsen",
+    "fileCount": "{count, plural, one {# bestand} other {# bestanden}}"
   },
   "dropzone": {
     "defaultLabel": "Sleep bestanden hierheen of klik om te bladeren",
@@ -77,7 +78,7 @@
       "description": "Herschik, keer om of dupliceer pagina's."
     },
     "nup": {
-      "label": "N-up",
+      "label": "Pagina's per vel",
       "description": "Plaats meerdere pagina's per vel of vouw een boekje."
     },
     "compress": {
@@ -356,13 +357,14 @@
     "merge": {
       "title": "Samenvoegen",
       "description": "Voeg meerdere PDF's, afbeeldingen of officedocumenten samen tot één PDF.",
-      "hint": "PDF's, afbeeldingen en officedocumenten. Sleep de lijst hieronder om de volgorde te bepalen.",
+      "hint": "PDF's, afbeeldingen en officedocumenten.",
       "outputName": "Uitvoernaam (optioneel)",
       "outputNamePlaceholder": "samengevoegd.pdf",
       "outputNameHelp": "Standaard de naam van het eerste bestand met het achtervoegsel “_merged”.",
       "removeAria": "Verwijderen",
-      "submit": "{count, plural, one {# bestand samenvoegen} other {# bestanden samenvoegen}}",
-      "loading": "Samenvoegen…"
+      "submit": "Samenvoegen",
+      "loading": "Samenvoegen…",
+      "reorderHint": "Sleep de lijst hieronder om de volgorde te bepalen."
     },
     "extract": {
       "title": "Extraheren",
@@ -386,7 +388,7 @@
       "targetHelp1": "Accepteert",
       "targetHelp2": "of een ruw aantal bytes.",
       "targetError": "Voer een grootte in zoals",
-      "submit": "{count, plural, one {# bestand comprimeren} other {# bestanden comprimeren}}",
+      "submit": "Comprimeren",
       "loading": "Comprimeren…",
       "noopWarning": "Doel ≥ bestandsgrootte — wordt niet kleiner",
       "blankWarning": "Voer een doelgrootte in om te comprimeren.",
@@ -412,8 +414,7 @@
       "dir270": "270° left (counter-clockwise)",
       "pages": "Pagina's",
       "pagesPlaceholder": "bijv. 1,3,5-8 (leeg = alle)",
-      "pagesHelp": "Leeg = elke pagina.",
-      "submit": "{count, plural, one {# bestand draaien} other {# bestanden draaien}}",
+      "submit": "Draaien",
       "loading": "Draaien…"
     },
     "arrange": {
@@ -429,7 +430,7 @@
       "loading": "Schikken…"
     },
     "nup": {
-      "title": "N-up / Boekje",
+      "title": "Pagina's per vel",
       "description": "Plaats meerdere pagina's per vel of vouw een boekje met rugnietje.",
       "privacyLine": "Uw bestanden worden privé geïmposeerd en nooit opgeslagen.",
       "hint": "PDF-bestanden — meerdere bestanden komen terug als ZIP.",
@@ -443,8 +444,8 @@
       "mode": "Modus",
       "booklet": "Boekje (rugnietje)",
       "bookletHelp": "Herschik pagina's zodat een gedrukte, gevouwen stapel op volgorde leest.",
-      "submit": "Imposeren",
-      "loading": "Imposeren…"
+      "submit": "Lay-out toepassen",
+      "loading": "Lay-out toepassen…"
     },
     "toPdf": {
       "title": "Naar PDF",
@@ -454,7 +455,7 @@
       "sizeFit": "Aanpassen aan inhoud",
       "sizeLetter": "Letter",
       "sizeHelp": "Afbeeldingsinvoer wordt op dit paginaformaat geplaatst (officedocumenten behouden hun eigen formaat).",
-      "submit": "{count, plural, one {# bestand converteren} other {# bestanden converteren}}",
+      "submit": "Converteren",
       "loading": "Converteren…"
     },
     "toImages": {
@@ -513,7 +514,7 @@
       "confirmError": "De wachtwoorden komen niet overeen.",
       "ownerPassword": "Eigenaarswachtwoord (optioneel)",
       "ownerPasswordHelp": "Regelt de rechten; standaard gelijk aan het gebruikerswachtwoord.",
-      "submit": "{count, plural, one {# bestand beveiligen} other {# bestanden beveiligen}}",
+      "submit": "Beveiligen",
       "loading": "Versleutelen…",
       "encryption": "Versleutelingssterkte",
       "encryption128": "AES-128 (compatibel)",
@@ -528,7 +529,7 @@
       "password": "Wachtwoord",
       "passwordHelp": "Het huidige wachtwoord om de PDF('s) te openen.",
       "passwordError": "Een wachtwoord is vereist.",
-      "submit": "{count, plural, one {# bestand ontgrendelen} other {# bestanden ontgrendelen}}",
+      "submit": "Ontgrendelen",
       "loading": "Ontgrendelen…"
     },
     "redact": {

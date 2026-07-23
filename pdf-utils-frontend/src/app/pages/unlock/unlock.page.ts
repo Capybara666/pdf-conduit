@@ -69,7 +69,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           [disabled]="!files().length || password.invalid || state.loading()"
           (click)="submit()"
         >
-          {{ 'pages.unlock.submit' | transloco: { count: files().length } }}
+          {{ 'pages.unlock.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 

@@ -43,7 +43,10 @@ type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
 
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
-          {{ 'pages.toPdf.submit' | transloco: { count: files().length } }}
+          {{ 'pages.toPdf.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 

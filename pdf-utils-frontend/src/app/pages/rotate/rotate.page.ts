@@ -76,7 +76,6 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
             [formControl]="pages"
             [placeholder]="'pages.rotate.pagesPlaceholder' | transloco"
           />
-          <span class="help">{{ 'pages.rotate.pagesHelp' | transloco }}</span>
         </div>
       </div>
 
@@ -92,7 +91,10 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 
       <div class="btn-row">
         <button type="button" class="btn btn-primary" [disabled]="!files().length || state.loading()" (click)="submit()">
-          {{ 'pages.rotate.submit' | transloco: { count: files().length } }}
+          {{ 'pages.rotate.submit' | transloco }}
+          @if (files().length) {
+            · {{ 'common.fileCount' | transloco: { count: files().length } }}
+          }
         </button>
       </div>
 
