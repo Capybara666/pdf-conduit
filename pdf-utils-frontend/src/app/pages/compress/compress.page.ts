@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -215,13 +215,17 @@ export class CompressPage {
   protected readonly grayscale = new FormControl(false, { nonNullable: true });
   protected readonly state = new OperationState();
 
-  /** Live amount/unit as signals so warnings react to typing and unit changes. */
-  private readonly amountValue = toSignal(this.targetAmount.valueChanges, {
-    initialValue: this.targetAmount.value,
-  });
-  private readonly unitValue = toSignal(this.targetUnit.valueChanges, {
-    initialValue: this.targetUnit.value,
-  });
+  // Live amount/unit as writable signals so warnings react to typing and unit
+  // changes. NOTE: these are NOT derived from `valueChanges` via `toSignal`,
+  // because WorkStateService restores persisted values with `emitEvent: false`
+  // (no valueChanges emission). A `toSignal(valueChanges)` would therefore keep
+  // its pre-restore initial value while the control (and its `[formControl]`
+  // display) shows the restored one — making the displayed unit and the no-op
+  // logic DISAGREE (e.g. display "5 KB" but no-op computed as if "5 MB"). We
+  // instead seed these from the control's ACTUAL value after restore (see the
+  // constructor) and keep them in sync via a valueChanges subscription.
+  private readonly amountValue = signal<number | null>(this.targetAmount.value);
+  private readonly unitValue = signal<TargetUnit>(this.targetUnit.value);
   /** Parsed target in bytes, or null when blank/non-positive. */
   private readonly targetBytes = computed(() => {
     const amount = this.amountValue();
@@ -256,16 +260,36 @@ export class CompressPage {
   private readonly workState = inject(WorkStateService);
 
   constructor(private readonly api: ApiService) {
+    // persist() synchronously restores any saved amount/unit into the controls
+    // (with emitEvent:false), so read the controls AFTERWARDS to seed the live
+    // signals from the actual, possibly-restored values — keeping the displayed
+    // unit and the no-op/warning logic in agreement.
     this.workState.persist('compress', {
       targetAmount: this.targetAmount,
       targetUnit: this.targetUnit,
       dpi: this.dpi,
       grayscale: this.grayscale,
     });
+    this.amountValue.set(this.targetAmount.value);
+    this.unitValue.set(this.targetUnit.value);
+
+    // Keep the live signals tracking user edits (typing / unit changes). Neither
+    // restore nor reset() emit (both patch with emitEvent:false), so those paths
+    // re-seed the signals explicitly; every real user edit does emit here.
+    this.targetAmount.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.amountValue.set(v));
+    this.targetUnit.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.unitValue.set(v));
   }
 
   clear(): void {
     this.workState.reset('compress');
+    // reset() restores defaults with emitEvent:false, so re-seed the live
+    // signals from the (now-default) control values to keep them consistent.
+    this.amountValue.set(this.targetAmount.value);
+    this.unitValue.set(this.targetUnit.value);
     this.files.set([]);
     this.state.reset();
   }
