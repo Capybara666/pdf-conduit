@@ -291,25 +291,20 @@
     padding-left: 1.5rem;
   }
 
-  /* Column 2 = mirror of `.content`: same side gutter (2rem fixed). */
+  /* Column 2 = mirror of `.content` at its WIDEST: always use the wide side
+     gutter so the actions stay pinned to the wide content column's right edge,
+     regardless of the fixed/wide toggle. */
   .header-actions {
     min-width: 0;
-    padding: 0 2rem;
+    padding: 0 max(2rem, 3vw);
   }
 
-  /* Inner = mirror of `.op-page`: same max-width, centred, same inline padding,
-     with the controls flush to its right edge. */
+  /* Inner = mirror of `.op-page` at its WIDE max-width, always — so the controls'
+     right edge sits at the WIDE content boundary even when fixed mode is active. */
   .actions-inner {
-    max-width: var(--content-max);
+    max-width: min(96vw, 1600px);
     margin: 0 auto;
     padding: 0 1.5rem;
-  }
-
-  /* WIDE mode: match `.content`'s widened side gutter so column 2 stays aligned
-     with the wider content column (the max-width already flips via the token). */
-  :root[data-width='wide'] .header-actions {
-    padding-left: max(2rem, 3vw);
-    padding-right: max(2rem, 3vw);
   }
 }
 
