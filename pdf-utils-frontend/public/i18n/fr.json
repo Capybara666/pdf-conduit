@@ -115,8 +115,8 @@
       "description": "Masquez définitivement des zones d'une page."
     },
     "sign": {
-      "label": "Fill & Sign",
-      "description": "Place a signature and fill form fields, then flatten."
+      "label": "Remplir et signer",
+      "description": "Placez une signature et remplissez les champs, puis aplatissez."
     },
     "metadata": {
       "label": "Métadonnées",
@@ -143,8 +143,8 @@
       "description": "Rognez les marges de chaque page."
     },
     "page-marks": {
-      "label": "Page Marks",
-      "description": "Add page numbers and header/footer text."
+      "label": "Marques de page",
+      "description": "Ajoutez des numéros de page et du texte d'en-tête/pied de page."
     }
   },
   "header": {
@@ -158,8 +158,8 @@
     "themeToLight": "Passer au thème clair",
     "themeToDark": "Passer au thème sombre",
     "languageLabel": "Langue",
-    "settings": "Settings",
-    "settingsClose": "Close"
+    "settings": "Paramètres",
+    "settingsClose": "Fermer"
   },
   "theme": {
     "label": "Thème",
@@ -391,8 +391,8 @@
       "targetHelp1": "Accepte",
       "targetHelp2": "ou un nombre d'octets brut.",
       "targetError": "Saisissez une taille telle que",
-      "amountError": "Enter a positive number.",
-      "unitLabel": "Unit",
+      "amountError": "Saisissez un nombre positif.",
+      "unitLabel": "Unité",
       "submit": "Compresser",
       "loading": "Compression en cours…",
       "noopWarning": "Cible ≥ taille du fichier — pas de réduction",
@@ -414,9 +414,9 @@
       "hint": "Un ou plusieurs PDF (plusieurs fichiers → ZIP).",
       "angle": "Angle",
       "angleAria": "Angle de rotation",
-      "dir90": "Rotates 90° clockwise",
-      "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir90": "Pivote de 90° dans le sens horaire",
+      "dir180": "Pivote de 180° (retournement)",
+      "dir270": "Pivote de 270° dans le sens horaire",
       "pages": "Pages",
       "pagesPlaceholder": "ex. 1,3,5-8 (vide = toutes)",
       "submit": "Pivoter",
@@ -551,28 +551,28 @@
       "keepSearchable": "Garder le texte consultable (OCR)"
     },
     "sign": {
-      "title": "Fill & Sign",
-      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
-      "hint": "One PDF. Then create a signature and drop it onto the page.",
-      "dragHint": "Drag on a page to place your signature.",
-      "chooseAnother": "Choose another PDF",
-      "needSignature": "Create a signature first, then drag a box on the page to place it.",
-      "signature": "Your signature",
-      "tabDraw": "Draw",
-      "tabType": "Type",
-      "tabUpload": "Upload",
-      "clearPad": "Clear",
-      "useSignature": "Use this signature",
-      "typePlaceholder": "Type your name",
-      "currentSignature": "Current signature",
-      "placements": "Placements ({{count}})",
-      "placementsNoSig": "Create a signature to start placing it.",
-      "placementsEmpty": "No placements yet. Drag a box where the signature should go.",
-      "removePlacement": "Remove placement",
-      "flatten": "Flatten the document",
-      "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
-      "submit": "Sign & download",
-      "loading": "Signing…"
+      "title": "Remplir et signer",
+      "description": "Ajoutez une signature à votre PDF et aplatissez-le — rien n'est stocké, tout se déroule dans votre session.",
+      "hint": "Un seul PDF. Créez ensuite une signature et déposez-la sur la page.",
+      "dragHint": "Faites glisser sur une page pour placer votre signature.",
+      "chooseAnother": "Choisir un autre PDF",
+      "needSignature": "Créez d'abord une signature, puis tracez un cadre sur la page pour la placer.",
+      "signature": "Votre signature",
+      "tabDraw": "Dessiner",
+      "tabType": "Saisir",
+      "tabUpload": "Importer",
+      "clearPad": "Effacer",
+      "useSignature": "Utiliser cette signature",
+      "typePlaceholder": "Saisissez votre nom",
+      "currentSignature": "Signature actuelle",
+      "placements": "Emplacements ({{count}})",
+      "placementsNoSig": "Créez une signature pour commencer à la placer.",
+      "placementsEmpty": "Aucun emplacement pour l'instant. Tracez un cadre à l'endroit voulu pour la signature.",
+      "removePlacement": "Supprimer l'emplacement",
+      "flatten": "Aplatir le document",
+      "flattenHint": "Intègre la signature et les champs de formulaire à la page pour qu'ils ne soient plus modifiables.",
+      "submit": "Signer et télécharger",
+      "loading": "Signature en cours…"
     },
     "metadata": {
       "title": "Métadonnées",
@@ -628,7 +628,7 @@
       "step2": "Réorganisation",
       "step3": "Réglages de page",
       "step4": "Compression",
-      "step5": "Export",
+      "step5": "Exporter",
       "selectTitle": "Sélectionner les fichiers",
       "selectHint": "PDF, images et documents bureautiques.",
       "arrangeTitle": "Réorganisation et plages de pages",
@@ -702,11 +702,11 @@
       "running": "Exécution en cours…",
       "valid": "✓ Le pipeline est valide.",
       "jsonTitle": "JSON du pipeline",
-      "fieldHeaderCenter": "Header (center)",
-      "fieldFooterCenter": "Footer (center)",
-      "fieldStartNumber": "Start number",
-      "fieldPrefix": "Bates prefix",
-      "skipFirst": "Skip first page"
+      "fieldHeaderCenter": "En-tête (centre)",
+      "fieldFooterCenter": "Pied de page (centre)",
+      "fieldStartNumber": "Numéro de départ",
+      "fieldPrefix": "Préfixe Bates",
+      "skipFirst": "Ignorer la première page"
     },
     "gdprScan": {
       "title": "Analyse RGPD / PII",
@@ -775,26 +775,26 @@
       "loading": "Rognage…"
     },
     "pageMarks": {
-      "title": "Page Marks",
-      "description": "Add page numbers and header/footer text to every page.",
-      "hint": "One or more PDFs to mark (several files → ZIP).",
-      "privacyLine": "Your files are marked privately and never stored.",
-      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
-      "header": "Header",
-      "footer": "Footer",
-      "left": "Left",
-      "center": "Center",
-      "right": "Right",
-      "slotPlaceholder": "e.g. {page} / {pages}",
-      "fontSize": "Font size (pt)",
-      "margin": "Margin (pt)",
-      "startNumber": "Start number",
-      "prefix": "Bates prefix",
-      "prefixPlaceholder": "e.g. ACME-",
-      "skipFirst": "Skip the first page",
-      "submit": "Add page marks",
-      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
-      "loading": "Marking…"
+      "title": "Marques de page",
+      "description": "Ajoutez des numéros de page et du texte d'en-tête/pied de page à chaque page.",
+      "hint": "Un ou plusieurs PDF à marquer (plusieurs fichiers → ZIP).",
+      "privacyLine": "Vos fichiers sont marqués en privé et ne sont jamais stockés.",
+      "tokensHelp": "Utilisez des jetons dans n'importe quel emplacement : {page} page actuelle, {pages} total, {n} numéro de page, {date} aujourd'hui.",
+      "header": "En-tête",
+      "footer": "Pied de page",
+      "left": "Gauche",
+      "center": "Centre",
+      "right": "Droite",
+      "slotPlaceholder": "ex. {page} / {pages}",
+      "fontSize": "Taille de police (pt)",
+      "margin": "Marge (pt)",
+      "startNumber": "Numéro de départ",
+      "prefix": "Préfixe Bates",
+      "prefixPlaceholder": "ex. ACME-",
+      "skipFirst": "Ignorer la première page",
+      "submit": "Ajouter les marques de page",
+      "needSlot": "Saisissez du texte dans au moins un emplacement (ex. {page} / {pages}).",
+      "loading": "Marquage en cours…"
     }
   },
   "pageGrid": {

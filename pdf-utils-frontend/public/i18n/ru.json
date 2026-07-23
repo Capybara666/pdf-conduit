@@ -115,8 +115,8 @@
       "description": "Безвозвратно закрасьте области на странице."
     },
     "sign": {
-      "label": "Fill & Sign",
-      "description": "Place a signature and fill form fields, then flatten."
+      "label": "Заполнить и подписать",
+      "description": "Разместите подпись, заполните поля формы и сведите документ."
     },
     "metadata": {
       "label": "Метаданные",
@@ -140,11 +140,11 @@
     },
     "crop": {
       "label": "Обрезать",
-      "description": "Trim margins off every page."
+      "description": "Обрежьте поля на каждой странице."
     },
     "page-marks": {
-      "label": "Page Marks",
-      "description": "Add page numbers and header/footer text."
+      "label": "Колонтитулы и нумерация",
+      "description": "Добавьте номера страниц и текст колонтитулов."
     }
   },
   "header": {
@@ -158,8 +158,8 @@
     "themeToLight": "Переключить на светлую тему",
     "themeToDark": "Переключить на тёмную тему",
     "languageLabel": "Язык",
-    "settings": "Settings",
-    "settingsClose": "Close"
+    "settings": "Настройки",
+    "settingsClose": "Закрыть"
   },
   "theme": {
     "label": "Тема",
@@ -391,8 +391,8 @@
       "targetHelp1": "Принимает",
       "targetHelp2": "или число байтов.",
       "targetError": "Введите размер, например",
-      "amountError": "Enter a positive number.",
-      "unitLabel": "Unit",
+      "amountError": "Введите положительное число.",
+      "unitLabel": "Единица",
       "submit": "Сжать",
       "loading": "Сжатие…",
       "noopWarning": "Цель ≥ размера файла — не уменьшится",
@@ -414,9 +414,9 @@
       "hint": "Один или несколько PDF (несколько файлов → ZIP).",
       "angle": "Угол",
       "angleAria": "Угол поворота",
-      "dir90": "Rotates 90° clockwise",
-      "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir90": "Поворот на 90° по часовой стрелке",
+      "dir180": "Поворот на 180° (переворот)",
+      "dir270": "Поворот на 270° по часовой стрелке",
       "pages": "Страницы",
       "pagesPlaceholder": "например 1,3,5-8 (пусто = все)",
       "submit": "Повернуть",
@@ -551,28 +551,28 @@
       "keepSearchable": "Сохранить текст для поиска (OCR)"
     },
     "sign": {
-      "title": "Fill & Sign",
-      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
-      "hint": "One PDF. Then create a signature and drop it onto the page.",
-      "dragHint": "Drag on a page to place your signature.",
-      "chooseAnother": "Choose another PDF",
-      "needSignature": "Create a signature first, then drag a box on the page to place it.",
-      "signature": "Your signature",
-      "tabDraw": "Draw",
-      "tabType": "Type",
-      "tabUpload": "Upload",
-      "clearPad": "Clear",
-      "useSignature": "Use this signature",
-      "typePlaceholder": "Type your name",
-      "currentSignature": "Current signature",
-      "placements": "Placements ({{count}})",
-      "placementsNoSig": "Create a signature to start placing it.",
-      "placementsEmpty": "No placements yet. Drag a box where the signature should go.",
-      "removePlacement": "Remove placement",
-      "flatten": "Flatten the document",
-      "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
-      "submit": "Sign & download",
-      "loading": "Signing…"
+      "title": "Заполнить и подписать",
+      "description": "Добавьте подпись к вашему PDF и сведите его — ничего не сохраняется, всё выполняется в вашей сессии.",
+      "hint": "Один PDF. Затем создайте подпись и перетащите её на страницу.",
+      "dragHint": "Перетащите по странице, чтобы разместить подпись.",
+      "chooseAnother": "Выбрать другой PDF",
+      "needSignature": "Сначала создайте подпись, затем перетащите рамку на странице, чтобы её разместить.",
+      "signature": "Ваша подпись",
+      "tabDraw": "Нарисовать",
+      "tabType": "Ввести",
+      "tabUpload": "Загрузить",
+      "clearPad": "Очистить",
+      "useSignature": "Использовать эту подпись",
+      "typePlaceholder": "Введите ваше имя",
+      "currentSignature": "Текущая подпись",
+      "placements": "Размещения ({{count}})",
+      "placementsNoSig": "Создайте подпись, чтобы начать её размещать.",
+      "placementsEmpty": "Пока нет размещений. Перетащите рамку туда, где должна быть подпись.",
+      "removePlacement": "Удалить размещение",
+      "flatten": "Свести документ",
+      "flattenHint": "Впечатывает подпись и поля формы в страницу, чтобы их нельзя было редактировать.",
+      "submit": "Подписать и скачать",
+      "loading": "Подписание…"
     },
     "metadata": {
       "title": "Метаданные",
@@ -702,11 +702,11 @@
       "running": "Выполнение…",
       "valid": "✓ Конвейер корректен.",
       "jsonTitle": "JSON конвейера",
-      "fieldHeaderCenter": "Header (center)",
-      "fieldFooterCenter": "Footer (center)",
-      "fieldStartNumber": "Start number",
-      "fieldPrefix": "Bates prefix",
-      "skipFirst": "Skip first page"
+      "fieldHeaderCenter": "Верхний колонтитул (по центру)",
+      "fieldFooterCenter": "Нижний колонтитул (по центру)",
+      "fieldStartNumber": "Начальный номер",
+      "fieldPrefix": "Префикс Бейтса",
+      "skipFirst": "Пропустить первую страницу"
     },
     "gdprScan": {
       "title": "Проверка GDPR / PII",
@@ -759,10 +759,10 @@
     },
     "crop": {
       "title": "Обрезать",
-      "description": "Trim margins off every page.",
-      "privacyLine": "Your files are cropped privately and never stored.",
-      "hint": "PDF files — several files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "description": "Обрежьте поля на каждой странице.",
+      "privacyLine": "Ваши файлы обрезаются конфиденциально и никогда не сохраняются.",
+      "hint": "Файлы PDF — несколько файлов вернутся в виде ZIP.",
+      "batchNote": "Выбрано файлов: {{count}} — поля применяются к каждому; результаты вернутся в виде ZIP.",
       "top": "Сверху",
       "right": "Справа",
       "bottom": "Снизу",
@@ -770,31 +770,31 @@
       "unit": "Единица",
       "unitPt": "Пункты (pt)",
       "unitMm": "Миллиметры (mm)",
-      "unitHelp": "Each margin is trimmed off the matching page edge.",
-      "submit": "Crop pages",
-      "loading": "Cropping…"
+      "unitHelp": "Каждое поле обрезается с соответствующего края страницы.",
+      "submit": "Обрезать страницы",
+      "loading": "Обрезка…"
     },
     "pageMarks": {
-      "title": "Page Marks",
-      "description": "Add page numbers and header/footer text to every page.",
-      "hint": "One or more PDFs to mark (several files → ZIP).",
-      "privacyLine": "Your files are marked privately and never stored.",
-      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
-      "header": "Header",
-      "footer": "Footer",
-      "left": "Left",
-      "center": "Center",
-      "right": "Right",
-      "slotPlaceholder": "e.g. {page} / {pages}",
-      "fontSize": "Font size (pt)",
-      "margin": "Margin (pt)",
-      "startNumber": "Start number",
-      "prefix": "Bates prefix",
-      "prefixPlaceholder": "e.g. ACME-",
-      "skipFirst": "Skip the first page",
-      "submit": "Add page marks",
-      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
-      "loading": "Marking…"
+      "title": "Колонтитулы и нумерация",
+      "description": "Добавьте номера страниц и текст колонтитулов на каждую страницу.",
+      "hint": "Один или несколько PDF для маркировки (несколько файлов → ZIP).",
+      "privacyLine": "Ваши файлы маркируются конфиденциально и никогда не сохраняются.",
+      "tokensHelp": "Используйте токены в любом поле: {page} текущая страница, {pages} всего, {n} номер страницы, {date} сегодня.",
+      "header": "Верхний колонтитул",
+      "footer": "Нижний колонтитул",
+      "left": "Слева",
+      "center": "По центру",
+      "right": "Справа",
+      "slotPlaceholder": "напр. {page} / {pages}",
+      "fontSize": "Размер шрифта (pt)",
+      "margin": "Отступ (pt)",
+      "startNumber": "Начальный номер",
+      "prefix": "Префикс Бейтса",
+      "prefixPlaceholder": "напр. ACME-",
+      "skipFirst": "Пропустить первую страницу",
+      "submit": "Добавить отметки страниц",
+      "needSlot": "Введите текст хотя бы в одно поле (напр. {page} / {pages}).",
+      "loading": "Маркировка…"
     }
   },
   "pageGrid": {

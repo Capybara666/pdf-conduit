@@ -115,11 +115,11 @@
       "description": "Maak delen van een pagina permanent onleesbaar."
     },
     "sign": {
-      "label": "Fill & Sign",
-      "description": "Place a signature and fill form fields, then flatten."
+      "label": "Invullen en ondertekenen",
+      "description": "Plaats een handtekening en vul formuliervelden in, en maak vervolgens plat."
     },
     "metadata": {
-      "label": "Metadata",
+      "label": "Metagegevens",
       "description": "Bekijk, bewerk of verwijder documentgegevens."
     },
     "watermark": {
@@ -140,11 +140,11 @@
     },
     "crop": {
       "label": "Bijsnijden",
-      "description": "Trim margins off every page."
+      "description": "Snijd de marges van elke pagina bij."
     },
     "page-marks": {
-      "label": "Page Marks",
-      "description": "Add page numbers and header/footer text."
+      "label": "Paginamarkeringen",
+      "description": "Voeg paginanummers en kop-/voettekst toe."
     }
   },
   "header": {
@@ -158,8 +158,8 @@
     "themeToLight": "Overschakelen naar licht thema",
     "themeToDark": "Overschakelen naar donker thema",
     "languageLabel": "Taal",
-    "settings": "Settings",
-    "settingsClose": "Close"
+    "settings": "Instellingen",
+    "settingsClose": "Sluiten"
   },
   "theme": {
     "label": "Thema",
@@ -225,7 +225,7 @@
     },
     "footer": {
       "aria": "Voettekst",
-      "tools": "Tools",
+      "tools": "Hulpmiddelen",
       "privacy": "Privacy",
       "github": "GitHub",
       "copy": "Je bestanden worden verwerkt en nooit opgeslagen. Gratis te gebruiken."
@@ -391,8 +391,8 @@
       "targetHelp1": "Accepteert",
       "targetHelp2": "of een ruw aantal bytes.",
       "targetError": "Voer een grootte in zoals",
-      "amountError": "Enter a positive number.",
-      "unitLabel": "Unit",
+      "amountError": "Voer een positief getal in.",
+      "unitLabel": "Eenheid",
       "submit": "Comprimeren",
       "loading": "Comprimeren…",
       "noopWarning": "Doel ≥ bestandsgrootte — wordt niet kleiner",
@@ -414,9 +414,9 @@
       "hint": "Eén of meer PDF's (meerdere bestanden → ZIP).",
       "angle": "Hoek",
       "angleAria": "Rotatiehoek",
-      "dir90": "Rotates 90° clockwise",
-      "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir90": "Draait 90° met de klok mee",
+      "dir180": "Draait 180° (omkeren)",
+      "dir270": "Draait 270° met de klok mee",
       "pages": "Pagina's",
       "pagesPlaceholder": "bijv. 1,3,5-8 (leeg = alle)",
       "submit": "Draaien",
@@ -551,31 +551,31 @@
       "keepSearchable": "Tekst doorzoekbaar houden (OCR)"
     },
     "sign": {
-      "title": "Fill & Sign",
-      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
-      "hint": "One PDF. Then create a signature and drop it onto the page.",
-      "dragHint": "Drag on a page to place your signature.",
-      "chooseAnother": "Choose another PDF",
-      "needSignature": "Create a signature first, then drag a box on the page to place it.",
-      "signature": "Your signature",
-      "tabDraw": "Draw",
-      "tabType": "Type",
-      "tabUpload": "Upload",
-      "clearPad": "Clear",
-      "useSignature": "Use this signature",
-      "typePlaceholder": "Type your name",
-      "currentSignature": "Current signature",
-      "placements": "Placements ({{count}})",
-      "placementsNoSig": "Create a signature to start placing it.",
-      "placementsEmpty": "No placements yet. Drag a box where the signature should go.",
-      "removePlacement": "Remove placement",
-      "flatten": "Flatten the document",
-      "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
-      "submit": "Sign & download",
-      "loading": "Signing…"
+      "title": "Invullen en ondertekenen",
+      "description": "Voeg een handtekening toe aan je PDF en maak deze plat — er wordt niets opgeslagen, alles gebeurt in je sessie.",
+      "hint": "Eén PDF. Maak vervolgens een handtekening en plaats deze op de pagina.",
+      "dragHint": "Sleep op een pagina om je handtekening te plaatsen.",
+      "chooseAnother": "Kies een andere PDF",
+      "needSignature": "Maak eerst een handtekening en sleep dan een vak op de pagina om deze te plaatsen.",
+      "signature": "Je handtekening",
+      "tabDraw": "Tekenen",
+      "tabType": "Typen",
+      "tabUpload": "Uploaden",
+      "clearPad": "Wissen",
+      "useSignature": "Deze handtekening gebruiken",
+      "typePlaceholder": "Typ je naam",
+      "currentSignature": "Huidige handtekening",
+      "placements": "Plaatsingen ({{count}})",
+      "placementsNoSig": "Maak een handtekening om te beginnen met plaatsen.",
+      "placementsEmpty": "Nog geen plaatsingen. Sleep een vak naar de plek waar de handtekening moet komen.",
+      "removePlacement": "Plaatsing verwijderen",
+      "flatten": "Document platmaken",
+      "flattenHint": "Bakt de handtekening en eventuele formuliervelden in de pagina, zodat ze niet meer bewerkt kunnen worden.",
+      "submit": "Ondertekenen en downloaden",
+      "loading": "Ondertekenen…"
     },
     "metadata": {
-      "title": "Metadata",
+      "title": "Metagegevens",
       "description": "Bekijk, bewerk of verwijder documentgegevens.",
       "hint": "PDF-bestanden — dezelfde wijzigingen gelden voor elk bestand (meerdere komen terug als ZIP).",
       "batchNote": "Dezelfde velden worden op elk bestand toegepast. Het voorbeeld leest alleen het eerste bestand.",
@@ -702,11 +702,11 @@
       "running": "Uitvoeren…",
       "valid": "✓ Pijplijn is geldig.",
       "jsonTitle": "Pijplijn-JSON",
-      "fieldHeaderCenter": "Header (center)",
-      "fieldFooterCenter": "Footer (center)",
-      "fieldStartNumber": "Start number",
-      "fieldPrefix": "Bates prefix",
-      "skipFirst": "Skip first page"
+      "fieldHeaderCenter": "Koptekst (midden)",
+      "fieldFooterCenter": "Voettekst (midden)",
+      "fieldStartNumber": "Beginnummer",
+      "fieldPrefix": "Bates-voorvoegsel",
+      "skipFirst": "Eerste pagina overslaan"
     },
     "gdprScan": {
       "title": "AVG-/PII-scan",
@@ -759,10 +759,10 @@
     },
     "crop": {
       "title": "Bijsnijden",
-      "description": "Trim margins off every page.",
-      "privacyLine": "Your files are cropped privately and never stored.",
-      "hint": "PDF files — several files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "description": "Snijd de marges van elke pagina bij.",
+      "privacyLine": "Je bestanden worden privé bijgesneden en nooit opgeslagen.",
+      "hint": "PDF-bestanden — meerdere bestanden komen terug als ZIP.",
+      "batchNote": "{{count}} bestanden geselecteerd — de marges gelden voor elk bestand; resultaten komen terug als ZIP.",
       "top": "Boven",
       "right": "Rechts",
       "bottom": "Onder",
@@ -770,31 +770,31 @@
       "unit": "Eenheid",
       "unitPt": "Punten (pt)",
       "unitMm": "Millimeter (mm)",
-      "unitHelp": "Each margin is trimmed off the matching page edge.",
-      "submit": "Crop pages",
-      "loading": "Cropping…"
+      "unitHelp": "Elke marge wordt van de bijbehorende paginarand bijgesneden.",
+      "submit": "Pagina's bijsnijden",
+      "loading": "Bijsnijden…"
     },
     "pageMarks": {
-      "title": "Page Marks",
-      "description": "Add page numbers and header/footer text to every page.",
-      "hint": "One or more PDFs to mark (several files → ZIP).",
-      "privacyLine": "Your files are marked privately and never stored.",
-      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
-      "header": "Header",
-      "footer": "Footer",
-      "left": "Left",
-      "center": "Center",
-      "right": "Right",
-      "slotPlaceholder": "e.g. {page} / {pages}",
-      "fontSize": "Font size (pt)",
-      "margin": "Margin (pt)",
-      "startNumber": "Start number",
-      "prefix": "Bates prefix",
-      "prefixPlaceholder": "e.g. ACME-",
-      "skipFirst": "Skip the first page",
-      "submit": "Add page marks",
-      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
-      "loading": "Marking…"
+      "title": "Paginamarkeringen",
+      "description": "Voeg paginanummers en kop-/voettekst toe aan elke pagina.",
+      "hint": "Eén of meer PDF's om te markeren (meerdere bestanden → ZIP).",
+      "privacyLine": "Je bestanden worden privé gemarkeerd en nooit opgeslagen.",
+      "tokensHelp": "Gebruik tokens in elk vak: {page} huidige pagina, {pages} totaal, {n} paginanummer, {date} vandaag.",
+      "header": "Koptekst",
+      "footer": "Voettekst",
+      "left": "Links",
+      "center": "Midden",
+      "right": "Rechts",
+      "slotPlaceholder": "bijv. {page} / {pages}",
+      "fontSize": "Tekengrootte (pt)",
+      "margin": "Marge (pt)",
+      "startNumber": "Beginnummer",
+      "prefix": "Bates-voorvoegsel",
+      "prefixPlaceholder": "bijv. ACME-",
+      "skipFirst": "Eerste pagina overslaan",
+      "submit": "Paginamarkeringen toevoegen",
+      "needSlot": "Voer tekst in bij minstens één vak (bijv. {page} / {pages}).",
+      "loading": "Markeren…"
     }
   },
   "pageGrid": {

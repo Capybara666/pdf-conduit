@@ -115,8 +115,8 @@
       "description": "페이지의 특정 영역을 영구적으로 가립니다."
     },
     "sign": {
-      "label": "Fill & Sign",
-      "description": "Place a signature and fill form fields, then flatten."
+      "label": "작성 및 서명",
+      "description": "서명을 배치하고 양식 필드를 작성한 후 병합합니다."
     },
     "metadata": {
       "label": "메타데이터",
@@ -140,11 +140,11 @@
     },
     "crop": {
       "label": "자르기",
-      "description": "Trim margins off every page."
+      "description": "모든 페이지의 여백을 잘라냅니다."
     },
     "page-marks": {
-      "label": "Page Marks",
-      "description": "Add page numbers and header/footer text."
+      "label": "페이지 표시",
+      "description": "페이지 번호와 머리글/바닥글 텍스트를 추가합니다."
     }
   },
   "header": {
@@ -158,8 +158,8 @@
     "themeToLight": "밝은 테마로 전환",
     "themeToDark": "어두운 테마로 전환",
     "languageLabel": "언어",
-    "settings": "Settings",
-    "settingsClose": "Close"
+    "settings": "설정",
+    "settingsClose": "닫기"
   },
   "theme": {
     "label": "테마",
@@ -391,8 +391,8 @@
       "targetHelp1": "허용 형식:",
       "targetHelp2": "또는 원시 바이트 수.",
       "targetError": "다음과 같은 크기를 입력하세요:",
-      "amountError": "Enter a positive number.",
-      "unitLabel": "Unit",
+      "amountError": "양수를 입력하세요.",
+      "unitLabel": "단위",
       "submit": "압축",
       "loading": "압축 중…",
       "noopWarning": "목표 ≥ 파일 크기 — 줄어들지 않음",
@@ -414,9 +414,9 @@
       "hint": "PDF 하나 이상 (여러 파일 → ZIP).",
       "angle": "각도",
       "angleAria": "회전 각도",
-      "dir90": "Rotates 90° clockwise",
-      "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir90": "시계 방향으로 90° 회전",
+      "dir180": "180° 회전 (뒤집기)",
+      "dir270": "시계 방향으로 270° 회전",
       "pages": "페이지",
       "pagesPlaceholder": "예: 1,3,5-8 (비워 두면 = 전체)",
       "submit": "회전",
@@ -551,28 +551,28 @@
       "keepSearchable": "텍스트 검색 가능 유지 (OCR)"
     },
     "sign": {
-      "title": "Fill & Sign",
-      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
-      "hint": "One PDF. Then create a signature and drop it onto the page.",
-      "dragHint": "Drag on a page to place your signature.",
-      "chooseAnother": "Choose another PDF",
-      "needSignature": "Create a signature first, then drag a box on the page to place it.",
-      "signature": "Your signature",
-      "tabDraw": "Draw",
-      "tabType": "Type",
-      "tabUpload": "Upload",
-      "clearPad": "Clear",
-      "useSignature": "Use this signature",
-      "typePlaceholder": "Type your name",
-      "currentSignature": "Current signature",
-      "placements": "Placements ({{count}})",
-      "placementsNoSig": "Create a signature to start placing it.",
-      "placementsEmpty": "No placements yet. Drag a box where the signature should go.",
-      "removePlacement": "Remove placement",
-      "flatten": "Flatten the document",
-      "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
-      "submit": "Sign & download",
-      "loading": "Signing…"
+      "title": "작성 및 서명",
+      "description": "PDF에 서명을 추가하고 병합하세요 — 아무것도 저장되지 않으며 모든 작업은 세션 내에서 실행됩니다.",
+      "hint": "PDF 한 개. 서명을 만든 다음 페이지에 놓으세요.",
+      "dragHint": "페이지에서 드래그하여 서명을 배치하세요.",
+      "chooseAnother": "다른 PDF 선택",
+      "needSignature": "먼저 서명을 만든 다음, 페이지에 상자를 드래그하여 배치하세요.",
+      "signature": "내 서명",
+      "tabDraw": "그리기",
+      "tabType": "입력",
+      "tabUpload": "업로드",
+      "clearPad": "지우기",
+      "useSignature": "이 서명 사용",
+      "typePlaceholder": "이름을 입력하세요",
+      "currentSignature": "현재 서명",
+      "placements": "배치 ({{count}})",
+      "placementsNoSig": "서명을 만들어 배치를 시작하세요.",
+      "placementsEmpty": "아직 배치가 없습니다. 서명을 놓을 위치에 상자를 드래그하세요.",
+      "removePlacement": "배치 제거",
+      "flatten": "문서 병합",
+      "flattenHint": "서명과 모든 양식 필드를 페이지에 병합하여 편집할 수 없게 합니다.",
+      "submit": "서명 및 다운로드",
+      "loading": "서명하는 중…"
     },
     "metadata": {
       "title": "메타데이터",
@@ -702,11 +702,11 @@
       "running": "실행 중…",
       "valid": "✓ 파이프라인이 유효합니다.",
       "jsonTitle": "파이프라인 JSON",
-      "fieldHeaderCenter": "Header (center)",
-      "fieldFooterCenter": "Footer (center)",
-      "fieldStartNumber": "Start number",
-      "fieldPrefix": "Bates prefix",
-      "skipFirst": "Skip first page"
+      "fieldHeaderCenter": "머리글 (가운데)",
+      "fieldFooterCenter": "바닥글 (가운데)",
+      "fieldStartNumber": "시작 번호",
+      "fieldPrefix": "Bates 접두사",
+      "skipFirst": "첫 페이지 건너뛰기"
     },
     "gdprScan": {
       "title": "GDPR / PII 검사",
@@ -759,10 +759,10 @@
     },
     "crop": {
       "title": "자르기",
-      "description": "Trim margins off every page.",
-      "privacyLine": "Your files are cropped privately and never stored.",
-      "hint": "PDF files — several files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "description": "모든 페이지의 여백을 잘라냅니다.",
+      "privacyLine": "파일은 비공개로 잘리며 저장되지 않습니다.",
+      "hint": "PDF 파일 — 여러 파일은 ZIP으로 반환됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨 — 여백이 각 파일에 적용되며, 결과는 ZIP으로 반환됩니다.",
       "top": "위",
       "right": "오른쪽",
       "bottom": "아래",
@@ -770,31 +770,31 @@
       "unit": "단위",
       "unitPt": "포인트 (pt)",
       "unitMm": "밀리미터 (mm)",
-      "unitHelp": "Each margin is trimmed off the matching page edge.",
-      "submit": "Crop pages",
-      "loading": "Cropping…"
+      "unitHelp": "각 여백은 해당하는 페이지 가장자리에서 잘립니다.",
+      "submit": "페이지 자르기",
+      "loading": "자르는 중…"
     },
     "pageMarks": {
-      "title": "Page Marks",
-      "description": "Add page numbers and header/footer text to every page.",
-      "hint": "One or more PDFs to mark (several files → ZIP).",
-      "privacyLine": "Your files are marked privately and never stored.",
-      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
-      "header": "Header",
-      "footer": "Footer",
-      "left": "Left",
-      "center": "Center",
-      "right": "Right",
-      "slotPlaceholder": "e.g. {page} / {pages}",
-      "fontSize": "Font size (pt)",
-      "margin": "Margin (pt)",
-      "startNumber": "Start number",
-      "prefix": "Bates prefix",
-      "prefixPlaceholder": "e.g. ACME-",
-      "skipFirst": "Skip the first page",
-      "submit": "Add page marks",
-      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
-      "loading": "Marking…"
+      "title": "페이지 표시",
+      "description": "모든 페이지에 페이지 번호와 머리글/바닥글 텍스트를 추가합니다.",
+      "hint": "표시할 PDF 한 개 이상 (여러 파일 → ZIP).",
+      "privacyLine": "파일은 비공개로 표시되며 저장되지 않습니다.",
+      "tokensHelp": "어느 슬롯에나 토큰을 사용하세요: {page} 현재 페이지, {pages} 전체, {n} 페이지 번호, {date} 오늘.",
+      "header": "머리글",
+      "footer": "바닥글",
+      "left": "왼쪽",
+      "center": "가운데",
+      "right": "오른쪽",
+      "slotPlaceholder": "예: {page} / {pages}",
+      "fontSize": "글꼴 크기 (pt)",
+      "margin": "여백 (pt)",
+      "startNumber": "시작 번호",
+      "prefix": "Bates 접두사",
+      "prefixPlaceholder": "예: ACME-",
+      "skipFirst": "첫 페이지 건너뛰기",
+      "submit": "페이지 표시 추가",
+      "needSlot": "슬롯 하나 이상에 텍스트를 입력하세요 (예: {page} / {pages}).",
+      "loading": "표시하는 중…"
     }
   },
   "pageGrid": {

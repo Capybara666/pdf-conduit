@@ -115,8 +115,8 @@
       "description": "永久涂黑页面上的区域。"
     },
     "sign": {
-      "label": "Fill & Sign",
-      "description": "Place a signature and fill form fields, then flatten."
+      "label": "填写和签名",
+      "description": "放置签名并填写表单字段，然后扁平化。"
     },
     "metadata": {
       "label": "元数据",
@@ -143,8 +143,8 @@
       "description": "裁去每页的页边距。"
     },
     "page-marks": {
-      "label": "Page Marks",
-      "description": "Add page numbers and header/footer text."
+      "label": "页面标记",
+      "description": "添加页码和页眉/页脚文本。"
     }
   },
   "header": {
@@ -158,8 +158,8 @@
     "themeToLight": "切换到浅色主题",
     "themeToDark": "切换到深色主题",
     "languageLabel": "语言",
-    "settings": "Settings",
-    "settingsClose": "Close"
+    "settings": "设置",
+    "settingsClose": "关闭"
   },
   "theme": {
     "label": "主题",
@@ -391,8 +391,8 @@
       "targetHelp1": "接受",
       "targetHelp2": "或原始字节数。",
       "targetError": "请输入大小，例如",
-      "amountError": "Enter a positive number.",
-      "unitLabel": "Unit",
+      "amountError": "请输入一个正数。",
+      "unitLabel": "单位",
       "submit": "压缩",
       "loading": "压缩中…",
       "noopWarning": "目标 ≥ 文件大小 — 不会缩小",
@@ -414,9 +414,9 @@
       "hint": "一个或多个 PDF（多个文件 → ZIP）。",
       "angle": "角度",
       "angleAria": "旋转角度",
-      "dir90": "Rotates 90° clockwise",
-      "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir90": "顺时针旋转 90°",
+      "dir180": "旋转 180°（翻转）",
+      "dir270": "顺时针旋转 270°",
       "pages": "页面",
       "pagesPlaceholder": "例如 1,3,5-8（留空 = 全部）",
       "submit": "旋转",
@@ -551,28 +551,28 @@
       "keepSearchable": "保持文本可搜索 (OCR)"
     },
     "sign": {
-      "title": "Fill & Sign",
-      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
-      "hint": "One PDF. Then create a signature and drop it onto the page.",
-      "dragHint": "Drag on a page to place your signature.",
-      "chooseAnother": "Choose another PDF",
-      "needSignature": "Create a signature first, then drag a box on the page to place it.",
-      "signature": "Your signature",
-      "tabDraw": "Draw",
-      "tabType": "Type",
-      "tabUpload": "Upload",
-      "clearPad": "Clear",
-      "useSignature": "Use this signature",
-      "typePlaceholder": "Type your name",
-      "currentSignature": "Current signature",
-      "placements": "Placements ({{count}})",
-      "placementsNoSig": "Create a signature to start placing it.",
-      "placementsEmpty": "No placements yet. Drag a box where the signature should go.",
-      "removePlacement": "Remove placement",
-      "flatten": "Flatten the document",
-      "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
-      "submit": "Sign & download",
-      "loading": "Signing…"
+      "title": "填写和签名",
+      "description": "为 PDF 添加签名并将其扁平化——不存储任何内容，全部在您的会话中完成。",
+      "hint": "一个 PDF。然后创建签名并将其放到页面上。",
+      "dragHint": "在页面上拖动以放置您的签名。",
+      "chooseAnother": "选择其他 PDF",
+      "needSignature": "请先创建签名，然后在页面上拖出一个框来放置它。",
+      "signature": "您的签名",
+      "tabDraw": "手写",
+      "tabType": "输入",
+      "tabUpload": "上传",
+      "clearPad": "清除",
+      "useSignature": "使用此签名",
+      "typePlaceholder": "输入您的姓名",
+      "currentSignature": "当前签名",
+      "placements": "放置位置（{{count}}）",
+      "placementsNoSig": "创建签名后即可开始放置。",
+      "placementsEmpty": "暂无放置位置。在签名应放置处拖出一个框。",
+      "removePlacement": "移除放置",
+      "flatten": "扁平化文档",
+      "flattenHint": "将签名和所有表单字段固化到页面中，使其无法再编辑。",
+      "submit": "签名并下载",
+      "loading": "签名中…"
     },
     "metadata": {
       "title": "元数据",
@@ -702,11 +702,11 @@
       "running": "运行中…",
       "valid": "✓ 流程有效。",
       "jsonTitle": "流程 JSON",
-      "fieldHeaderCenter": "Header (center)",
-      "fieldFooterCenter": "Footer (center)",
-      "fieldStartNumber": "Start number",
-      "fieldPrefix": "Bates prefix",
-      "skipFirst": "Skip first page"
+      "fieldHeaderCenter": "页眉（居中）",
+      "fieldFooterCenter": "页脚（居中）",
+      "fieldStartNumber": "起始编号",
+      "fieldPrefix": "Bates 前缀",
+      "skipFirst": "跳过第一页"
     },
     "gdprScan": {
       "title": "GDPR / PII 扫描",
@@ -775,26 +775,26 @@
       "loading": "正在裁剪…"
     },
     "pageMarks": {
-      "title": "Page Marks",
-      "description": "Add page numbers and header/footer text to every page.",
-      "hint": "One or more PDFs to mark (several files → ZIP).",
-      "privacyLine": "Your files are marked privately and never stored.",
-      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
-      "header": "Header",
-      "footer": "Footer",
-      "left": "Left",
-      "center": "Center",
-      "right": "Right",
-      "slotPlaceholder": "e.g. {page} / {pages}",
-      "fontSize": "Font size (pt)",
-      "margin": "Margin (pt)",
-      "startNumber": "Start number",
-      "prefix": "Bates prefix",
-      "prefixPlaceholder": "e.g. ACME-",
-      "skipFirst": "Skip the first page",
-      "submit": "Add page marks",
-      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
-      "loading": "Marking…"
+      "title": "页面标记",
+      "description": "为每一页添加页码和页眉/页脚文本。",
+      "hint": "标记一个或多个 PDF（多个文件 → ZIP）。",
+      "privacyLine": "您的文件将被私密标记，绝不存储。",
+      "tokensHelp": "在任意位置使用标记符：{page} 当前页，{pages} 总页数，{n} 页码，{date} 今天。",
+      "header": "页眉",
+      "footer": "页脚",
+      "left": "左",
+      "center": "中",
+      "right": "右",
+      "slotPlaceholder": "例如 {page} / {pages}",
+      "fontSize": "字号 (pt)",
+      "margin": "页边距 (pt)",
+      "startNumber": "起始编号",
+      "prefix": "Bates 前缀",
+      "prefixPlaceholder": "例如 ACME-",
+      "skipFirst": "跳过第一页",
+      "submit": "添加页面标记",
+      "needSlot": "至少在一个位置输入文本（例如 {page} / {pages}）。",
+      "loading": "标记中…"
     }
   },
   "pageGrid": {

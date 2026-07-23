@@ -115,8 +115,8 @@
       "description": "Bir sayfanın bölgelerini kalıcı olarak karartın."
     },
     "sign": {
-      "label": "Fill & Sign",
-      "description": "Place a signature and fill form fields, then flatten."
+      "label": "Doldur ve imzala",
+      "description": "İmza yerleştirin ve form alanlarını doldurun, ardından düzleştirin."
     },
     "metadata": {
       "label": "Meta veri",
@@ -140,11 +140,11 @@
     },
     "crop": {
       "label": "Kırp",
-      "description": "Trim margins off every page."
+      "description": "Her sayfanın kenar boşluklarını kırpın."
     },
     "page-marks": {
-      "label": "Page Marks",
-      "description": "Add page numbers and header/footer text."
+      "label": "Sayfa işaretleri",
+      "description": "Sayfa numaraları ve üstbilgi/altbilgi metni ekleyin."
     }
   },
   "header": {
@@ -158,8 +158,8 @@
     "themeToLight": "Açık temaya geç",
     "themeToDark": "Koyu temaya geç",
     "languageLabel": "Dil",
-    "settings": "Settings",
-    "settingsClose": "Close"
+    "settings": "Ayarlar",
+    "settingsClose": "Kapat"
   },
   "theme": {
     "label": "Tema",
@@ -391,8 +391,8 @@
       "targetHelp1": "Kabul edilir:",
       "targetHelp2": "veya ham bayt sayısı.",
       "targetError": "Şu şekilde bir boyut girin:",
-      "amountError": "Enter a positive number.",
-      "unitLabel": "Unit",
+      "amountError": "Pozitif bir sayı girin.",
+      "unitLabel": "Birim",
       "submit": "Sıkıştır",
       "loading": "Sıkıştırılıyor…",
       "noopWarning": "Hedef ≥ dosya boyutu — küçülmez",
@@ -414,9 +414,9 @@
       "hint": "Bir veya daha fazla PDF (birden fazla dosya → ZIP).",
       "angle": "Açı",
       "angleAria": "Döndürme açısı",
-      "dir90": "Rotates 90° clockwise",
-      "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir90": "90° saat yönünde döndürür",
+      "dir180": "180° döndürür (ters çevir)",
+      "dir270": "270° saat yönünde döndürür",
       "pages": "Sayfalar",
       "pagesPlaceholder": "örn. 1,3,5-8 (boş = tümü)",
       "submit": "Döndür",
@@ -551,28 +551,28 @@
       "keepSearchable": "Metni aranabilir tut (OCR)"
     },
     "sign": {
-      "title": "Fill & Sign",
-      "description": "Add a signature to your PDF and flatten it — nothing is stored, everything runs in your session.",
-      "hint": "One PDF. Then create a signature and drop it onto the page.",
-      "dragHint": "Drag on a page to place your signature.",
-      "chooseAnother": "Choose another PDF",
-      "needSignature": "Create a signature first, then drag a box on the page to place it.",
-      "signature": "Your signature",
-      "tabDraw": "Draw",
-      "tabType": "Type",
-      "tabUpload": "Upload",
-      "clearPad": "Clear",
-      "useSignature": "Use this signature",
-      "typePlaceholder": "Type your name",
-      "currentSignature": "Current signature",
-      "placements": "Placements ({{count}})",
-      "placementsNoSig": "Create a signature to start placing it.",
-      "placementsEmpty": "No placements yet. Drag a box where the signature should go.",
-      "removePlacement": "Remove placement",
-      "flatten": "Flatten the document",
-      "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
-      "submit": "Sign & download",
-      "loading": "Signing…"
+      "title": "Doldur ve imzala",
+      "description": "PDF'nize imza ekleyin ve düzleştirin — hiçbir şey saklanmaz, her şey oturumunuzda çalışır.",
+      "hint": "Tek bir PDF. Ardından bir imza oluşturup sayfaya bırakın.",
+      "dragHint": "İmzanızı yerleştirmek için sayfada sürükleyin.",
+      "chooseAnother": "Başka bir PDF seçin",
+      "needSignature": "Önce bir imza oluşturun, sonra yerleştirmek için sayfada bir kutu sürükleyin.",
+      "signature": "İmzanız",
+      "tabDraw": "Çiz",
+      "tabType": "Yaz",
+      "tabUpload": "Yükle",
+      "clearPad": "Temizle",
+      "useSignature": "Bu imzayı kullan",
+      "typePlaceholder": "Adınızı yazın",
+      "currentSignature": "Geçerli imza",
+      "placements": "Yerleşimler ({{count}})",
+      "placementsNoSig": "Yerleştirmeye başlamak için bir imza oluşturun.",
+      "placementsEmpty": "Henüz yerleşim yok. İmzanın gideceği yere bir kutu sürükleyin.",
+      "removePlacement": "Yerleşimi kaldır",
+      "flatten": "Belgeyi düzleştir",
+      "flattenHint": "İmzayı ve tüm form alanlarını sayfaya işler, böylece düzenlenemezler.",
+      "submit": "İmzala ve indir",
+      "loading": "İmzalanıyor…"
     },
     "metadata": {
       "title": "Meta veri",
@@ -702,11 +702,11 @@
       "running": "Çalışıyor…",
       "valid": "✓ İş akışı geçerli.",
       "jsonTitle": "İş akışı JSON",
-      "fieldHeaderCenter": "Header (center)",
-      "fieldFooterCenter": "Footer (center)",
-      "fieldStartNumber": "Start number",
-      "fieldPrefix": "Bates prefix",
-      "skipFirst": "Skip first page"
+      "fieldHeaderCenter": "Üstbilgi (orta)",
+      "fieldFooterCenter": "Altbilgi (orta)",
+      "fieldStartNumber": "Başlangıç numarası",
+      "fieldPrefix": "Bates ön eki",
+      "skipFirst": "İlk sayfayı atla"
     },
     "gdprScan": {
       "title": "GDPR / PII Taraması",
@@ -759,10 +759,10 @@
     },
     "crop": {
       "title": "Kırp",
-      "description": "Trim margins off every page.",
-      "privacyLine": "Your files are cropped privately and never stored.",
-      "hint": "PDF files — several files come back as a ZIP.",
-      "batchNote": "{{count}} files selected — the margins apply to each; results come back as a ZIP.",
+      "description": "Her sayfanın kenar boşluklarını kırpın.",
+      "privacyLine": "Dosyalarınız gizli olarak kırpılır ve asla saklanmaz.",
+      "hint": "PDF dosyaları — birden fazla dosya ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi — kenar boşlukları her birine uygulanır; sonuçlar ZIP olarak döner.",
       "top": "Üst",
       "right": "Sağ",
       "bottom": "Alt",
@@ -770,31 +770,31 @@
       "unit": "Birim",
       "unitPt": "Nokta (pt)",
       "unitMm": "Milimetre (mm)",
-      "unitHelp": "Each margin is trimmed off the matching page edge.",
-      "submit": "Crop pages",
-      "loading": "Cropping…"
+      "unitHelp": "Her kenar boşluğu, eşleşen sayfa kenarından kırpılır.",
+      "submit": "Sayfaları kırp",
+      "loading": "Kırpılıyor…"
     },
     "pageMarks": {
-      "title": "Page Marks",
-      "description": "Add page numbers and header/footer text to every page.",
-      "hint": "One or more PDFs to mark (several files → ZIP).",
-      "privacyLine": "Your files are marked privately and never stored.",
-      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
-      "header": "Header",
-      "footer": "Footer",
-      "left": "Left",
-      "center": "Center",
-      "right": "Right",
-      "slotPlaceholder": "e.g. {page} / {pages}",
-      "fontSize": "Font size (pt)",
-      "margin": "Margin (pt)",
-      "startNumber": "Start number",
-      "prefix": "Bates prefix",
-      "prefixPlaceholder": "e.g. ACME-",
-      "skipFirst": "Skip the first page",
-      "submit": "Add page marks",
-      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
-      "loading": "Marking…"
+      "title": "Sayfa işaretleri",
+      "description": "Her sayfaya sayfa numaraları ve üstbilgi/altbilgi metni ekleyin.",
+      "hint": "İşaretlenecek bir veya daha fazla PDF (birden fazla dosya → ZIP).",
+      "privacyLine": "Dosyalarınız gizli olarak işaretlenir ve asla saklanmaz.",
+      "tokensHelp": "Herhangi bir alanda belirteç kullanın: {page} geçerli sayfa, {pages} toplam, {n} sayfa numarası, {date} bugün.",
+      "header": "Üstbilgi",
+      "footer": "Altbilgi",
+      "left": "Sol",
+      "center": "Orta",
+      "right": "Sağ",
+      "slotPlaceholder": "örn. {page} / {pages}",
+      "fontSize": "Yazı tipi boyutu (pt)",
+      "margin": "Kenar boşluğu (pt)",
+      "startNumber": "Başlangıç numarası",
+      "prefix": "Bates ön eki",
+      "prefixPlaceholder": "örn. ACME-",
+      "skipFirst": "İlk sayfayı atla",
+      "submit": "Sayfa işaretleri ekle",
+      "needSlot": "En az bir alana metin girin (örn. {page} / {pages}).",
+      "loading": "İşaretleniyor…"
     }
   },
   "pageGrid": {
