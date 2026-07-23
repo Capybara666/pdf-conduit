@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
@@ -59,21 +59,21 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
       </div>
 
       <form class="card form-grid" [formGroup]="form">
-        <div class="field">
+        <div class="field" [class.field-disabled]="strip()">
           <label for="md-title">{{ 'pages.metadata.titleField' | transloco }}</label>
-          <input id="md-title" type="text" formControlName="title" [attr.disabled]="strip() ? '' : null" />
+          <input id="md-title" type="text" formControlName="title" />
         </div>
-        <div class="field">
+        <div class="field" [class.field-disabled]="strip()">
           <label for="md-author">{{ 'pages.metadata.author' | transloco }}</label>
-          <input id="md-author" type="text" formControlName="author" [attr.disabled]="strip() ? '' : null" />
+          <input id="md-author" type="text" formControlName="author" />
         </div>
-        <div class="field">
+        <div class="field" [class.field-disabled]="strip()">
           <label for="md-subject">{{ 'pages.metadata.subject' | transloco }}</label>
-          <input id="md-subject" type="text" formControlName="subject" [attr.disabled]="strip() ? '' : null" />
+          <input id="md-subject" type="text" formControlName="subject" />
         </div>
-        <div class="field">
+        <div class="field" [class.field-disabled]="strip()">
           <label for="md-keywords">{{ 'pages.metadata.keywords' | transloco }}</label>
-          <input id="md-keywords" type="text" formControlName="keywords" [attr.disabled]="strip() ? '' : null" />
+          <input id="md-keywords" type="text" formControlName="keywords" />
         </div>
         <div class="field full">
           <label class="check">
@@ -98,6 +98,21 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
       />
     </section>
   `,
+  styles: [
+    `
+      /* When strip-all is on the individual fields are ignored — make that
+         visually obvious: dim the whole field and show the inputs as disabled. */
+      .field-disabled {
+        opacity: 0.5;
+      }
+      .field-disabled label {
+        cursor: not-allowed;
+      }
+      .field input:disabled {
+        cursor: not-allowed;
+      }
+    `,
+  ],
 })
 export class MetadataPage {
   protected readonly files = signal<File[]>([]);
@@ -113,7 +128,19 @@ export class MetadataPage {
   protected readonly state = new OperationState();
   private readonly transloco = inject(TranslocoService);
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    // Strip-all ignores the individual fields, so disable them (greys out the
+    // inputs and blocks typing) while it's on; re-enable when it's unchecked.
+    // Reactive-forms disabling is the source of truth — the inputs get the
+    // native `disabled` state and the wrapping `.field-disabled` class dims them.
+    effect(() => {
+      if (this.strip()) {
+        this.form.disable({ emitEvent: false });
+      } else {
+        this.form.enable({ emitEvent: false });
+      }
+    });
+  }
 
   /** Friendly, code-aware headline for a failed manual read (never a raw stack). */
   get readErrorText(): string {
