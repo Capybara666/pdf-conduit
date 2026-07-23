@@ -10,6 +10,7 @@ import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.ImageToPdfOptions;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PdfResult;
+import com.pdfconduit.core.util.GrayscaleConverter;
 import com.pdfconduit.core.util.OutputPaths;
 import com.pdfconduit.core.util.PdfLoader;
 
@@ -27,7 +28,7 @@ public final class ImageToPdfConverter {
     public static PdfResult execute(ImageToPdfOptions opts) throws PdfOperationException {
         try (PDDocument doc = new PDDocument()) {
             for (Path imagePath : opts.images()) {
-                appendImagePage(doc, imagePath, opts.pageSize());
+                appendImagePage(doc, imagePath, opts.pageSize(), opts.grayscale());
             }
             OutputPaths.ensureParentDir(opts.output());
             doc.save(opts.output().toFile());
@@ -43,13 +44,22 @@ public final class ImageToPdfConverter {
      */
     public static byte[] executeBytes(List<byte[]> images, PageSize pageSize)
             throws PdfOperationException {
+        return executeBytes(images, pageSize, false);
+    }
+
+    /**
+     * In-memory variant with an explicit grayscale toggle: when {@code grayscale} is true every
+     * image is converted to grayscale (regardless of its source colorspace) before placement.
+     */
+    public static byte[] executeBytes(List<byte[]> images, PageSize pageSize, boolean grayscale)
+            throws PdfOperationException {
         try (PDDocument doc = new PDDocument()) {
             for (byte[] image : images) {
                 BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(image));
                 if (bufferedImage == null) {
                     throw new IOException("Cannot read image: unsupported or corrupt image data.");
                 }
-                appendImagePage(doc, bufferedImage, pageSize);
+                appendImagePage(doc, bufferedImage, pageSize, grayscale);
             }
             return PdfLoader.toBytes(doc);
         } catch (IOException e) {
@@ -59,16 +69,29 @@ public final class ImageToPdfConverter {
 
     static void appendImagePage(PDDocument doc, Path imagePath, PageSize targetSize)
             throws IOException {
+        appendImagePage(doc, imagePath, targetSize, false);
+    }
+
+    static void appendImagePage(PDDocument doc, Path imagePath, PageSize targetSize, boolean grayscale)
+            throws IOException {
         BufferedImage bufferedImage = ImageIO.read(imagePath.toFile());
         if (bufferedImage == null) {
             throw new IOException("Cannot read image: " + imagePath);
         }
-        appendImagePage(doc, bufferedImage, targetSize);
+        appendImagePage(doc, bufferedImage, targetSize, grayscale);
     }
 
     /** The shared layout algorithm: place {@code bufferedImage} on a new page sized per {@code targetSize}. */
     static void appendImagePage(PDDocument doc, BufferedImage bufferedImage, PageSize targetSize)
             throws IOException {
+        appendImagePage(doc, bufferedImage, targetSize, false);
+    }
+
+    static void appendImagePage(PDDocument doc, BufferedImage bufferedImage, PageSize targetSize,
+                                boolean grayscale) throws IOException {
+        if (grayscale) {
+            bufferedImage = GrayscaleConverter.toGrayscale(bufferedImage);
+        }
         PDImageXObject img = LosslessFactory.createFromImage(doc, bufferedImage);
 
         PDRectangle mediaBox = resolveMediaBox(targetSize, bufferedImage.getWidth(), bufferedImage.getHeight());
