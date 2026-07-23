@@ -2,14 +2,54 @@
   display: block;
 }
 
+/* The bar is full-bleed: its background + bottom border span the whole
+   viewport width. Horizontal padding lives on `.header-inner` (mobile) or is
+   added here on desktop to reproduce the sidebar offset + content gutter so the
+   inner row lines up with the page content column. */
 .app-header {
+  display: block;
+  height: var(--header-height);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Inner content row (brand + actions). On mobile it is effectively full-width
+   with the original bar gutter. On desktop it is constrained to the same
+   max-width + centering + side padding as the page content column so the
+   brand's left edge and the actions' right edge line up with `.op-page`'s
+   content edges below (see the min-width: 821px block). */
+.header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: var(--header-height);
+  height: 100%;
   padding: 0 1.25rem;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+}
+
+/* Desktop: align the header row to the content column.
+   - `.app-header` reproduces the sidebar offset + the `.content` cell's side
+     gutter (fixed = 2rem), so the inner region equals the `.content` cell.
+   - `.header-inner` centres itself at `var(--content-max)` (tracks FIXED vs
+     WIDE via the `data-width` toggle) and adds `.op-page`'s own 1.5rem padding,
+     so brand/actions align with the op-page CONTENT edges, not just widths. */
+@media (min-width: 821px) {
+  .app-header {
+    padding-left: calc(var(--sidebar-width) + 2rem);
+    padding-right: 2rem;
+  }
+
+  .header-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  /* WIDE mode: match `.content`'s roomier side gutter (max(2rem, 3vw)); the
+     max-width already tracks via `--content-max`, op-page padding is unchanged. */
+  :root[data-width='wide'] .app-header {
+    padding-left: calc(var(--sidebar-width) + max(2rem, 3vw));
+    padding-right: max(2rem, 3vw);
+  }
 }
 
 /* Mobile-only drawer toggle; hidden on desktop where the rail is permanent. */
