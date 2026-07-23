@@ -540,7 +540,8 @@
       "regionsEmpty": "まだ領域がありません。削除したい内容の上に矩形をドラッグしてください。",
       "removeRegion": "領域を削除",
       "submit": "墨消ししてダウンロード",
-      "loading": "墨消し中…"
+      "loading": "墨消し中…",
+      "keepSearchable": "テキストを検索可能に保つ (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

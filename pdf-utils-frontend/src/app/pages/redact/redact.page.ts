@@ -74,6 +74,11 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
               }
             </div>
 
+            <label class="ocr-toggle">
+              <input type="checkbox" [checked]="reOcr()" (change)="reOcr.set($any($event.target).checked)" />
+              <span>{{ 'pages.redact.keepSearchable' | transloco }}</span>
+            </label>
+
             <div class="btn-row">
               <button
                 type="button"
@@ -146,6 +151,16 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         font-size: 0.8rem;
         font-variant-numeric: tabular-nums;
       }
+      .ocr-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .ocr-toggle input {
+        cursor: pointer;
+      }
       @media (max-width: 820px) {
         .redact-layout {
           grid-template-columns: 1fr;
@@ -176,6 +191,7 @@ export class RedactPage implements OnInit {
 
   protected readonly file = signal<File | null>(null);
   protected readonly regions = signal<RegionRect[]>([]);
+  protected readonly reOcr = signal(false);
   protected readonly state = new OperationState();
 
   private readonly handoff = inject(RedactHandoffService);
@@ -245,6 +261,7 @@ export class RedactPage implements OnInit {
     const fd = new FormData();
     fd.append('file', f, f.name);
     fd.append('regions', JSON.stringify(payload));
+    if (this.reOcr()) fd.append('reOcr', 'true');
     this.state.run(this.api.redact(fd));
   }
 }

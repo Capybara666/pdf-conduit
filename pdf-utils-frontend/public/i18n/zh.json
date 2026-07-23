@@ -540,7 +540,8 @@
       "regionsEmpty": "尚无区域。在要移除的内容上拖动一个矩形。",
       "removeRegion": "移除区域",
       "submit": "涂黑并下载",
-      "loading": "涂黑中…"
+      "loading": "涂黑中…",
+      "keepSearchable": "保持文本可搜索 (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

@@ -540,7 +540,8 @@
       "regionsEmpty": "Ainda não há regiões. Arraste um retângulo sobre o conteúdo que pretende remover.",
       "removeRegion": "Remover região",
       "submit": "Ocultar e descarregar",
-      "loading": "A ocultar…"
+      "loading": "A ocultar…",
+      "keepSearchable": "Manter o texto pesquisável (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

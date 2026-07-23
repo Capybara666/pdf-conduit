@@ -540,7 +540,8 @@
       "regionsEmpty": "Aucune zone pour l'instant. Faites glisser un rectangle sur le contenu à supprimer.",
       "removeRegion": "Retirer la zone",
       "submit": "Caviarder et télécharger",
-      "loading": "Caviardage en cours…"
+      "loading": "Caviardage en cours…",
+      "keepSearchable": "Garder le texte consultable (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

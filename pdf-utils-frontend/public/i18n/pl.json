@@ -540,7 +540,8 @@
       "regionsEmpty": "Brak obszarów. Przeciągnij prostokąt nad treścią, którą chcesz usunąć.",
       "removeRegion": "Usuń obszar",
       "submit": "Zamaż i pobierz",
-      "loading": "Zamazywanie…"
+      "loading": "Zamazywanie…",
+      "keepSearchable": "Zachowaj przeszukiwalny tekst (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

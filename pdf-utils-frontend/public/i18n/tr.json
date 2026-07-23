@@ -540,7 +540,8 @@
       "regionsEmpty": "Henüz bölge yok. Kaldırmak istediğiniz içeriğin üzerine bir dikdörtgen sürükleyin.",
       "removeRegion": "Bölgeyi kaldır",
       "submit": "Karart ve indir",
-      "loading": "Karartılıyor…"
+      "loading": "Karartılıyor…",
+      "keepSearchable": "Metni aranabilir tut (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

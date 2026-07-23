@@ -236,6 +236,22 @@ class OperationsControllerTest {
         assertThat(TestPdfs.pageCount(result.getResponse().getContentAsByteArray())).isEqualTo(1);
     }
 
+    @Test
+    void redact_reOcr_whenOcrUnavailable_isNoOpAndStillRedacts() throws Exception {
+        // OCR is disabled by default (and tesseract is absent in CI), so reOcr=true must be a clean
+        // no-op layered on top of redaction: the redacted PDF is still returned, never a crash/415.
+        byte[] a = TestPdfs.withText("secret data here");
+        String regions = "[{\"pageIndex\":0,\"x\":20,\"y\":20,\"width\":100,\"height\":30}]";
+        MvcResult result = mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", regions)
+                .param("reOcr", "true"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+            .andReturn();
+        assertThat(TestPdfs.pageCount(result.getResponse().getContentAsByteArray())).isEqualTo(1);
+    }
+
     // ------------------------------------------------------------- to-images
 
     @Test

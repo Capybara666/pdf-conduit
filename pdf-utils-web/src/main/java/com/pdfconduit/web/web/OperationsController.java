@@ -325,12 +325,13 @@ public class OperationsController {
     @PostMapping(value = "/redact", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> redact(@RequestParam("file") MultipartFile file,
                                          @RequestParam String regions,
-                                         @RequestParam(required = false) Integer dpi)
+                                         @RequestParam(required = false) Integer dpi,
+                                         @RequestParam(defaultValue = "false") boolean reOcr)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         List<RedactRegion> parsed = parseRegions(regions);
         NamedBytes in = uploads.read(file);
         int resolvedDpi = dpi != null ? dpi : 0;
-        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.redact(in, parsed, resolvedDpi));
+        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.redact(in, parsed, resolvedDpi, reOcr));
         return Responses.file(result, MediaType.APPLICATION_PDF);
     }
 

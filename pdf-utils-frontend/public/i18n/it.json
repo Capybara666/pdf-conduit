@@ -540,7 +540,8 @@
       "regionsEmpty": "Ancora nessuna area. Trascina un rettangolo sul contenuto che vuoi rimuovere.",
       "removeRegion": "Rimuovi area",
       "submit": "Oscura e scarica",
-      "loading": "Oscuramento in corso…"
+      "loading": "Oscuramento in corso…",
+      "keepSearchable": "Mantieni il testo ricercabile (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

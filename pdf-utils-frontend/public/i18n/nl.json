@@ -540,7 +540,8 @@
       "regionsEmpty": "Nog geen gebieden. Sleep een rechthoek over de inhoud die je wilt verwijderen.",
       "removeRegion": "Gebied verwijderen",
       "submit": "Redigeren & downloaden",
-      "loading": "Redigeren…"
+      "loading": "Redigeren…",
+      "keepSearchable": "Tekst doorzoekbaar houden (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

@@ -540,7 +540,8 @@
       "regionsEmpty": "No regions yet. Drag a rectangle over the content you want removed.",
       "removeRegion": "Remove region",
       "submit": "Redact & download",
-      "loading": "Redacting…"
+      "loading": "Redacting…",
+      "keepSearchable": "Keep text searchable (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

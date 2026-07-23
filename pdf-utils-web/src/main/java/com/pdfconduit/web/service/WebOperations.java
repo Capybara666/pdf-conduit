@@ -340,17 +340,51 @@ public class WebOperations {
 
     // ------------------------------------------------------------------ REDACT
 
-    public NamedBytes redact(NamedBytes in, List<RedactRegion> regions, int dpi)
+    /**
+     * Permanently redact {@code regions} (rasterising the affected pages). When {@code reOcr} is
+     * requested <em>and</em> OCR is available on this server, the rasterised output is piped back
+     * through {@link PdfOcr} to re-add an invisible searchable text layer over the flattened pages:
+     * the redacted content stays gone (it is now only black pixels), while the surviving text becomes
+     * selectable/searchable again. Re-OCR is a best-effort enhancement layered <em>on top</em> of the
+     * security-critical redaction — if OCR is disabled by config or Tesseract is not installed the
+     * flag is a clean <b>no-op</b> (the redacted, non-searchable PDF is still returned), so an
+     * optional searchability step can never discard or block the actual redaction.
+     */
+    public NamedBytes redact(NamedBytes in, List<RedactRegion> regions, int dpi, boolean reOcr)
             throws PdfOperationException {
         byte[] pdf = routeToPdf(in);
+        byte[] out;
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
             // dpi <= 0 means "core default" (PdfRedactor.DEFAULT_DPI); guard against the effective value.
             guardRender(lp, dpi > 0 ? dpi : PdfRedactor.DEFAULT_DPI);
-            byte[] out = PdfRedactor.executeBytes(pdf, regions, dpi);
-            return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
+            out = PdfRedactor.executeBytes(pdf, regions, dpi);
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
+        if (reOcr && ocrEnabled && PdfOcr.available()) {
+            out = reOcr(out);
+        }
+        return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
+    }
+
+    /**
+     * Re-adds a searchable text layer over already-rasterised redacted pages, reusing the exact OCR
+     * plumbing behind {@code /api/ocr} — render/page-count guarded, run under {@link OcrGuard}'s
+     * concurrency + timeout gate. Callers gate on {@link PdfOcr#available()} first.
+     */
+    private byte[] reOcr(byte[] redacted) throws PdfOperationException {
+        int ocrDpi = maxDpi > 0 ? Math.min(PdfOcr.DEFAULT_DPI, maxDpi) : PdfOcr.DEFAULT_DPI;
+        try (LoadedPdf lp = LoadedPdf.open(redacted)) {
+            guardPageCount(lp);
+            guardRender(lp, ocrDpi);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read redacted PDF: " + e.getMessage(), e);
+        }
+        try {
+            return ocrGuard.run(() -> PdfOcr.executeBytes(redacted, ocrLanguages, ocrDpi));
+        } catch (IOException e) {
+            throw new PdfOperationException("OCR failed: " + e.getMessage(), e);
         }
     }
 

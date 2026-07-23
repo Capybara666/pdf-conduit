@@ -540,7 +540,8 @@
       "regionsEmpty": "아직 영역이 없습니다. 제거할 내용 위에 사각형을 드래그하세요.",
       "removeRegion": "영역 제거",
       "submit": "가리고 다운로드",
-      "loading": "가리는 중…"
+      "loading": "가리는 중…",
+      "keepSearchable": "텍스트 검색 가능 유지 (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",

@@ -540,7 +540,8 @@
       "regionsEmpty": "Noch keine Bereiche. Ziehen Sie ein Rechteck über den Inhalt, den Sie entfernen möchten.",
       "removeRegion": "Bereich entfernen",
       "submit": "Schwärzen & herunterladen",
-      "loading": "Wird geschwärzt…"
+      "loading": "Wird geschwärzt…",
+      "keepSearchable": "Text durchsuchbar halten (OCR)"
     },
     "sign": {
       "title": "Fill & Sign",
