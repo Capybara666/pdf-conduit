@@ -145,6 +145,10 @@
     "page-marks": {
       "label": "Paginamarkeringen",
       "description": "Voeg paginanummers en kop-/voettekst toe."
+    },
+    "gdpr-redact": {
+      "label": "Auto-redact PII",
+      "description": "Scan for personal data and black it out automatically."
     }
   },
   "header": {
@@ -854,7 +858,8 @@
         "noPassword": "Geen wachtwoord",
         "metaStrip": "Metadata verwijderen",
         "metaEdit": "Metadata bewerken"
-      }
+      },
+      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
     },
     "mobileHint": "De pijplijn-editor werkt het best op een groter scherm."
   },

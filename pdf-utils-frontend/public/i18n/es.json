@@ -145,6 +145,10 @@
     "page-marks": {
       "label": "Marcas de página",
       "description": "Añade números de página y texto de encabezado/pie."
+    },
+    "gdpr-redact": {
+      "label": "Auto-redact PII",
+      "description": "Scan for personal data and black it out automatically."
     }
   },
   "header": {
@@ -854,7 +858,8 @@
         "noPassword": "Sin contraseña",
         "metaStrip": "Eliminar metadatos",
         "metaEdit": "Editar metadatos"
-      }
+      },
+      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
     },
     "mobileHint": "El editor de flujos funciona mejor en una pantalla más grande."
   },

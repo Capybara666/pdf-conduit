@@ -145,6 +145,10 @@
     "page-marks": {
       "label": "ページ番号・ヘッダー",
       "description": "ページ番号とヘッダー・フッターのテキストを追加します。"
+    },
+    "gdpr-redact": {
+      "label": "Auto-redact PII",
+      "description": "Scan for personal data and black it out automatically."
     }
   },
   "header": {
@@ -854,7 +858,8 @@
         "noPassword": "パスワードなし",
         "metaStrip": "メタデータを削除",
         "metaEdit": "メタデータを編集"
-      }
+      },
+      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
     },
     "mobileHint": "パイプラインビルダーは大きな画面で最も快適に使えます。"
   },

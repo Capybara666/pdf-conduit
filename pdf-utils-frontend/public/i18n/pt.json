@@ -145,6 +145,10 @@
     "page-marks": {
       "label": "Marcas de página",
       "description": "Adicione números de página e texto de cabeçalho/rodapé."
+    },
+    "gdpr-redact": {
+      "label": "Auto-redact PII",
+      "description": "Scan for personal data and black it out automatically."
     }
   },
   "header": {
@@ -854,7 +858,8 @@
         "noPassword": "Sem palavra-passe",
         "metaStrip": "Remover metadados",
         "metaEdit": "Editar metadados"
-      }
+      },
+      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
     },
     "mobileHint": "O editor de pipelines funciona melhor num ecrã maior."
   },

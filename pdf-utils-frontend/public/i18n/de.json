@@ -145,6 +145,10 @@
     "page-marks": {
       "label": "Seitenmarkierungen",
       "description": "Seitenzahlen sowie Kopf- und Fußzeilentext hinzufügen."
+    },
+    "gdpr-redact": {
+      "label": "Auto-redact PII",
+      "description": "Scan for personal data and black it out automatically."
     }
   },
   "header": {
@@ -854,7 +858,8 @@
         "noPassword": "Kein Passwort",
         "metaStrip": "Metadaten entfernen",
         "metaEdit": "Metadaten bearbeiten"
-      }
+      },
+      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
     },
     "mobileHint": "Der Pipeline-Editor funktioniert am besten auf einem größeren Bildschirm."
   },

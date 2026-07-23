@@ -145,6 +145,10 @@
     "page-marks": {
       "label": "Page Marks",
       "description": "Add page numbers and header/footer text."
+    },
+    "gdpr-redact": {
+      "label": "Auto-redact PII",
+      "description": "Scan for personal data and black it out automatically."
     }
   },
   "header": {
@@ -854,7 +858,8 @@
         "noPassword": "No password",
         "metaStrip": "Strip metadata",
         "metaEdit": "Edit metadata"
-      }
+      },
+      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
     },
     "mobileHint": "The pipeline builder works best on a larger screen."
   },

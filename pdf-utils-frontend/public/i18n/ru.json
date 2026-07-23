@@ -145,6 +145,10 @@
     "page-marks": {
       "label": "Колонтитулы и нумерация",
       "description": "Добавьте номера страниц и текст колонтитулов."
+    },
+    "gdpr-redact": {
+      "label": "Auto-redact PII",
+      "description": "Scan for personal data and black it out automatically."
     }
   },
   "header": {
@@ -854,7 +858,8 @@
         "noPassword": "Без пароля",
         "metaStrip": "Удалить метаданные",
         "metaEdit": "Изменить метаданные"
-      }
+      },
+      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
     },
     "mobileHint": "Редактор конвейера лучше всего работает на большом экране."
   },
