@@ -54,6 +54,12 @@ public final class DocumentConverter {
     private static final Set<String> IMAGE_EXTS = extsOf(IMAGE_GLOBS);
     private static final Set<String> OFFICE_EXTS = extsOf(OFFICE_GLOBS);
 
+    /**
+     * Spreadsheet extensions that get the tuned Calc PDF export (see {@link #pdfConvertSpec}).
+     * A subset of {@link #OFFICE_EXTS}; the rest (doc/ppt/txt/html/…) use the generic PDF filter.
+     */
+    private static final Set<String> SPREADSHEET_EXTS = Set.of("xls", "xlsx", "ods", "csv", "fods");
+
     public enum Kind { PDF, IMAGE, OFFICE, UNSUPPORTED }
 
     public static Kind classify(Path file) {
@@ -265,7 +271,40 @@ public final class DocumentConverter {
 
     private static void convertWithLibreOffice(Path source, Path target)
             throws PdfOperationException {
-        runLibreOffice(source, "pdf", "pdf", target);
+        String spec = pdfConvertSpec(source);
+        if (spec.equals("pdf")) {
+            runLibreOffice(source, "pdf", "pdf", target);
+            return;
+        }
+        // Tuned spreadsheet export. If a LibreOffice too old to parse the JSON filter options
+        // rejects the tuned spec, fall back to the plain PDF filter so spreadsheet conversion
+        // never regresses — it only loses the single-page layout, it never fails outright.
+        try {
+            runLibreOffice(source, spec, "pdf", target);
+        } catch (PdfOperationException tuned) {
+            runLibreOffice(source, "pdf", "pdf", target);
+        }
+    }
+
+    /**
+     * The {@code --convert-to} value used to export {@code source} to PDF.
+     *
+     * <p>Plain office/text documents (doc/docx/odt/rtf/txt/md/ppt/pptx/odp/html) export with the
+     * generic {@code "pdf"} filter — unchanged behaviour.
+     *
+     * <p>Spreadsheets (xls/xlsx/ods/csv/fods) are the ugly case this method fixes: LibreOffice's
+     * default Calc PDF export honours each sheet's print ranges, so a wide sheet spills its columns
+     * across many pages and is cut at the page edge, and fit-to-page is ignored. We instead invoke
+     * the Calc-specific export filter ({@code calc_pdf_Export}) with the {@code SinglePageSheets}
+     * option, which lays each whole sheet onto a single PDF page — no column spill, no cut-off wide
+     * sheets. Delivered as a JSON filter-options string, understood by LibreOffice 7.4+; older
+     * builds are covered by the plain-{@code pdf} fallback in {@link #convertWithLibreOffice}.
+     */
+    private static String pdfConvertSpec(Path source) {
+        if (SPREADSHEET_EXTS.contains(extensionOf(source))) {
+            return "pdf:calc_pdf_Export:{\"SinglePageSheets\":{\"type\":\"boolean\",\"value\":\"true\"}}";
+        }
+        return "pdf";
     }
 
     /**
