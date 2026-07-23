@@ -97,53 +97,71 @@ const KIND_TO_OP: Record<string, string> = {
         </div>
       </div>
 
-      <div class="pl-grid">
+      <div class="pl-grid" [class.collapsed]="!panelOpen()">
         <!-- Canvas -->
         <div class="col">
           <app-pipeline-canvas #cv />
           <p class="hint-note canvas-help">{{ 'pipeline.canvas.help' | transloco }}</p>
         </div>
 
-        <!-- Right column -->
-        <aside class="col side">
-          <div class="card">
-            <h2 class="card-h">{{ 'pipeline.canvas.inspector' | transloco }}</h2>
-            <app-pipeline-inspector
-              [node]="cv.selectedNode()"
-              [sourceFiles]="cv.selectedSourceFiles()"
-              (patch)="cv.patchSelected($event)"
-              (asset)="cv.setSelectedAsset($event)"
-              (sourceFilesChange)="cv.setSelectedSourceFiles($event)"
-            />
-          </div>
+        <!-- Right dock: persistent toggle rail + collapsible drawer.
+             Collapsing drops the grid to a single column, giving the canvas full width. -->
+        <div class="dock">
+          <!-- TODO(i18n): localize "Show inspector" / "Hide inspector" aria labels. -->
+          <button
+            type="button"
+            class="rail-toggle"
+            [attr.aria-expanded]="panelOpen()"
+            [attr.aria-label]="panelOpen() ? 'Hide inspector panel' : 'Show inspector panel'"
+            [title]="panelOpen() ? 'Hide panel' : 'Show panel'"
+            (click)="togglePanel()"
+          >
+            <span class="rail-chevron">{{ panelOpen() ? '»' : '«' }}</span>
+            @if (!panelOpen()) { <span class="rail-label">{{ 'pipeline.canvas.inspector' | transloco }}</span> }
+          </button>
 
-          <div class="card">
-            <div class="btn-row">
-              <button type="button" class="btn" [disabled]="busy() || !cv.nodes().length" (click)="validate(cv)">{{ 'pages.pipeline.validate' | transloco }}</button>
-              <button type="button" class="btn btn-primary" [disabled]="!cv.runnable() || busy()" (click)="run(cv)">{{ 'pages.pipeline.run' | transloco }}</button>
-            </div>
-            @if (busy()) { <app-spinner [label]="'pages.pipeline.running' | transloco" /> }
-
-            @if (validationErrors() !== null) {
-              @if (validationErrors()!.length) {
-                <ul class="verr">
-                  @for (e of validationErrors()!; track $index) {
-                    <li>{{ e.nodeId ? '[' + e.nodeId + '] ' : '' }}{{ e.message }}</li>
-                  }
-                </ul>
-              } @else {
-                <p class="ok-note">{{ 'pages.pipeline.valid' | transloco }}</p>
-              }
-            }
-            @if (error()) { <p class="verr-line">{{ error()!.message }}</p> }
-            @if (result()) {
-              <div class="done-box">
-                <p class="filename">{{ result()!.filename }}</p>
-                <button type="button" class="btn btn-primary" (click)="download()">{{ 'common.downloadZip' | transloco }}</button>
+          @if (panelOpen()) {
+            <aside class="col side">
+              <div class="card">
+                <h2 class="card-h">{{ 'pipeline.canvas.inspector' | transloco }}</h2>
+                <app-pipeline-inspector
+                  [node]="cv.selectedNode()"
+                  [sourceFiles]="cv.selectedSourceFiles()"
+                  (patch)="cv.patchSelected($event)"
+                  (asset)="cv.setSelectedAsset($event)"
+                  (sourceFilesChange)="cv.setSelectedSourceFiles($event)"
+                />
               </div>
-            }
-          </div>
-        </aside>
+
+              <div class="card">
+                <div class="btn-row">
+                  <button type="button" class="btn" [disabled]="busy() || !cv.nodes().length" (click)="validate(cv)">{{ 'pages.pipeline.validate' | transloco }}</button>
+                  <button type="button" class="btn btn-primary" [disabled]="!cv.runnable() || busy()" (click)="run(cv)">{{ 'pages.pipeline.run' | transloco }}</button>
+                </div>
+                @if (busy()) { <app-spinner [label]="'pages.pipeline.running' | transloco" /> }
+
+                @if (validationErrors() !== null) {
+                  @if (validationErrors()!.length) {
+                    <ul class="verr">
+                      @for (e of validationErrors()!; track $index) {
+                        <li>{{ e.nodeId ? '[' + e.nodeId + '] ' : '' }}{{ e.message }}</li>
+                      }
+                    </ul>
+                  } @else {
+                    <p class="ok-note">{{ 'pages.pipeline.valid' | transloco }}</p>
+                  }
+                }
+                @if (error()) { <p class="verr-line">{{ error()!.message }}</p> }
+                @if (result()) {
+                  <div class="done-box">
+                    <p class="filename">{{ result()!.filename }}</p>
+                    <button type="button" class="btn btn-primary" (click)="download()">{{ 'common.downloadZip' | transloco }}</button>
+                  </div>
+                }
+              </div>
+            </aside>
+          }
+        </div>
       </div>
     </section>
   `,
@@ -151,9 +169,14 @@ const KIND_TO_OP: Record<string, string> = {
     `
       .pl-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 320px;
-        gap: 1.25rem;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 1rem;
         align-items: start;
+      }
+      /* Collapsed: the drawer folds away and the canvas takes the whole row. */
+      .pl-grid.collapsed {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.5rem;
       }
       .col {
         display: flex;
@@ -161,10 +184,57 @@ const KIND_TO_OP: Record<string, string> = {
         gap: 0.75rem;
         min-width: 0;
       }
-      .side {
+      /* Sticky right dock = a slim toggle rail + (when open) the drawer. */
+      .dock {
         position: sticky;
         top: 1rem;
-        gap: 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0;
+      }
+      .rail-toggle {
+        flex: 0 0 auto;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 30px;
+        min-height: 96px;
+        padding: 0.75rem 0;
+        border: 1px solid var(--border);
+        border-radius: 10px 0 0 10px;
+        background: var(--surface);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+      .rail-toggle:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .rail-toggle:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      /* When the drawer is hidden the rail stands alone — round all corners. */
+      .pl-grid.collapsed .rail-toggle {
+        border-radius: 10px;
+      }
+      .rail-chevron {
+        font-size: 1.05rem;
+        line-height: 1;
+        font-weight: 700;
+      }
+      .rail-label {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+      }
+      .side {
+        width: 300px;
+        gap: 1rem;
       }
       .card-h {
         margin: 0 0 0.75rem;
@@ -224,11 +294,31 @@ const KIND_TO_OP: Record<string, string> = {
         display: none;
       }
       @media (max-width: 768px) {
-        .pl-grid {
+        .pl-grid,
+        .pl-grid.collapsed {
           grid-template-columns: 1fr;
         }
-        .side {
+        .dock {
           position: static;
+          flex-direction: column;
+          align-items: stretch;
+        }
+        /* On narrow screens the rail becomes a full-width horizontal bar. */
+        .rail-toggle {
+          flex-direction: row;
+          width: auto;
+          min-height: 0;
+          padding: 0.5rem 0.75rem;
+          border-radius: 10px;
+        }
+        .pl-grid.collapsed .rail-toggle {
+          border-radius: 10px;
+        }
+        .rail-label {
+          writing-mode: horizontal-tb;
+        }
+        .side {
+          width: auto;
         }
         .mobile-hint {
           display: block;
@@ -244,6 +334,9 @@ export class PipelinePage implements OnInit, AfterViewInit {
   @ViewChild('cv') private canvas!: PipelineCanvasComponent;
 
   protected readonly kinds = signal<NodeKindInfo[]>(FALLBACK_KINDS);
+
+  /** Inspector/Run drawer open state — remembered across visits so the canvas can stay wide. */
+  protected readonly panelOpen = signal(PipelinePage.readPanelOpen());
 
   protected readonly busy = signal(false);
   protected readonly error = signal<ApiError | null>(null);
@@ -268,6 +361,28 @@ export class PipelinePage implements OnInit, AfterViewInit {
     // the inspector immediately shows its per-node upload drop zone.
     if (!this.canvas.hasSource()) {
       this.canvas.addNode('SOURCE');
+    }
+  }
+
+  private static readonly PANEL_KEY = 'pl.panelOpen';
+
+  /** Restore the last drawer state (defaults to open on first visit / unavailable storage). */
+  private static readonly readPanelOpen = (): boolean => {
+    try {
+      return localStorage.getItem(PipelinePage.PANEL_KEY) !== '0';
+    } catch {
+      return true;
+    }
+  };
+
+  /** Toggle the inspector/run drawer and persist the choice. */
+  togglePanel(): void {
+    const next = !this.panelOpen();
+    this.panelOpen.set(next);
+    try {
+      localStorage.setItem(PipelinePage.PANEL_KEY, next ? '1' : '0');
+    } catch {
+      /* storage unavailable — state still lives in the signal for this session */
     }
   }
 
