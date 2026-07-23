@@ -39,9 +39,33 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         <div class="field">
           <span class="field-label">{{ 'pages.rotate.angle' | transloco }}</span>
           <div class="seg" role="group" [attr.aria-label]="'pages.rotate.angleAria' | transloco">
-            @for (a of angles; track a) {
-              <button type="button" [class.active]="angle() === a" [attr.aria-pressed]="angle() === a" (click)="angle.set(a)">{{ a }}°</button>
-            }
+            <button type="button" [class.active]="angle() === 90" [attr.aria-pressed]="angle() === 90" (click)="angle.set(90)"
+                    style="display:flex;flex-direction:column;align-items:center;gap:.35rem;min-width:6.5rem">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9.5" y="8.5" width="5" height="7" rx="1" />
+                <path d="M12 4.5 A 7.5 7.5 0 0 1 19.5 12" />
+                <path d="M17 9.5 L19.5 12 L22 9.5" />
+              </svg>
+              <span>{{ 'pages.rotate.dir90' | transloco }}</span>
+            </button>
+            <button type="button" [class.active]="angle() === 180" [attr.aria-pressed]="angle() === 180" (click)="angle.set(180)"
+                    style="display:flex;flex-direction:column;align-items:center;gap:.35rem;min-width:6.5rem">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9.5" y="8.5" width="5" height="7" rx="1" />
+                <path d="M12 4.5 A 7.5 7.5 0 0 1 12 19.5" />
+                <path d="M14.5 17 L12 19.5 L14.5 22" />
+              </svg>
+              <span>{{ 'pages.rotate.dir180' | transloco }}</span>
+            </button>
+            <button type="button" [class.active]="angle() === 270" [attr.aria-pressed]="angle() === 270" (click)="angle.set(270)"
+                    style="display:flex;flex-direction:column;align-items:center;gap:.35rem;min-width:6.5rem">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9.5" y="8.5" width="5" height="7" rx="1" />
+                <path d="M12 4.5 A 7.5 7.5 0 0 0 4.5 12" />
+                <path d="M2 9.5 L4.5 12 L7 9.5" />
+              </svg>
+              <span>{{ 'pages.rotate.dir270' | transloco }}</span>
+            </button>
           </div>
         </div>
         <div class="field">
@@ -83,7 +107,6 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
   `,
 })
 export class RotatePage {
-  protected readonly angles = [90, 180, 270];
   protected readonly files = signal<File[]>([]);
   protected readonly angle = signal(90);
   protected readonly pages = new FormControl('', { nonNullable: true });
