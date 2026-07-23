@@ -21,7 +21,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import com.pdfconduit.app.gui.util.DefaultLocations;
-import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.pipeline.NodeKind;
 import com.pdfconduit.core.pipeline.PipelineGraph;
 import com.pdfconduit.core.pipeline.PipelineNode;
@@ -240,12 +239,9 @@ class NodeInspector extends FlowPane {
     }
 
     private void buildToText(PipelineNode node) {
-        boolean lo = DocumentConverter.officeConversionAvailable();
-        // Without LibreOffice only TXT is offered.
-        ComboBox<TextFormat> fmt = new ComboBox<>(lo
-            ? FXCollections.observableArrayList(TextFormat.values())
-            : FXCollections.observableArrayList(TextFormat.TXT));
-        if (node.textFormat == TextFormat.DOCX && !lo) node.textFormat = TextFormat.TXT;
+        // Both formats are produced natively (no LibreOffice); always offer TXT and DOCX.
+        ComboBox<TextFormat> fmt =
+            new ComboBox<>(FXCollections.observableArrayList(TextFormat.values()));
         fmt.setValue(node.textFormat);
         fmt.setConverter(new javafx.util.StringConverter<>() {
             @Override public String toString(TextFormat t) {
@@ -258,7 +254,6 @@ class NodeInspector extends FlowPane {
         fmt.valueProperty().addListener((o, a, b) -> { if (b != null) { node.textFormat = b; canvas.refreshNode(node); } });
 
         getChildren().add(group("pipeline.node.format", fmt));
-        if (!lo) getChildren().add(hint(I18n.t("totext.word.needslo")));
     }
 
     private void buildOcr(PipelineNode node) {

@@ -43,7 +43,6 @@ import com.pdfconduit.core.util.PdfLoader;
 import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OcrDisabledException;
-import com.pdfconduit.web.error.OfficeDisabledException;
 import com.pdfconduit.web.guard.OcrGuard;
 import com.pdfconduit.web.guard.OfficeGuard;
 import com.pdfconduit.web.plan.PlanLimits;
@@ -77,7 +76,6 @@ public class WebOperations {
     private final int maxPages;
     private final int maxDpi;
     private final long maxOutputPixels;
-    private final boolean officeEnabled;
     private final boolean ocrEnabled;
     private final String ocrLanguages;
 
@@ -93,7 +91,6 @@ public class WebOperations {
         this.maxPages = plan.maxPages();
         this.maxDpi = plan.maxDpi();
         this.maxOutputPixels = plan.maxOutputPixels();
-        this.officeEnabled = props.officeEnabled();
         this.ocrEnabled = props.ocrEnabled();
         this.ocrLanguages = props.ocr().languages();
     }
@@ -445,11 +442,8 @@ public class WebOperations {
 
     public NamedBytes toText(NamedBytes in, TextFormat format, String pagesExpr)
             throws PdfOperationException, InvalidPageRangeException {
-        // DOCX output needs LibreOffice (txt→docx); reject up front when office is disabled so the
-        // output-side conversion never fires an ungated soffice, mirroring the input-side 415.
-        if (format == TextFormat.DOCX && !officeEnabled) {
-            throw new OfficeDisabledException(in.filename());
-        }
+        // DOCX output is now built in memory (OOXML, no LibreOffice), so it is never office-gated.
+        // Non-PDF *inputs* are still routed through routeToPdf, which applies the office gate itself.
         byte[] pdf = routeToPdf(in);
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);

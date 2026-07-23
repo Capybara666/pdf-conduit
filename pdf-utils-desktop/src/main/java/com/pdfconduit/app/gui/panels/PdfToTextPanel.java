@@ -3,7 +3,6 @@ package com.pdfconduit.app.gui.panels;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
@@ -12,7 +11,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import com.pdfconduit.app.gui.Ui;
 import com.pdfconduit.app.gui.component.PageSelectDialog;
-import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.model.PdfToTextOptions;
 import com.pdfconduit.core.model.TextFormat;
 import com.pdfconduit.core.operations.PdfTextExporter;
@@ -26,8 +24,8 @@ import java.util.List;
 
 /**
  * Exports the text of one or more PDFs (or any convertible document) as TXT or
- * Word (.docx) into a folder. Word requires LibreOffice — the option is disabled
- * with a hint when it is unavailable. A terminal operation (output is not a PDF).
+ * structured Word (.docx) into a folder. Both formats are produced natively (no
+ * LibreOffice). A terminal operation (output is not a PDF).
  */
 public class PdfToTextPanel extends BasePanel {
 
@@ -65,16 +63,8 @@ public class PdfToTextPanel extends BasePanel {
         HBox formatRow = new HBox(Ui.INLINE_GAP, fieldLabel("totext.format.label"), txtRadio, wordRadio);
         formatRow.getStyleClass().add("row-left");
 
+        // Both TXT and DOCX are produced natively (in memory) — no LibreOffice gate.
         VBox formatGroupBox = new VBox(Ui.LABEL_FIELD_GAP, formatRow);
-        // Gate Word on LibreOffice: disable the option and explain why when it's missing.
-        if (!DocumentConverter.officeConversionAvailable()) {
-            wordRadio.setDisable(true);
-            Label needsLo = new Label();
-            I18n.bindText(needsLo::setText, "totext.word.needslo");
-            needsLo.getStyleClass().add("text-caption");
-            needsLo.setWrapText(true);
-            formatGroupBox.getChildren().add(needsLo);
-        }
 
         pagesField = new TextField();
         I18n.bindText(pagesField::setPromptText, "split.pages.prompt");

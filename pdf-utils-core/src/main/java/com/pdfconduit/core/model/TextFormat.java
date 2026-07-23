@@ -1,15 +1,16 @@
 package com.pdfconduit.core.model;
 
 /**
- * Output format for {@link com.pdfconduit.core.operations.PdfTextExporter}. TXT is
- * extracted directly with PDFBox (no dependency); DOCX is produced by LibreOffice.
+ * Output format for {@link com.pdfconduit.core.operations.PdfTextExporter}. Both are produced
+ * natively — TXT via PDFBox extraction, DOCX as an OOXML package built in memory (no LibreOffice,
+ * no extra dependency). Neither requires an external process.
  */
 public enum TextFormat {
     TXT("txt", null),
-    DOCX("docx", "docx");
+    DOCX("docx", null);
 
     private final String extension;
-    private final String sofficeFormat;   // null when no LibreOffice conversion is needed
+    private final String sofficeFormat;   // retained for API stability; always null today
 
     TextFormat(String extension, String sofficeFormat) {
         this.extension = extension;
@@ -18,9 +19,9 @@ public enum TextFormat {
 
     public String extension() { return extension; }
 
-    /** The LibreOffice {@code --convert-to} format name, or {@code null} for native extraction. */
+    /** The LibreOffice {@code --convert-to} format name, or {@code null} for native output. */
     public String sofficeFormat() { return sofficeFormat; }
 
-    /** True when producing this format requires a LibreOffice install. */
+    /** True when producing this format requires a LibreOffice install (none do today). */
     public boolean needsLibreOffice() { return sofficeFormat != null; }
 }

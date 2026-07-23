@@ -1,7 +1,5 @@
 package com.pdfconduit.core.operations;
 
-import com.pdfconduit.core.convert.DocumentConverter;
-import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PdfToTextOptions;
 import com.pdfconduit.core.model.PdfToTextResult;
@@ -12,14 +10,15 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.zip.ZipFile;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,10 +56,8 @@ class PdfTextExporterTest {
     }
 
     @Test
-    void exportsDocxWhenLibreOfficeIsAvailable() throws Exception {
-        // Real LibreOffice conversion — runs only where soffice is installed.
-        Assumptions.assumeTrue(DocumentConverter.officeConversionAvailable(),
-            "LibreOffice not installed — skipping the docx happy path");
+    void exportsDocxNativelyWithoutLibreOffice() throws Exception {
+        // DOCX is now built in memory as OOXML — no LibreOffice, so this runs everywhere.
         Path src = createPdf("ALPHA", "BETA");
         Path dir = tmp.resolve("docx");
 
@@ -68,30 +65,65 @@ class PdfTextExporterTest {
             new PdfToTextOptions(src, TextFormat.DOCX, PageRange.ALL, dir, "doc"));
 
         assertEquals(dir.resolve("doc.docx"), result.output());
-        // A .docx is a zip; a valid, text-based one carries our text in document.xml.
-        try (var zip = new java.util.zip.ZipFile(result.output().toFile())) {
-            var entry = zip.getEntry("word/document.xml");
-            assertNotNull(entry, "docx must contain word/document.xml");
-            String xml = new String(zip.getInputStream(entry).readAllBytes(),
-                java.nio.charset.StandardCharsets.UTF_8);
-            assertTrue(xml.contains("ALPHA"), "docx should contain the extracted text");
-            // The fragile writer_pdf_import path filled the doc with text frames; the
-            // text-based path must not.
-            assertFalse(xml.contains("<wps:"), "docx should be clean text, not frame-heavy");
-        }
+        String xml = documentXml(result.output());
+        assertTrue(xml.contains("ALPHA"), "docx should contain the extracted text");
+        // Clean OOXML text, not LibreOffice's frame-heavy writer_pdf_import output.
+        assertFalse(xml.contains("<wps:"), "docx should be clean text, not frame-heavy");
     }
 
     @Test
-    void docxWithoutLibreOfficeFailsClearly() throws Exception {
-        // Only meaningful when LibreOffice is absent (CI / headless dev box).
-        Assumptions.assumeFalse(DocumentConverter.officeConversionAvailable(),
-            "LibreOffice present — skipping the 'missing' path");
-        Path src = createPdf("ALPHA");
+    void docxSplitsIntoMultipleDistinctParagraphs() throws Exception {
+        // A heading, a two-line body paragraph, and a second body paragraph separated by a gap.
+        Path src = createStructuredPdf();
+        Path dir = tmp.resolve("structured");
 
-        PdfOperationException ex = assertThrows(PdfOperationException.class, () ->
-            PdfTextExporter.execute(new PdfToTextOptions(
-                src, TextFormat.DOCX, PageRange.ALL, tmp.resolve("d"), "doc")));
-        assertTrue(ex.getMessage().contains("LibreOffice"), ex.getMessage());
+        PdfTextExporter.execute(
+            new PdfToTextOptions(src, TextFormat.DOCX, PageRange.ALL, dir, "doc"));
+
+        String xml = documentXml(dir.resolve("doc.docx"));
+
+        // At least three <w:p> elements: one heading + two body paragraphs (not a single run).
+        assertTrue(paragraphCount(xml) >= 3,
+            "expected multiple distinct paragraphs, got:\n" + xml);
+
+        // The heading is styled (Word Heading 1), not dumped as body text.
+        assertTrue(xml.contains("<w:pStyle w:val=\"Heading1\"/>"),
+            "large-font line should become a Heading 1 paragraph:\n" + xml);
+        assertTrue(xml.contains("CHAPTER ONE"), xml);
+
+        // The two wrapped lines of paragraph one are re-joined into a single paragraph run,
+        // while paragraph two is a separate run — proving real paragraph splitting.
+        assertTrue(xml.contains("First body line one continues on line two"),
+            "wrapped lines should join into one paragraph:\n" + xml);
+        assertTrue(xml.contains("Second paragraph starts here"), xml);
+        assertFalse(xml.contains("First body line one continues on line two Second paragraph"),
+            "the two paragraphs must not be merged into one:\n" + xml);
+    }
+
+    @Test
+    void docxInsertsPageBreaksBetweenPages() throws Exception {
+        Path src = createPdf("ALPHA", "BETA", "GAMMA");
+        Path dir = tmp.resolve("pages");
+
+        PdfTextExporter.execute(
+            new PdfToTextOptions(src, TextFormat.DOCX, PageRange.ALL, dir, "doc"));
+
+        String xml = documentXml(dir.resolve("doc.docx"));
+        // Two page breaks separate the three pages.
+        int breaks = xml.split("<w:br w:type=\"page\"/>", -1).length - 1;
+        assertEquals(2, breaks, "expected a page break between each of the 3 pages:\n" + xml);
+    }
+
+    private static String documentXml(Path docx) throws IOException {
+        try (ZipFile zip = new ZipFile(docx.toFile())) {
+            var entry = zip.getEntry("word/document.xml");
+            assertNotNull(entry, "docx must contain word/document.xml");
+            return new String(zip.getInputStream(entry).readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private static int paragraphCount(String documentXml) {
+        return documentXml.split("<w:p>", -1).length - 1;
     }
 
     private Path createPdf(String... pageTexts) throws IOException {
@@ -111,5 +143,31 @@ class PdfTextExporterTest {
             doc.save(path.toFile());
         }
         return path;
+    }
+
+    /** One page: a large-font heading, a two-line paragraph, then a gap-separated paragraph. */
+    private Path createStructuredPdf() throws IOException {
+        Path path = tmp.resolve("structured-" + System.nanoTime() + ".pdf");
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
+                drawLine(cs, "CHAPTER ONE", 20, 100, 780);
+                drawLine(cs, "First body line one", 12, 100, 740);   // tight spacing -> same
+                drawLine(cs, "continues on line two", 12, 100, 725); //   paragraph
+                drawLine(cs, "Second paragraph starts here", 12, 100, 680); // gap -> new paragraph
+            }
+            doc.save(path.toFile());
+        }
+        return path;
+    }
+
+    private void drawLine(PDPageContentStream cs, String text, int size, float x, float y)
+            throws IOException {
+        cs.beginText();
+        cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), size);
+        cs.newLineAtOffset(x, y);
+        cs.showText(text);
+        cs.endText();
     }
 }

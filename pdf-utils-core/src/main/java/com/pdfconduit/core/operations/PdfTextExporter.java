@@ -1,11 +1,12 @@
 package com.pdfconduit.core.operations;
 
-import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PdfToTextOptions;
 import com.pdfconduit.core.model.PdfToTextResult;
 import com.pdfconduit.core.model.TextFormat;
+import com.pdfconduit.core.operations.StructuredTextStripper.Line;
+import com.pdfconduit.core.util.DocxWriter;
 import com.pdfconduit.core.util.PdfLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -14,16 +15,24 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Exports a PDF's text content as TXT or DOCX. The text is always extracted with
- * PDFBox ({@link PDFTextStripper}, honouring the page range); for DOCX that text is
- * then wrapped into a Word document by LibreOffice (txt→docx).
+ * Exports a PDF's text content as TXT or DOCX.
  *
- * <p>Word output is therefore plain, editable text — not a visual reproduction of the
- * PDF's layout. That is deliberate: importing a PDF's layout into Word
- * (LibreOffice's {@code writer_pdf_import}) yields a frame-heavy document that even
- * LibreOffice can hang on when reopening.
+ * <p>TXT is the raw {@link PDFTextStripper} extraction (honouring the page range). DOCX is built
+ * directly as an OOXML package by {@link DocxWriter} — <b>no LibreOffice</b> and no new dependency —
+ * and, unlike a flat txt→docx dump, carries real structure:
+ * <ul>
+ *   <li><b>Paragraphs</b> — wrapped lines are re-joined and split into paragraphs on vertical
+ *       layout gaps, not one blob or one paragraph per visual line.</li>
+ *   <li><b>Headings</b> — lines whose dominant font size stands out above the body text become
+ *       bold, larger {@code Heading 1/2} paragraphs (so they appear in Word's outline).</li>
+ *   <li><b>Page breaks</b> — a hard page break is inserted between source pages.</li>
+ * </ul>
  */
 public final class PdfTextExporter {
 
@@ -37,30 +46,11 @@ public final class PdfTextExporter {
             throw new PdfOperationException("Cannot create output folder: " + e.getMessage(), e);
         }
 
-        String text = extractText(opts);
-
-        if (opts.format() == TextFormat.TXT) {
-            try {
-                Files.writeString(out, text, StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
-            }
-            return new PdfToTextResult(out);
-        }
-
-        // DOCX: wrap the extracted text into a Word document via LibreOffice (txt→docx).
-        Path tempTxt;
-        try {
-            tempTxt = Files.createTempFile("pdfconduit-text-", ".txt");
-            Files.writeString(tempTxt, text, StandardCharsets.UTF_8);
+        try (PDDocument doc = PdfLoader.load(opts.input())) {
+            byte[] data = render(doc, opts.format(), opts.pages());
+            Files.write(out, data);
         } catch (IOException e) {
             throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
-        }
-        try {
-            DocumentConverter.convertTo(tempTxt, opts.format().sofficeFormat(),
-                opts.format().extension(), out);
-        } finally {
-            try { Files.deleteIfExists(tempTxt); } catch (IOException ignored) {}
         }
         return new PdfToTextResult(out);
     }
@@ -79,56 +69,27 @@ public final class PdfTextExporter {
 
     /**
      * In-memory variant: export the text of {@code pdf} in {@code format} and return the bytes.
-     *
-     * <p>TXT is produced purely in memory (UTF-8). DOCX still requires LibreOffice, which is an
-     * external process that must read/write real files, so this is the one documented disk touch:
-     * the extracted text is written to an isolated temp dir, converted, read back, and the dir
-     * deleted in {@code finally}.
+     * Both TXT and DOCX are produced purely in memory — no disk, no external process.
      */
     public static byte[] toTextBytes(byte[] pdf, TextFormat format, PageRange pages)
             throws PdfOperationException {
-        String text = extractTextBytes(pdf, pages);
+        try (PDDocument doc = PdfLoader.load(pdf)) {
+            return render(doc, format, pages);
+        } catch (IOException e) {
+            throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
+        }
+    }
+
+    /** Produce the bytes for {@code format} from an already-loaded document. */
+    private static byte[] render(PDDocument doc, TextFormat format, PageRange pages)
+            throws IOException {
         if (format == TextFormat.TXT) {
-            return text.getBytes(StandardCharsets.UTF_8);
+            return extractText(doc, pages).getBytes(StandardCharsets.UTF_8);
         }
-
-        // DOCX: the LibreOffice (disk) exception.
-        Path dir;
-        try {
-            dir = Files.createTempDirectory("pdfconduit-text-");
-        } catch (IOException e) {
-            throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
-        }
-        try {
-            Path txt = dir.resolve("text.txt");
-            Path out = dir.resolve("text." + format.extension());
-            Files.writeString(txt, text, StandardCharsets.UTF_8);
-            DocumentConverter.convertTo(txt, format.sofficeFormat(), format.extension(), out);
-            return Files.readAllBytes(out);
-        } catch (IOException e) {
-            throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
-        } finally {
-            deleteRecursively(dir);
-        }
+        return DocxWriter.write(structure(StructuredTextStripper.collect(doc, pages)));
     }
 
-    private static void deleteRecursively(Path dir) {
-        try (java.util.stream.Stream<Path> walk = Files.walk(dir)) {
-            walk.sorted(java.util.Comparator.reverseOrder()).forEach(p -> {
-                try { Files.deleteIfExists(p); } catch (IOException ignored) {}
-            });
-        } catch (IOException ignored) {}
-    }
-
-    private static String extractText(PdfToTextOptions opts) throws PdfOperationException {
-        try (PDDocument doc = PdfLoader.load(opts.input())) {
-            return extractText(doc, opts.pages());
-        } catch (IOException e) {
-            throw new PdfOperationException("Text export failed: " + e.getMessage(), e);
-        }
-    }
-
-    /** The shared extraction: all pages, or the given 1-based pages, of {@code doc}. */
+    /** The shared plain-text extraction: all pages, or the given 1-based pages, of {@code doc}. */
     private static String extractText(PDDocument doc, PageRange pages) throws IOException {
         PDFTextStripper stripper = new PDFTextStripper();
         if (pages.isAll()) {
@@ -141,5 +102,80 @@ public final class PdfTextExporter {
             sb.append(stripper.getText(doc));
         }
         return sb.toString();
+    }
+
+    // ------------------------------------------------------------ structuring
+
+    /**
+     * Turns captured lines into a flow of DOCX blocks: headings (larger-than-body font),
+     * paragraphs (wrapped lines re-joined, split on vertical gaps) and page breaks (between pages).
+     */
+    static List<DocxWriter.Block> structure(List<Line> lines) {
+        List<DocxWriter.Block> blocks = new ArrayList<>();
+        if (lines.isEmpty()) return blocks;
+
+        float bodyFont = bodyFontSize(lines);
+
+        StringBuilder para = new StringBuilder();
+        float prevY = 0;
+        int prevPage = -1;
+        boolean prevHeading = false;
+
+        for (Line line : lines) {
+            boolean pageChanged = prevPage != -1 && line.page() != prevPage;
+            boolean heading = isHeading(line, bodyFont);
+            boolean gap = !pageChanged && prevPage != -1
+                && (line.y() - prevY) > 1.8f * Math.max(bodyFont, line.fontSize());
+
+            if (pageChanged) {
+                flush(blocks, para);
+                blocks.add(DocxWriter.Block.newPage());
+            }
+
+            if (heading) {
+                flush(blocks, para);
+                int level = line.fontSize() >= bodyFont * 1.5f ? 1 : 2;
+                blocks.add(DocxWriter.Block.heading(line.text(), level));
+            } else if (para.length() == 0 || prevHeading || gap || pageChanged) {
+                flush(blocks, para);
+                para.append(line.text());
+            } else {
+                para.append(' ').append(line.text());
+            }
+
+            prevY = line.y();
+            prevPage = line.page();
+            prevHeading = heading;
+        }
+        flush(blocks, para);
+        return blocks;
+    }
+
+    private static void flush(List<DocxWriter.Block> blocks, StringBuilder para) {
+        if (para.length() > 0) {
+            blocks.add(DocxWriter.Block.paragraph(para.toString()));
+            para.setLength(0);
+        }
+    }
+
+    /** A line is a heading when its font is clearly larger than the body and the line is short. */
+    private static boolean isHeading(Line line, float bodyFont) {
+        return line.fontSize() >= bodyFont + 1.0f
+            && line.fontSize() >= bodyFont * 1.12f
+            && line.text().length() <= 120;
+    }
+
+    /** The most common (rounded) line font size — the body text size that headings rise above. */
+    private static float bodyFontSize(List<Line> lines) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (Line line : lines) {
+            int rounded = Math.round(line.fontSize());
+            if (rounded > 0) counts.merge(rounded, 1, Integer::sum);
+        }
+        int best = 0, bestCount = -1;
+        for (Map.Entry<Integer, Integer> e : counts.entrySet()) {
+            if (e.getValue() > bestCount) { bestCount = e.getValue(); best = e.getKey(); }
+        }
+        return best > 0 ? best : 12f;
     }
 }

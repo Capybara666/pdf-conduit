@@ -19,14 +19,14 @@ import java.util.Locale;
 import java.util.concurrent.Callable;
 
 @Command(name = "pdf-to-text", aliases = {"to-text"},
-         description = "Export a PDF's text as TXT (PDFBox) or Word .docx (LibreOffice).")
+         description = "Export a PDF's text as TXT or structured Word .docx (both native).")
 public class PdfToTextCommand implements Callable<Integer> {
 
     @Parameters(index = "0", paramLabel = "FILE", description = "Input PDF.")
     private Path input;
 
     @Option(names = "--format", paramLabel = "txt|docx", defaultValue = "txt",
-            description = "Output format (default: txt). docx needs LibreOffice.")
+            description = "Output format (default: txt). Both are produced natively.")
     private String format;
 
     @Option(names = "--pages", paramLabel = "RANGE", defaultValue = "",
