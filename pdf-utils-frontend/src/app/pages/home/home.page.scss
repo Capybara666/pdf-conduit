@@ -515,6 +515,20 @@
   .hero-art {
     display: none;
   }
+  /* Single-column hero reads best centered on tablet/phone. */
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .lede {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-row {
+    justify-content: center;
+  }
   .trust {
     grid-template-columns: 1fr;
   }
@@ -526,5 +540,60 @@
 @media (max-width: 640px) {
   .how-steps {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Phone: compact, centered 2-up tool grid ---------- */
+@media (max-width: 560px) {
+  .home {
+    gap: 2.5rem;
+  }
+
+  /* Two balanced columns of compact tiles instead of a flat 1-per-row list. */
+  .feature-grid,
+  .basic-grid,
+  .advanced-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  /* Icon stacked above a centered label; description dropped for a tidy tile. */
+  .feature-card {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 1.1rem 0.7rem;
+    min-height: 7.25rem;
+    border-radius: var(--radius);
+  }
+
+  .fc-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0;
+
+    app-op-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  .fc-title {
+    font-size: 0.92rem;
+    line-height: 1.25;
+  }
+
+  /* Keep tiles compact and uniform — the label carries the tile on phones. */
+  .fc-desc {
+    display: none;
+  }
+
+  .section-head {
+    padding: 0 0.25rem;
+
+    h2 {
+      font-size: 1.45rem;
+    }
   }
 }
