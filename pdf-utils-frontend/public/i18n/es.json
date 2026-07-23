@@ -157,7 +157,9 @@
     "serverChecking": "Comprobando el servidor…",
     "themeToLight": "Cambiar al tema claro",
     "themeToDark": "Cambiar al tema oscuro",
-    "languageLabel": "Idioma"
+    "languageLabel": "Idioma",
+    "settings": "Settings",
+    "settingsClose": "Close"
   },
   "theme": {
     "label": "Tema",

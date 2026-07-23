@@ -157,7 +157,9 @@
     "serverChecking": "Проверка сервера…",
     "themeToLight": "Переключить на светлую тему",
     "themeToDark": "Переключить на тёмную тему",
-    "languageLabel": "Язык"
+    "languageLabel": "Язык",
+    "settings": "Settings",
+    "settingsClose": "Close"
   },
   "theme": {
     "label": "Тема",

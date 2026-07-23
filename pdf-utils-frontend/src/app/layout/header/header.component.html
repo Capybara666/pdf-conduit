@@ -149,9 +149,37 @@
       </button>
     </div>
 
-    <!-- Language + theme pickers. Hidden below the mobile breakpoint, where they
-         reappear inside the off-canvas drawer (see app-sidebar) so the top bar
+    <!-- Language + theme pickers. Hidden below the mobile breakpoint, where the
+         gear button (next) opens the settings sheet instead, so the top bar
          stays a single, non-wrapping row. -->
     <app-secondary-controls class="header-secondary" />
+
+    <!-- Mobile-only settings gear: opens the language + theme sheet. Hidden on
+         desktop, where the pickers live inline in the header above. -->
+    <button
+      #gearButton
+      type="button"
+      class="settings-gear"
+      (click)="openSettings()"
+      [attr.aria-haspopup]="'dialog'"
+      [attr.aria-expanded]="settingsOpen()"
+      [attr.aria-label]="'header.settings' | transloco"
+      [title]="'header.settings' | transloco"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <path
+          d="M12 3.5v2 M12 18.5v2 M4.6 7.6l1.7 1 M17.7 15.4l1.7 1 M4.6 16.4l1.7-1 M17.7 8.6l1.7-1"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
   </div>
+
+  @if (settingsOpen()) {
+    <app-settings-modal (closed)="closeSettings()" />
+  }
 </header>

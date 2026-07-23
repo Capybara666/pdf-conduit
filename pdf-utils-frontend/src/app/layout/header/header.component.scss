@@ -227,18 +227,52 @@
   }
 }
 
+/* Mobile-only settings gear (opens the language + theme sheet). Square, matched
+   to the hamburger; hidden on desktop where the pickers live inline. */
+.settings-gear {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard);
+
+  svg {
+    width: 1.35rem;
+    height: 1.35rem;
+    fill: none;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
 @media (max-width: 820px) {
   .menu-toggle {
     display: inline-flex;
   }
 
   /* Keep the top bar to a single, non-wrapping row on mobile: the width toggle
-     (wide mode is a desktop-only feature) is dropped entirely, and the language
-     + theme pickers move into the off-canvas drawer (app-sidebar). What's left —
-     the quota chip, health dot and help link — stays compact and never wraps. */
+     (wide mode is a desktop-only feature) is dropped entirely, and the inline
+     language + theme pickers are hidden — the gear button opens them in a
+     settings sheet instead. What's left — the quota chip, health dot, help link
+     and gear — stays compact and never wraps. */
   .width-toggle,
   .header-secondary {
     display: none;
+  }
+
+  .settings-gear {
+    display: inline-flex;
   }
 }
 

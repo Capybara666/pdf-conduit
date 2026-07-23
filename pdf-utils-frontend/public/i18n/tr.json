@@ -157,7 +157,9 @@
     "serverChecking": "Sunucu kontrol ediliyor…",
     "themeToLight": "Açık temaya geç",
     "themeToDark": "Koyu temaya geç",
-    "languageLabel": "Dil"
+    "languageLabel": "Dil",
+    "settings": "Settings",
+    "settingsClose": "Close"
   },
   "theme": {
     "label": "Tema",

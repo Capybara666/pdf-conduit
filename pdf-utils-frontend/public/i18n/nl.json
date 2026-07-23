@@ -157,7 +157,9 @@
     "serverChecking": "Server controleren…",
     "themeToLight": "Overschakelen naar licht thema",
     "themeToDark": "Overschakelen naar donker thema",
-    "languageLabel": "Taal"
+    "languageLabel": "Taal",
+    "settings": "Settings",
+    "settingsClose": "Close"
   },
   "theme": {
     "label": "Thema",

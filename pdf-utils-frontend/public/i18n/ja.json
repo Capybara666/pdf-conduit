@@ -157,7 +157,9 @@
     "serverChecking": "サーバーを確認中…",
     "themeToLight": "ライトテーマに切り替え",
     "themeToDark": "ダークテーマに切り替え",
-    "languageLabel": "言語"
+    "languageLabel": "言語",
+    "settings": "Settings",
+    "settingsClose": "Close"
   },
   "theme": {
     "label": "テーマ",

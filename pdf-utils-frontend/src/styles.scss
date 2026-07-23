@@ -601,10 +601,14 @@ input[type='radio'] {
     min-height: 40px;
   }
 
-  /* D — drop the op-page side padding on phones; .content already pads the
-     sides, so the extra ~1.5rem each side just eats width at 375px. */
+  /* D — on phones keep a comfortable, SYMMETRIC side gutter so the content
+     block sits centred with equal space on both edges and cards/controls are
+     never flush against the screen. `.content` adds ~1rem; this adds a touch
+     more (total ~1.75rem/side) rather than the old flush 0. `margin: 0 auto`
+     (from the base rule) keeps the block horizontally centred. */
   .op-page {
-    padding: 1.25rem 0 3rem;
+    padding: 1.25rem 0.75rem 3rem;
+    margin-inline: auto;
   }
 
   /* F — never show two cramped columns on phones. */

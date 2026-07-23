@@ -157,7 +157,9 @@
     "serverChecking": "Server wird geprüft…",
     "themeToLight": "Zum hellen Design wechseln",
     "themeToDark": "Zum dunklen Design wechseln",
-    "languageLabel": "Sprache"
+    "languageLabel": "Sprache",
+    "settings": "Settings",
+    "settingsClose": "Close"
   },
   "theme": {
     "label": "Design",

@@ -157,7 +157,9 @@
     "serverChecking": "서버 확인 중…",
     "themeToLight": "밝은 테마로 전환",
     "themeToDark": "어두운 테마로 전환",
-    "languageLabel": "언어"
+    "languageLabel": "언어",
+    "settings": "Settings",
+    "settingsClose": "Close"
   },
   "theme": {
     "label": "테마",

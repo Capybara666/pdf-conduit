@@ -157,7 +157,9 @@
     "serverChecking": "正在检查服务器…",
     "themeToLight": "切换到浅色主题",
     "themeToDark": "切换到深色主题",
-    "languageLabel": "语言"
+    "languageLabel": "语言",
+    "settings": "Settings",
+    "settingsClose": "Close"
   },
   "theme": {
     "label": "主题",

@@ -8,15 +8,14 @@ import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.com
 
 /**
  * The header's secondary pickers (language + theme), extracted into a small
- * self-contained control so the SAME markup/state can render in two places:
- *  - inline in the desktop header (`.header-actions`);
- *  - inside the mobile off-canvas drawer, where the header would otherwise
- *    overflow into an ugly multi-row cluster on narrow viewports.
+ * self-contained control. Rendered inline in the desktop header
+ * (`.header-actions`); below the mobile breakpoint it is hidden and the same
+ * two pickers are offered from the settings sheet (gear button) instead, so the
+ * top bar never overflows into an ugly multi-row cluster on narrow viewports.
  *
- * Both instances bind to the same root-provided services, so switching language
- * or theme from either surface stays in sync. Host is an inline flex row with
- * the same 1rem gap the header used, so the desktop layout is unchanged; it may
- * wrap when placed in the narrow drawer.
+ * Binds to the same root-provided services as the settings sheet, so switching
+ * language or theme from either surface stays in sync. Host is an inline flex
+ * row with the same 1rem gap the header used, so the desktop layout is unchanged.
  */
 @Component({
   selector: 'app-secondary-controls',
