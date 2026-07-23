@@ -247,6 +247,76 @@ class PdfCompressorTest {
         assertTrue(result.resultBytes() < original, "object-stream compression should shrink it");
     }
 
+    @Test
+    void grayscaleConvertsNonRgbColorImages() throws Exception {
+        // Indexed/palette and ARGB sources are exactly the colorspaces the old "draw straight onto a
+        // TYPE_BYTE_GRAY canvas" path mishandled. Route through GrayscaleConverter and every one must
+        // come out truly gray (R==G==B) — verified on the DECODED output image, not just its
+        // component count — while still retaining the tonal variation from the original colours.
+        for (int type : new int[]{BufferedImage.TYPE_BYTE_INDEXED, BufferedImage.TYPE_INT_ARGB}) {
+            Path src = createColorImagePdf(240, type);
+            long original = src.toFile().length();
+            Path out = tmp.resolve("gray-nonrgb-" + type + ".pdf");
+
+            PdfCompressor.execute(new CompressOptions(src, original, out, DpiPreset.NONE, true));
+
+            assertTrue(isValidPdf(out), "grayscale output must be a valid PDF (type=" + type + ")");
+            BufferedImage decoded = firstImage(out);
+            assertNotNull(decoded, "output must still contain an image (type=" + type + ")");
+
+            boolean sawVariation = false;
+            int prev = -1;
+            for (int y = 0; y < decoded.getHeight(); y += 7) {
+                for (int x = 0; x < decoded.getWidth(); x += 7) {
+                    int argb = decoded.getRGB(x, y);
+                    int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
+                    assertEquals(r, g, "R==G expected (grayscale) type=" + type + " @" + x + "," + y);
+                    assertEquals(g, b, "G==B expected (grayscale) type=" + type + " @" + x + "," + y);
+                    if (prev != -1 && r != prev) sawVariation = true;
+                    prev = r;
+                }
+            }
+            assertTrue(sawVariation,
+                "grayscale must preserve tonal variation from the colours, not be a flat fill (type="
+                    + type + ")");
+        }
+    }
+
+    /** Decoded first embedded image on page 1 of {@code pdf} (null if none). */
+    private BufferedImage firstImage(Path pdf) throws IOException {
+        try (PDDocument doc = Loader.loadPDF(pdf.toFile())) {
+            PDResources res = doc.getPage(0).getResources();
+            for (COSName name : res.getXObjectNames()) {
+                if (res.getXObject(name) instanceof PDImageXObject img) return img.getImage();
+            }
+        }
+        return null;
+    }
+
+    /** An A4 page with a {@code px}×{@code px} colour gradient stored in the given {@link BufferedImage} type. */
+    private Path createColorImagePdf(int px, int imageType) throws IOException {
+        Path path = tmp.resolve("color-" + imageType + ".pdf");
+        BufferedImage img = new BufferedImage(px, px, imageType);
+        for (int y = 0; y < px; y++) {
+            for (int x = 0; x < px; x++) {
+                int r = (x * 255) / px;
+                int g = (y * 255) / px;
+                int b = ((x + y) * 255) / (2 * px);
+                img.setRGB(x, y, (0xFF << 24) | (r << 16) | (g << 8) | b);
+            }
+        }
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+            PDImageXObject pdfImg = LosslessFactory.createFromImage(doc, img);
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
+                cs.drawImage(pdfImg, 50, 50, 200, 200);
+            }
+            doc.save(path.toFile());
+        }
+        return path;
+    }
+
     private Path createImageHeavyPdf() throws IOException {
         Path path = tmp.resolve("heavy.pdf");
         try (PDDocument doc = new PDDocument()) {

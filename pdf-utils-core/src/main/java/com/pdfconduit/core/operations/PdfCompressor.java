@@ -22,6 +22,7 @@ import com.pdfconduit.core.model.CompressBytesResult;
 import com.pdfconduit.core.model.CompressOptions;
 import com.pdfconduit.core.model.CompressOptions.DpiPreset;
 import com.pdfconduit.core.model.CompressResult;
+import com.pdfconduit.core.util.GrayscaleConverter;
 import com.pdfconduit.core.util.OutputPaths;
 import com.pdfconduit.core.util.PdfLoader;
 import com.pdfconduit.core.util.SizeEstimator;
@@ -461,14 +462,20 @@ public final class PdfCompressor {
                     source = image.getImage();
                 }
 
-                int imageType = mode.grayscale()
-                    ? BufferedImage.TYPE_BYTE_GRAY : BufferedImage.TYPE_INT_RGB;
-                BufferedImage target = new BufferedImage(newW, newH, imageType);
-                Graphics2D g = target.createGraphics();
+                // Scale onto a canonical opaque sRGB canvas first. Drawing the source directly onto a
+                // TYPE_BYTE_GRAY raster silently misbehaves for non-RGB colorspaces (indexed/palette,
+                // CMYK/YCCK JPEG, TYPE_CUSTOM), leaving those images in colour — the "some images stay
+                // coloured" bug. Doing the grayscale reduction with GrayscaleConverter afterwards
+                // handles every colorspace reliably (normalise → BT.601 luma → TYPE_BYTE_GRAY).
+                BufferedImage scaled = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = scaled.createGraphics();
                 g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
                 g.drawImage(source, 0, 0, newW, newH, null);
                 g.dispose();
+
+                BufferedImage target = mode.grayscale()
+                    ? GrayscaleConverter.toGrayscale(scaled) : scaled;
 
                 resources.put(name, JPEGFactory.createFromImage(doc, target, quality));
             }
