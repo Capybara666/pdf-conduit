@@ -21,6 +21,16 @@ $bp-rail: 820px;
   --sidebar-width-collapsed: 64px;
   --radius: 12px;
 
+  /* Global content-width system. Every op page derives its max-width from these
+     tokens (never a hard-coded literal) so all pages share ONE width regime,
+     switched by the top-bar width toggle (attribute `data-width` on <html>).
+     FIXED (default): the comfortable reading width. WIDE: fills wide monitors.
+     `--content-max` drives the standard `.op-page`; `--content-max-wide` drives
+     the roomier `.op-page.wide` variant (canvas-style pages: pipeline, sign,
+     redact). The `data-width="wide"` block below rewrites both. */
+  --content-max: 860px;
+  --content-max-wide: 1200px;
+
   /* Motion system — durations + easings. Defined once here so all 6 themes
      inherit them (themes override colours only). Consumed across global
      controls and component surfaces; the reduced-motion block at the end of
@@ -34,6 +44,17 @@ $bp-rail: 820px;
 
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+}
+
+/* WIDE width mode — set by the top-bar width toggle (localStorage
+   `pdf-conduit.width`, default "fixed"). On very wide monitors, widen the
+   shared content container so power users use the full screen. Fluid up to a
+   sane ceiling; the wide `.op-page.wide` variant matches so it never ends up
+   narrower than the standard page. This attribute is orthogonal to
+   `data-theme`, so both can be present on <html> at once. */
+:root[data-width='wide'] {
+  --content-max: min(96vw, 1600px);
+  --content-max-wide: min(96vw, 1600px);
 }
 
 /* Light theme (default). */
@@ -250,16 +271,20 @@ button {
  * ------------------------------------------------------------------------- */
 
 .op-page {
-  max-width: 860px;
+  /* Single source of width truth for every op page: FIXED vs WIDE is driven
+     entirely by the `--content-max` token (see :root + :root[data-width]). */
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 1.75rem 1.5rem 4rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  /* Smooth the max-width change when the width toggle flips. */
+  transition: max-width var(--dur-base) var(--ease-standard);
 }
 
 .op-page.wide {
-  max-width: 1200px;
+  max-width: var(--content-max-wide);
 }
 
 /* Reusable scroll wrapper for wide content blocks (tables, code, wide grids)
@@ -357,6 +382,17 @@ input[type='range'] {
   accent-color: var(--accent);
 }
 
+/* Larger checkboxes + radios app-wide (~18–19px). The native ~13–16px controls
+   read as cramped next to our label text; bump them and keep the accent tint. */
+input[type='checkbox'],
+input[type='radio'] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
 .check {
   display: flex;
   align-items: center;
@@ -366,7 +402,9 @@ input[type='range'] {
 }
 
 .check input {
-  width: auto;
+  /* Don't let the flex row stretch/shrink the box away from its intrinsic
+     size set above. */
+  flex: 0 0 auto;
   accent-color: var(--accent);
 }
 

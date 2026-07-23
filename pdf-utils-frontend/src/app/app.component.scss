@@ -40,10 +40,28 @@
   min-height: 0;
 }
 
+/* Scroll host for every routed page. It stays full-width and provides the outer
+   gutter; the actual content width is owned by `.op-page` (styles.scss), which
+   centres itself via `margin: 0 auto` and derives its max-width from the shared
+   `--content-max` / `--content-max-wide` tokens. Those tokens flip between the
+   FIXED and WIDE regimes via the top-bar width toggle (`data-width` on <html>),
+   so op pages widen/narrow in here automatically — no per-page width rules. */
 .content {
   overflow-y: auto;
   padding: 1.75rem 2rem;
   background: var(--bg);
+  transition: padding var(--dur-base) var(--ease-standard);
+}
+
+/* WIDE mode on large monitors: a little extra side gutter so the widened
+   op-page never runs flush to the scroll edge. Gated above the mobile rail so
+   the narrow-screen padding (set in the breakpoint below) always wins on
+   phones — wide mode only matters above the fixed reading width. */
+@media (min-width: 821px) {
+  :root[data-width='wide'] .content {
+    padding-left: max(2rem, 3vw);
+    padding-right: max(2rem, 3vw);
+  }
 }
 
 /* Scrim behind the mobile drawer — only rendered below the breakpoint. */
