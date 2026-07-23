@@ -39,6 +39,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         <app-page-grid
           mode="reorder"
           [file]="file()"
+          [orderSeed]="order.value"
           (orderStringChange)="order.setValue($event)"
         />
       }

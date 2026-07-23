@@ -44,3 +44,30 @@ export function toCompactRange(selected: number[], total: number): string {
 export function toOrderString(order: number[]): string {
   return order.filter((n) => Number.isInteger(n) && n >= 1).join(',');
 }
+
+/**
+ * Parse an order expression back into a 1-based visual page sequence — the
+ * inverse of `toOrderString`, plus the extra grammar the arrange text field
+ * accepts: reverse ranges (`5-1` → `[5,4,3,2,1]`) and repeats (`1,1,2`).
+ * Pages outside `1..total` are dropped. Returns `null` on a blank string, a
+ * token that is neither a number nor a numeric range (e.g. `end-2`), or when
+ * nothing valid remains — so the caller can leave the text field's value alone.
+ */
+export function parseOrderSeed(text: string, total: number): number[] | null {
+  const trimmed = (text ?? '').trim();
+  if (!trimmed) return null;
+  const out: number[] = [];
+  for (const raw of trimmed.split(',')) {
+    const token = raw.trim();
+    if (!token) continue;
+    const m = /^(\d+)(?:-(\d+))?$/.exec(token);
+    if (!m) return null; // 'end-2' etc. — let the text field own it
+    const a = +m[1];
+    const b = m[2] ? +m[2] : a;
+    const step = a <= b ? 1 : -1;
+    for (let n = a; step > 0 ? n <= b : n >= b; n += step) {
+      if (n >= 1 && (total <= 0 || n <= total)) out.push(n);
+    }
+  }
+  return out.length ? out : null;
+}

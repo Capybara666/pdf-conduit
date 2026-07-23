@@ -14,7 +14,7 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { loadPdf, PDFDocumentProxy } from '../../core/pdfjs';
 import { SpinnerComponent } from '../spinner/spinner.component';
-import { toCompactRange, toOrderString } from './page-range.util';
+import { parseOrderSeed, toCompactRange, toOrderString } from './page-range.util';
 
 /** A tile in reorder mode: a stable id (survives reorder/duplicate) + source page. */
 interface OrderTile {
@@ -330,6 +330,13 @@ export class PageGridComponent implements OnDestroy {
     if (this.ready() && this.mode === 'select') this.applySeed();
   }
 
+  /** Optional order-expression seed for reorder mode (e.g. `"3,1,2"`, `"5-1"`). */
+  @Input()
+  set orderSeed(value: string | null | undefined) {
+    this._orderSeed = value ?? '';
+    if (this.ready() && this.mode === 'reorder') this.applyOrderSeed();
+  }
+
   @Input()
   set file(value: File | Blob | null | undefined) {
     if (value === this._file) return;
@@ -359,6 +366,7 @@ export class PageGridComponent implements OnDestroy {
 
   private _file: File | Blob | null = null;
   private _seed = '';
+  private _orderSeed = '';
   private doc: PDFDocumentProxy | null = null;
   private renderToken = 0;
   private selected = new Set<number>();
@@ -554,6 +562,20 @@ export class PageGridComponent implements OnDestroy {
     this.scheduleObserve();
   }
 
+  /**
+   * Rebuild the reorder tiles from the host's order-expression seed (live text
+   * input). On an unparseable / empty seed, leave the current tiles untouched so
+   * the text field owns the value. Never emits — the host owns the source value
+   * (same rule as `applySeed`). Re-observes so the freshly-created tiles are
+   * handed to the IntersectionObserver and actually paint their thumbnails.
+   */
+  private applyOrderSeed(): void {
+    const seq = parseOrderSeed(this._orderSeed, this.total());
+    if (!seq) return; // blank / 'end-2' etc. — let the text field own it
+    this.order.set(seq.map((page) => ({ id: this.nextTileId++, page })));
+    this.scheduleObserve();
+  }
+
   thumbHeight(page: number): number {
     const d = this.pageDims.get(page);
     if (!d || d.w === 0) return Math.round(this.thumbWidth * 1.294); // ~US-letter fallback
@@ -620,9 +642,15 @@ export class PageGridComponent implements OnDestroy {
         this.selectionChange.emit(arr);
         this.rangeChange.emit(toCompactRange(arr, pages));
       } else {
-        this.order.set(this.pageList().map((p) => ({ id: this.nextTileId++, page: p })));
-        this.orderChange.emit(this.pageList());
-        this.orderStringChange.emit(toOrderString(this.pageList()));
+        const seq = parseOrderSeed(this._orderSeed, pages);
+        if (seq) {
+          // Host already owns the seed value — build tiles from it, don't echo back.
+          this.order.set(seq.map((p) => ({ id: this.nextTileId++, page: p })));
+        } else {
+          this.order.set(this.pageList().map((p) => ({ id: this.nextTileId++, page: p })));
+          this.orderChange.emit(this.pageList());
+          this.orderStringChange.emit(toOrderString(this.pageList()));
+        }
       }
 
       this.scheduleObserve();
