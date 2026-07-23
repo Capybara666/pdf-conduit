@@ -271,8 +271,24 @@
     display: none;
   }
 
+  /* Reclaim the space the brand logo/wordmark took so the remaining controls
+     fit on one row. Only the hamburger stays on the left. */
+  .brand {
+    display: none;
+  }
+
   .settings-gear {
     display: inline-flex;
+  }
+
+  /* Burger stays pinned left (the .app-header is space-between); group the rest
+     of the controls at the right edge, on a single non-wrapping row. */
+  .header-actions {
+    flex: 1;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.6rem;
   }
 }
 
@@ -283,7 +299,7 @@
     display: none;
   }
 
-  /* Tighten the row and keep the remaining actions aligned to the right edge. */
+  /* Tighten the row; remaining icon controls stay grouped at the right edge. */
   .header-actions {
     gap: 0.5rem;
     justify-content: flex-end;

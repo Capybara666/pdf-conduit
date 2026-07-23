@@ -71,6 +71,7 @@ import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.com
             [options]="langOptions"
             [value]="language.active()"
             [ariaLabel]="'header.languageLabel' | transloco"
+            [dropUp]="true"
             (valueChange)="onLangChange($event)"
           >
             <svg ddIcon viewBox="0 0 24 24" aria-hidden="true">
@@ -92,6 +93,7 @@ import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.com
             [options]="themeOptions()"
             [value]="themeService.theme()"
             [ariaLabel]="'theme.label' | transloco"
+            [dropUp]="true"
             (valueChange)="onThemeChange($event)"
           >
             <svg ddIcon viewBox="0 0 24 24" aria-hidden="true">

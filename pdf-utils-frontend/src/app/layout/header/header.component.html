@@ -167,13 +167,16 @@
       [title]="'header.settings' | transloco"
     >
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <!-- Cog: perfectly rotationally-symmetric 8-tooth gear centered at
+             (12,12), drawn as a light stroked outline (outer toothed ring +
+             concentric center circle) to match the other header line icons. -->
         <path
-          d="M12 3.5v2 M12 18.5v2 M4.6 7.6l1.7 1 M17.7 15.4l1.7 1 M4.6 16.4l1.7-1 M17.7 8.6l1.7-1"
           fill="none"
           stroke="currentColor"
-          stroke-width="1.6"
+          stroke-width="1.8"
+          stroke-linejoin="round"
           stroke-linecap="round"
+          d="M8.71 4.05 L9.53 1.28 L14.47 1.28 L15.29 4.05 L17.83 2.67 L21.33 6.17 L19.95 8.71 L22.72 9.53 L22.72 14.47 L19.95 15.29 L21.33 17.83 L17.83 21.33 L15.29 19.95 L14.47 22.72 L9.53 22.72 L8.71 19.95 L6.17 21.33 L2.67 17.83 L4.05 15.29 L1.28 14.47 L1.28 9.53 L4.05 8.71 L2.67 6.17 L6.17 2.67 Z M15.3 12 A3.3 3.3 0 1 0 8.7 12 A3.3 3.3 0 1 0 15.3 12 Z"
         />
       </svg>
     </button>

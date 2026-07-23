@@ -71,6 +71,7 @@ export interface DropdownOption {
       <ul
         #listbox
         class="dd-menu"
+        [class.dd-menu-up]="dropUp"
         role="listbox"
         [attr.aria-label]="ariaLabel"
         (keydown)="onListKeydown($event)"
@@ -180,6 +181,15 @@ export interface DropdownOption {
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
       }
 
+      /* Open above the trigger — used inside the mobile settings bottom-sheet,
+         where a downward menu would run off the bottom of the screen. Cap the
+         height so it stays within the sheet and scrolls on its own. */
+      .dd-menu-up {
+        top: auto;
+        bottom: calc(100% + 0.35rem);
+        max-height: 40vh;
+      }
+
       .dd-option {
         display: flex;
         align-items: center;
@@ -229,6 +239,12 @@ export class HeaderDropdownComponent {
   @Input() value: string | null = null;
   /** Accessible name for the trigger and listbox. */
   @Input() ariaLabel = '';
+  /**
+   * Open the menu ABOVE the trigger instead of below. Used inside the mobile
+   * settings bottom-sheet, where a downward menu would run off the bottom of
+   * the screen. Top-bar header dropdowns keep the default (open downward).
+   */
+  @Input() dropUp = false;
 
   /** Emitted with the chosen option's value. */
   @Output() valueChange = new EventEmitter<string>();
