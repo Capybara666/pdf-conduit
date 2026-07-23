@@ -43,6 +43,7 @@
       "pdf": "PDF",
       "images": "afbeeldingen",
       "office": "Office-documenten",
+      "markup": "Markdown en HTML",
       "json": "JSON",
       "any": "Elk bestand"
     }
@@ -88,7 +89,7 @@
     },
     "to-pdf": {
       "label": "Naar PDF",
-      "description": "Converteer afbeeldingen en officedocumenten naar PDF."
+      "description": "Converteer afbeeldingen, officedocumenten, Markdown en HTML naar PDF."
     },
     "to-images": {
       "label": "Naar afbeeldingen",
@@ -458,8 +459,8 @@
     },
     "toPdf": {
       "title": "Naar PDF",
-      "description": "Converteer afbeeldingen en officedocumenten naar PDF.",
-      "hint": "Afbeeldingen en officedocumenten. Elke invoer wordt een eigen PDF (meerdere → ZIP).",
+      "description": "Converteer afbeeldingen, officedocumenten, Markdown en HTML naar PDF.",
+      "hint": "Afbeeldingen, officedocumenten, Markdown en HTML. met behoud van opmaak. Elke invoer wordt een eigen PDF (meerdere → ZIP).",
       "pageSize": "Paginaformaat",
       "sizeFit": "Aanpassen aan inhoud",
       "sizeLetter": "Letter",

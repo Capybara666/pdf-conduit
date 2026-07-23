@@ -43,6 +43,7 @@
       "pdf": "PDF",
       "images": "görseller",
       "office": "Office belgeleri",
+      "markup": "Markdown ve HTML",
       "json": "JSON",
       "any": "Herhangi bir dosya"
     }
@@ -88,7 +89,7 @@
     },
     "to-pdf": {
       "label": "PDF'e",
-      "description": "Görselleri ve ofis belgelerini PDF'e dönüştürün."
+      "description": "Görselleri, ofis belgelerini, Markdown ve HTML dosyalarını PDF'e dönüştürün."
     },
     "to-images": {
       "label": "Görsele",
@@ -458,8 +459,8 @@
     },
     "toPdf": {
       "title": "PDF'e",
-      "description": "Görselleri ve ofis belgelerini PDF'e dönüştürün.",
-      "hint": "Görseller ve ofis belgeleri. Her girdi kendi PDF'i olur (birden fazla → ZIP).",
+      "description": "Görselleri, ofis belgelerini, Markdown ve HTML dosyalarını PDF'e dönüştürün.",
+      "hint": "Görseller, ofis belgeleri, Markdown ve HTML. biçimlendirme korunur. Her girdi kendi PDF'i olur (birden fazla → ZIP).",
       "pageSize": "Sayfa boyutu",
       "sizeFit": "İçeriğe sığdır",
       "sizeLetter": "Letter",

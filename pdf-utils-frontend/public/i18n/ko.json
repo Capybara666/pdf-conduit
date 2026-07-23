@@ -43,6 +43,7 @@
       "pdf": "PDF",
       "images": "이미지",
       "office": "Office 문서",
+      "markup": "Markdown 및 HTML",
       "json": "JSON",
       "any": "모든 파일"
     }
@@ -88,7 +89,7 @@
     },
     "to-pdf": {
       "label": "PDF로 변환",
-      "description": "이미지와 오피스 문서를 PDF로 변환합니다."
+      "description": "이미지, 오피스 문서, Markdown, HTML을 PDF로 변환합니다."
     },
     "to-images": {
       "label": "이미지로 변환",
@@ -458,8 +459,8 @@
     },
     "toPdf": {
       "title": "PDF로 변환",
-      "description": "이미지와 오피스 문서를 PDF로 변환합니다.",
-      "hint": "이미지와 오피스 문서. 각 입력이 개별 PDF가 됩니다 (여러 개 → ZIP).",
+      "description": "이미지, 오피스 문서, Markdown, HTML을 PDF로 변환합니다.",
+      "hint": "이미지, 오피스 문서, Markdown, HTML 지원 (서식 유지). 각 입력이 개별 PDF가 됩니다 (여러 개 → ZIP).",
       "pageSize": "페이지 크기",
       "sizeFit": "내용에 맞춤",
       "sizeLetter": "Letter",

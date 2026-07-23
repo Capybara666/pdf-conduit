@@ -43,6 +43,7 @@
       "pdf": "PDF",
       "images": "imágenes",
       "office": "documentos de Office",
+      "markup": "Markdown y HTML",
       "json": "JSON",
       "any": "Cualquier archivo"
     }
@@ -88,7 +89,7 @@
     },
     "to-pdf": {
       "label": "A PDF",
-      "description": "Convierte imágenes y documentos de oficina a PDF."
+      "description": "Convierte imágenes, documentos de oficina, Markdown y HTML a PDF."
     },
     "to-images": {
       "label": "A imágenes",
@@ -458,8 +459,8 @@
     },
     "toPdf": {
       "title": "A PDF",
-      "description": "Convierte imágenes y documentos de oficina a PDF.",
-      "hint": "Imágenes y documentos de oficina. Cada entrada se convierte en su propio PDF (varios → ZIP).",
+      "description": "Convierte imágenes, documentos de oficina, Markdown y HTML a PDF.",
+      "hint": "Imágenes, documentos de oficina, Markdown y HTML. con el formato conservado. Cada entrada se convierte en su propio PDF (varios → ZIP).",
       "pageSize": "Tamaño de página",
       "sizeFit": "Ajustar al contenido",
       "sizeLetter": "Letter",

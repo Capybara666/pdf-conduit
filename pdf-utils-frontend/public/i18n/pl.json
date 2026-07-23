@@ -43,6 +43,7 @@
       "pdf": "PDF",
       "images": "obrazy",
       "office": "dokumenty Office",
+      "markup": "Markdown i HTML",
       "json": "JSON",
       "any": "Dowolny plik"
     }
@@ -88,7 +89,7 @@
     },
     "to-pdf": {
       "label": "Do PDF",
-      "description": "Konwertuj obrazy i dokumenty biurowe do PDF."
+      "description": "Konwertuj obrazy, dokumenty biurowe, Markdown i HTML do PDF."
     },
     "to-images": {
       "label": "Do obrazów",
@@ -458,8 +459,8 @@
     },
     "toPdf": {
       "title": "Do PDF",
-      "description": "Konwertuj obrazy i dokumenty biurowe do PDF.",
-      "hint": "Obrazy i dokumenty biurowe. Każdy plik wejściowy staje się osobnym PDF (kilka → ZIP).",
+      "description": "Konwertuj obrazy, dokumenty biurowe, Markdown i HTML do PDF.",
+      "hint": "Obrazy, dokumenty biurowe, Markdown i HTML. z zachowaniem formatowania. Każdy plik wejściowy staje się osobnym PDF (kilka → ZIP).",
       "pageSize": "Rozmiar strony",
       "sizeFit": "Dopasuj do treści",
       "sizeLetter": "Letter",

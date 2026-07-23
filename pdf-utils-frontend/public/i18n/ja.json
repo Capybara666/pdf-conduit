@@ -43,6 +43,7 @@
       "pdf": "PDF",
       "images": "画像",
       "office": "Office 文書",
+      "markup": "Markdown・HTML",
       "json": "JSON",
       "any": "任意のファイル"
     }
@@ -88,7 +89,7 @@
     },
     "to-pdf": {
       "label": "PDF に変換",
-      "description": "画像やオフィス文書を PDF に変換します。"
+      "description": "画像、オフィス文書、Markdown、HTML を PDF に変換します。"
     },
     "to-images": {
       "label": "画像に変換",
@@ -458,8 +459,8 @@
     },
     "toPdf": {
       "title": "PDF に変換",
-      "description": "画像やオフィス文書を PDF に変換します。",
-      "hint": "画像とオフィス文書に対応。各入力がそれぞれ 1 つの PDF になります（複数 → ZIP）。",
+      "description": "画像、オフィス文書、Markdown、HTML を PDF に変換します。",
+      "hint": "画像、オフィス文書、Markdown、HTML に対応（書式を保持）。各入力がそれぞれ 1 つの PDF になります（複数 → ZIP）。",
       "pageSize": "ページサイズ",
       "sizeFit": "内容に合わせる",
       "sizeLetter": "Letter",

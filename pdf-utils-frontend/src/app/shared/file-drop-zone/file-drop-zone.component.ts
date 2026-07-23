@@ -329,6 +329,7 @@ export class FileDropZoneComponent implements OnInit, OnDestroy {
       .filter(Boolean);
     const officeExts = ['.docx', '.odt', '.rtf', '.txt', '.xlsx', '.pptx', '.doc', '.ppt', '.xls'];
     const imageExts = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.tif', '.tiff'];
+    const markupExts = ['.md', '.markdown', '.html', '.htm'];
     const keys: string[] = [];
     if (tokens.includes('.pdf') || tokens.includes('application/pdf')) {
       keys.push('pdf');
@@ -338,6 +339,9 @@ export class FileDropZoneComponent implements OnInit, OnDestroy {
     }
     if (tokens.some((t) => officeExts.includes(t))) {
       keys.push('office');
+    }
+    if (tokens.some((t) => markupExts.includes(t))) {
+      keys.push('markup');
     }
     if (tokens.includes('.json') || tokens.includes('application/json')) {
       keys.push('json');

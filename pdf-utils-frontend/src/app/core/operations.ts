@@ -242,7 +242,7 @@ export const NAV_ITEMS: NavItem[] = [
   {
     id: 'to-pdf',
     label: 'To PDF',
-    description: 'Convert images and office documents to PDF.',
+    description: 'Convert images, office docs, Markdown and HTML to PDF.',
     group: 'convert',
     icon: OP_ICONS['to-pdf'],
   },

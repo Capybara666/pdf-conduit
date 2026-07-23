@@ -43,6 +43,7 @@
       "pdf": "PDF",
       "images": "images",
       "office": "documents Office",
+      "markup": "Markdown et HTML",
       "json": "JSON",
       "any": "Tout fichier"
     }
@@ -88,7 +89,7 @@
     },
     "to-pdf": {
       "label": "Vers PDF",
-      "description": "Convertissez des images et des documents bureautiques en PDF."
+      "description": "Convertissez images, documents bureautiques, Markdown et HTML en PDF."
     },
     "to-images": {
       "label": "Vers images",
@@ -458,8 +459,8 @@
     },
     "toPdf": {
       "title": "Vers PDF",
-      "description": "Convertissez des images et des documents bureautiques en PDF.",
-      "hint": "Images et documents bureautiques. Chaque fichier devient son propre PDF (plusieurs → ZIP).",
+      "description": "Convertissez images, documents bureautiques, Markdown et HTML en PDF.",
+      "hint": "Images, documents bureautiques, Markdown et HTML. mise en forme conservée. Chaque fichier devient son propre PDF (plusieurs → ZIP).",
       "pageSize": "Format de page",
       "sizeFit": "Ajuster au contenu",
       "sizeLetter": "Letter",

@@ -43,6 +43,7 @@
       "pdf": "PDF",
       "images": "图片",
       "office": "Office 文档",
+      "markup": "Markdown 与 HTML",
       "json": "JSON",
       "any": "任意文件"
     }
@@ -88,7 +89,7 @@
     },
     "to-pdf": {
       "label": "转为 PDF",
-      "description": "将图片和办公文档转换为 PDF。"
+      "description": "将图片、办公文档、Markdown 和 HTML 转换为 PDF。"
     },
     "to-images": {
       "label": "转为图片",
@@ -458,8 +459,8 @@
     },
     "toPdf": {
       "title": "转为 PDF",
-      "description": "将图片和办公文档转换为 PDF。",
-      "hint": "图片和办公文档。每个输入生成各自的 PDF（多个 → ZIP）。",
+      "description": "将图片、办公文档、Markdown 和 HTML 转换为 PDF。",
+      "hint": "图片、办公文档、Markdown 和 HTML（保留格式）。每个输入生成各自的 PDF（多个 → ZIP）。",
       "pageSize": "页面大小",
       "sizeFit": "适应内容",
       "sizeLetter": "Letter",
