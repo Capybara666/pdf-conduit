@@ -27,10 +27,13 @@ export type NodeKindName =
   | 'WATERMARK'
   | 'NUP'
   | 'PAGE_MARKS'
+  | 'CROP'
   | 'TO_IMAGES'
   | 'TO_TEXT';
 
 export type SplitModeName = 'COMBINE' | 'SEPARATE';
+/** Crop margin unit — friendly editing value; maps to the wire `cropMm` boolean. */
+export type CropUnitName = 'pt' | 'mm';
 /** Must match `com.pdfconduit.core.model.NupLayout` enum names. */
 export type NupLayoutName = 'TWO_UP' | 'FOUR_UP' | 'SIX_UP' | 'EIGHT_UP' | 'NINE_UP';
 export type PageSizeName = 'FIT' | 'A4' | 'A3' | 'LETTER';
@@ -76,6 +79,11 @@ export interface PipelineNodeJson {
   pmSkipFirst?: boolean;
   pmStartNumber?: number;
   pmPrefix?: string;
+  cropTop?: number;
+  cropRight?: number;
+  cropBottom?: number;
+  cropLeft?: number;
+  cropMm?: boolean;
   imageFormat?: ImageFormatName;
   imageDpi?: number;
   jpegQuality?: number;
@@ -159,6 +167,12 @@ export interface CanvasNode {
   pmSkipFirst: boolean;
   pmStartNumber: number;
   pmPrefix: string;
+  cropTop: number;
+  cropRight: number;
+  cropBottom: number;
+  cropLeft: number;
+  /** Friendly unit toggle; serialises to the wire `cropMm` boolean in `toWireNode`. */
+  cropUnit: CropUnitName;
   imageFormat: ImageFormatName;
   imageDpi: number;
   textFormat: TextFormatName;
@@ -203,6 +217,11 @@ export function newCanvasNode(id: string, kind: NodeKindName, x: number, y: numb
     pmSkipFirst: false,
     pmStartNumber: 1,
     pmPrefix: '',
+    cropTop: 0,
+    cropRight: 0,
+    cropBottom: 0,
+    cropLeft: 0,
+    cropUnit: 'pt',
     imageFormat: 'PNG',
     imageDpi: 150,
     textFormat: 'TXT',
@@ -266,6 +285,15 @@ export function toWireNode(n: CanvasNode): PipelineNodeJson {
         pmStartNumber: n.pmStartNumber,
         pmPrefix: n.pmPrefix,
       };
+    case 'CROP':
+      return {
+        ...base,
+        cropTop: n.cropTop,
+        cropRight: n.cropRight,
+        cropBottom: n.cropBottom,
+        cropLeft: n.cropLeft,
+        cropMm: n.cropUnit === 'mm',
+      };
     case 'TO_IMAGES':
       return { ...base, imageFormat: n.imageFormat, imageDpi: n.imageDpi };
     case 'TO_TEXT':
@@ -310,6 +338,11 @@ export function fromWireNode(w: PipelineNodeJson): CanvasNode {
   if (w.pmSkipFirst != null) n.pmSkipFirst = w.pmSkipFirst;
   if (w.pmStartNumber != null) n.pmStartNumber = w.pmStartNumber;
   if (w.pmPrefix != null) n.pmPrefix = w.pmPrefix;
+  if (w.cropTop != null) n.cropTop = w.cropTop;
+  if (w.cropRight != null) n.cropRight = w.cropRight;
+  if (w.cropBottom != null) n.cropBottom = w.cropBottom;
+  if (w.cropLeft != null) n.cropLeft = w.cropLeft;
+  if (w.cropMm != null) n.cropUnit = w.cropMm ? 'mm' : 'pt';
   if (w.imageFormat != null) n.imageFormat = w.imageFormat;
   if (w.imageDpi != null) n.imageDpi = w.imageDpi;
   if (w.textFormat != null) n.textFormat = w.textFormat;

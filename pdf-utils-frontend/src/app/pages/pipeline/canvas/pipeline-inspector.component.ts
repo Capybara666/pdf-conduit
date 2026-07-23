@@ -18,6 +18,7 @@ const KIND_TO_OP: Record<string, string> = {
   WATERMARK: 'watermark',
   NUP: 'nup',
   PAGE_MARKS: 'page-marks',
+  CROP: 'crop',
   TO_IMAGES: 'to-images',
   TO_TEXT: 'to-text',
 };
@@ -168,6 +169,19 @@ const KIND_TO_OP: Record<string, string> = {
           <div class="field"><label>{{ 'pages.pipeline.fieldStartNumber' | transloco }}</label><input type="number" step="1" [value]="node.pmStartNumber" (input)="emit('pmStartNumber', +$any($event.target).value)" /></div>
           <div class="field"><label>{{ 'pages.pipeline.fieldPrefix' | transloco }}</label><input type="text" [value]="node.pmPrefix" (input)="emit('pmPrefix', $any($event.target).value)" placeholder="ACME-" /></div>
           <label class="check"><input type="checkbox" [checked]="node.pmSkipFirst" (change)="emit('pmSkipFirst', $any($event.target).checked)" /> {{ 'pages.pipeline.skipFirst' | transloco }}</label>
+        }
+        @case ('CROP') {
+          <div class="field"><label>{{ 'pages.crop.top' | transloco }}</label><input type="number" min="0" step="1" [value]="node.cropTop" (input)="emit('cropTop', +$any($event.target).value)" /></div>
+          <div class="field"><label>{{ 'pages.crop.right' | transloco }}</label><input type="number" min="0" step="1" [value]="node.cropRight" (input)="emit('cropRight', +$any($event.target).value)" /></div>
+          <div class="field"><label>{{ 'pages.crop.bottom' | transloco }}</label><input type="number" min="0" step="1" [value]="node.cropBottom" (input)="emit('cropBottom', +$any($event.target).value)" /></div>
+          <div class="field"><label>{{ 'pages.crop.left' | transloco }}</label><input type="number" min="0" step="1" [value]="node.cropLeft" (input)="emit('cropLeft', +$any($event.target).value)" /></div>
+          <div class="field">
+            <label>{{ 'pages.crop.unit' | transloco }}</label>
+            <select [value]="node.cropUnit" (change)="emit('cropUnit', $any($event.target).value)">
+              <option value="pt">{{ 'pages.crop.unitPt' | transloco }}</option>
+              <option value="mm">{{ 'pages.crop.unitMm' | transloco }}</option>
+            </select>
+          </div>
         }
         @case ('TO_IMAGES') {
           <div class="field">
