@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -179,7 +180,7 @@ interface PageMeta {
     `,
   ],
 })
-export class PdfViewerComponent implements OnDestroy {
+export class PdfViewerComponent implements AfterViewInit, OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly zone = inject(NgZone);
   private readonly transloco = inject(TranslocoService);
@@ -211,11 +212,14 @@ export class PdfViewerComponent implements OnDestroy {
   readonly errorMsg = signal<string | null>(null);
   /**
    * Effective display scale (PDF points → CSS pixels) actually used to size and
-   * render pages. Equal to the requested `scale`, but capped so the widest page
-   * fits the container width (fit-to-width) — this is what keeps wide/landscape
-   * pages from overflowing and being clipped on the right. All pixel↔point math
-   * (region rendering, draw→point conversion, canvas paint) reads this, so a
-   * single conversion factor stays consistent across every page.
+   * render pages. Defaults to the requested `scale` and is ONLY reduced below it
+   * when a valid, positive container width proves the widest page would overflow
+   * (fit-to-width) — so portrait/normal pages always render full size and only
+   * wide/landscape pages shrink to avoid right-side clipping. It is never derived
+   * from a 0/unmeasured width (that path keeps the requested scale), so pages can
+   * never collapse to a sliver. All pixel↔point math (region rendering,
+   * draw→point conversion, canvas paint) reads this single factor, so the
+   * conversion stays consistent across every page.
    */
   readonly renderScale = signal(this.scale);
   readonly draft = signal<{
@@ -231,6 +235,13 @@ export class PdfViewerComponent implements OnDestroy {
   private doc: PDFDocumentProxy | null = null;
   private renderToken = 0;
   private dragStart: { x: number; y: number } | null = null;
+
+  /** Intrinsic page sizes in PDF points (scale = 1), captured on load so the
+   *  fit-to-width scale can be recomputed on resize without reloading the doc. */
+  private ptSizes: { n: number; w: number; h: number }[] = [];
+  private maxPtWidth = 0;
+  private range: { first: number; last: number } = { first: 1, last: 1 };
+  private resizeObserver?: ResizeObserver;
 
   regionsFor(pageIndex: number): RegionRect[] {
     return this.regions().filter((r) => r.pageIndex === pageIndex);
@@ -265,7 +276,19 @@ export class PdfViewerComponent implements OnDestroy {
     this.regionsChange.emit([]);
   }
 
+  ngAfterViewInit(): void {
+    // Re-measure once real layout width is available (the file may have been set
+    // before the viewer was laid out — e.g. mounted into a lightbox that hadn't
+    // sized yet) and on every later resize, so a wide page re-fits to the width
+    // and a page that was rendered before a valid width existed corrects itself.
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => this.refitToWidth());
+      this.resizeObserver.observe(this.host.nativeElement as HTMLElement);
+    }
+  }
+
   ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
     void this.doc?.destroy();
   }
 
@@ -291,6 +314,7 @@ export class PdfViewerComponent implements OnDestroy {
 
       const first = this.singlePage ?? 1;
       const last = this.singlePage ?? doc.numPages;
+      this.range = { first, last };
 
       // Pass 1: collect each page's intrinsic size in PDF points (scale = 1).
       const ptSizes: { n: number; w: number; h: number }[] = [];
@@ -302,31 +326,26 @@ export class PdfViewerComponent implements OnDestroy {
         if (vp1.width > maxPtWidth) maxPtWidth = vp1.width;
       }
       if (token !== this.renderToken) return;
+      this.ptSizes = ptSizes;
+      this.maxPtWidth = maxPtWidth;
 
-      // Fit-to-width: never upscale past the requested `scale`, but shrink so the
-      // WIDEST page fits the container. This makes landscape/wide pages (e.g. the
-      // N-up result) scale down to fit instead of overflowing and being clipped
-      // on the right. A single doc-wide scale keeps region math consistent.
-      const containerWidth = this.measureContainerWidth();
-      const eff =
-        containerWidth > 0 && maxPtWidth > 0
-          ? Math.min(this.scale, containerWidth / maxPtWidth)
-          : this.scale;
-      this.renderScale.set(eff);
-
-      const metas: PageMeta[] = ptSizes.map((s) => ({
-        pageNumber: s.n,
-        pageIndex: s.n - 1,
-        cssWidth: Math.round(s.w * eff),
-        cssHeight: Math.round(s.h * eff),
-      }));
-      if (token !== this.renderToken) return;
-      this.pages.set(metas);
+      // First layout at the requested scale (full size) — deliberately NOT from a
+      // measurement here, because the file may have been set before the viewer
+      // was laid out, and a 0/tiny width at this moment would collapse the scale.
+      // `fitScale()` then narrows it only if a VALID width proves overflow.
+      this.renderScale.set(this.scale);
+      this.layoutPages();
       this.loaded.emit({ pages: doc.numPages });
 
-      // Let the template create the <canvas> elements, then paint each.
+      // Let the template create the <canvas> elements (and the container gain
+      // layout width), then measure and fit-to-width before the single paint.
       await new Promise<void>((resolve) => setTimeout(resolve, 0));
       if (token !== this.renderToken) return;
+      const eff = this.fitScale();
+      if (eff !== this.renderScale()) {
+        this.renderScale.set(eff);
+        this.layoutPages();
+      }
       await this.paint(doc, first, last, token);
     } catch (e) {
       const msg =
@@ -338,12 +357,65 @@ export class PdfViewerComponent implements OnDestroy {
     }
   }
 
+  /** Build `pages()` metas from the cached point sizes at the current render scale. */
+  private layoutPages(): void {
+    const eff = this.renderScale();
+    this.pages.set(
+      this.ptSizes.map((s) => ({
+        pageNumber: s.n,
+        pageIndex: s.n - 1,
+        cssWidth: Math.round(s.w * eff),
+        cssHeight: Math.round(s.h * eff),
+      })),
+    );
+  }
+
+  /**
+   * Effective scale to render at: the requested `scale`, reduced ONLY when a
+   * valid positive container width proves the widest page would overflow it
+   * (fit-to-width for landscape/wide pages). With no valid width, or when the
+   * page already fits, the requested `scale` is returned unchanged — so a
+   * portrait/normal page is never shrunk and an unmeasured (0-width) container
+   * can never drive the scale toward 0. Every division is guarded.
+   */
+  private fitScale(): number {
+    const cw = this.measureContainerWidth();
+    if (cw > 0 && this.maxPtWidth > 0) {
+      const fit = cw / this.maxPtWidth; // px-per-point that makes the widest page fit
+      if (fit > 0 && fit < this.scale) return fit; // only ever downscale
+    }
+    return this.scale;
+  }
+
+  /**
+   * Recompute the fit-to-width scale after a layout/resize and repaint if it
+   * changed. Called from the ResizeObserver so that once a real width is known
+   * (or the container is resized) wide pages re-fit and any page rendered before
+   * a valid width existed corrects itself. No-op until a document is loaded.
+   */
+  private refitToWidth(): void {
+    if (!this.ptSizes.length || !this.doc) return;
+    const eff = this.fitScale();
+    if (Math.abs(eff - this.renderScale()) < 0.001) return;
+    this.renderScale.set(eff);
+    this.layoutPages();
+    const doc = this.doc;
+    const token = this.renderToken;
+    // Let the new page-box sizes settle, then repaint the canvases at the new scale.
+    setTimeout(() => {
+      if (token !== this.renderToken || this.doc !== doc) return;
+      void this.paint(doc, this.range.first, this.range.last, token);
+    }, 0);
+  }
+
   /**
    * Width (CSS px) available for a page, from the scroll wrapper's content box
-   * (excludes its scrollbar). A small margin covers the `.page` border so an
-   * exactly-fitted page doesn't spill 1–2px and trigger a scroll/clip. Returns 0
-   * when the viewer isn't laid out yet (offscreen) — callers then fall back to
-   * the requested scale.
+   * (excludes its scrollbar). The wrapper is block-level (`max-width:100%`), so
+   * its clientWidth reflects the AVAILABLE width independent of page content —
+   * measuring it can't feed back into the fit-to-width scale. A small margin
+   * covers the `.page` border so an exactly-fitted page doesn't spill 1–2px and
+   * trigger a scroll/clip. Returns 0 when the viewer isn't laid out yet
+   * (offscreen/collapsed) — callers then fall back to the requested scale.
    */
   private measureContainerWidth(): number {
     const root = this.host.nativeElement as HTMLElement;

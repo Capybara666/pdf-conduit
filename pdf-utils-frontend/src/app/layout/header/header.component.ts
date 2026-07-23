@@ -11,6 +11,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription, switchMap, timer } from 'rxjs';
@@ -50,13 +51,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
     label: l.name,
   }));
 
+  /**
+   * Translated theme labels, kept as a signal that updates when the locale
+   * dictionary finishes loading AND on every language switch. `selectTranslate*`
+   * is reactive (unlike the synchronous `translate()`, which returns the raw key
+   * if read before the async dictionary has loaded and never self-heals).
+   */
+  private readonly themeLabels = toSignal(
+    this.transloco.selectTranslateObject<Record<string, string>>('theme.name'),
+    { initialValue: {} as Record<string, string> },
+  );
+
   /** Theme options for the custom dropdown; labels track the active UI language. */
   readonly themeOptions = computed<DropdownOption[]>(() => {
-    // Depend on the active language so labels re-translate on switch.
-    this.language.active();
+    const labels = this.themeLabels();
     return this.themeService.themes.map((t) => ({
       value: t,
-      label: this.transloco.translate('theme.name.' + t),
+      label: labels[t] ?? t,
     }));
   });
 
