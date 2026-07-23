@@ -131,8 +131,11 @@ public final class PdfCompressor {
                     recompressImages(compressed, step.scale(), step.quality(), mode, dpiScale, decodeCache);
                     if (SizeEstimator.estimateBytes(compressed) <= opts.targetSizeBytes()) {
                         compressed.save(opts.output().toFile());
+                        // Report "reached" from the ACTUAL serialized size, never the estimate that
+                        // merely triggered this rung — so the flag is always resultBytes <= target.
+                        long resultBytes = opts.output().toFile().length();
                         return new CompressResult(opts.output(), originalSize,
-                            opts.output().toFile().length(), true);
+                            resultBytes, resultBytes <= opts.targetSizeBytes());
                     }
                 }
             }
@@ -201,7 +204,8 @@ public final class PdfCompressor {
             // Short-circuit only when the lossless copy meets the target AND no image transform
             // (DPI cap / grayscale) was requested — otherwise we still owe that transform.
             if (lossless.length <= targetSizeBytes && !mode.isActive()) {
-                return new CompressBytesResult(lossless, originalSize, lossless.length, true);
+                return new CompressBytesResult(lossless, originalSize, lossless.length,
+                    lossless.length <= targetSizeBytes);
             }
 
             // 2) Nothing to downsample: the lossless copy is the best we can do.
@@ -221,8 +225,11 @@ public final class PdfCompressor {
                 try (PDDocument compressed = PdfLoader.load(input)) {
                     recompressImages(compressed, step.scale(), step.quality(), mode, dpiScale, decodeCache);
                     if (SizeEstimator.estimateBytes(compressed) <= targetSizeBytes) {
+                        // Derive "reached" from the ACTUAL emitted bytes, not the estimate that
+                        // triggered this rung — the flag is always resultBytes <= target.
                         byte[] out = PdfLoader.toBytes(compressed);
-                        return new CompressBytesResult(out, originalSize, out.length, true);
+                        return new CompressBytesResult(out, originalSize, out.length,
+                            out.length <= targetSizeBytes);
                     }
                 }
             }

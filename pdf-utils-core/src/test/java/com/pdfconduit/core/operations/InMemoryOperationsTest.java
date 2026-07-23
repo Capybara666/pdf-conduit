@@ -159,6 +159,21 @@ class InMemoryOperationsTest {
             "an image-heavy PDF must have an achievable floor below its original size");
     }
 
+    @Test
+    void compressBytesTinyTargetReportsNotReachedWithFloorAboveTarget() throws Exception {
+        // A genuinely large image PDF with a 1KB target: unreachable, so the flag MUST be false
+        // (derived from the ACTUAL result bytes, never the estimate that stopped a ladder rung),
+        // and the achievable floor MUST sit well above the 1KB the user asked for.
+        byte[] imagePdf = ImageToPdfConverter.executeBytes(
+            List.of(noisyPngBytes(800, 800)), PageSize.A4);
+        long target = 1024;                                  // "1KB"
+        CompressBytesResult r = PdfCompressor.compressBytes(imagePdf, target);
+        assertFalse(r.targetReached(), "1KB is unreachable for a large image PDF");
+        assertTrue(r.resultBytes() > target, "result must exceed the impossible 1KB target");
+        assertTrue(PdfCompressor.estimateFloorBytes(imagePdf) > target,
+            "the achievable floor must be above the 1KB target");
+    }
+
     /** A random-noise image (does not compress trivially), so the source PDF is genuinely large. */
     private static byte[] noisyPngBytes(int w, int h) throws IOException {
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);

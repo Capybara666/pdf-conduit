@@ -389,6 +389,8 @@
       "targetHelp1": "Accepte",
       "targetHelp2": "ou un nombre d'octets brut.",
       "targetError": "Saisissez une taille telle que",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Compresser",
       "loading": "Compression en cours…",
       "noopWarning": "Cible ≥ taille du fichier — pas de réduction",

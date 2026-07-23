@@ -389,6 +389,8 @@
       "targetHelp1": "Приймає",
       "targetHelp2": "або кількість байтів.",
       "targetError": "Введіть розмір, наприклад",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Стиснути",
       "loading": "Стиснення…",
       "noopWarning": "Ціль ≥ розміру файлу — не зменшиться",

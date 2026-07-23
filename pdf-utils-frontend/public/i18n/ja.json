@@ -389,6 +389,8 @@
       "targetHelp1": "対応形式：",
       "targetHelp2": "またはバイト数の直接指定。",
       "targetError": "次のようなサイズを入力してください：",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "圧縮",
       "loading": "圧縮中…",
       "noopWarning": "目標 ≥ ファイルサイズ — 縮小されません",

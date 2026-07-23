@@ -389,6 +389,8 @@
       "targetHelp1": "Acepta",
       "targetHelp2": "o un recuento de bytes sin procesar.",
       "targetError": "Introduce un tamaño como",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Comprimir",
       "loading": "Comprimiendo…",
       "noopWarning": "Objetivo ≥ tamaño del archivo — no se reducirá",

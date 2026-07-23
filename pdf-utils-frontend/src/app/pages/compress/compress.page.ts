@@ -11,15 +11,9 @@ import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zon
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
-/** Parse a target-size string ("5MB", "800 KB", "1.5mb", raw bytes) into bytes. */
-function parseSizeToBytes(text: string): number | null {
-  const m = /^\s*(\d+(?:\.\d+)?)\s*(b|kb|mb|gb)?\s*$/i.exec(text ?? '');
-  if (!m) return null;
-  const value = parseFloat(m[1]);
-  const unit = (m[2] ?? 'b').toLowerCase();
-  const mult = unit === 'gb' ? 1024 ** 3 : unit === 'mb' ? 1024 ** 2 : unit === 'kb' ? 1024 : 1;
-  return value * mult;
-}
+/** Target-size unit choices offered by the picker. */
+type TargetUnit = 'KB' | 'MB' | 'GB';
+const UNIT_BYTES: Record<TargetUnit, number> = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 };
 
 /** Compress one or more PDFs toward a target size (e.g. "5MB"). */
 @Component({
@@ -62,20 +56,35 @@ function parseSizeToBytes(text: string): number | null {
 
       <div class="card form-grid">
         <div class="field">
-          <label for="cp-target">{{ 'pages.compress.target' | transloco }}</label>
-          <input
-            id="cp-target"
-            type="text"
-            [formControl]="targetSize"
-            [placeholder]="'pages.compress.targetPlaceholder' | transloco"
-          />
+          <label for="cp-amount">{{ 'pages.compress.target' | transloco }}</label>
+          <div class="target-row">
+            <input
+              id="cp-amount"
+              type="number"
+              min="0"
+              step="any"
+              inputmode="decimal"
+              [formControl]="targetAmount"
+              [placeholder]="'pages.compress.targetPlaceholder' | transloco"
+            />
+            <select
+              id="cp-unit"
+              class="unit"
+              [formControl]="targetUnit"
+              [attr.aria-label]="'pages.compress.unitLabel' | transloco"
+            >
+              <option value="KB">KB</option>
+              <option value="MB">MB</option>
+              <option value="GB">GB</option>
+            </select>
+          </div>
           <span class="help">
             {{ 'pages.compress.targetHelp1' | transloco }}
             <code>KB</code>/<code>MB</code>
             {{ 'pages.compress.targetHelp2' | transloco }}
           </span>
-          @if (targetSize.invalid && targetSize.touched) {
-            <span class="err">{{ 'pages.compress.targetError' | transloco }} <code>5MB</code>.</span>
+          @if (targetAmount.invalid && targetAmount.touched) {
+            <span class="err">{{ 'pages.compress.amountError' | transloco }}</span>
           } @else if (isBlankTarget()) {
             <span class="err">{{ 'pages.compress.blankWarning' | transloco }}</span>
           } @else if (allNoop()) {
@@ -107,7 +116,7 @@ function parseSizeToBytes(text: string): number | null {
         <button
           type="button"
           class="btn btn-primary"
-          [disabled]="!files().length || targetSize.invalid || state.loading()"
+          [disabled]="!files().length || targetAmount.invalid || state.loading()"
           (click)="submit()"
         >
           {{ 'pages.compress.submit' | transloco }}
@@ -165,6 +174,19 @@ function parseSizeToBytes(text: string): number | null {
         font-size: 0.8rem;
         white-space: nowrap;
       }
+      .target-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: stretch;
+      }
+      .target-row input[type='number'] {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .target-row .unit {
+        flex: 0 0 auto;
+        width: auto;
+      }
       .floor-note {
         margin-top: 1rem;
         padding: 0.75rem 1rem;
@@ -178,11 +200,13 @@ function parseSizeToBytes(text: string): number | null {
 })
 export class CompressPage {
   protected readonly files = signal<File[]>([]);
-  // Matches "5MB", "800 KB", "1.5mb", or a bare byte count.
-  protected readonly targetSize = new FormControl('5MB', {
-    nonNullable: true,
-    validators: [Validators.required, Validators.pattern(/^\s*\d+(\.\d+)?\s*(b|kb|mb|gb)?\s*$/i)],
+  // The user types a positive NUMBER and picks a unit; the two compose the "5MB"-style string
+  // the backend's `targetSize` parser expects (see composeTarget()).
+  protected readonly targetAmount = new FormControl<number | null>(5, {
+    validators: [Validators.required, Validators.min(0.0000001)],
   });
+  /** Unit for the numeric amount; MB is the sensible default. */
+  protected readonly targetUnit = new FormControl<TargetUnit>('MB', { nonNullable: true });
   /** Optional image-resolution ceiling: 'none' (default), 'screen', 'ebook', 'print'. */
   protected readonly dpi = new FormControl<'none' | 'screen' | 'ebook' | 'print'>('none', {
     nonNullable: true,
@@ -191,17 +215,20 @@ export class CompressPage {
   protected readonly grayscale = new FormControl(false, { nonNullable: true });
   protected readonly state = new OperationState();
 
-  /** Live target value as a signal so warnings react to typing. */
-  private readonly targetValue = toSignal(this.targetSize.valueChanges, {
-    initialValue: this.targetSize.value,
+  /** Live amount/unit as signals so warnings react to typing and unit changes. */
+  private readonly amountValue = toSignal(this.targetAmount.valueChanges, {
+    initialValue: this.targetAmount.value,
   });
-  /** Parsed target in bytes, or null when blank/unparseable. */
+  private readonly unitValue = toSignal(this.targetUnit.valueChanges, {
+    initialValue: this.targetUnit.value,
+  });
+  /** Parsed target in bytes, or null when blank/non-positive. */
   private readonly targetBytes = computed(() => {
-    const raw = (this.targetValue() ?? '').trim();
-    if (!raw) return null;
-    return parseSizeToBytes(raw);
+    const amount = this.amountValue();
+    if (amount == null || !(amount > 0)) return null;
+    return amount * UNIT_BYTES[this.unitValue()];
   });
-  protected readonly isBlankTarget = computed(() => !(this.targetValue() ?? '').trim());
+  protected readonly isBlankTarget = computed(() => this.amountValue() == null);
   /** True when every selected file is already at/below the target (a no-op). */
   protected readonly allNoop = computed(() => {
     const fs = this.files();
@@ -230,7 +257,8 @@ export class CompressPage {
 
   constructor(private readonly api: ApiService) {
     this.workState.persist('compress', {
-      targetSize: this.targetSize,
+      targetAmount: this.targetAmount,
+      targetUnit: this.targetUnit,
       dpi: this.dpi,
       grayscale: this.grayscale,
     });
@@ -248,9 +276,14 @@ export class CompressPage {
     return target !== null && target >= size;
   }
 
+  /** Compose the backend `targetSize` string from the numeric amount + unit (e.g. 5 + MB → "5MB"). */
+  private composeTarget(): string {
+    return `${this.targetAmount.value}${this.targetUnit.value}`;
+  }
+
   submit(): void {
-    if (!this.files().length || this.targetSize.invalid) return;
-    const target = this.targetSize.value.trim();
+    if (!this.files().length || this.targetAmount.invalid) return;
+    const target = this.composeTarget();
     this.lastTarget.set(target);
     const fd = new FormData();
     for (const f of this.files()) fd.append('files', f, f.name);

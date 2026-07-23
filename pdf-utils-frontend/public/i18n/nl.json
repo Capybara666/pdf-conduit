@@ -389,6 +389,8 @@
       "targetHelp1": "Accepteert",
       "targetHelp2": "of een ruw aantal bytes.",
       "targetError": "Voer een grootte in zoals",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Comprimeren",
       "loading": "Comprimeren…",
       "noopWarning": "Doel ≥ bestandsgrootte — wordt niet kleiner",

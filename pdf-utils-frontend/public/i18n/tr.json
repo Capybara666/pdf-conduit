@@ -389,6 +389,8 @@
       "targetHelp1": "Kabul edilir:",
       "targetHelp2": "veya ham bayt sayısı.",
       "targetError": "Şu şekilde bir boyut girin:",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Sıkıştır",
       "loading": "Sıkıştırılıyor…",
       "noopWarning": "Hedef ≥ dosya boyutu — küçülmez",

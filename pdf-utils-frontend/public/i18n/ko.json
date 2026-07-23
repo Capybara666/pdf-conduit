@@ -389,6 +389,8 @@
       "targetHelp1": "허용 형식:",
       "targetHelp2": "또는 원시 바이트 수.",
       "targetError": "다음과 같은 크기를 입력하세요:",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "압축",
       "loading": "압축 중…",
       "noopWarning": "목표 ≥ 파일 크기 — 줄어들지 않음",

@@ -389,6 +389,8 @@
       "targetHelp1": "Akceptuje",
       "targetHelp2": "lub liczbę bajtów.",
       "targetError": "Wpisz rozmiar, na przykład",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Kompresuj",
       "loading": "Kompresowanie…",
       "noopWarning": "Cel ≥ rozmiar pliku — bez zmniejszenia",

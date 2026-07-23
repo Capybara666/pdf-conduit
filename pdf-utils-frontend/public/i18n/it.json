@@ -389,6 +389,8 @@
       "targetHelp1": "Accetta",
       "targetHelp2": "o un numero di byte grezzo.",
       "targetError": "Inserisci una dimensione come",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Comprimi",
       "loading": "Compressione in corso…",
       "noopWarning": "Obiettivo ≥ dimensione file — nessuna riduzione",

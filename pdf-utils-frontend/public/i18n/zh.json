@@ -389,6 +389,8 @@
       "targetHelp1": "接受",
       "targetHelp2": "或原始字节数。",
       "targetError": "请输入大小，例如",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "压缩",
       "loading": "压缩中…",
       "noopWarning": "目标 ≥ 文件大小 — 不会缩小",

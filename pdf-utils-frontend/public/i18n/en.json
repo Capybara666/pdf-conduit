@@ -389,6 +389,8 @@
       "targetHelp1": "Accepts",
       "targetHelp2": "or a raw byte count.",
       "targetError": "Enter a size such as",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Compress",
       "loading": "Compressing…",
       "noopWarning": "Target ≥ file size — won't shrink",

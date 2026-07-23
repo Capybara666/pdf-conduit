@@ -389,6 +389,8 @@
       "targetHelp1": "Akzeptiert",
       "targetHelp2": "oder eine reine Byte-Anzahl.",
       "targetError": "Geben Sie eine Größe an, etwa",
+      "amountError": "Enter a positive number.",
+      "unitLabel": "Unit",
       "submit": "Komprimieren",
       "loading": "Wird komprimiert…",
       "noopWarning": "Ziel ≥ Dateigröße — keine Verkleinerung",
