@@ -557,8 +557,8 @@
     },
     "sign": {
       "title": "Wypełnij i podpisz",
-      "description": "Dodaj podpis do pliku PDF i spłaszcz go. Nic nie jest przechowywane, wszystko dzieje się w Twojej sesji.",
-      "hint": "Jeden plik PDF. Następnie utwórz podpis i przeciągnij go na stronę.",
+      "description": "Wypełnij pola formularza PDF (AcroForm) i dodaj podpis, a następnie spłaszcz dokument. Nic nie jest przechowywane, wszystko dzieje się w Twojej sesji.",
+      "hint": "Jeden plik PDF. Wykrywamy pola formularza do wypełnienia. Następnie utwórz podpis i przeciągnij go na stronę.",
       "dragHint": "Przeciągnij po stronie, aby umieścić podpis.",
       "chooseAnother": "Wybierz inny plik PDF",
       "needSignature": "Najpierw utwórz podpis, a następnie przeciągnij ramkę na stronie, aby go umieścić.",

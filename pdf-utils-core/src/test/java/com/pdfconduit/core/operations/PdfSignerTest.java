@@ -16,6 +16,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDPushButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
@@ -133,6 +134,36 @@ class PdfSignerTest {
     }
 
     @Test
+    void pushButtonIsTypedButtonNotTextAndFillDoesNotThrowOnIt() throws Exception {
+        byte[] pdf = formWithTextAndResetButton();
+
+        // Detection: the reset/push button is typed "button" (never "text") and is not fillable.
+        List<FormField> fields = PdfSigner.listFields(pdf);
+        FormField button = fields.stream().filter(f -> f.name().equals("ResetButton"))
+            .findFirst().orElseThrow();
+        assertEquals("button", button.type(), "a push/reset button must not be typed as a text field");
+        assertFalse(button.fillable(), "a push/reset button is not user-fillable");
+        FormField text = fields.stream().filter(f -> f.name().equals("fullName"))
+            .findFirst().orElseThrow();
+        assertTrue(text.fillable(), "a text field is fillable");
+
+        // Fill: submitting an empty value for the button (as the buggy UI did) must NOT abort — the
+        // text field is still filled and the whole op succeeds, returning a valid PDF.
+        Map<String, String> values = new java.util.HashMap<>();
+        values.put("fullName", "Ada Lovelace");
+        values.put("ResetButton", ""); // the field that triggered "value '' is not a valid option"
+        byte[] out = assertDoesNotThrow(() ->
+            PdfSigner.executeBytes(pdf, List.of(), List.of(), values, false));
+
+        try (PDDocument doc = Loader.loadPDF(out)) {
+            PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+            assertNotNull(form);
+            assertEquals("Ada Lovelace", form.getField("fullName").getValueAsString(),
+                "the text field is filled even though a button field was in the value map");
+        }
+    }
+
+    @Test
     void listsNoFieldsWhenNoAcroForm() throws Exception {
         assertTrue(PdfSigner.listFields(plainPdf(1)).isEmpty(),
             "a PDF with no AcroForm should enumerate to an empty list");
@@ -192,6 +223,42 @@ class PdfSignerTest {
         }
     }
 
+
+    /** A one-page PDF with a text field ({@code fullName}) and a push/reset button ({@code ResetButton}). */
+    private static byte[] formWithTextAndResetButton() throws IOException {
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+
+            PDAcroForm form = new PDAcroForm(doc);
+            doc.getDocumentCatalog().setAcroForm(form);
+            PDResources dr = new PDResources();
+            dr.put(COSName.getPDFName("Helv"), new PDType1Font(Standard14Fonts.FontName.HELVETICA));
+            form.setDefaultResources(dr);
+            form.setDefaultAppearance("/Helv 12 Tf 0 g");
+
+            PDTextField text = new PDTextField(form);
+            text.setPartialName("fullName");
+            text.setDefaultAppearance("/Helv 12 Tf 0 g");
+            PDAnnotationWidget tw = text.getWidgets().get(0);
+            tw.setRectangle(new PDRectangle(100, 700, 200, 20));
+            tw.setPage(page);
+            page.getAnnotations().add(tw);
+            form.getFields().add(text);
+
+            PDPushButton reset = new PDPushButton(form);
+            reset.setPartialName("ResetButton");
+            PDAnnotationWidget rw = reset.getWidgets().get(0);
+            rw.setRectangle(new PDRectangle(100, 660, 80, 24));
+            rw.setPage(page);
+            page.getAnnotations().add(rw);
+            form.getFields().add(reset);
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            doc.save(bos);
+            return bos.toByteArray();
+        }
+    }
 
     private static boolean hasImage(PDPage page) throws IOException {
         PDResources res = page.getResources();

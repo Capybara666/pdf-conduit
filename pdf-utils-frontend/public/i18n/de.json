@@ -557,8 +557,8 @@
     },
     "sign": {
       "title": "Ausfüllen & Signieren",
-      "description": "Füge deinem PDF eine Signatur hinzu und fixiere sie. Nichts wird gespeichert, alles läuft in deiner Sitzung.",
-      "hint": "Ein PDF. Erstelle dann eine Signatur und ziehe sie auf die Seite.",
+      "description": "Fülle ausfüllbare PDF-Formularfelder (AcroForm) aus und füge eine Signatur hinzu, dann fixiere alles. Nichts wird gespeichert, alles läuft in deiner Sitzung.",
+      "hint": "Ein PDF. Wir erkennen ausfüllbare Formularfelder. Erstelle dann eine Signatur und ziehe sie auf die Seite.",
       "dragHint": "Ziehe auf einer Seite, um deine Signatur zu platzieren.",
       "chooseAnother": "Anderes PDF wählen",
       "needSignature": "Erstelle zuerst eine Signatur und ziehe dann ein Feld auf die Seite, um sie zu platzieren.",

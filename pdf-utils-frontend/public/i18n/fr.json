@@ -557,8 +557,8 @@
     },
     "sign": {
       "title": "Remplir et signer",
-      "description": "Ajoutez une signature à votre PDF et aplatissez-le. Rien n'est stocké, tout se déroule dans votre session.",
-      "hint": "Un seul PDF. Créez ensuite une signature et déposez-la sur la page.",
+      "description": "Remplissez les champs de formulaire PDF (AcroForm) et ajoutez une signature, puis aplatissez. Rien n'est stocké, tout se déroule dans votre session.",
+      "hint": "Un seul PDF. Nous détectons les champs de formulaire à remplir. Créez ensuite une signature et déposez-la sur la page.",
       "dragHint": "Faites glisser sur une page pour placer votre signature.",
       "chooseAnother": "Choisir un autre PDF",
       "needSignature": "Créez d'abord une signature, puis tracez un cadre sur la page pour la placer.",

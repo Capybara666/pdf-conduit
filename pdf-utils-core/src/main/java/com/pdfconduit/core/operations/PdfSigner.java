@@ -13,6 +13,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
@@ -114,30 +115,53 @@ public final class PdfSigner {
         return out;
     }
 
-    /** Maps a PDFBox {@link PDField} to the transport-agnostic {@link FormField} description. */
+    /**
+     * Maps a PDFBox {@link PDField} to the transport-agnostic {@link FormField} description.
+     *
+     * <p>Only {@code text}/{@code checkbox}/{@code radio}/{@code choice} are user-fillable; a
+     * {@link PDPushButton} (push/reset/submit) is typed {@code button} and a {@link PDSignatureField}
+     * {@code signature} — both non-fillable. Anything that is not one of the clean fillable PDFBox
+     * subclasses falls through to {@code button} (for any other {@code PDButton}) or {@code other},
+     * never {@code text}, so the UI never renders a text input for it and the fill never sets a value
+     * on it (which would throw for e.g. a reset button whose only valid value is {@code Off}).
+     */
     private static FormField describe(PDField field) {
         String name = field.getFullyQualifiedName();
         boolean readOnly = field.isReadOnly();
         String value = valueOf(field);
         if (field instanceof PDTextField) {
-            return new FormField(name, "text", value, List.of(), readOnly);
+            return fillable(name, "text", value, List.of(), readOnly);
         }
         if (field instanceof PDCheckBox) {
-            return new FormField(name, "checkbox", value, List.of(), readOnly);
+            return fillable(name, "checkbox", value, List.of(), readOnly);
         }
         if (field instanceof PDRadioButton radio) {
-            return new FormField(name, "radio", value, new ArrayList<>(radio.getOnValues()), readOnly);
+            return fillable(name, "radio", value, new ArrayList<>(radio.getOnValues()), readOnly);
         }
         if (field instanceof PDChoice choice) {
-            return new FormField(name, "choice", value, safeOptions(choice), readOnly);
+            return fillable(name, "choice", value, safeOptions(choice), readOnly);
         }
         if (field instanceof PDSignatureField) {
-            return new FormField(name, "signature", value, List.of(), readOnly);
+            return new FormField(name, "signature", value, List.of(), readOnly, false);
         }
         if (field instanceof PDPushButton) {
-            return new FormField(name, "button", value, List.of(), readOnly);
+            return new FormField(name, "button", value, List.of(), readOnly, false);
         }
-        return new FormField(name, "other", value, List.of(), readOnly);
+        // Any other button (odd flag combinations) is still a button, never text; everything else
+        // we cannot fill safely is "other". Both are non-fillable.
+        if (field instanceof PDButton) {
+            return new FormField(name, "button", value, List.of(), readOnly, false);
+        }
+        return new FormField(name, "other", value, List.of(), readOnly, false);
+    }
+
+    /**
+     * A fillable-typed field: {@code fillable} is true only when it is not read-only. A read-only
+     * text/checkbox/radio/choice field keeps its type (so the UI can show it) but is not fillable.
+     */
+    private static FormField fillable(String name, String type, String value,
+                                      List<String> options, boolean readOnly) {
+        return new FormField(name, type, value, options, readOnly, !readOnly);
     }
 
     /** Field value as a string, defaulting to empty if PDFBox cannot resolve it. */
@@ -175,8 +199,18 @@ public final class PdfSigner {
 
     // ------------------------------------------------------------------ fields
 
-    /** Fills AcroForm text fields / checkboxes by fully-qualified name; returns how many were set. */
-    private static int fillFields(PDDocument doc, Map<String, String> fieldValues) throws IOException {
+    /**
+     * Fills AcroForm fields by fully-qualified name; returns how many values were actually set.
+     *
+     * <p>Resilient by design: non-fillable fields are skipped and never aborted on. Push/reset/submit
+     * buttons, signature fields and read-only fields are left untouched (setting a value on them is
+     * invalid — e.g. a reset button's only valid value is {@code Off}, so an empty value throws).
+     * Blank values are skipped for every non-text field (an empty option is not valid for a
+     * radio/choice/checkbox), while an empty string is a legitimate clear for a text field. Each
+     * field's set is wrapped in its own try/catch so one field that PDFBox rejects (an invalid option,
+     * a malformed widget) is logged-and-skipped rather than failing the whole fill.
+     */
+    private static int fillFields(PDDocument doc, Map<String, String> fieldValues) {
         if (fieldValues == null || fieldValues.isEmpty()) return 0;
         PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
         if (form == null) return 0;
@@ -186,13 +220,26 @@ public final class PdfSigner {
         for (Map.Entry<String, String> e : fieldValues.entrySet()) {
             PDField field = form.getField(e.getKey());
             if (field == null) continue;
+            // Never attempt a value on a non-fillable field: buttons, signatures, read-only.
+            if (field.isReadOnly()) continue;
+            if (field instanceof PDPushButton || field instanceof PDSignatureField) continue;
             String value = e.getValue() == null ? "" : e.getValue();
-            if (field instanceof PDCheckBox check) {
-                if (isChecked(value)) check.check(); else check.unCheck();
-            } else {
-                field.setValue(value);
+            try {
+                if (field instanceof PDCheckBox check) {
+                    if (isChecked(value)) check.check(); else check.unCheck();
+                } else if (field instanceof PDTextField) {
+                    field.setValue(value); // empty string is a valid clear for a text field
+                } else {
+                    // radio / choice / any other button: an empty value has no valid option, skip it.
+                    if (value.isBlank()) continue;
+                    field.setValue(value);
+                }
+                filled++;
+            } catch (RuntimeException | IOException ex) {
+                // One bad field (e.g. "value '' is not a valid option") must not fail the whole fill.
+                System.getLogger(PdfSigner.class.getName()).log(System.Logger.Level.DEBUG,
+                    "Skipping form field '" + e.getKey() + "': " + ex.getMessage());
             }
-            filled++;
         }
         return filled;
     }

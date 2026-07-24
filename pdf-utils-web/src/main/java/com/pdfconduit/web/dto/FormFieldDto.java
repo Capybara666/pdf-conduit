@@ -8,14 +8,16 @@ import java.util.List;
 /**
  * JSON view of one enumerated AcroForm field from {@code POST /api/form-fields}. Mirrors the core
  * {@link FormField}; {@code options} is omitted when empty (only choice/radio fields carry options),
- * so the wire shape is {@code {name, type, value, options?, readOnly}}.
+ * so the wire shape is {@code {name, type, value, options?, readOnly, fillable}}. {@code fillable} is
+ * true only for a non-read-only text/checkbox/radio/choice field — the UI must not render buttons,
+ * signatures or read-only fields as fillable inputs.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record FormFieldDto(String name, String type, String value,
-                           List<String> options, boolean readOnly) {
+                           List<String> options, boolean readOnly, boolean fillable) {
 
     public static FormFieldDto of(FormField f) {
         List<String> options = (f.options() == null || f.options().isEmpty()) ? null : f.options();
-        return new FormFieldDto(f.name(), f.type(), f.value(), options, f.readOnly());
+        return new FormFieldDto(f.name(), f.type(), f.value(), options, f.readOnly(), f.fillable());
     }
 }

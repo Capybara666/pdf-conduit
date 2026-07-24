@@ -557,8 +557,8 @@
     },
     "sign": {
       "title": "Rellenar y firmar",
-      "description": "Añade una firma a tu PDF y aplánalo: no se guarda nada, todo se procesa en tu sesión.",
-      "hint": "Un solo PDF. Luego crea una firma y colócala en la página.",
+      "description": "Rellena los campos de formulario PDF (AcroForm) y añade una firma, luego aplánalo. No se guarda nada, todo se procesa en tu sesión.",
+      "hint": "Un solo PDF. Detectamos los campos de formulario rellenables. Luego crea una firma y colócala en la página.",
       "dragHint": "Arrastra sobre una página para colocar tu firma.",
       "chooseAnother": "Elegir otro PDF",
       "needSignature": "Crea primero una firma y luego arrastra un recuadro en la página para colocarla.",

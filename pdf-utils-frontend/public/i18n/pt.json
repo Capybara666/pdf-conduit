@@ -557,8 +557,8 @@
     },
     "sign": {
       "title": "Preencher e assinar",
-      "description": "Adicione uma assinatura ao seu PDF e achate-o. Nada é armazenado, tudo corre na sua sessão.",
-      "hint": "Um PDF. Depois crie uma assinatura e coloque-a na página.",
+      "description": "Preencha campos de formulário PDF (AcroForm) e adicione uma assinatura, depois achate. Nada é armazenado, tudo corre na sua sessão.",
+      "hint": "Um PDF. Detetamos os campos de formulário preenchíveis. Depois crie uma assinatura e coloque-a na página.",
       "dragHint": "Arraste sobre uma página para colocar a sua assinatura.",
       "chooseAnother": "Escolher outro PDF",
       "needSignature": "Crie primeiro uma assinatura e depois arraste uma caixa na página para a colocar.",

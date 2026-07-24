@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
@@ -11,6 +11,18 @@ import { PdfViewerComponent, RegionRect } from '../../shared/pdf-viewer/pdf-view
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
 type SigMode = 'draw' | 'type' | 'upload';
+
+/** Field types a user can actually fill (all others — button/signature/other — are display-only). */
+const FILLABLE_TYPES = ['text', 'checkbox', 'radio', 'choice'];
+
+/**
+ * Whether a detected field is user-fillable: prefer the backend's explicit `fillable` flag, else
+ * derive it (non-read-only text/checkbox/radio/choice). Buttons and signatures are never fillable.
+ */
+function isFillable(f: FormField): boolean {
+  if (typeof f.fillable === 'boolean') return f.fillable;
+  return FILLABLE_TYPES.includes(f.type) && !f.readOnly;
+}
 
 /**
  * Fill & Sign (Phase 1, visual): the user builds a signature — draw it on a canvas,
@@ -154,12 +166,12 @@ type SigMode = 'draw' | 'type' | 'upload';
               }
             </div>
 
-            <!-- Detected AcroForm fields -->
-            @if (formFields().length) {
+            <!-- Detected AcroForm fields (only user-fillable ones are rendered) -->
+            @if (fillableFields().length) {
               <div class="card">
                 <h2 class="side-title">{{ 'pages.sign.formFields' | transloco }}</h2>
                 <p class="hint-note">{{ 'pages.sign.formFieldsHint' | transloco }}</p>
-                @for (fld of formFields(); track fld.name) {
+                @for (fld of fillableFields(); track fld.name) {
                   <div class="field-row">
                     <label class="field-label" [title]="fld.name">{{ fld.name }}</label>
                     @switch (fld.type) {
@@ -475,6 +487,12 @@ export class SignPage {
 
   /** Detected AcroForm fields (empty = none / not yet loaded). */
   protected readonly formFields = signal<FormField[]>([]);
+  /**
+   * Only the user-fillable fields — non-read-only text/checkbox/radio/choice. Buttons (push/reset/
+   * submit), signature fields, read-only and unknown fields are excluded: they are never rendered as
+   * inputs and never submitted (sending an empty value for a reset button made the whole fill fail).
+   */
+  protected readonly fillableFields = computed(() => this.formFields().filter((f) => isFillable(f)));
   /** Working name→value map the field controls edit; submitted to the fill endpoint. */
   protected readonly fieldValues = signal<Record<string, string>>({});
   /** True while the detection request is in flight. */
@@ -532,8 +550,10 @@ export class SignPage {
       next: (fields) => {
         if (this.file() !== f) return; // superseded by a newer file
         this.formFields.set(fields);
+        // Seed working values ONLY for user-fillable fields — never submit a value for a button /
+        // signature / read-only field (an empty value for a reset button fails the whole fill).
         const values: Record<string, string> = {};
-        for (const fld of fields) values[fld.name] = fld.value ?? '';
+        for (const fld of fields) if (isFillable(fld)) values[fld.name] = fld.value ?? '';
         this.fieldValues.set(values);
         this.fieldsLoading.set(false);
         this.fieldsChecked.set(true);
@@ -563,7 +583,7 @@ export class SignPage {
   /** Submit the collected field values to the fill endpoint and download the filled PDF. */
   fillForm(): void {
     const f = this.file();
-    if (!f || !this.formFields().length) return;
+    if (!f || !this.fillableFields().length) return;
     const fd = new FormData();
     fd.append('file', f, f.name);
     fd.append('fields', JSON.stringify(this.fieldValues()));

@@ -67,6 +67,8 @@ export type MetadataDto = Schemas['MetadataDto'];
  * Hand-declared (the endpoint is not yet in the generated OpenAPI schema): mirrors the
  * backend `FormFieldDto`. `type` is a stable UI tag; `options` is present only for
  * `choice` (combo/list values) or `radio` (on-values); `value` is the current value.
+ * `fillable` is true only for a non-read-only text/checkbox/radio/choice field — the UI must
+ * not render buttons, signatures or read-only fields as fillable inputs, nor submit values for them.
  */
 export interface FormField {
   name: string;
@@ -74,6 +76,7 @@ export interface FormField {
   value?: string;
   options?: string[];
   readOnly?: boolean;
+  fillable?: boolean;
 }
 
 /** GDPR risk level for a scanned document (mirrors the backend `RiskLevel`). */

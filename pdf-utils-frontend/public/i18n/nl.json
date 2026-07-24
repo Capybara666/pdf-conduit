@@ -557,8 +557,8 @@
     },
     "sign": {
       "title": "Invullen en ondertekenen",
-      "description": "Voeg een handtekening toe aan je PDF en maak deze plat. Er wordt niets opgeslagen, alles gebeurt in je sessie.",
-      "hint": "Eén PDF. Maak vervolgens een handtekening en plaats deze op de pagina.",
+      "description": "Vul invulbare PDF-formuliervelden (AcroForm) in en voeg een handtekening toe, maak het daarna plat. Er wordt niets opgeslagen, alles gebeurt in je sessie.",
+      "hint": "Eén PDF. We detecteren invulbare formuliervelden. Maak vervolgens een handtekening en plaats deze op de pagina.",
       "dragHint": "Sleep op een pagina om je handtekening te plaatsen.",
       "chooseAnother": "Kies een andere PDF",
       "needSignature": "Maak eerst een handtekening en sleep dan een vak op de pagina om deze te plaatsen.",
