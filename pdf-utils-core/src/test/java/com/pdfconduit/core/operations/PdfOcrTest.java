@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -109,6 +110,61 @@ class PdfOcrTest {
         byte[] searchable = PdfOcr.executeBytes(pdf, "eng", 300);
         String text = PdfTextExporter.extractTextBytes(searchable, PageRange.ALL).toUpperCase();
         assertTrue(text.contains("HELLO"), "OCR'd text layer should contain the scanned word, got: " + text);
+    }
+
+    /**
+     * The page-filter variant with an EMPTY set is a clean no-op: succeeds even without the
+     * tesseract binary (redaction's re-OCR computes the set up front), page count intact, and no
+     * text layer appears.
+     */
+    @Test
+    void emptyPageSetIsANoOpWithoutTesseract() throws Exception {
+        byte[] pdf = imageOnlyPdf("HELLO");
+        byte[] out = PdfOcr.executeBytes(pdf, "eng", 300, Set.of());
+        try (PDDocument doc = org.apache.pdfbox.Loader.loadPDF(out)) {
+            assertEquals(1, doc.getNumberOfPages());
+        }
+        assertFalse(PdfTextExporter.extractTextBytes(out, PageRange.ALL).toUpperCase().contains("HELLO"),
+            "no OCR text layer may be added when the page set is empty");
+    }
+
+    /**
+     * Live: the page filter OCRs ONLY the listed pages — page 0 becomes searchable, page 1 (outside
+     * the set) stays image-only. This is the contract redaction's re-OCR relies on: untouched pages
+     * must not gain a duplicate text layer.
+     */
+    @Test
+    void pageFilterLimitsOcrToGivenPages() throws Exception {
+        Assumptions.assumeTrue(PdfOcr.available(), "tesseract not installed — skipping live OCR test");
+        byte[] twoPages = twoPageScan("ALPHA", "BRAVO");
+
+        byte[] out = PdfOcr.executeBytes(twoPages, "eng", 300, Set.of(0));
+
+        try (PDDocument doc = org.apache.pdfbox.Loader.loadPDF(out)) {
+            assertEquals(2, doc.getNumberOfPages());
+            org.apache.pdfbox.text.PDFTextStripper stripper = new org.apache.pdfbox.text.PDFTextStripper();
+            stripper.setStartPage(1);
+            stripper.setEndPage(1);
+            String page1 = stripper.getText(doc).toUpperCase();
+            stripper.setStartPage(2);
+            stripper.setEndPage(2);
+            String page2 = stripper.getText(doc).toUpperCase();
+            assertTrue(page1.contains("ALPHA"), "filtered-in page should be searchable, got: " + page1);
+            assertFalse(page2.contains("BRAVO"), "filtered-out page must stay image-only, got: " + page2);
+        }
+    }
+
+    /** Two single-page "scans" merged into one two-page, text-layer-free document. */
+    private static byte[] twoPageScan(String firstWord, String secondWord) throws Exception {
+        try (PDDocument first = org.apache.pdfbox.Loader.loadPDF(imageOnlyPdf(firstWord));
+             PDDocument second = org.apache.pdfbox.Loader.loadPDF(imageOnlyPdf(secondWord));
+             PDDocument merged = new PDDocument()) {
+            merged.importPage(first.getPage(0));
+            merged.importPage(second.getPage(0));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            merged.save(baos);
+            return baos.toByteArray();
+        }
     }
 
     /** Builds an image-only (no text layer) PDF with {@code word} rendered as pixels — a "scan". */

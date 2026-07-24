@@ -54,6 +54,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -363,17 +364,25 @@ public class WebOperations {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
         }
         if (reOcr && ocrEnabled && PdfOcr.available()) {
-            out = reOcr(out);
+            // Only the rasterised pages lost their text layer — mirror PdfRedactor's grouping
+            // (zero-area regions are no-ops there) so OCR touches exactly those pages. The
+            // untouched pages keep their original, superior text layer instead of gaining a
+            // duplicate invisible one, and each skipped page saves a full tesseract run.
+            Set<Integer> rasterised = new HashSet<>();
+            for (RedactRegion r : regions) {
+                if (r.width() > 0 && r.height() > 0) rasterised.add(r.pageIndex());
+            }
+            out = reOcr(out, rasterised);
         }
         return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
     }
 
     /**
-     * Re-adds a searchable text layer over already-rasterised redacted pages, reusing the exact OCR
-     * plumbing behind {@code /api/ocr} — render/page-count guarded, run under {@link OcrGuard}'s
-     * concurrency + timeout gate. Callers gate on {@link PdfOcr#available()} first.
+     * Re-adds a searchable text layer over the already-rasterised redacted {@code pages} (0-based),
+     * reusing the exact OCR plumbing behind {@code /api/ocr} — render/page-count guarded, run under
+     * {@link OcrGuard}'s concurrency + timeout gate. Callers gate on {@link PdfOcr#available()} first.
      */
-    private byte[] reOcr(byte[] redacted) throws PdfOperationException {
+    private byte[] reOcr(byte[] redacted, Set<Integer> pages) throws PdfOperationException {
         int ocrDpi = maxDpi > 0 ? Math.min(PdfOcr.DEFAULT_DPI, maxDpi) : PdfOcr.DEFAULT_DPI;
         try (LoadedPdf lp = LoadedPdf.open(redacted)) {
             guardPageCount(lp);
@@ -382,7 +391,7 @@ public class WebOperations {
             throw new PdfOperationException("Cannot read redacted PDF: " + e.getMessage(), e);
         }
         try {
-            return ocrGuard.run(() -> PdfOcr.executeBytes(redacted, ocrLanguages, ocrDpi));
+            return ocrGuard.run(() -> PdfOcr.executeBytes(redacted, ocrLanguages, ocrDpi, pages));
         } catch (IOException e) {
             throw new PdfOperationException("OCR failed: " + e.getMessage(), e);
         }

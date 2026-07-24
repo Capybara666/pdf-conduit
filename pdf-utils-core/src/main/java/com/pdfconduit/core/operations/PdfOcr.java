@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -235,7 +236,7 @@ public final class PdfOcr {
     /** OCR {@code opts.input()} to a searchable PDF written at {@code opts.output()}. */
     public static OcrResult execute(OcrOptions opts) throws PdfOperationException {
         try (PDDocument doc = PdfLoader.load(opts.input())) {
-            int[] counts = ocr(doc, opts.languages(), opts.dpi());
+            int[] counts = ocr(doc, opts.languages(), opts.dpi(), null);
             OutputPaths.ensureParentDir(opts.output());
             doc.save(opts.output().toFile());
             return new OcrResult(opts.output(), counts[0], counts[1]);
@@ -250,8 +251,20 @@ public final class PdfOcr {
      */
     public static byte[] executeBytes(byte[] pdf, String languages, int dpi)
             throws PdfOperationException {
+        return executeBytes(pdf, languages, dpi, null);
+    }
+
+    /**
+     * In-memory variant restricted to {@code pages} (0-based indices; {@code null} = every page).
+     * Used by redaction's re-OCR: only the rasterised (redacted) pages lost their text layer, so
+     * OCR-ing the untouched pages would waste a tesseract run per page <em>and</em> stack a second,
+     * usually worse, invisible text layer over their still-intact original text (duplicated
+     * extraction/search hits). Pages outside the set are left byte-for-byte alone.
+     */
+    public static byte[] executeBytes(byte[] pdf, String languages, int dpi, Set<Integer> pages)
+            throws PdfOperationException {
         try (PDDocument doc = PdfLoader.load(pdf)) {
-            ocr(doc, languages, dpi);
+            ocr(doc, languages, dpi, pages);
             return PdfLoader.toBytes(doc);
         } catch (IOException e) {
             throw new PdfOperationException("OCR failed: " + e.getMessage(), e);
@@ -260,8 +273,15 @@ public final class PdfOcr {
 
     // --- core algorithm ---------------------------------------------------
 
-    /** Adds an invisible text layer to every page of {@code doc} in place. Returns {@code [pages, words]}. */
-    private static int[] ocr(PDDocument doc, String languages, int dpiIn) throws PdfOperationException {
+    /**
+     * Adds an invisible text layer to the pages of {@code doc} in place ({@code pages} filters by
+     * 0-based index; {@code null} = all). Returns {@code [pagesProcessed, words]}.
+     */
+    private static int[] ocr(PDDocument doc, String languages, int dpiIn, Set<Integer> pages)
+            throws PdfOperationException {
+        // An explicitly empty page set means "nothing to OCR" — succeed without requiring the
+        // tesseract binary at all (callers may compute the set before probing availability).
+        if (pages != null && pages.isEmpty()) return new int[]{ 0, 0 };
         // Validate the language spec first (fail-fast, independent of whether tesseract is present).
         String lang = validateLanguages(languages);
         String tesseract = findTesseract();
@@ -275,6 +295,7 @@ public final class PdfOcr {
         PDFont font = loadFont(doc);
         PDFRenderer renderer = new PDFRenderer(doc);
         int pageCount = doc.getNumberOfPages();
+        int processed = 0;
         int wordCount = 0;
 
         Path work;
@@ -285,6 +306,8 @@ public final class PdfOcr {
         }
         try {
             for (int i = 0; i < pageCount; i++) {
+                if (pages != null && !pages.contains(i)) continue;
+                processed++;
                 double scale = dpi / 72.0;
                 BufferedImage img = renderer.renderImageWithDPI(i, dpi, ImageType.RGB);
                 List<Word> words = recognise(tesseract, lang, img, work, i);
@@ -298,7 +321,7 @@ public final class PdfOcr {
         } finally {
             deleteRecursively(work);
         }
-        return new int[]{ pageCount, wordCount };
+        return new int[]{ processed, wordCount };
     }
 
     /** Renders {@code img} to a temp PNG and runs {@code tesseract ... tsv}, parsing per-word boxes. */
