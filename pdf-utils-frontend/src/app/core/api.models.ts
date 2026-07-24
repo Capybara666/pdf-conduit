@@ -28,26 +28,21 @@ export type Cardinality = 'MAP' | 'REDUCE';
 /**
  * Catalog entry from `GET /api/operations`. Mirrors the backend `OperationInfo`
  * schema; `cardinality` is re-narrowed from `string` to the {@link Cardinality}
- * union. `available` is hand-added until the next `api.gen.ts` regeneration:
- * `false` only for operations this server cannot run (today just `ocr` when OCR
- * is disabled); absent/`true` means available.
+ * union. `available` is `false` only for operations this server cannot run
+ * (today just `ocr` when OCR is disabled); absent/`true` means available.
  */
 export type OperationInfo = Omit<Schemas['OperationInfo'], 'cardinality'> & {
   cardinality?: Cardinality;
-  available?: boolean;
 };
 
 /**
- * Server capability flags from `GET /api/capabilities`. Hand-declared (the
- * endpoint is not yet in the generated OpenAPI schema): mirrors the backend
- * `CapabilitiesInfo`. `ocrLanguages` lists the Tesseract language codes
- * installed on the server (empty when OCR is disabled or Tesseract is absent).
+ * Server capability flags from `GET /api/capabilities`. Mirrors the backend
+ * `CapabilitiesInfo`; the schema marks every field optional, here they are
+ * required — the backend always sends all of them. `ocrLanguages` lists the
+ * Tesseract language codes installed on the server (empty when OCR is disabled
+ * or Tesseract is absent).
  */
-export interface CapabilitiesInfo {
-  officeEnabled: boolean;
-  ocrEnabled: boolean;
-  ocrLanguages: string[];
-}
+export type CapabilitiesInfo = Required<Schemas['CapabilitiesInfo']>;
 
 /**
  * A successful binary download from a run: the raw bytes plus the filename
@@ -79,20 +74,16 @@ export type MetadataDto = Schemas['MetadataDto'];
 
 /**
  * One enumerated AcroForm field from `POST /api/form-fields` (JSON, not a download).
- * Hand-declared (the endpoint is not yet in the generated OpenAPI schema): mirrors the
- * backend `FormFieldDto`. `type` is a stable UI tag; `options` is present only for
- * `choice` (combo/list values) or `radio` (on-values); `value` is the current value.
+ * Mirrors the backend `FormFieldDto`; `name` is re-required and `type` re-narrowed
+ * from `string` to the stable UI tag union. `options` is present only for `choice`
+ * (combo/list values) or `radio` (on-values); `value` is the current value.
  * `fillable` is true only for a non-read-only text/checkbox/radio/choice field — the UI must
  * not render buttons, signatures or read-only fields as fillable inputs, nor submit values for them.
  */
-export interface FormField {
+export type FormField = Omit<Schemas['FormFieldDto'], 'name' | 'type'> & {
   name: string;
   type: 'text' | 'checkbox' | 'radio' | 'choice' | 'signature' | 'button' | 'other';
-  value?: string;
-  options?: string[];
-  readOnly?: boolean;
-  fillable?: boolean;
-}
+};
 
 /** GDPR risk level for a scanned document (mirrors the backend `RiskLevel`). */
 export type PiiRisk = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
