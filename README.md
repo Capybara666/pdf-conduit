@@ -2,263 +2,155 @@
 
 # PDF Conduit
 
-A small desktop toolkit for everyday PDF tasks — **merge, extract pages,
-compress to a target size, rotate, arrange (reorder) pages, and convert images &
-documents to PDF** — with both a JavaFX GUI and a command-line interface, built on
-[Apache PDFBox](https://pdfbox.apache.org/).
+PDF Conduit is a privacy-first, all-in-one PDF toolkit. Every operation runs
+server-side **in memory** — uploaded files are processed per request and never
+stored. It ships as a free web app at **[pdf-conduit.com](https://pdf-conduit.com)**
+(Angular SPA + stateless Spring Boot REST API), a JavaFX **desktop app** with a
+full **CLI**, and a self-hostable **REST API**, all built on the same
+[Apache PDFBox](https://pdfbox.apache.org/)-based core.
 
-> **New here?** The [User Guide](USER_GUIDE.md) walks through every feature of the
-> app and the CLI.
+> Desktop users: the [User Guide](USER_GUIDE.md) walks through every feature of
+> the desktop app and the CLI.
 
 ## Features
 
-- **Core operations:** merge PDFs/images into one document, extract pages — into
-  one PDF or split into a separate file per page — compress to a target file size
-  (iterative image downsampling), rotate pages, arrange (reorder, duplicate or
-  drop) pages, convert files to PDF (one PDF per input), password-protect or
-  unlock PDFs (AES-128), view/edit/strip metadata, and stamp text or image
-  watermarks.
-- **Any supported input, anywhere:** every operation accepts images and office
-  documents (`.docx`, `.odt`, `.rtf`, `.txt`, `.xlsx`, `.pptx`, …) in addition to
-  PDFs — non-PDF files are converted to PDF automatically (images inline; office
-  documents via a headless LibreOffice). Pipelines convert source files on the
-  fly, so no separate "Images → PDF" step is needed.
-- **Languages:** English, Polish, Spanish and Chinese, switchable live from the
-  Language menu (switching never discards your loaded files or in-progress work).
-- **GUI (JavaFX):**
-  - A panel per operation with drag-and-drop, a file list, and live progress.
-  - **Batch mode** — per-file operations (Extract/Compress/Rotate/To PDF)
-    process every selected file into an output folder.
-  - A guided **Wizard** for the merge → arrange → compress → export flow.
-  - **Pipelines** — a visual node editor: drag operation/source blocks onto a
-    canvas, wire outputs into inputs, and run the whole graph. Edges carry
-    bundles of documents (map operations — including To PDF — apply per file;
-    only Merge collapses a bundle into one). Pipelines can be **saved and loaded**
-    as `.json` and re-run from the CLI (`pdf-conduit pipeline my.json`).
-  - Outputs default to a `pdf-conduit` folder in your Documents directory.
-  - Six color themes (Daylight, Graphite, Nord, Dracula, Solarized, Sunset) plus
-    a System option, with subtle UI animations.
-- **CLI** mirroring every core operation, with exit codes (0 success, 1 bad
-  input, 2 operation failed).
+| Operation | What it does | Web | Desktop |
+| --- | --- | :---: | :---: |
+| **Merge** | Combine PDFs, images or office docs into one document | ✔ | ✔ |
+| **Extract** | Pull selected pages out — into one PDF or one file per page | ✔ | ✔ |
+| **Rotate** | Rotate selected pages 90°, 180° or 270° | ✔ | ✔ |
+| **Arrange** | Reorder, reverse, duplicate or drop pages | ✔ | ✔ |
+| **Pages per sheet** | N-up imposition (2/4/6/8/9-up) and booklet folding | ✔ | — |
+| **Compress** | Shrink toward a target size (web adds max-DPI and grayscale options) | ✔ | ✔ |
+| **To PDF** | Convert images, office docs, Markdown and HTML (with formatting) to PDF | ✔ | ✔ |
+| **To Images** | Render PDF pages to PNG or JPG | ✔ | — |
+| **To Text** | Extract text content as `.txt` or `.docx` | ✔ | — |
+| **OCR** | Make a scanned PDF searchable | ✔ | — |
+| **Protect** | Password-encrypt (AES-128; web adds AES-256) | ✔ | ✔ |
+| **Unlock** | Remove a known password | ✔ | ✔ |
+| **Redact** | Permanently black out regions (pages are rasterized, so the data is gone) | ✔ | — |
+| **Fill & Sign** | Fill AcroForm fields, place a signature, flatten | ✔ | — |
+| **Metadata** | View, edit or strip document info | ✔ | ✔ |
+| **Watermark** | Stamp text or an image over every page (web adds tiling and positions) | ✔ | ✔ |
+| **Crop** | Trim margins off every page | ✔ | — |
+| **Page Marks** | Page numbers, headers/footers, Bates numbering | ✔ | — |
+| **GDPR / PII scan** | Detect personal data, then auto-redact the findings (single or batch) | ✔ | — |
+| **Wizard** | Guided select → arrange → compress → export flow | ✔ | ✔ |
+| **Pipeline** | Visual node editor: wire operations into a graph, save/load as JSON | ✔ | ✔ |
 
-## Requirements
+Everywhere, non-PDF inputs (images, `.docx`, `.odt`, `.xlsx`, `.pptx`, `.rtf`,
+`.txt`, …) are converted to PDF automatically — images inline, office documents
+via headless LibreOffice — so there is no separate conversion step. The desktop
+app additionally offers batch mode (per-file operations over a whole folder) and
+runs saved pipelines from the CLI (`pdf-conduit pipeline my.json`).
 
-- **JDK 21+** (the release scripts also use its bundled `jpackage`).
-- **Maven 3.9+**.
-- **LibreOffice** *(optional)* — only needed to convert office/text documents to
-  PDF. Without it, PDFs and images still work; document conversion reports a clear
-  "LibreOffice is not installed" message.
+The GDPR/PII scanner works offline in server memory: it flags emails, phone
+numbers, IP addresses, IBANs, payment card numbers (checksum-validated),
+national IDs and special-category keywords, reports a risk level with masked
+samples, and hands the exact finding positions to the Redact tool for a
+one-click cleanup.
 
-## Build & test
+## Privacy
+
+- The backend is **stateless**: files are processed in memory per request and
+  the result is streamed straight back. File contents are never written to disk
+  or retained after the response.
+- **Single exception:** office/text-document conversion requires LibreOffice,
+  which runs in an isolated per-request temp directory that is deleted
+  immediately afterwards.
+- The live service's policy is published at
+  [pdf-conduit.com/privacy](https://pdf-conduit.com/privacy).
+
+## Architecture
+
+Three Maven modules (Java 21) plus a standalone Angular frontend. The core
+library exposes two behaviour-compatible APIs over the same algorithms: a
+`Path`-in/`Path`-out API used by the desktop app, and an in-memory `byte[]` API
+used by the web backend so uploads never touch disk.
+
+- **`pdf-utils-core`** — pure PDFBox library: all operations, models, page-range
+  parsing, document conversion, the GDPR/PII scanner, and the JavaFX-free
+  pipeline model + executor. No UI dependencies; headlessly testable.
+- **`pdf-utils-desktop`** — JavaFX GUI + picocli CLI in one entry point (no
+  arguments opens the GUI, arguments run the CLI).
+- **`pdf-utils-web`** — stateless, API-only Spring Boot REST backend under
+  `/api`, with per-IP rate limiting, daily quotas, concurrency/memory guards and
+  processing timeouts for safe public hosting.
+- **`pdf-utils-frontend`** — Angular 18 SPA (own npm build, not part of the
+  Maven reactor); nginx serves the SPA and proxies `/api` to the backend.
+
+## Quick start
+
+### Web (Docker)
 
 ```bash
-mvn package        # build everything
-mvn test           # run all tests
+docker compose up --build     # then open http://localhost:4200
 ```
 
-## Run the GUI
+LibreOffice is bundled in the backend image, so office conversion works out of
+the box. For a production deployment with automatic HTTPS (Caddy + Let's
+Encrypt), hardening and tuning, follow the step-by-step guide in
+[`deploy/README.md`](deploy/README.md). Configuration knobs are documented in
+`.env.example`.
+
+### Desktop
+
+Requires JDK 21+ and Maven 3.9+ (LibreOffice optional, only for office/text
+conversion):
 
 ```bash
+mvn package                         # build everything
 cd pdf-utils-desktop && mvn javafx:run
 ```
 
-Launching with no arguments opens the GUI; launching with arguments runs the
-CLI (see below). The window opens centered on your primary monitor.
+Native installers (bundled runtime, no JDK needed by end users) are produced by
+`scripts/build-linux.sh` (app-image + `.deb`) and `scripts/build-windows.ps1`
+(app-image + `.exe`); see `scripts/README.md`.
 
-In IntelliJ IDEA, a shared **PdfUtils GUI** run configuration is checked into
-`.idea/runConfigurations/` and appears automatically after importing the
-project. The Maven `javafx:run` command above works regardless of IDE.
+### CLI
 
-## CLI
-
-The application entry point dispatches to the CLI when given arguments. Once you
-build a native package (see *Releases*), the launcher is `pdf-conduit`:
+The desktop entry point dispatches to the CLI when given arguments; the native
+package installs a `pdf-conduit` launcher:
 
 ```bash
 pdf-conduit merge a.pdf b.pdf images/*.png -o combined.pdf
 pdf-conduit split report.pdf --pages 1-3,5,end-2 -o pages.pdf
-pdf-conduit split report.pdf --separate -o pages/   # one PDF per page into a folder
 pdf-conduit compress scan.pdf --target-size 5MB -o smaller.pdf
 pdf-conduit rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
-pdf-conduit arrange doc.pdf --order 3,1,2 -o reordered.pdf   # reorder pages; 5-1 reverses, repeat to duplicate
-pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf   # combines images into one PDF (alias of images-to-pdf)
-pdf-conduit protect secret.pdf --password s3cret -o locked.pdf      # AES-128 password protection
-pdf-conduit unlock locked.pdf --password s3cret -o open.pdf         # remove the password
-pdf-conduit metadata report.pdf --show                             # print title/author/subject/keywords
+pdf-conduit arrange doc.pdf --order 3,1,2 -o reordered.pdf
+pdf-conduit to-pdf *.jpg --page-size A4 -o album.pdf
+pdf-conduit protect secret.pdf --password s3cret -o locked.pdf
+pdf-conduit unlock locked.pdf --password s3cret -o open.pdf
 pdf-conduit metadata report.pdf --title "Q3 Report" --author Me -o tagged.pdf
-pdf-conduit metadata report.pdf --strip -o clean.pdf               # remove all metadata
-pdf-conduit watermark report.pdf --text DRAFT --opacity 0.3 --scale 0.9 -o stamped.pdf
-pdf-conduit watermark report.pdf --image logo.png --rotation 0 -o branded.pdf  # --scale 0.05-2 sizes it
-pdf-conduit pipeline my-pipeline.json   # run a pipeline saved from the GUI
+pdf-conduit watermark report.pdf --text DRAFT --opacity 0.3 -o stamped.pdf
+pdf-conduit pipeline my-pipeline.json    # run a pipeline saved from the GUI
 ```
 
-- **Page ranges:** `1`, `2-5`, `1,3,5-8`, `end-2` (relative to the last page).
-- **Sizes:** `500KB`, `5MB`, `1.5MB`.
+Page ranges accept `1`, `2-5`, `1,3,5-8` and `end-2`; sizes accept `500KB`,
+`5MB`, `1.5MB`. Exit codes: 0 success, 1 bad input, 2 operation failed.
 
-## Web app / SaaS
+## Languages and themes
 
-PDF Conduit also runs as a **free, public web app** — the same operations in the
-browser, with no install. It's the on-ramp to future paid tiers: the UI shows a
-**"Pro coming soon"** teaser, but everything available today is free.
+- **Web:** 14 UI languages (en, pl, es, zh, de, fr, it, pt, nl, uk, ru, tr, ja,
+  ko), switchable live from the header.
+- **Desktop:** 4 languages (English, Polish, Spanish, Chinese); switching never
+  discards loaded files or in-progress work.
+- **Both:** six color themes (Daylight, Graphite, Nord, Dracula, Solarized,
+  Sunset), plus a System option on desktop.
 
-### The stack
-
-Two containers, built from source (wired by `docker-compose.yml`):
-
-- **`pdf-utils-frontend`** — an **Angular 18** single-page app served by nginx
-  (its own npm build, *not* part of the Maven reactor). All operations plus the
-  Wizard, the visual Pipeline builder, in-browser Redaction (pdf.js
-  box-drawing), and a **GDPR/PII scanner** (see below), a landing page, a header
-  **quota chip** ("N free left today"), a **six-theme** picker (Daylight,
-  Graphite, Nord, Dracula, Solarized, Sunset — parity with the desktop), and a
-  **14-language** UI (en, pl, es, zh, de, fr, it, pt, nl, uk, ru, tr, ja, ko)
-  switchable live from the header. nginx serves the SPA and reverse-proxies
-  `/api` to the backend, so the browser talks to a single origin.
-- **`pdf-utils-web`** — a **stateless, in-memory Spring Boot REST API** (no
-  browser UI of its own). It reuses `pdf-utils-core`, so behaviour matches the
-  desktop app.
-- **Caddy (prod only)** — an optional TLS edge added by `docker-compose.prod.yml`
-  that terminates HTTPS with **automatic Let's Encrypt certificates**.
-
-### Privacy
-
-Uploads are processed **entirely in memory** and never written to disk — the
-result is streamed straight back for download. The **sole exception** is
-office/text-document conversion (`.docx`, `.xlsx`, …), which LibreOffice performs
-in an isolated, immediately-deleted per-request temp dir.
-
-### GDPR / PII scanner
-
-A privacy-first tool that checks a PDF for **personal data** without it ever
-leaving the server's memory. It flags emails, phone numbers, IP addresses,
-bank **IBANs** and payment **card** numbers (checksum-validated), national IDs,
-and special-category ("health-ish") keywords, then reports a **risk level** with
-masked samples per category. Detected concrete values come back with their
-positions, so the report offers a **one-click "Redact detected data"** hand-off
-that opens the Redaction tool with black boxes already drawn over the findings —
-free, no upload leaves your browser session.
-
-### Free-tier protection
-
-Because it's a public, free instance, the backend is hardened against abuse and
-out-of-memory floods (all configurable, env-overridable — see `.env.example`):
-
-- **Per-IP rate limiting** and a **per-IP daily quota** of free operations
-  (`429 rate_limited` / `quota_exceeded`, with `X-RateLimit-*`, `X-Quota-*` and
-  `Retry-After` headers).
-- **Free-tier size/count caps** per file and per request (`413 too_large` /
-  `file_too_large`).
-- **Resource guards** — a heavy-op concurrency semaphore, an in-flight-bytes
-  ceiling, per-operation processing timeouts, a LibreOffice concurrency/timeout
-  guard, and a PDF page-count "bomb" guard (`503 server_busy` /
-  `processing_timeout`).
-
-Friendly toasts surface these limits in the UI.
-
-### Run it locally
-
-**Dev** (two terminals — hot reload):
+## Build and test
 
 ```bash
-scripts/run-web.sh        # backend REST API  → http://localhost:8080/api
-scripts/run-frontend.sh   # Angular dev server → http://localhost:4200
+mvn package                                        # build all Maven modules
+mvn test                                           # run all tests
+mvn test -pl pdf-utils-core -Dtest=PdfMergerTest   # a single test class
+cd pdf-utils-frontend && npm start                 # Angular dev server (:4200)
 ```
 
-Open **http://localhost:4200** (the dev server proxies `/api` to `:8080`).
-Equivalents: `mvn -pl pdf-utils-web -am spring-boot:run` and
-`cd pdf-utils-frontend && npm start`.
+## License
 
-**Docker** (two containers, LibreOffice bundled so office conversion works out of
-the box):
-
-```bash
-# Dev / no TLS — frontend published on FRONTEND_PORT (default 4200)
-docker compose up --build      # then open http://localhost:4200
-
-# Prod — behind the Caddy TLS edge (HTTPS via Let's Encrypt)
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-```
-
-### Deploy & configure
-
-- **VPS walkthrough:** [`deploy/README.md`](deploy/README.md) is the authoritative,
-  step-by-step guide — DNS, the Caddy TLS edge, container hardening, and tuning.
-- **Configuration:** copy `.env.example` → `.env`; it documents every knob
-  (`FRONTEND_PORT`, `PDFCONDUIT_WEB_OFFICE_ENABLED`, CORS origins, upload caps,
-  and the `pdfconduit.web.{ratelimit,quota,concurrency,processing,pdf,office}.*`
-  abuse-protection settings). For prod, set `DOMAIN`, `ACME_EMAIL`, and
-  `PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS` to your real origin.
-- **Per-environment limit presets (Spring profiles):** the same size/count/rate/
-  concurrency knobs are pre-tuned per environment, selected by
-  `SPRING_PROFILES_ACTIVE`. The **no-profile base** (`application.yml`) is already
-  the strict, fail-closed public baseline, so a misconfigured deploy is safe by
-  default. Profiles layer over it and override only what differs:
-
-  | Profile | File | Intent |
-  | --- | --- | --- |
-  | `local` | `application-local.yml` | RELAXED — single-developer box, guards stay out of the way. **Base compose default.** |
-  | `dev` | `application-dev.yml` | RELAXED — shared non-public dev/staging (same intent as `local`). |
-  | `prod` | `application-prod.yml` | STRICT — explicit public ceilings (re-states the base default verbatim). **`docker-compose.prod.yml` forces this.** |
-
-  Relaxed vs. strict at a glance (base default = strict):
-
-  | Key | `local`/`dev` (relaxed) | base / `prod` (strict) |
-  | --- | --- | --- |
-  | `quota.free-max-file-size` | 1GB | 25MB |
-  | `quota.free-max-files` | 500 | 15 |
-  | `quota.daily-operations` | 1000000 | 60 |
-  | `ratelimit.requests-per-minute` | 6000 | 40 |
-  | `ratelimit.heavy-per-minute` | 3000 | 10 |
-  | `ratelimit.burst` | 2000 | 15 |
-  | `concurrency.max-heavy-ops` | 32 | 4 |
-  | `concurrency.max-in-flight-bytes` | 4294967296 | 536870912 |
-  | `processing.timeout-seconds` | 600 | 60 |
-  | `pdf.max-pages` | 100000 | 3000 |
-  | `render.max-dpi` | 1200 | 300 |
-  | `render.max-output-pixels` | 500000000 | 60000000 |
-  | `max-files-per-request` | 500 | 50 |
-
-  An explicit `PDFCONDUIT_WEB_*` env var **always wins over the profile preset**
-  (the env-var name is the property path upper-cased with `.`/`-` → `_`, e.g.
-  `pdfconduit.web.quota.free-max-file-size` → `PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILE_SIZE`).
-  So you can start from a preset and tune a single ceiling without editing YAML.
-
-## Releases (native packages)
-
-`jpackage`-based scripts produce a self-contained app (bundled Java runtime, no
-JDK required by the user). Run each **on its target OS** — jpackage does not
-cross-compile.
-
-```bash
-scripts/build-linux.sh        # Ubuntu/Linux  → portable app-image + .deb
-scripts/build-windows.ps1     # Windows       → portable app-image + .exe
-```
-
-Output lands in `dist/`. See `scripts/README.md` for prerequisites.
-
-## Project layout
-
-```
-pdf-utils-core/     pure library — PDFBox operations, models, utils (no JavaFX/CLI).
-                    Path API (desktop) + in-memory byte[] API (web).
-pdf-utils-desktop/  entry point: CLI (picocli) + GUI (JavaFX), depends on core
-pdf-utils-web/      stateless, in-memory Spring Boot REST API (no UI of its own)
-pdf-utils-frontend/ Angular 18 SPA (standalone npm build, not a Maven module)
-scripts/            jpackage release builders + web/frontend dev launchers
-```
-
-- `pdf-utils-core` is dependency-light and headlessly testable.
-- The pipeline **model + executor** (`pdf-utils-core/.../pipeline`) are
-  JavaFX-free and unit-tested, so the CLI runs pipelines without the GUI; the
-  canvas (`pdf-utils-desktop/.../gui/pipeline`) is the JavaFX layer on top.
-
-## Testing
-
-```bash
-mvn test -pl pdf-utils-core                       # core operations
-mvn test -pl pdf-utils-desktop                     # CLI + pipeline + stylesheet tests
-mvn test -pl pdf-utils-core -Dtest=PdfMergerTest   # a single class
-```
-
-GUI interactions (canvas dragging, animations) are verified manually with
-`mvn javafx:run`; everything else is covered by automated tests.
+PDF Conduit is licensed under the terms in [`LICENSE`](LICENSE) (End User
+License Agreement). Bundled third-party open-source components and their
+licenses are listed in [`THIRD-PARTY-LICENSES.md`](THIRD-PARTY-LICENSES.md),
+with full license texts in [`licenses/`](licenses/) and attribution notices in
+[`NOTICE`](NOTICE).
