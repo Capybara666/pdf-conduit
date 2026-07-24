@@ -62,6 +62,20 @@ export interface CompressionInfo {
 /** Document metadata from `POST /api/metadata/read`. Mirrors backend `MetadataDto`. */
 export type MetadataDto = Schemas['MetadataDto'];
 
+/**
+ * One enumerated AcroForm field from `POST /api/form-fields` (JSON, not a download).
+ * Hand-declared (the endpoint is not yet in the generated OpenAPI schema): mirrors the
+ * backend `FormFieldDto`. `type` is a stable UI tag; `options` is present only for
+ * `choice` (combo/list values) or `radio` (on-values); `value` is the current value.
+ */
+export interface FormField {
+  name: string;
+  type: 'text' | 'checkbox' | 'radio' | 'choice' | 'signature' | 'button' | 'other';
+  value?: string;
+  options?: string[];
+  readOnly?: boolean;
+}
+
 /** GDPR risk level for a scanned document (mirrors the backend `RiskLevel`). */
 export type PiiRisk = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
 

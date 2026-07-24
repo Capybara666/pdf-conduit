@@ -7,6 +7,7 @@ import com.pdfconduit.core.pipeline.PipelineException;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.BatchPiiReportDto;
+import com.pdfconduit.web.dto.FormFieldDto;
 import com.pdfconduit.web.dto.PiiReportDto;
 import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.service.WebOperations;
@@ -46,6 +47,20 @@ public class AnalysisController {
         this.uploads = uploads;
         this.loadGuard = loadGuard;
         this.maxFiles = props.maxFilesPerRequest();
+    }
+
+    /**
+     * Detect an uploaded PDF's fillable AcroForm fields — a cheap, read-only analysis (like
+     * {@code /metadata/read}) returning a JSON array of {@link FormFieldDto}. A PDF with no form
+     * yields {@code []}. The values collected from these fields are filled back through
+     * {@code /api/sign}'s {@code fields} map. Nothing is stored; the scan runs in memory.
+     */
+    @PostMapping(value = "/form-fields", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<FormFieldDto> formFields(@RequestParam("file") MultipartFile file)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        NamedBytes in = uploads.read(file);
+        return loadGuard.execute(in.data().length, () -> ops.listFormFields(in))
+            .stream().map(FormFieldDto::of).toList();
     }
 
     @PostMapping(value = "/gdpr-scan", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

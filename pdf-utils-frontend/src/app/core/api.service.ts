@@ -8,6 +8,7 @@ import {
   ApiError,
   BatchPiiReport,
   CompressionInfo,
+  FormField,
   HealthStatus,
   MetadataDto,
   OperationInfo,
@@ -77,6 +78,19 @@ export class ApiService {
       }),
       catchError((err) => this.toApiError(err)),
     );
+  }
+
+  /**
+   * `POST /api/form-fields` → the PDF's fillable AcroForm fields (JSON array; `[]` when the PDF has
+   * no form). A cheap read-only detection (quota-exempt), so it does not touch the quota chip. The
+   * collected values are filled back through {@link sign} (its `fields` param).
+   */
+  formFields(file: File): Observable<FormField[]> {
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    return this.http
+      .post<FormField[]>(`${this.base}/form-fields`, fd)
+      .pipe(catchError((err) => this.toApiError(err)));
   }
 
   /** `POST /api/gdpr-scan` → GDPR / PII scan report JSON. */

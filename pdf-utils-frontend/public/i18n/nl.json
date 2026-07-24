@@ -577,7 +577,12 @@
       "flatten": "Document platmaken",
       "flattenHint": "Bakt de handtekening en eventuele formuliervelden in de pagina, zodat ze niet meer bewerkt kunnen worden.",
       "submit": "Ondertekenen en downloaden",
-      "loading": "Ondertekenen…"
+      "loading": "Ondertekenen…",
+      "formFields": "Formuliervelden",
+      "formFieldsHint": "Deze PDF heeft invulbare velden. Bewerk ze hieronder en vul het formulier in.",
+      "fillForm": "Formulier invullen en downloaden",
+      "fillFlatten": "Afvlakken (niet-bewerkbaar maken)",
+      "noFields": "Geen invulbare velden gevonden."
     },
     "metadata": {
       "title": "Metagegevens",

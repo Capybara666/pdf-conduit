@@ -577,7 +577,12 @@
       "flatten": "Spłaszcz dokument",
       "flattenHint": "Trwale nanosi podpis i pola formularza na stronę, tak aby nie można było ich edytować.",
       "submit": "Podpisz i pobierz",
-      "loading": "Podpisywanie…"
+      "loading": "Podpisywanie…",
+      "formFields": "Pola formularza",
+      "formFieldsHint": "Ten PDF ma pola do wypełnienia. Edytuj je poniżej, a następnie wypełnij formularz.",
+      "fillForm": "Wypełnij formularz i pobierz",
+      "fillFlatten": "Spłaszcz (uczyń nieedytowalnym)",
+      "noFields": "Nie wykryto pól do wypełnienia."
     },
     "metadata": {
       "title": "Metadane",

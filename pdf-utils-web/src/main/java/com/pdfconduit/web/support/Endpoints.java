@@ -22,6 +22,7 @@ public final class Endpoints {
         "/api/pipeline/kinds",
         "/api/pipeline/validate",
         "/api/metadata/read",
+        "/api/form-fields",
         "/api/page-marks");
 
     /**

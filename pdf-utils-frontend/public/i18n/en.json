@@ -577,7 +577,12 @@
       "flatten": "Flatten the document",
       "flattenHint": "Bakes the signature and any form fields into the page so they can't be edited.",
       "submit": "Sign & download",
-      "loading": "Signing…"
+      "loading": "Signing…",
+      "formFields": "Form fields",
+      "formFieldsHint": "This PDF has fillable fields. Edit them below, then fill the form.",
+      "fillForm": "Fill form & download",
+      "fillFlatten": "Flatten (make non-editable)",
+      "noFields": "No fillable fields detected."
     },
     "metadata": {
       "title": "Metadata",

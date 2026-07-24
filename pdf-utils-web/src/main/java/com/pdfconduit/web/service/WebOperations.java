@@ -497,6 +497,24 @@ public class WebOperations {
         return out;
     }
 
+    // -------------------------------------------------------------- FORM-FIELDS
+
+    /**
+     * Enumerate an input's fillable AcroForm fields (read-only detection). The upload is routed to
+     * PDF first (images/office → PDF, then page-count guarded) so a non-PDF simply yields no fields;
+     * enumeration runs off the one open handle. Nothing is stored.
+     */
+    public List<com.pdfconduit.core.model.FormField> listFormFields(NamedBytes in)
+            throws PdfOperationException {
+        byte[] pdf = routeToPdf(in);
+        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+            guardPageCount(lp);
+            return PdfSigner.listFields(lp.document());
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
+    }
+
     // --------------------------------------------------------------- GDPR-SCAN
 
     /**

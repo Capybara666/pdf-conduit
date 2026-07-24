@@ -1,6 +1,7 @@
 package com.pdfconduit.core.operations;
 
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.model.FormField;
 import com.pdfconduit.core.model.SignPlacement;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -14,6 +15,7 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
@@ -114,7 +116,82 @@ class PdfSignerTest {
         assertEquals(0f, fit[1], 1e-4, "no vertical letterbox for a full-height fit");
     }
 
+    @Test
+    void listsTextFieldAndCheckboxWithTypesAndValues() throws Exception {
+        byte[] pdf = formWithTextAndCheckbox();
+
+        List<FormField> fields = PdfSigner.listFields(pdf);
+
+        assertEquals(2, fields.size(), "both terminal fields should be enumerated");
+        FormField text = fields.stream().filter(f -> f.name().equals("fullName")).findFirst().orElseThrow();
+        FormField check = fields.stream().filter(f -> f.name().equals("agree")).findFirst().orElseThrow();
+        assertEquals("text", text.type());
+        assertEquals("Ada Lovelace", text.value(), "current text value should be reported");
+        assertFalse(text.readOnly());
+        assertEquals("checkbox", check.type());
+        assertFalse(check.readOnly());
+    }
+
+    @Test
+    void listsNoFieldsWhenNoAcroForm() throws Exception {
+        assertTrue(PdfSigner.listFields(plainPdf(1)).isEmpty(),
+            "a PDF with no AcroForm should enumerate to an empty list");
+    }
+
+    @Test
+    void enumeratedFieldsRoundTripThroughFill() throws Exception {
+        byte[] pdf = formWithTextAndCheckbox();
+        // Detect, then fill each detected field by its reported name — the detect→fill contract.
+        List<FormField> fields = PdfSigner.listFields(pdf);
+        assertEquals(2, fields.size());
+        byte[] out = PdfSigner.executeBytes(pdf, List.of(), List.of(),
+            Map.of("fullName", "Grace Hopper", "agree", "true"), false);
+        try (PDDocument doc = Loader.loadPDF(out)) {
+            PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+            assertEquals("Grace Hopper", form.getField("fullName").getValueAsString());
+            assertTrue(((PDCheckBox) form.getField("agree")).isChecked(), "checkbox should be ticked");
+        }
+    }
+
     // ------------------------------------------------------------------ helpers
+
+    /** A one-page PDF with a text field ({@code fullName}, prefilled) and a checkbox ({@code agree}). */
+    private static byte[] formWithTextAndCheckbox() throws IOException {
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+
+            PDAcroForm form = new PDAcroForm(doc);
+            doc.getDocumentCatalog().setAcroForm(form);
+            PDResources dr = new PDResources();
+            dr.put(COSName.getPDFName("Helv"), new PDType1Font(Standard14Fonts.FontName.HELVETICA));
+            form.setDefaultResources(dr);
+            form.setDefaultAppearance("/Helv 12 Tf 0 g");
+
+            PDTextField text = new PDTextField(form);
+            text.setPartialName("fullName");
+            text.setDefaultAppearance("/Helv 12 Tf 0 g");
+            PDAnnotationWidget tw = text.getWidgets().get(0);
+            tw.setRectangle(new PDRectangle(100, 700, 200, 20));
+            tw.setPage(page);
+            page.getAnnotations().add(tw);
+            form.getFields().add(text);
+            text.setValue("Ada Lovelace");
+
+            PDCheckBox check = new PDCheckBox(form);
+            check.setPartialName("agree");
+            PDAnnotationWidget cw = check.getWidgets().get(0);
+            cw.setRectangle(new PDRectangle(100, 660, 20, 20));
+            cw.setPage(page);
+            page.getAnnotations().add(cw);
+            form.getFields().add(check);
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            doc.save(bos);
+            return bos.toByteArray();
+        }
+    }
+
 
     private static boolean hasImage(PDPage page) throws IOException {
         PDResources res = page.getResources();

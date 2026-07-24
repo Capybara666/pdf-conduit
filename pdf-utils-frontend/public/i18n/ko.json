@@ -577,7 +577,12 @@
       "flatten": "문서 병합",
       "flattenHint": "서명과 모든 양식 필드를 페이지에 병합하여 편집할 수 없게 합니다.",
       "submit": "서명 및 다운로드",
-      "loading": "서명하는 중…"
+      "loading": "서명하는 중…",
+      "formFields": "양식 필드",
+      "formFieldsHint": "이 PDF에는 입력 가능한 필드가 있습니다. 아래에서 편집한 후 양식을 채우세요.",
+      "fillForm": "양식 채우고 다운로드",
+      "fillFlatten": "병합(편집 불가로 만들기)",
+      "noFields": "입력 가능한 필드가 없습니다."
     },
     "metadata": {
       "title": "메타데이터",

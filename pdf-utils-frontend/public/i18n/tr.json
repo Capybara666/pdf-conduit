@@ -577,7 +577,12 @@
       "flatten": "Belgeyi düzleştir",
       "flattenHint": "İmzayı ve tüm form alanlarını sayfaya işler, böylece düzenlenemezler.",
       "submit": "İmzala ve indir",
-      "loading": "İmzalanıyor…"
+      "loading": "İmzalanıyor…",
+      "formFields": "Form alanları",
+      "formFieldsHint": "Bu PDF'de doldurulabilir alanlar var. Aşağıda düzenleyip formu doldurun.",
+      "fillForm": "Formu doldur ve indir",
+      "fillFlatten": "Düzleştir (düzenlenemez yap)",
+      "noFields": "Doldurulabilir alan bulunamadı."
     },
     "metadata": {
       "title": "Meta veri",

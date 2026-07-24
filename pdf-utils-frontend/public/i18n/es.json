@@ -577,7 +577,12 @@
       "flatten": "Aplanar el documento",
       "flattenHint": "Fija la firma y cualquier campo de formulario en la página para que no se puedan editar.",
       "submit": "Firmar y descargar",
-      "loading": "Firmando…"
+      "loading": "Firmando…",
+      "formFields": "Campos de formulario",
+      "formFieldsHint": "Este PDF tiene campos rellenables. Edítalos abajo y luego rellena el formulario.",
+      "fillForm": "Rellenar formulario y descargar",
+      "fillFlatten": "Aplanar (no editable)",
+      "noFields": "No se detectaron campos rellenables."
     },
     "metadata": {
       "title": "Metadatos",

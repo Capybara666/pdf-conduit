@@ -577,7 +577,12 @@
       "flatten": "Appiattisci il documento",
       "flattenHint": "Fonde la firma e i campi del modulo nella pagina così non possono più essere modificati.",
       "submit": "Firma e scarica",
-      "loading": "Firma in corso…"
+      "loading": "Firma in corso…",
+      "formFields": "Campi modulo",
+      "formFieldsHint": "Questo PDF ha campi compilabili. Modificali qui sotto, poi compila il modulo.",
+      "fillForm": "Compila modulo e scarica",
+      "fillFlatten": "Appiattisci (non modificabile)",
+      "noFields": "Nessun campo compilabile rilevato."
     },
     "metadata": {
       "title": "Metadati",

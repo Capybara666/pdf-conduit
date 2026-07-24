@@ -577,7 +577,12 @@
       "flatten": "Achatar o documento",
       "flattenHint": "Fixa a assinatura e quaisquer campos de formulário na página para não poderem ser editados.",
       "submit": "Assinar e transferir",
-      "loading": "A assinar…"
+      "loading": "A assinar…",
+      "formFields": "Campos de formulário",
+      "formFieldsHint": "Este PDF tem campos preenchíveis. Edite-os abaixo e preencha o formulário.",
+      "fillForm": "Preencher formulário e baixar",
+      "fillFlatten": "Achatar (tornar não editável)",
+      "noFields": "Nenhum campo preenchível detectado."
     },
     "metadata": {
       "title": "Metadados",

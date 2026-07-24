@@ -1,6 +1,7 @@
 package com.pdfconduit.core.operations;
 
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.model.FormField;
 import com.pdfconduit.core.model.SignOptions;
 import com.pdfconduit.core.model.SignPlacement;
 import com.pdfconduit.core.model.SignResult;
@@ -13,7 +14,13 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDNonTerminalField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDPushButton;
+import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
@@ -75,6 +82,81 @@ public final class PdfSigner {
             return PdfLoader.toBytes(doc);
         } catch (IOException e) {
             throw new PdfOperationException("Sign failed: " + e.getMessage(), e);
+        }
+    }
+
+    // -------------------------------------------------------------- enumerate
+
+    /**
+     * Enumerates the AcroForm fields of {@code pdf} so a UI can render + fill them. Returns the
+     * terminal (fillable) fields in document order — for each: its fully-qualified {@link FormField#name()},
+     * a UI-friendly {@link FormField#type()}, its current value, the selectable options (choice/radio),
+     * and whether it is read-only. A PDF with no AcroForm yields an empty list.
+     */
+    public static List<FormField> listFields(byte[] pdf) throws PdfOperationException {
+        try (PDDocument doc = PdfLoader.load(pdf)) {
+            return listFields(doc);
+        } catch (IOException e) {
+            throw new PdfOperationException("Cannot read form fields: " + e.getMessage(), e);
+        }
+    }
+
+    /** As {@link #listFields(byte[])} but off an already-open document — no re-parse. */
+    public static List<FormField> listFields(PDDocument doc) {
+        List<FormField> out = new ArrayList<>();
+        PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+        if (form == null) return out;
+        for (PDField field : form.getFieldTree()) {
+            // Skip non-terminal container fields; only leaf fields are fillable.
+            if (field instanceof PDNonTerminalField) continue;
+            out.add(describe(field));
+        }
+        return out;
+    }
+
+    /** Maps a PDFBox {@link PDField} to the transport-agnostic {@link FormField} description. */
+    private static FormField describe(PDField field) {
+        String name = field.getFullyQualifiedName();
+        boolean readOnly = field.isReadOnly();
+        String value = valueOf(field);
+        if (field instanceof PDTextField) {
+            return new FormField(name, "text", value, List.of(), readOnly);
+        }
+        if (field instanceof PDCheckBox) {
+            return new FormField(name, "checkbox", value, List.of(), readOnly);
+        }
+        if (field instanceof PDRadioButton radio) {
+            return new FormField(name, "radio", value, new ArrayList<>(radio.getOnValues()), readOnly);
+        }
+        if (field instanceof PDChoice choice) {
+            return new FormField(name, "choice", value, safeOptions(choice), readOnly);
+        }
+        if (field instanceof PDSignatureField) {
+            return new FormField(name, "signature", value, List.of(), readOnly);
+        }
+        if (field instanceof PDPushButton) {
+            return new FormField(name, "button", value, List.of(), readOnly);
+        }
+        return new FormField(name, "other", value, List.of(), readOnly);
+    }
+
+    /** Field value as a string, defaulting to empty if PDFBox cannot resolve it. */
+    private static String valueOf(PDField field) {
+        try {
+            String v = field.getValueAsString();
+            return v == null ? "" : v;
+        } catch (RuntimeException e) {
+            return "";
+        }
+    }
+
+    /** Combo/list selectable option values (export values), never null. */
+    private static List<String> safeOptions(PDChoice choice) {
+        try {
+            List<String> opts = choice.getOptions();
+            return opts == null ? List.of() : new ArrayList<>(opts);
+        } catch (RuntimeException e) {
+            return List.of();
         }
     }
 

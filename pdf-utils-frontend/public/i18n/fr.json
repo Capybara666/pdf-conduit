@@ -577,7 +577,12 @@
       "flatten": "Aplatir le document",
       "flattenHint": "Intègre la signature et les champs de formulaire à la page pour qu'ils ne soient plus modifiables.",
       "submit": "Signer et télécharger",
-      "loading": "Signature en cours…"
+      "loading": "Signature en cours…",
+      "formFields": "Champs de formulaire",
+      "formFieldsHint": "Ce PDF comporte des champs à remplir. Modifiez-les ci-dessous, puis remplissez le formulaire.",
+      "fillForm": "Remplir le formulaire et télécharger",
+      "fillFlatten": "Aplatir (non modifiable)",
+      "noFields": "Aucun champ à remplir détecté."
     },
     "metadata": {
       "title": "Métadonnées",

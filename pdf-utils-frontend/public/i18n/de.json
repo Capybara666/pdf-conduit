@@ -577,7 +577,12 @@
       "flatten": "Dokument fixieren",
       "flattenHint": "Bettet die Signatur und alle Formularfelder fest in die Seite ein, sodass sie nicht mehr bearbeitet werden können.",
       "submit": "Signieren & herunterladen",
-      "loading": "Wird signiert…"
+      "loading": "Wird signiert…",
+      "formFields": "Formularfelder",
+      "formFieldsHint": "Dieses PDF hat ausfüllbare Felder. Bearbeiten Sie sie unten und füllen Sie das Formular aus.",
+      "fillForm": "Formular ausfüllen & herunterladen",
+      "fillFlatten": "Reduzieren (nicht mehr bearbeitbar)",
+      "noFields": "Keine ausfüllbaren Felder erkannt."
     },
     "metadata": {
       "title": "Metadaten",

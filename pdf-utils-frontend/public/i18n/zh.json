@@ -577,7 +577,12 @@
       "flatten": "扁平化文档",
       "flattenHint": "将签名和所有表单字段固化到页面中，使其无法再编辑。",
       "submit": "签名并下载",
-      "loading": "签名中…"
+      "loading": "签名中…",
+      "formFields": "表单字段",
+      "formFieldsHint": "此 PDF 包含可填写字段。在下方编辑后填写表单。",
+      "fillForm": "填写表单并下载",
+      "fillFlatten": "扁平化（设为不可编辑）",
+      "noFields": "未检测到可填写字段。"
     },
     "metadata": {
       "title": "元数据",

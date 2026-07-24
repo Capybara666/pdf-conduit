@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core'
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
+import { FormField } from '../../core/api.models';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
@@ -152,6 +153,86 @@ type SigMode = 'draw' | 'type' | 'upload';
                 </div>
               }
             </div>
+
+            <!-- Detected AcroForm fields -->
+            @if (formFields().length) {
+              <div class="card">
+                <h2 class="side-title">{{ 'pages.sign.formFields' | transloco }}</h2>
+                <p class="hint-note">{{ 'pages.sign.formFieldsHint' | transloco }}</p>
+                @for (fld of formFields(); track fld.name) {
+                  <div class="field-row">
+                    <label class="field-label" [title]="fld.name">{{ fld.name }}</label>
+                    @switch (fld.type) {
+                      @case ('checkbox') {
+                        <label class="check field-check">
+                          <input
+                            type="checkbox"
+                            [disabled]="fld.readOnly"
+                            [checked]="isChecked(fld.name)"
+                            (change)="setField(fld.name, $any($event.target).checked ? 'true' : 'false')"
+                          />
+                        </label>
+                      }
+                      @case ('choice') {
+                        <select
+                          class="input"
+                          [disabled]="fld.readOnly"
+                          (change)="setField(fld.name, $any($event.target).value)"
+                        >
+                          @for (opt of fld.options || []; track opt) {
+                            <option [value]="opt" [selected]="valueOf(fld.name) === opt">{{ opt }}</option>
+                          }
+                        </select>
+                      }
+                      @case ('radio') {
+                        <div class="radio-group">
+                          @for (opt of fld.options || []; track opt) {
+                            <label class="radio">
+                              <input
+                                type="radio"
+                                [name]="'ff-' + fld.name"
+                                [disabled]="fld.readOnly"
+                                [checked]="valueOf(fld.name) === opt"
+                                (change)="setField(fld.name, opt)"
+                              />
+                              <span>{{ opt }}</span>
+                            </label>
+                          }
+                        </div>
+                      }
+                      @default {
+                        <input
+                          class="input"
+                          type="text"
+                          [disabled]="fld.readOnly || (fld.type !== 'text')"
+                          [value]="valueOf(fld.name)"
+                          (input)="setField(fld.name, $any($event.target).value)"
+                        />
+                      }
+                    }
+                  </div>
+                }
+                <label class="check">
+                  <input
+                    type="checkbox"
+                    [checked]="fillFlatten()"
+                    (change)="fillFlatten.set($any($event.target).checked)"
+                  />
+                  <span>{{ 'pages.sign.fillFlatten' | transloco }}</span>
+                </label>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  style="margin-top:0.5rem"
+                  [disabled]="state.loading()"
+                  (click)="fillForm()"
+                >
+                  {{ 'pages.sign.fillForm' | transloco }}
+                </button>
+              </div>
+            } @else if (fieldsChecked() && !fieldsLoading()) {
+              <p class="hint-note no-fields">{{ 'pages.sign.noFields' | transloco }}</p>
+            }
 
             <!-- Placement + options -->
             <div class="card">
@@ -330,6 +411,37 @@ type SigMode = 'draw' | 'type' | 'upload';
         margin-top: 0.75rem;
         cursor: pointer;
       }
+      .field-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        margin-bottom: 0.6rem;
+      }
+      .field-label {
+        font-size: 0.8rem;
+        color: var(--text-muted, var(--text));
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .field-check {
+        margin-top: 0;
+      }
+      .radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+      }
+      .radio {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .no-fields {
+        margin: 0;
+      }
       @media (max-width: 820px) {
         .sign-layout {
           grid-template-columns: 1fr;
@@ -361,6 +473,17 @@ export class SignPage {
   protected readonly signature = signal<{ file: File; url: string } | null>(null);
   protected readonly state = new OperationState();
 
+  /** Detected AcroForm fields (empty = none / not yet loaded). */
+  protected readonly formFields = signal<FormField[]>([]);
+  /** Working name→value map the field controls edit; submitted to the fill endpoint. */
+  protected readonly fieldValues = signal<Record<string, string>>({});
+  /** True while the detection request is in flight. */
+  protected readonly fieldsLoading = signal(false);
+  /** True once detection has completed (so the "no fields" note only shows after a real check). */
+  protected readonly fieldsChecked = signal(false);
+  /** Flatten toggle for the form-fill action (independent of the signature flatten). */
+  protected readonly fillFlatten = signal(false);
+
   /** Aspect ratio (width / height) of the loaded signature image, or null until
    *  it has decoded. Every placement box is constrained to this so the drawn box
    *  always matches the signature's shape (no distortion, no letterbox gap). */
@@ -390,7 +513,62 @@ export class SignPage {
     this.sigAspect.set(null);
     this.typed.set('');
     this.flatten.set(false);
+    this.formFields.set([]);
+    this.fieldValues.set({});
+    this.fieldsChecked.set(false);
+    this.fieldsLoading.set(false);
+    this.fillFlatten.set(false);
     this.state.reset();
+    if (f) this.detectFields(f);
+  }
+
+  // ---- Form fields (detect + fill) --------------------------------------
+
+  /** Call `/api/form-fields` for the uploaded PDF and seed the editable values. */
+  private detectFields(f: File): void {
+    this.fieldsLoading.set(true);
+    this.fieldsChecked.set(false);
+    this.api.formFields(f).subscribe({
+      next: (fields) => {
+        if (this.file() !== f) return; // superseded by a newer file
+        this.formFields.set(fields);
+        const values: Record<string, string> = {};
+        for (const fld of fields) values[fld.name] = fld.value ?? '';
+        this.fieldValues.set(values);
+        this.fieldsLoading.set(false);
+        this.fieldsChecked.set(true);
+      },
+      error: () => {
+        if (this.file() !== f) return;
+        this.formFields.set([]);
+        this.fieldsLoading.set(false);
+        this.fieldsChecked.set(true);
+      },
+    });
+  }
+
+  valueOf(name: string): string {
+    return this.fieldValues()[name] ?? '';
+  }
+
+  isChecked(name: string): boolean {
+    const v = this.valueOf(name).trim().toLowerCase();
+    return v === 'true' || v === 'yes' || v === 'on' || v === '1' || v === 'x' || v === 'checked';
+  }
+
+  setField(name: string, value: string): void {
+    this.fieldValues.set({ ...this.fieldValues(), [name]: value });
+  }
+
+  /** Submit the collected field values to the fill endpoint and download the filled PDF. */
+  fillForm(): void {
+    const f = this.file();
+    if (!f || !this.formFields().length) return;
+    const fd = new FormData();
+    fd.append('file', f, f.name);
+    fd.append('fields', JSON.stringify(this.fieldValues()));
+    fd.append('flatten', String(this.fillFlatten()));
+    this.state.run(this.api.sign(fd));
   }
 
   // ---- Placement aspect constraint --------------------------------------
