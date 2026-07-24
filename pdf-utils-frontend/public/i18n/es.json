@@ -148,8 +148,8 @@
       "description": "Añade números de página y texto de encabezado/pie."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "Censura automática de datos personales",
+      "description": "Analiza el documento en busca de datos personales y los censura automáticamente."
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Gratis · En tu navegador",
+      "eyebrow": "Gratis · Tus archivos nunca se guardan",
       "title": "Todas las herramientas PDF que necesitas, en un espacio de trabajo limpio.",
       "lede": "Combina, comprime, convierte, protege y censura PDF en segundos. Procesados al instante y nunca almacenados en nuestros servidores. Sin cuenta. Sin instalaciones.",
       "ctaStart": "Empieza gratis",
@@ -215,8 +215,8 @@
       "freeFeat5": "Sin cuenta necesaria",
       "freeCta": "Úsalo ahora",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ mes",
+      "proPrice": "Precio",
+      "proPer": "por anunciar",
       "proFeat1": "<b>Archivos más grandes</b>: elimina el límite de tamaño gratuito",
       "proFeat2": "<b>Límites diarios más altos</b> para grandes lotes",
       "proFeat3": "<b>Acceso por lotes y API</b> para automatizar flujos de trabajo",
@@ -462,7 +462,7 @@
     "toPdf": {
       "title": "A PDF",
       "description": "Convierte imágenes, documentos de oficina, Markdown y HTML a PDF.",
-      "hint": "Imágenes, documentos de oficina, Markdown y HTML. con el formato conservado. Cada entrada se convierte en su propio PDF (varios → ZIP).",
+      "hint": "Imágenes, documentos de oficina, Markdown y HTML (con el formato conservado). Cada entrada se convierte en su propio PDF (varios → ZIP).",
       "pageSize": "Tamaño de página",
       "sizeFit": "Ajustar al contenido",
       "sizeLetter": "Letter",
@@ -867,7 +867,7 @@
         "metaStrip": "Eliminar metadatos",
         "metaEdit": "Editar metadatos"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "Analiza la página en busca de datos personales y los censura automáticamente. Sin ajustes."
     },
     "mobileHint": "El editor de flujos funciona mejor en una pantalla más grande."
   },

@@ -148,8 +148,8 @@
       "description": "Voeg paginanummers en kop-/voettekst toe."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "Persoonsgegevens automatisch redigeren",
+      "description": "Scant het document op persoonsgegevens en redigeert ze automatisch."
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Gratis · In je browser",
+      "eyebrow": "Gratis · Je bestanden worden nooit opgeslagen",
       "title": "Elke PDF-tool die je nodig hebt, in één overzichtelijke werkruimte.",
       "lede": "Voeg samen, comprimeer, converteer, beveilig en redigeer PDF's in seconden. Direct verwerkt en nooit opgeslagen op onze servers. Geen account. Geen installaties.",
       "ctaStart": "Gratis beginnen",
@@ -215,8 +215,8 @@
       "freeFeat5": "Geen account vereist",
       "freeCta": "Nu gebruiken",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ maand",
+      "proPrice": "Prijs",
+      "proPer": "wordt nog bekendgemaakt",
       "proFeat1": "<b>Grotere bestanden</b>: verhoog de gratis groottelimiet",
       "proFeat2": "<b>Hogere daglimieten</b> voor grote batches",
       "proFeat3": "<b>Batch- &amp; API-toegang</b> om workflows te automatiseren",
@@ -462,7 +462,7 @@
     "toPdf": {
       "title": "Naar PDF",
       "description": "Converteer afbeeldingen, officedocumenten, Markdown en HTML naar PDF.",
-      "hint": "Afbeeldingen, officedocumenten, Markdown en HTML. met behoud van opmaak. Elke invoer wordt een eigen PDF (meerdere → ZIP).",
+      "hint": "Afbeeldingen, officedocumenten, Markdown en HTML (met behoud van opmaak). Elke invoer wordt een eigen PDF (meerdere → ZIP).",
       "pageSize": "Paginaformaat",
       "sizeFit": "Aanpassen aan inhoud",
       "sizeLetter": "Letter",
@@ -867,7 +867,7 @@
         "metaStrip": "Metadata verwijderen",
         "metaEdit": "Metadata bewerken"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "Scant de pagina op persoonsgegevens en redigeert ze automatisch. Geen instellingen."
     },
     "mobileHint": "De pijplijn-editor werkt het best op een groter scherm."
   },

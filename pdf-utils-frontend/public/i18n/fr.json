@@ -148,8 +148,8 @@
       "description": "Ajoutez des numéros de page et du texte d'en-tête/pied de page."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "Caviardage auto des données personnelles",
+      "description": "Analyse le document à la recherche de données personnelles et les caviarde automatiquement."
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Gratuit · Dans votre navigateur",
+      "eyebrow": "Gratuit · Vos fichiers ne sont jamais conservés",
       "title": "Tous les outils PDF dont vous avez besoin, dans un espace de travail épuré.",
       "lede": "Fusionnez, compressez, convertissez, protégez et caviardez vos PDF en quelques secondes. Traités instantanément et jamais stockés sur nos serveurs. Sans compte. Sans installation.",
       "ctaStart": "Commencer gratuitement",
@@ -215,8 +215,8 @@
       "freeFeat5": "Aucun compte requis",
       "freeCta": "Utiliser maintenant",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ mois",
+      "proPrice": "Tarif",
+      "proPer": "à venir",
       "proFeat1": "<b>Fichiers plus volumineux</b> : supprimez le plafond de taille gratuit",
       "proFeat2": "<b>Limites quotidiennes plus élevées</b> pour les gros lots",
       "proFeat3": "<b>Accès par lots &amp; API</b> pour automatiser vos flux de travail",
@@ -462,7 +462,7 @@
     "toPdf": {
       "title": "Vers PDF",
       "description": "Convertissez images, documents bureautiques, Markdown et HTML en PDF.",
-      "hint": "Images, documents bureautiques, Markdown et HTML. mise en forme conservée. Chaque fichier devient son propre PDF (plusieurs → ZIP).",
+      "hint": "Images, documents bureautiques, Markdown et HTML (mise en forme conservée). Chaque fichier devient son propre PDF (plusieurs → ZIP).",
       "pageSize": "Format de page",
       "sizeFit": "Ajuster au contenu",
       "sizeLetter": "Letter",
@@ -867,7 +867,7 @@
         "metaStrip": "Supprimer les métadonnées",
         "metaEdit": "Modifier les métadonnées"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "Analyse la page à la recherche de données personnelles et les caviarde automatiquement. Aucun réglage."
     },
     "mobileHint": "L'éditeur de pipeline fonctionne mieux sur un grand écran."
   },

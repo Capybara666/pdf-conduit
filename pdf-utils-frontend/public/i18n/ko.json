@@ -148,8 +148,8 @@
       "description": "페이지 번호와 머리글/바닥글 텍스트를 추가합니다."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "개인정보 자동 블랙아웃",
+      "description": "문서에서 개인정보를 찾아 자동으로 블랙아웃합니다."
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "무료 · 브라우저에서",
+      "eyebrow": "무료 · 파일은 저장되지 않습니다",
       "title": "필요한 모든 PDF 도구를 하나의 깔끔한 작업 공간에서.",
       "lede": "PDF를 병합, 압축, 변환, 보호, 블랙아웃까지 몇 초 만에. 즉시 처리되며 서버에 절대 저장되지 않습니다. 계정 불필요. 설치 불필요.",
       "ctaStart": "무료로 시작하기",
@@ -215,8 +215,8 @@
       "freeFeat5": "계정 불필요",
       "freeCta": "지금 사용하기",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ 월",
+      "proPrice": "요금",
+      "proPer": "곧 공개 예정",
       "proFeat1": "<b>더 큰 파일</b>: 무료 크기 제한 해제",
       "proFeat2": "대량 작업을 위한 <b>더 높은 일일 한도</b>",
       "proFeat3": "워크플로 자동화를 위한 <b>배치 &amp; API 접근</b>",
@@ -867,7 +867,7 @@
         "metaStrip": "메타데이터 삭제",
         "metaEdit": "메타데이터 편집"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "페이지에서 개인정보를 찾아 자동으로 블랙아웃합니다. 설정이 필요 없습니다."
     },
     "mobileHint": "파이프라인 빌더는 큰 화면에서 가장 잘 작동합니다."
   },

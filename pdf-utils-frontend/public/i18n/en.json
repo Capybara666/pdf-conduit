@@ -148,7 +148,7 @@
       "description": "Add page numbers and header/footer text."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
+      "label": "Auto-redact personal data",
       "description": "Scan for personal data and black it out automatically."
     }
   },
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Free · In your browser",
+      "eyebrow": "Free · Your files are never stored",
       "title": "Every PDF tool you need, in one clean workspace.",
       "lede": "Merge, compress, convert, protect and redact PDFs in seconds. Processed instantly and never stored on our servers. No account. No installs.",
       "ctaStart": "Start for free",
@@ -215,8 +215,8 @@
       "freeFeat5": "No account required",
       "freeCta": "Use it now",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ month",
+      "proPrice": "Pricing",
+      "proPer": "to be announced",
       "proFeat1": "<b>Larger files</b>: lift the free size cap",
       "proFeat2": "<b>Higher daily limits</b> for big batches",
       "proFeat3": "<b>Batch &amp; API access</b> to automate workflows",
@@ -462,7 +462,7 @@
     "toPdf": {
       "title": "To PDF",
       "description": "Convert images, office docs, Markdown and HTML to PDF.",
-      "hint": "Images, office docs, Markdown & HTML. formatting preserved. Each input becomes its own PDF (several → ZIP).",
+      "hint": "Images, office docs, Markdown & HTML (formatting preserved). Each input becomes its own PDF (several → ZIP).",
       "pageSize": "Page size",
       "sizeFit": "Fit to content",
       "sizeLetter": "Letter",

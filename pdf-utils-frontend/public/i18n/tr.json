@@ -148,8 +148,8 @@
       "description": "Sayfa numaraları ve üstbilgi/altbilgi metni ekleyin."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "Kişisel verileri otomatik karart",
+      "description": "Belgeyi kişisel veriler için tarar ve bunları otomatik olarak karartır."
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Ücretsiz · Tarayıcınızda",
+      "eyebrow": "Ücretsiz · Dosyalarınız asla saklanmaz",
       "title": "İhtiyacınız olan tüm PDF araçları, tek bir temiz çalışma alanında.",
       "lede": "PDF'leri saniyeler içinde birleştirin, sıkıştırın, dönüştürün, koruyun ve karartın. Anında işlenir ve sunucularımızda hiçbir zaman saklanmaz. Hesap yok. Kurulum yok.",
       "ctaStart": "Ücretsiz başlayın",
@@ -215,8 +215,8 @@
       "freeFeat5": "Hesap gerekmez",
       "freeCta": "Hemen kullanın",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ ay",
+      "proPrice": "Fiyat",
+      "proPer": "yakında açıklanacak",
       "proFeat1": "<b>Daha büyük dosyalar</b>: ücretsiz boyut sınırını kaldırın",
       "proFeat2": "Büyük gruplar için <b>daha yüksek günlük sınırlar</b>",
       "proFeat3": "İş akışlarını otomatikleştirmek için <b>toplu &amp; API erişimi</b>",
@@ -462,7 +462,7 @@
     "toPdf": {
       "title": "PDF'e",
       "description": "Görselleri, ofis belgelerini, Markdown ve HTML dosyalarını PDF'e dönüştürün.",
-      "hint": "Görseller, ofis belgeleri, Markdown ve HTML. biçimlendirme korunur. Her girdi kendi PDF'i olur (birden fazla → ZIP).",
+      "hint": "Görseller, ofis belgeleri, Markdown ve HTML (biçimlendirme korunur). Her girdi kendi PDF'i olur (birden fazla → ZIP).",
       "pageSize": "Sayfa boyutu",
       "sizeFit": "İçeriğe sığdır",
       "sizeLetter": "Letter",
@@ -867,7 +867,7 @@
         "metaStrip": "Meta verileri kaldır",
         "metaEdit": "Meta verileri düzenle"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "Sayfayı kişisel veriler için tarar ve bunları otomatik olarak karartır. Ayar gerekmez."
     },
     "mobileHint": "İş akışı düzenleyicisi daha büyük bir ekranda en iyi şekilde çalışır."
   },

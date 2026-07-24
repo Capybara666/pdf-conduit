@@ -148,8 +148,8 @@
       "description": "添加页码和页眉/页脚文本。"
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "自动涂黑个人信息",
+      "description": "扫描文档中的个人数据并自动涂黑。"
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "免费 · 在浏览器中运行",
+      "eyebrow": "免费 · 文件绝不存储",
       "title": "所需的每一款 PDF 工具，尽在一个简洁的工作区。",
       "lede": "几秒内完成 PDF 的合并、压缩、转换、加密和涂黑。即时处理，绝不存储在我们的服务器上。无需账户，无需安装。",
       "ctaStart": "免费开始",
@@ -215,8 +215,8 @@
       "freeFeat5": "无需账户",
       "freeCta": "立即使用",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "／月",
+      "proPrice": "价格",
+      "proPer": "即将公布",
       "proFeat1": "<b>更大的文件</b>：解除免费版大小上限",
       "proFeat2": "<b>更高的每日限额</b>，适用于大批量处理",
       "proFeat3": "<b>批处理与 API 访问</b>，实现工作流自动化",
@@ -867,7 +867,7 @@
         "metaStrip": "清除元数据",
         "metaEdit": "编辑元数据"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "扫描页面中的个人数据并自动涂黑。无需设置。"
     },
     "mobileHint": "流程编辑器在较大的屏幕上体验最佳。"
   },

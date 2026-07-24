@@ -148,8 +148,8 @@
       "description": "Dodaj numery stron oraz tekst nagłówka i stopki."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "Auto-zamazanie PII",
+      "description": "Skanuje dokument w poszukiwaniu danych osobowych i automatycznie je zamazuje."
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Za darmo · W Twojej przeglądarce",
+      "eyebrow": "Za darmo · Bez przechowywania plików",
       "title": "Wszystkie narzędzia PDF, których potrzebujesz, w jednym przejrzystym miejscu.",
       "lede": "Scalaj, kompresuj, konwertuj, zabezpieczaj i zamazuj pliki PDF w kilka sekund. Przetwarzane natychmiast i nigdy nieprzechowywane na naszych serwerach. Bez konta. Bez instalacji.",
       "ctaStart": "Zacznij za darmo",
@@ -215,8 +215,8 @@
       "freeFeat5": "Konto niewymagane",
       "freeCta": "Użyj teraz",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ miesiąc",
+      "proPrice": "Cennik",
+      "proPer": "ogłosimy wkrótce",
       "proFeat1": "<b>Większe pliki</b>: zdejmij darmowy limit rozmiaru",
       "proFeat2": "<b>Wyższe dzienne limity</b> dla dużych partii",
       "proFeat3": "<b>Dostęp wsadowy &amp; API</b> do automatyzacji przepływów pracy",
@@ -254,7 +254,7 @@
       "subtitle": "Chcesz więcej? Twórz wieloetapowe procesy lub sprawdź dokument pod kątem danych osobowych.",
       "wizardDesc": "Pierwszy raz tutaj? Pozwól, aby kreator przeprowadził Cię krok po kroku.",
       "pipelineDesc": "Połącz kilka operacji w jeden powtarzalny proces za pomocą wizualnego grafu węzłów.",
-      "gdprDesc": "Przeskanuj plik PDF pod kątem danych osobowych (RODO / PII), a potem od razu je zredaguj."
+      "gdprDesc": "Przeskanuj plik PDF pod kątem danych osobowych (RODO / PII), a potem od razu je zamaż."
     }
   },
   "onboarding": {
@@ -462,7 +462,7 @@
     "toPdf": {
       "title": "Do PDF",
       "description": "Konwertuj obrazy, dokumenty biurowe, Markdown i HTML do PDF.",
-      "hint": "Obrazy, dokumenty biurowe, Markdown i HTML. z zachowaniem formatowania. Każdy plik wejściowy staje się osobnym PDF (kilka → ZIP).",
+      "hint": "Obrazy, dokumenty biurowe, Markdown i HTML (z zachowaniem formatowania). Każdy plik wejściowy staje się osobnym PDF (kilka → ZIP).",
       "pageSize": "Rozmiar strony",
       "sizeFit": "Dopasuj do treści",
       "sizeLetter": "Letter",
@@ -753,7 +753,7 @@
         "sample": "Próbka (zamaskowana)",
         "occurrences": "Liczba"
       },
-      "redactCta": "Zredaguj wykryte dane",
+      "redactCta": "Zamaż wykryte dane",
       "redactHint": "Sprawdź zaznaczone obszary i zastosuj. Za darmo.",
       "hintMulti": "Jeden lub więcej plików PDF, obrazów lub dokumentów biurowych.",
       "submitBatch": "Skanuj {{count}} plików",
@@ -867,7 +867,7 @@
         "metaStrip": "Usuń metadane",
         "metaEdit": "Edytuj metadane"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "Skanuje stronę w poszukiwaniu danych osobowych i automatycznie je zamazuje. Bez ustawień."
     },
     "mobileHint": "Edytor potoków działa najlepiej na większym ekranie."
   },

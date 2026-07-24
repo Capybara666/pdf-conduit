@@ -148,8 +148,8 @@
       "description": "Seitenzahlen sowie Kopf- und Fußzeilentext hinzufügen."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "Personendaten automatisch schwärzen",
+      "description": "Scannt das Dokument nach personenbezogenen Daten und schwärzt sie automatisch."
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Kostenlos · In Ihrem Browser",
+      "eyebrow": "Kostenlos · Ihre Dateien werden nie gespeichert",
       "title": "Alle PDF-Werkzeuge, die Sie brauchen. In einem aufgeräumten Arbeitsbereich.",
       "lede": "PDFs in Sekunden zusammenführen, komprimieren, umwandeln, schützen und schwärzen. Sofort verarbeitet und niemals auf unseren Servern gespeichert. Kein Konto. Keine Installation.",
       "ctaStart": "Kostenlos starten",
@@ -215,8 +215,8 @@
       "freeFeat5": "Kein Konto erforderlich",
       "freeCta": "Jetzt nutzen",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ Monat",
+      "proPrice": "Preis",
+      "proPer": "wird noch bekannt gegeben",
       "proFeat1": "<b>Größere Dateien</b>: die kostenlose Größenobergrenze aufheben",
       "proFeat2": "<b>Höhere Tageslimits</b> für große Stapel",
       "proFeat3": "<b>Stapel- &amp; API-Zugriff</b> zur Automatisierung von Abläufen",
@@ -867,7 +867,7 @@
         "metaStrip": "Metadaten entfernen",
         "metaEdit": "Metadaten bearbeiten"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "Scannt die Seite nach personenbezogenen Daten und schwärzt sie automatisch. Keine Einstellungen."
     },
     "mobileHint": "Der Pipeline-Editor funktioniert am besten auf einem größeren Bildschirm."
   },

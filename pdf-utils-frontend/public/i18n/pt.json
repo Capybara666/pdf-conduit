@@ -148,8 +148,8 @@
       "description": "Adicione números de página e texto de cabeçalho/rodapé."
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "Ocultação automática de dados pessoais",
+      "description": "Analisa o documento em busca de dados pessoais e oculta-os automaticamente."
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Gratuito · No seu navegador",
+      "eyebrow": "Gratuito · Os seus ficheiros nunca são guardados",
       "title": "Todas as ferramentas de PDF de que precisa, num só espaço de trabalho.",
       "lede": "Junte, comprima, converta, proteja e oculte conteúdo em PDF em segundos. Processado instantaneamente e nunca guardado nos nossos servidores. Sem conta. Sem instalações.",
       "ctaStart": "Começar gratuitamente",
@@ -215,8 +215,8 @@
       "freeFeat5": "Não é necessária conta",
       "freeCta": "Utilizar agora",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "/ mês",
+      "proPrice": "Preço",
+      "proPer": "a anunciar",
       "proFeat1": "<b>Ficheiros maiores</b>: elimine o limite de tamanho gratuito",
       "proFeat2": "<b>Limites diários mais altos</b> para grandes lotes",
       "proFeat3": "<b>Acesso a lotes &amp; API</b> para automatizar fluxos de trabalho",
@@ -462,7 +462,7 @@
     "toPdf": {
       "title": "Para PDF",
       "description": "Converta imagens, documentos office, Markdown e HTML para PDF.",
-      "hint": "Imagens, documentos office, Markdown e HTML. com a formatação preservada. Cada entrada torna-se o seu próprio PDF (vários → ZIP).",
+      "hint": "Imagens, documentos office, Markdown e HTML (com a formatação preservada). Cada entrada torna-se o seu próprio PDF (vários → ZIP).",
       "pageSize": "Tamanho da página",
       "sizeFit": "Ajustar ao conteúdo",
       "sizeLetter": "Letter",
@@ -867,7 +867,7 @@
         "metaStrip": "Remover metadados",
         "metaEdit": "Editar metadados"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "Analisa a página em busca de dados pessoais e oculta-os automaticamente. Sem definições."
     },
     "mobileHint": "O editor de pipelines funciona melhor num ecrã maior."
   },

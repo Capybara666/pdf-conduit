@@ -148,8 +148,8 @@
       "description": "ページ番号とヘッダー・フッターのテキストを追加します。"
     },
     "gdpr-redact": {
-      "label": "Auto-redact PII",
-      "description": "Scan for personal data and black it out automatically."
+      "label": "個人情報の自動墨消し",
+      "description": "文書から個人情報を検出し、自動的に墨消しします。"
     }
   },
   "header": {
@@ -179,7 +179,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "無料 · ブラウザ上で完結",
+      "eyebrow": "無料 · ファイルは保存されません",
       "title": "必要な PDF ツールをすべて、1 つの洗練されたワークスペースに。",
       "lede": "PDF の結合・圧縮・変換・保護・墨消しを数秒で。すべて瞬時に処理され、当社のサーバーに保存されることはありません。アカウント不要。インストール不要。",
       "ctaStart": "無料で始める",
@@ -215,8 +215,8 @@
       "freeFeat5": "アカウント不要",
       "freeCta": "今すぐ使う",
       "proName": "Pro",
-      "proPrice": "TBA",
-      "proPer": "／ 月",
+      "proPrice": "料金",
+      "proPer": "近日発表",
       "proFeat1": "<b>大きなファイル</b>：無料版のサイズ上限を解除",
       "proFeat2": "大量バッチ向けの<b>より高い 1 日あたりの上限</b>",
       "proFeat3": "ワークフローを自動化する<b>バッチ &amp; API アクセス</b>",
@@ -867,7 +867,7 @@
         "metaStrip": "メタデータを削除",
         "metaEdit": "メタデータを編集"
       },
-      "gdprRedactHint": "Scans the page for personal data and blacks it out automatically. No settings."
+      "gdprRedactHint": "ページから個人情報を検出し、自動的に墨消しします。設定は不要です。"
     },
     "mobileHint": "パイプラインビルダーは大きな画面で最も快適に使えます。"
   },
