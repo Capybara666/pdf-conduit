@@ -42,3 +42,6 @@ build/
 docs/
 SUMMARY.md
 .claude/
+
+# Desktop GUI pipeline saves (runtime artifact)
+pdf-utils-desktop/pipeline.json
