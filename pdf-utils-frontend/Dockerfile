@@ -7,7 +7,7 @@
 # (see nginx.conf). Standalone, /api requests 502 until a backend is reachable.
 
 # ---- Stage 1: build the Angular app ----------------------------------------
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 
 # Install deps first for better layer caching.

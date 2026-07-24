@@ -3,5 +3,4 @@
 User-agent: *
 Allow: /
 
-# NOTE: replace the placeholder host below with the real domain at deploy time.
-Sitemap: https://pdfconduit.app/sitemap.xml
+Sitemap: https://pdf-conduit.com/sitemap.xml
