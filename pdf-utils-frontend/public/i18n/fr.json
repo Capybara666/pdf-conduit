@@ -278,7 +278,7 @@
     "accountTitle": "Aucun compte, aucun mur de suivi",
     "accountBody": "Vous n'avez pas besoin de vous inscrire, de vous connecter ni de nous fournir une adresse e-mail pour utiliser les outils gratuits. Nous n'exigeons aucune information personnelle pour traiter un fichier.",
     "controllerTitle": "Responsable du traitement",
-    "controllerBody": "Le responsable du traitement des données traitées dans le cadre de PDF Conduit est l'opérateur du service PDF Conduit. Contact : hello@pdf-conduit.com. Comme les fichiers ne sont jamais conservés et qu'aucun compte n'est requis, le traitement des données personnelles se limite aux journaux techniques du serveur (adresse IP) nécessaires pour protéger le service contre les abus (art. 6, par. 1, point f du RGPD).",
+    "controllerBody": "Le responsable du traitement des données traitées dans le cadre de PDF Conduit est l'opérateur du service PDF Conduit. Contact : hello@pdfconduit.com. Comme les fichiers ne sont jamais conservés et qu'aucun compte n'est requis, le traitement des données personnelles se limite aux journaux techniques du serveur (adresse IP) nécessaires pour protéger le service contre les abus (art. 6, par. 1, point f du RGPD).",
     "limitsTitle": "Limites de l'offre gratuite",
     "limitsBody1": "Pour garder le service gratuit accessible à tous, les requêtes sont soumises à un quota d'opérations quotidien, à un plafond de taille par fichier et à une limitation de débit de base. Lorsque vous atteignez une limite, l'application vous l'indique clairement. Des limites plus élevées, des fichiers plus volumineux et un accès par lots/API sont prévus pour une future offre payante. Voir le",
     "limitsLink": "les offres Pro",

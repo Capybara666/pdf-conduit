@@ -3,4 +3,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pdf-conduit.com/sitemap.xml
+Sitemap: https://pdfconduit.com/sitemap.xml

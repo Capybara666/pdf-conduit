@@ -4,7 +4,7 @@
 
 PDF Conduit is a privacy-first, all-in-one PDF toolkit. Every operation runs
 server-side **in memory** — uploaded files are processed per request and never
-stored. It ships as a free web app at **[pdf-conduit.com](https://pdf-conduit.com)**
+stored. It ships as a free web app at **[pdfconduit.com](https://pdfconduit.com)**
 (Angular SPA + stateless Spring Boot REST API), a JavaFX **desktop app** with a
 full **CLI**, and a self-hostable **REST API**, all built on the same
 [Apache PDFBox](https://pdfbox.apache.org/)-based core.
@@ -59,7 +59,7 @@ one-click cleanup.
   which runs in an isolated per-request temp directory that is deleted
   immediately afterwards.
 - The live service's policy is published at
-  [pdf-conduit.com/privacy](https://pdf-conduit.com/privacy).
+  [pdfconduit.com/privacy](https://pdfconduit.com/privacy).
 
 ## Architecture
 
