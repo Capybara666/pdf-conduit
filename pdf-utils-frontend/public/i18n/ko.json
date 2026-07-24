@@ -463,6 +463,7 @@
       "title": "PDF로 변환",
       "description": "이미지, 오피스 문서, Markdown, HTML을 PDF로 변환합니다.",
       "hint": "이미지, 오피스 문서, Markdown, HTML 지원 (서식 유지). 각 입력이 개별 PDF가 됩니다 (여러 개 → ZIP).",
+      "hintNoOffice": "이미지 (PNG, JPG, WebP 등). 각 입력이 개별 PDF가 됩니다 (여러 개 → ZIP). 이 서버는 오피스 문서를 변환하지 않습니다.",
       "pageSize": "페이지 크기",
       "sizeFit": "내용에 맞춤",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "언어",
       "languagesPlaceholder": "예: eng 또는 eng+deu (비우면 eng)",
       "languagesHelp": "Tesseract 언어 코드입니다. 언어 팩이 서버에 설치되어 있어야 합니다.",
+      "langAdvanced": "고급: 언어 코드 직접 입력",
+      "langNone": "선택한 언어가 없습니다 — 영어(eng)가 사용됩니다.",
       "submit": "검색 가능하게 만들기",
       "loading": "텍스트 인식 중…"
     },

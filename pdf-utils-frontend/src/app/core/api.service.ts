@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 import {
   ApiError,
   BatchPiiReport,
+  CapabilitiesInfo,
   CompressionInfo,
   FormField,
   HealthStatus,
@@ -51,6 +52,13 @@ export class ApiService {
   getOperations(): Observable<OperationInfo[]> {
     return this.http
       .get<OperationInfo[]>(`${this.base}/operations`)
+      .pipe(catchError((err) => this.toApiError(err)));
+  }
+
+  /** `GET /api/capabilities` → server capability flags (office/OCR + installed OCR languages). */
+  getCapabilities(): Observable<CapabilitiesInfo> {
+    return this.http
+      .get<CapabilitiesInfo>(`${this.base}/capabilities`)
       .pipe(catchError((err) => this.toApiError(err)));
   }
 

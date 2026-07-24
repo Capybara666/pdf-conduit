@@ -463,6 +463,7 @@
       "title": "Vers PDF",
       "description": "Convertissez images, documents bureautiques, Markdown et HTML en PDF.",
       "hint": "Images, documents bureautiques, Markdown et HTML (mise en forme conservée). Chaque fichier devient son propre PDF (plusieurs → ZIP).",
+      "hintNoOffice": "Images (PNG, JPG, WebP…). Chaque fichier devient son propre PDF (plusieurs → ZIP). Ce serveur ne convertit pas les documents bureautiques.",
       "pageSize": "Format de page",
       "sizeFit": "Ajuster au contenu",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "Langues",
       "languagesPlaceholder": "ex. eng ou eng+deu (vide = eng)",
       "languagesHelp": "Codes de langue Tesseract ; le pack doit être installé sur le serveur.",
+      "langAdvanced": "Avancé : saisir les codes de langue manuellement",
+      "langNone": "Aucune langue sélectionnée — l'anglais (eng) sera utilisé.",
       "submit": "Rendre consultable",
       "loading": "Reconnaissance du texte…"
     },

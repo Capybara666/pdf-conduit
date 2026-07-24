@@ -32,7 +32,7 @@ class EndpointsHeavyTest {
     @Test
     void cheapReadOnlyEndpoints_areNotHeavy() {
         for (String cheap : new String[]{
-            "/api/health", "/api/operations", "/api/pipeline/kinds",
+            "/api/health", "/api/operations", "/api/capabilities", "/api/pipeline/kinds",
             "/api/pipeline/validate", "/api/metadata/read"}) {
             assertFalse(Endpoints.isHeavy(cheap), cheap + " should not be HEAVY");
         }

@@ -19,6 +19,7 @@ public final class Endpoints {
     private static final Set<String> CHEAP = Set.of(
         "/api/health",
         "/api/operations",
+        "/api/capabilities",
         "/api/pipeline/kinds",
         "/api/pipeline/validate",
         "/api/metadata/read",

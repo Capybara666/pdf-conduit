@@ -463,6 +463,7 @@
       "title": "In PDF",
       "description": "Bilder, Office-Dokumente, Markdown und HTML in PDF umwandeln.",
       "hint": "Bilder, Office-Dokumente, Markdown & HTML – mit erhaltener Formatierung. Jede Eingabe wird ein eigenes PDF (mehrere → ZIP).",
+      "hintNoOffice": "Bilder (PNG, JPG, WebP …). Jede Eingabe wird ein eigenes PDF (mehrere → ZIP). Dieser Server konvertiert keine Office-Dokumente.",
       "pageSize": "Seitengröße",
       "sizeFit": "An Inhalt anpassen",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "Sprachen",
       "languagesPlaceholder": "z. B. eng oder eng+deu (leer = eng)",
       "languagesHelp": "Tesseract-Sprachcodes; das Sprachpaket muss auf dem Server installiert sein.",
+      "langAdvanced": "Erweitert: Sprachcodes manuell eingeben",
+      "langNone": "Keine Sprache ausgewählt — Englisch (eng) wird verwendet.",
       "submit": "Durchsuchbar machen",
       "loading": "Text wird erkannt…"
     },

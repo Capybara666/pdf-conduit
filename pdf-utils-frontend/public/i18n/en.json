@@ -463,6 +463,7 @@
       "title": "To PDF",
       "description": "Convert images, office docs, Markdown and HTML to PDF.",
       "hint": "Images, office docs, Markdown & HTML (formatting preserved). Each input becomes its own PDF (several → ZIP).",
+      "hintNoOffice": "Images (PNG, JPG, WebP…). Each input becomes its own PDF (several → ZIP). This server does not convert office documents.",
       "pageSize": "Page size",
       "sizeFit": "Fit to content",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "Languages",
       "languagesPlaceholder": "e.g. eng or eng+deu (blank = eng)",
       "languagesHelp": "Tesseract language codes; the language pack must be installed on the server.",
+      "langAdvanced": "Advanced: enter language codes manually",
+      "langNone": "No language selected — English (eng) will be used.",
       "submit": "Make searchable",
       "loading": "Recognizing text…"
     },

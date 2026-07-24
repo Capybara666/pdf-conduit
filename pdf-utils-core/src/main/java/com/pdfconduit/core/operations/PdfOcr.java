@@ -90,6 +90,7 @@ public final class PdfOcr {
     private static volatile boolean tesseractSearched;
     private static volatile String tesseractPath;
     private static volatile String tesseractOverride;   // user-supplied path, tried first
+    private static volatile List<String> installedLanguages;   // cached `--list-langs` result
 
     /** Hard wall-clock timeout for a single {@code tesseract} invocation (per page). */
     private static final int DEFAULT_TIMEOUT_SECONDS = 120;
@@ -104,6 +105,7 @@ public final class PdfOcr {
             tesseractOverride = (path == null || path.isBlank()) ? null : path.strip();
             tesseractSearched = false;
             tesseractPath = null;
+            installedLanguages = null;
         }
     }
 
@@ -120,6 +122,62 @@ public final class PdfOcr {
     /** The resolved {@code tesseract} executable (override or auto-detected), or {@code null}. */
     public static String tesseractPath() {
         return findTesseract();
+    }
+
+    /**
+     * The Tesseract language codes installed on this machine (e.g. {@code eng}, {@code pol},
+     * {@code chi_sim}), sorted alphabetically. Discovered lazily — a single
+     * {@code tesseract --list-langs} run — and cached for the lifetime of the process (reset by
+     * {@link #setTesseractOverride}); never spawns a process per call after the first. Returns an
+     * empty list when the binary is absent or listing fails, so callers can gate UI on it safely.
+     * The pseudo-language {@code osd} (orientation/script detection) is excluded.
+     */
+    public static List<String> installedLanguages() {
+        List<String> cached = installedLanguages;
+        if (cached != null) return cached;
+        synchronized (PdfOcr.class) {
+            if (installedLanguages != null) return installedLanguages;
+            installedLanguages = discoverLanguages();
+            return installedLanguages;
+        }
+    }
+
+    private static List<String> discoverLanguages() {
+        String tesseract = findTesseract();
+        if (tesseract == null) return List.of();
+        try {
+            // Older tesseract versions print the list on stderr — merge the streams.
+            Process p = new ProcessBuilder(tesseract, "--list-langs")
+                .redirectErrorStream(true).start();
+            byte[] out = p.getInputStream().readAllBytes();
+            if (!p.waitFor(15, TimeUnit.SECONDS)) {
+                p.destroyForcibly();
+                return List.of();
+            }
+            if (p.exitValue() != 0) return List.of();
+            return parseLangList(new String(out, java.nio.charset.StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            return List.of();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return List.of();
+        }
+    }
+
+    /**
+     * Parses {@code tesseract --list-langs} output: a header line ("List of available languages
+     * (N):") followed by one language code per line. Keeps only plausible codes (letters/digits/
+     * underscores, e.g. {@code eng}, {@code chi_sim}), drops the {@code osd} pseudo-language, and
+     * returns them sorted + de-duplicated. Package-visible for unit testing (no binary required).
+     */
+    static List<String> parseLangList(String output) {
+        return output.lines()
+            .map(String::strip)
+            .filter(line -> line.matches("[A-Za-z0-9_]{2,32}"))
+            .filter(lang -> !lang.equalsIgnoreCase("osd"))
+            .distinct()
+            .sorted()
+            .toList();
     }
 
     private static String findTesseract() {

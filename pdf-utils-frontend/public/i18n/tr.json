@@ -463,6 +463,7 @@
       "title": "PDF'e",
       "description": "Görselleri, ofis belgelerini, Markdown ve HTML dosyalarını PDF'e dönüştürün.",
       "hint": "Görseller, ofis belgeleri, Markdown ve HTML (biçimlendirme korunur). Her girdi kendi PDF'i olur (birden fazla → ZIP).",
+      "hintNoOffice": "Görseller (PNG, JPG, WebP…). Her girdi kendi PDF'i olur (birden fazla → ZIP). Bu sunucu ofis belgelerini dönüştürmez.",
       "pageSize": "Sayfa boyutu",
       "sizeFit": "İçeriğe sığdır",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "Diller",
       "languagesPlaceholder": "örn. eng veya eng+deu (boş = eng)",
       "languagesHelp": "Tesseract dil kodları; dil paketi sunucuda kurulu olmalıdır.",
+      "langAdvanced": "Gelişmiş: dil kodlarını elle girin",
+      "langNone": "Dil seçilmedi — İngilizce (eng) kullanılacak.",
       "submit": "Aranabilir yap",
       "loading": "Metin tanınıyor…"
     },

@@ -1,6 +1,9 @@
 package com.pdfconduit.web.web;
 
+import com.pdfconduit.core.operations.PdfOcr;
 import com.pdfconduit.core.service.OperationType;
+import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.dto.CapabilitiesInfo;
 import com.pdfconduit.web.dto.OperationInfo;
 import com.pdfconduit.web.guard.LoadGuard;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +29,11 @@ import java.util.Map;
 public class InfoController {
 
     private final LoadGuard loadGuard;
+    private final WebProperties props;
 
-    public InfoController(LoadGuard loadGuard) {
+    public InfoController(LoadGuard loadGuard, WebProperties props) {
         this.loadGuard = loadGuard;
+        this.props = props;
     }
 
     @GetMapping("/health")
@@ -42,8 +47,33 @@ public class InfoController {
         return body;
     }
 
+    /**
+     * The operation catalog (a bare array — its shape is consumed as-is by the frontend and the
+     * generated client). Each entry carries {@code available}: {@code false} only for operations
+     * this deployment cannot run — today just {@code ocr} when OCR is disabled.
+     */
     @GetMapping("/operations")
     public List<OperationInfo> operations() {
-        return Arrays.stream(OperationType.values()).map(OperationInfo::of).toList();
+        return Arrays.stream(OperationType.values())
+            .map(type -> OperationInfo.of(type, isAvailable(type)))
+            .toList();
+    }
+
+    /**
+     * Server capability flags so the UI can adapt to this deployment: hide OCR when disabled,
+     * drop office types from To&nbsp;PDF's accepted inputs when office conversion is off, and
+     * offer the actually-installed OCR languages. The language list is discovered once (lazily,
+     * cached by {@link PdfOcr}) — never per request — and is empty when OCR is disabled or the
+     * {@code tesseract} binary is absent.
+     */
+    @GetMapping("/capabilities")
+    public CapabilitiesInfo capabilities() {
+        boolean ocrEnabled = props.ocrEnabled();
+        List<String> ocrLanguages = ocrEnabled ? PdfOcr.installedLanguages() : List.of();
+        return new CapabilitiesInfo(props.officeEnabled(), ocrEnabled, ocrLanguages);
+    }
+
+    private boolean isAvailable(OperationType type) {
+        return type != OperationType.OCR || props.ocrEnabled();
     }
 }

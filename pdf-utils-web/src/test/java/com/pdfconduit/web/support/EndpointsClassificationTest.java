@@ -84,7 +84,7 @@ class EndpointsClassificationTest {
     @Test
     void intendedCheapEndpoints_areNotHeavyOrQuota() {
         for (String cheap : new String[]{
-            "/api/health", "/api/operations", "/api/pipeline/kinds",
+            "/api/health", "/api/operations", "/api/capabilities", "/api/pipeline/kinds",
             "/api/pipeline/validate", "/api/metadata/read"}) {
             assertTrue(Endpoints.isCheap(cheap), cheap + " should be on the cheap allow-list");
             assertFalse(Endpoints.isHeavy(cheap), cheap + " should NOT be HEAVY");

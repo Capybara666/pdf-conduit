@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
+import { CapabilitiesService } from '../../core/capabilities.service';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
@@ -24,8 +25,8 @@ type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
 
       <app-file-drop-zone
         [multiple]="true"
-        accept="image/*,.docx,.odt,.rtf,.txt,.md,.markdown,.html,.htm,.xlsx,.pptx,.pdf"
-        [hint]="'pages.toPdf.hint' | transloco"
+        [accept]="accept()"
+        [hint]="(officeEnabled() ? 'pages.toPdf.hint' : 'pages.toPdf.hintNoOffice') | transloco"
         (filesChange)="files.set($event)"
       />
 
@@ -68,6 +69,21 @@ export class ToPdfPage {
   protected readonly state = new OperationState();
 
   private readonly workState = inject(WorkStateService);
+  private readonly capabilities = inject(CapabilitiesService);
+
+  /** Whether the server converts office/document inputs (docx/xlsx/txt/md/html/…). */
+  protected readonly officeEnabled = this.capabilities.officeEnabled;
+
+  /**
+   * Accepted input types. All office/document extensions (everything the backend
+   * classifies `Kind.OFFICE`, incl. txt/md/html) are dropped when the server has
+   * office conversion disabled — they would only be rejected with a 415.
+   */
+  protected readonly accept = computed(() =>
+    this.officeEnabled()
+      ? 'image/*,.docx,.odt,.rtf,.txt,.md,.markdown,.html,.htm,.xlsx,.pptx,.pdf'
+      : 'image/*,.pdf',
+  );
 
   constructor(private readonly api: ApiService) {
     this.workState.persist('to-pdf', { pageSize: this.pageSize });

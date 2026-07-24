@@ -463,6 +463,7 @@
       "title": "PDF に変換",
       "description": "画像、オフィス文書、Markdown、HTML を PDF に変換します。",
       "hint": "画像、オフィス文書、Markdown、HTML に対応（書式を保持）。各入力がそれぞれ 1 つの PDF になります（複数 → ZIP）。",
+      "hintNoOffice": "画像（PNG、JPG、WebP など）。各入力がそれぞれ 1 つの PDF になります（複数 → ZIP）。このサーバーではオフィス文書は変換できません。",
       "pageSize": "ページサイズ",
       "sizeFit": "内容に合わせる",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "言語",
       "languagesPlaceholder": "例: eng または eng+deu（空欄 = eng）",
       "languagesHelp": "Tesseractの言語コード。言語パックがサーバーにインストールされている必要があります。",
+      "langAdvanced": "詳細設定：言語コードを手動で入力",
+      "langNone": "言語が未選択のため、英語（eng）が使用されます。",
       "submit": "検索可能にする",
       "loading": "テキストを認識中…"
     },

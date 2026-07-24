@@ -463,6 +463,7 @@
       "title": "转为 PDF",
       "description": "将图片、办公文档、Markdown 和 HTML 转换为 PDF。",
       "hint": "图片、办公文档、Markdown 和 HTML（保留格式）。每个输入生成各自的 PDF（多个 → ZIP）。",
+      "hintNoOffice": "图片（PNG、JPG、WebP 等）。每个输入生成各自的 PDF（多个 → ZIP）。此服务器不转换办公文档。",
       "pageSize": "页面大小",
       "sizeFit": "适应内容",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "语言",
       "languagesPlaceholder": "例如 eng 或 eng+deu（留空 = eng）",
       "languagesHelp": "Tesseract 语言代码；服务器上必须安装相应语言包。",
+      "langAdvanced": "高级：手动输入语言代码",
+      "langNone": "未选择语言 — 将使用英语（eng）。",
       "submit": "使其可搜索",
       "loading": "正在识别文本…"
     },

@@ -72,7 +72,24 @@ class OperationsControllerTest {
         mvc().perform(get("/api/operations"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[?(@.id=='merge')].cardinality").value("REDUCE"))
-            .andExpect(jsonPath("$[?(@.id=='extract')].multiOutput").value(true));
+            .andExpect(jsonPath("$[?(@.id=='extract')].multiOutput").value(true))
+            // Availability flags: everything is available except OCR, which is disabled by
+            // default (pdfconduit.web.ocr.enabled=false) and must be flagged so the UI hides it.
+            .andExpect(jsonPath("$[?(@.id=='merge')].available").value(true))
+            .andExpect(jsonPath("$[?(@.id=='to-pdf')].available").value(true))
+            .andExpect(jsonPath("$[?(@.id=='ocr')].available").value(false));
+    }
+
+    @Test
+    void capabilities_reportFlags_withoutSpawningTesseractWhenOcrDisabled() throws Exception {
+        // OCR is disabled in the test context, so ocrLanguages must be [] WITHOUT any
+        // tesseract discovery (the binary may not exist on the build machine).
+        mvc().perform(get("/api/capabilities"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.officeEnabled").value(true))
+            .andExpect(jsonPath("$.ocrEnabled").value(false))
+            .andExpect(jsonPath("$.ocrLanguages").isArray())
+            .andExpect(jsonPath("$.ocrLanguages").isEmpty());
     }
 
     // --------------------------------------------------------------- merge

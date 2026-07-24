@@ -463,6 +463,7 @@
       "title": "Do PDF",
       "description": "Konwertuj obrazy, dokumenty biurowe, Markdown i HTML do PDF.",
       "hint": "Obrazy, dokumenty biurowe, Markdown i HTML (z zachowaniem formatowania). Każdy plik wejściowy staje się osobnym PDF (kilka → ZIP).",
+      "hintNoOffice": "Obrazy (PNG, JPG, WebP…). Każdy plik wejściowy staje się osobnym PDF (kilka → ZIP). Ten serwer nie konwertuje dokumentów biurowych.",
       "pageSize": "Rozmiar strony",
       "sizeFit": "Dopasuj do treści",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "Języki",
       "languagesPlaceholder": "np. eng lub eng+deu (puste = eng)",
       "languagesHelp": "Kody języków Tesseract; pakiet języka musi być zainstalowany na serwerze.",
+      "langAdvanced": "Zaawansowane: wpisz kody języków ręcznie",
+      "langNone": "Nie wybrano języka — zostanie użyty angielski (eng).",
       "submit": "Uczyń przeszukiwalnym",
       "loading": "Rozpoznawanie tekstu…"
     },

@@ -55,6 +55,38 @@ class PdfOcrTest {
         assertEquals(available, PdfOcr.available(), "availability should be stable/cached");
     }
 
+    /** {@code --list-langs} output parses into clean, sorted codes — no binary required. */
+    @Test
+    void parsesLangListOutput() {
+        String output = """
+            List of available languages in "/usr/share/tesseract-ocr/5/tessdata/" (5):
+            deu
+            eng
+            osd
+            pol
+            chi_sim
+            """;
+        assertEquals(List.of("chi_sim", "deu", "eng", "pol"), PdfOcr.parseLangList(output));
+        // Garbage / empty output never throws — it just yields no languages.
+        assertEquals(List.of(), PdfOcr.parseLangList(""));
+        assertEquals(List.of(), PdfOcr.parseLangList("tesseract: error while loading shared libraries"));
+    }
+
+    /** Language discovery is bounded, cached and safe whether or not tesseract exists. */
+    @Test
+    void installedLanguagesNeverHangsOrThrows() {
+        long start = System.currentTimeMillis();
+        List<String> langs = PdfOcr.installedLanguages();
+        long elapsed = System.currentTimeMillis() - start;
+        assertNotNull(langs);
+        assertTrue(elapsed < 30_000, "language discovery should be bounded, took " + elapsed + "ms");
+        // Cached: the second call returns the same list without a new process spawn.
+        assertSame(langs, PdfOcr.installedLanguages());
+        if (!PdfOcr.available()) {
+            assertTrue(langs.isEmpty(), "no tesseract -> no languages");
+        }
+    }
+
     /** When tesseract is NOT installed, OCR fails with a clear message rather than crashing. */
     @Test
     void reportsClearErrorWhenTesseractMissing() throws Exception {

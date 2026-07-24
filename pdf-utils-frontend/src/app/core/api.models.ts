@@ -28,11 +28,26 @@ export type Cardinality = 'MAP' | 'REDUCE';
 /**
  * Catalog entry from `GET /api/operations`. Mirrors the backend `OperationInfo`
  * schema; `cardinality` is re-narrowed from `string` to the {@link Cardinality}
- * union.
+ * union. `available` is hand-added until the next `api.gen.ts` regeneration:
+ * `false` only for operations this server cannot run (today just `ocr` when OCR
+ * is disabled); absent/`true` means available.
  */
 export type OperationInfo = Omit<Schemas['OperationInfo'], 'cardinality'> & {
   cardinality?: Cardinality;
+  available?: boolean;
 };
+
+/**
+ * Server capability flags from `GET /api/capabilities`. Hand-declared (the
+ * endpoint is not yet in the generated OpenAPI schema): mirrors the backend
+ * `CapabilitiesInfo`. `ocrLanguages` lists the Tesseract language codes
+ * installed on the server (empty when OCR is disabled or Tesseract is absent).
+ */
+export interface CapabilitiesInfo {
+  officeEnabled: boolean;
+  ocrEnabled: boolean;
+  ocrLanguages: string[];
+}
 
 /**
  * A successful binary download from a run: the raw bytes plus the filename

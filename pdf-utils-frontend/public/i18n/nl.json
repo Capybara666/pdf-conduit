@@ -463,6 +463,7 @@
       "title": "Naar PDF",
       "description": "Converteer afbeeldingen, officedocumenten, Markdown en HTML naar PDF.",
       "hint": "Afbeeldingen, officedocumenten, Markdown en HTML (met behoud van opmaak). Elke invoer wordt een eigen PDF (meerdere → ZIP).",
+      "hintNoOffice": "Afbeeldingen (PNG, JPG, WebP…). Elke invoer wordt een eigen PDF (meerdere → ZIP). Deze server converteert geen officedocumenten.",
       "pageSize": "Paginaformaat",
       "sizeFit": "Aanpassen aan inhoud",
       "sizeLetter": "Letter",
@@ -511,6 +512,8 @@
       "languages": "Talen",
       "languagesPlaceholder": "bijv. eng of eng+deu (leeg = eng)",
       "languagesHelp": "Tesseract-taalcodes; het taalpakket moet op de server geïnstalleerd zijn.",
+      "langAdvanced": "Geavanceerd: taalcodes handmatig invoeren",
+      "langNone": "Geen taal geselecteerd — Engels (eng) wordt gebruikt.",
       "submit": "Doorzoekbaar maken",
       "loading": "Tekst herkennen…"
     },
