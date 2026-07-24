@@ -88,8 +88,9 @@ EXPOSE 8080
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
 
 # Liveness: the app exposes GET /api/health returning {status:"UP"}.
+# 127.0.0.1, not localhost — avoids the in-container ::1-first resolution trap.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-    CMD curl -fsS "http://localhost:${SERVER_PORT:-8080}/api/health" || exit 1
+    CMD curl -fsS "http://127.0.0.1:${SERVER_PORT:-8080}/api/health" || exit 1
 
 # sh -c so $JAVA_OPTS is expanded (and word-split) at runtime.
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
