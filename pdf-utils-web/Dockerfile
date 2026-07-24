@@ -35,10 +35,12 @@ RUN mvn -q -pl pdf-utils-web -am -DskipTests package
 FROM eclipse-temurin:21-jre AS runtime
 
 # LibreOffice (headless) lets DocumentConverter turn .docx/.odt/.xlsx/… into
-# PDF. tesseract-ocr (+ the English data pack) powers the OCR → searchable-PDF
-# feature (opt-in via pdfconduit.web.ocr.enabled). fonts-dejavu + fontconfig
-# give conversions a sane default font; curl is used by the container
-# HEALTHCHECK below. --no-install-recommends keeps the image small.
+# PDF. tesseract-ocr (+ data packs for the widest-reach UI languages: English,
+# Polish, German, French, Spanish — ~15 MB each) powers the OCR →
+# searchable-PDF feature (opt-in via pdfconduit.web.ocr.enabled).
+# fonts-dejavu + fontconfig give conversions a sane default font; curl is used
+# by the container HEALTHCHECK below. --no-install-recommends keeps the image
+# small.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libreoffice-core \
@@ -47,6 +49,10 @@ RUN apt-get update \
         libreoffice-impress \
         tesseract-ocr \
         tesseract-ocr-eng \
+        tesseract-ocr-pol \
+        tesseract-ocr-deu \
+        tesseract-ocr-fra \
+        tesseract-ocr-spa \
         fonts-dejavu \
         fontconfig \
         curl \

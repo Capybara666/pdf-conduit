@@ -59,6 +59,7 @@ Edit `.env` and set at minimum:
 | `DOMAIN` | `pdf.example.com` | Domain Caddy provisions HTTPS for |
 | `ACME_EMAIL` | `you@example.com` | Let's Encrypt account / expiry notices |
 | `PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS` | `https://pdf.example.com` | Lock CORS to your real origin |
+| `PDFCONDUIT_WEB_OCR_ENABLED` | `true` | OCR is off by default in code; without this the public OCR page returns 415 |
 
 ```bash
 # 3. Build images and bring the stack up (prod overlay = TLS + limits)

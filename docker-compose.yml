@@ -59,6 +59,10 @@ services:
       # Office/document conversion (the sole disk exception). Set to false to
       # reject .docx/.xlsx/... uploads with a clear 415 instead.
       PDFCONDUIT_WEB_OFFICE_ENABLED: "${PDFCONDUIT_WEB_OFFICE_ENABLED:-true}"
+      # OCR (scanned PDF → searchable PDF; tesseract + eng/pol/deu/fra/spa data
+      # packs are baked into the image). Off by default — a production deploy
+      # MUST set true in .env, otherwise the OCR page returns 415.
+      PDFCONDUIT_WEB_OCR_ENABLED: "${PDFCONDUIT_WEB_OCR_ENABLED:-false}"
       # CORS allow-list for /api (comma-separated). Not needed for the nginx
       # same-origin proxy above, but harmless; matters for the dev split-origin.
       # In prod set this to your real https://DOMAIN (see .env.example).
