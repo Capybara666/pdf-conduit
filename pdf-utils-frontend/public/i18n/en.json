@@ -277,6 +277,8 @@
     "exceptionBody": "Converting office or text documents (for example .docx, .xlsx, .pptx) requires a headless LibreOffice. For that step only, the file is written to an isolated temporary folder that is deleted immediately after the conversion completes. Plain PDFs and images never touch the disk.",
     "accountTitle": "No account, no tracking wall",
     "accountBody": "You don't need to sign up, log in, or give us an email address to use the free tools. We don't require personal information to process a file.",
+    "controllerTitle": "Data controller",
+    "controllerBody": "The data controller for the data processed within PDF Conduit is the operator of the PDF Conduit service. Contact: hello@pdf-conduit.com. Because files are never stored and no account is required, the processing of personal data is limited to technical server logs (IP address) needed to protect the service against abuse (Art. 6(1)(f) GDPR).",
     "limitsTitle": "Free-tier limits",
     "limitsBody1": "To keep the free service available to everyone, requests are subject to a daily operation quota, a per-file size cap and basic rate limiting. When you hit a limit, the app tells you clearly. Higher limits, larger files and batch/API access are planned for a future paid tier. See the",
     "limitsLink": "Pro plans",

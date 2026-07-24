@@ -277,6 +277,8 @@
     "exceptionBody": "转换办公或文本文档（例如 .docx、.xlsx、.pptx）需要无界面的 LibreOffice。仅在该步骤中，文件会被写入一个隔离的临时文件夹，并在转换完成后立即删除。普通的 PDF 和图片绝不接触磁盘。",
     "accountTitle": "无账户，无跟踪墙",
     "accountBody": "使用免费工具无需注册、登录或提供邮箱地址。我们不需要个人信息即可处理文件。",
+    "controllerTitle": "数据控制者",
+    "controllerBody": "PDF Conduit 所处理数据的控制者为 PDF Conduit 服务的运营者。联系方式：hello@pdf-conduit.com。由于文件从不被存储，使用也无需账户，个人数据的处理仅限于为保护服务免遭滥用所必需的技术性服务器日志（IP 地址）（GDPR 第 6 条第 1 款 (f) 项）。",
     "limitsTitle": "免费版限制",
     "limitsBody1": "为了让每个人都能使用免费服务，请求会受到每日操作配额、单个文件大小上限和基本速率限制的约束。当您达到限制时，应用会明确提示。更高的限额、更大的文件以及批处理／API 访问已计划在未来的付费版中提供。请参阅首页上的",
     "limitsLink": "Pro 方案",

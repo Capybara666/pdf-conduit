@@ -277,6 +277,8 @@
     "exceptionBody": "Das Umwandeln von Office- oder Textdokumenten (zum Beispiel .docx, .xlsx, .pptx) erfordert ein headless LibreOffice. Nur für diesen Schritt wird die Datei in einen isolierten temporären Ordner geschrieben, der unmittelbar nach Abschluss der Umwandlung gelöscht wird. Reine PDFs und Bilder berühren die Festplatte nie.",
     "accountTitle": "Kein Konto, keine Tracking-Hürde",
     "accountBody": "Sie müssen sich nicht registrieren, anmelden oder uns eine E-Mail-Adresse geben, um die kostenlosen Werkzeuge zu nutzen. Wir verlangen keine persönlichen Daten, um eine Datei zu verarbeiten.",
+    "controllerTitle": "Verantwortlicher",
+    "controllerBody": "Verantwortlicher für die im Rahmen von PDF Conduit verarbeiteten Daten ist der Betreiber des Dienstes PDF Conduit. Kontakt: hello@pdf-conduit.com. Da Dateien nie gespeichert werden und kein Konto erforderlich ist, beschränkt sich die Verarbeitung personenbezogener Daten auf technische Server-Logs (IP-Adresse), die zum Schutz des Dienstes vor Missbrauch erforderlich sind (Art. 6 Abs. 1 lit. f DSGVO).",
     "limitsTitle": "Grenzen der kostenlosen Version",
     "limitsBody1": "Damit der kostenlose Dienst für alle verfügbar bleibt, unterliegen Anfragen einem täglichen Vorgangskontingent, einer Obergrenze für die Dateigröße pro Datei und einer grundlegenden Ratenbegrenzung. Wenn Sie ein Limit erreichen, sagt es Ihnen die App klar. Höhere Limits, größere Dateien und Stapel-/API-Zugriff sind für einen künftigen kostenpflichtigen Tarif geplant. Siehe den",
     "limitsLink": "Pro-Tarife",

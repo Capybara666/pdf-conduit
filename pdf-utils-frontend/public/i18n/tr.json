@@ -277,6 +277,8 @@
     "exceptionBody": "Ofis veya metin belgelerini (örneğin .docx, .xlsx, .pptx) dönüştürmek için başsız bir LibreOffice gerekir. Yalnızca o adım için dosya, dönüştürme tamamlandıktan hemen sonra silinen izole bir geçici klasöre yazılır. Düz PDF'ler ve görseller diske hiç dokunmaz.",
     "accountTitle": "Hesap yok, takip duvarı yok",
     "accountBody": "Ücretsiz araçları kullanmak için kaydolmanız, oturum açmanız veya bize bir e-posta adresi vermeniz gerekmez. Bir dosyayı işlemek için kişisel bilgi talep etmiyoruz.",
+    "controllerTitle": "Veri sorumlusu",
+    "controllerBody": "PDF Conduit kapsamında işlenen verilerin veri sorumlusu, PDF Conduit hizmetinin işletmecisidir. İletişim: hello@pdf-conduit.com. Dosyalar hiçbir zaman saklanmadığı ve hesap gerekmediği için, kişisel verilerin işlenmesi, hizmeti kötüye kullanıma karşı korumak için gerekli teknik sunucu günlükleriyle (IP adresi) sınırlıdır (GDPR md. 6/1-f).",
     "limitsTitle": "Ücretsiz katman sınırları",
     "limitsBody1": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır. Ana sayfadaki",
     "limitsLink": "Pro planları",

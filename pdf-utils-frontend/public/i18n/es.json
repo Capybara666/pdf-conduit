@@ -277,6 +277,8 @@
     "exceptionBody": "Convertir documentos de oficina o de texto (por ejemplo .docx, .xlsx, .pptx) requiere un LibreOffice sin interfaz. Solo para ese paso, el archivo se escribe en una carpeta temporal aislada que se elimina inmediatamente después de completarse la conversión. Los PDF y las imágenes normales nunca tocan el disco.",
     "accountTitle": "Sin cuenta, sin muro de seguimiento",
     "accountBody": "No necesitas registrarte, iniciar sesión ni darnos una dirección de correo para usar las herramientas gratuitas. No requerimos información personal para procesar un archivo.",
+    "controllerTitle": "Responsable del tratamiento",
+    "controllerBody": "El responsable del tratamiento de los datos procesados en PDF Conduit es el operador del servicio PDF Conduit. Contacto: hello@pdf-conduit.com. Como los archivos nunca se almacenan y no se requiere una cuenta, el tratamiento de datos personales se limita a los registros técnicos del servidor (dirección IP) necesarios para proteger el servicio frente a abusos (art. 6.1.f del RGPD).",
     "limitsTitle": "Límites del plan gratuito",
     "limitsBody1": "Para mantener el servicio gratuito disponible para todos, las solicitudes están sujetas a una cuota diaria de operaciones, un límite de tamaño por archivo y una limitación básica de frecuencia. Cuando alcanzas un límite, la aplicación te lo indica con claridad. Límites más altos, archivos más grandes y acceso por lotes/API están previstos para un futuro plan de pago. Consulta el",
     "limitsLink": "planes Pro",

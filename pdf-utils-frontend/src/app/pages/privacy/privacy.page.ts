@@ -29,6 +29,11 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
         <h2>{{ 'privacy.accountTitle' | transloco }}</h2>
         <p>{{ 'privacy.accountBody' | transloco }}</p>
 
+        <!-- TODO(user): replace "operator of the PDF Conduit service" in the
+             i18n controllerBody strings with the legal name before launch -->
+        <h2>{{ 'privacy.controllerTitle' | transloco }}</h2>
+        <p>{{ 'privacy.controllerBody' | transloco }}</p>
+
         <h2>{{ 'privacy.limitsTitle' | transloco }}</h2>
         <p>
           {{ 'privacy.limitsBody1' | transloco }}

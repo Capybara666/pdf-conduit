@@ -277,6 +277,8 @@
     "exceptionBody": "Het converteren van office- of tekstdocumenten (bijvoorbeeld .docx, .xlsx, .pptx) vereist een headless LibreOffice. Alleen voor die stap wordt het bestand naar een geïsoleerde tijdelijke map geschreven die onmiddellijk na de conversie wordt verwijderd. Gewone PDF's en afbeeldingen raken de schijf nooit aan.",
     "accountTitle": "Geen account, geen trackingmuur",
     "accountBody": "Je hoeft je niet te registreren, in te loggen of ons een e-mailadres te geven om de gratis tools te gebruiken. We vragen geen persoonlijke gegevens om een bestand te verwerken.",
+    "controllerTitle": "Verwerkingsverantwoordelijke",
+    "controllerBody": "De verwerkingsverantwoordelijke voor de gegevens die binnen PDF Conduit worden verwerkt, is de beheerder van de dienst PDF Conduit. Contact: hello@pdf-conduit.com. Omdat bestanden nooit worden opgeslagen en er geen account nodig is, blijft de verwerking van persoonsgegevens beperkt tot technische serverlogs (IP-adres) die nodig zijn om de dienst tegen misbruik te beschermen (art. 6 lid 1 sub f AVG).",
     "limitsTitle": "Limieten van de gratis versie",
     "limitsBody1": "Om de gratis dienst voor iedereen beschikbaar te houden, gelden voor verzoeken een dagelijkse bewerkingslimiet, een limiet voor de bestandsgrootte en basissnelheidsbeperking. Wanneer je een limiet bereikt, laat de app dat duidelijk weten. Hogere limieten, grotere bestanden en batch-/API-toegang zijn gepland voor een toekomstige betaalde versie. Zie de",
     "limitsLink": "Pro-abonnementen",

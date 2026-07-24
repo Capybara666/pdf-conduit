@@ -277,6 +277,8 @@
     "exceptionBody": "Konwersja dokumentów biurowych lub tekstowych (na przykład .docx, .xlsx, .pptx) wymaga bezokienkowego LibreOffice. Tylko na potrzeby tego kroku plik jest zapisywany w odizolowanym folderze tymczasowym, który jest usuwany natychmiast po zakończeniu konwersji. Zwykłe pliki PDF i obrazy nigdy nie dotykają dysku.",
     "accountTitle": "Bez konta, bez ściany śledzenia",
     "accountBody": "Nie musisz się rejestrować, logować ani podawać nam adresu e-mail, aby korzystać z darmowych narzędzi. Nie wymagamy danych osobowych do przetworzenia pliku.",
+    "controllerTitle": "Administrator danych",
+    "controllerBody": "Administratorem danych przetwarzanych w ramach PDF Conduit jest operator serwisu PDF Conduit. Kontakt: hello@pdf-conduit.com. Ponieważ pliki nie są przechowywane, a korzystanie nie wymaga konta, przetwarzanie danych osobowych ogranicza się do technicznych logów serwera (adres IP) niezbędnych do ochrony usługi przed nadużyciami (art. 6 ust. 1 lit. f RODO).",
     "limitsTitle": "Limity planu darmowego",
     "limitsBody1": "Aby utrzymać darmową usługę dostępną dla wszystkich, żądania podlegają dziennemu limitowi operacji, limitowi rozmiaru pojedynczego pliku i podstawowemu ograniczeniu częstotliwości. Gdy osiągniesz limit, aplikacja wyraźnie Cię o tym poinformuje. Wyższe limity, większe pliki oraz dostęp wsadowy/API są planowane w przyszłym płatnym planie. Zobacz",
     "limitsLink": "plany Pro",
