@@ -45,3 +45,6 @@ SUMMARY.md
 
 # Desktop GUI pipeline saves (runtime artifact)
 pdf-utils-desktop/pipeline.json
+
+# JetBrains project files (entire directory untracked for the public repo)
+.idea/
