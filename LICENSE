@@ -1,21 +1,11 @@
 PDF Conduit — End User License Agreement (EULA)
 
-Copyright © 2026 [LICENSOR LEGAL NAME]. All rights reserved.
-
-------------------------------------------------------------------------------
-TEMPLATE NOTICE — READ FIRST
-This document is a starting template for a proprietary, paid desktop product.
-It is NOT legal advice and is NOT ready for release as-is. Before you sell or
-distribute PDF Conduit, have a qualified lawyer review and complete it —
-in particular the bracketed [PLACEHOLDERS], the warranty/liability limits, the
-refund terms, and the governing-law/jurisdiction clauses, which must match the
-country where you sell and your consumer-protection obligations.
-------------------------------------------------------------------------------
+Copyright © 2026 the PDF Conduit project. All rights reserved.
 
 This End User License Agreement ("Agreement") is a legal agreement between you
-(either an individual or a single entity, "You") and [LICENSOR LEGAL NAME]
-("Licensor") for the PDF Conduit software, including the executables, bundled
-runtime, and accompanying documentation ("Software"). By installing, copying,
+(either an individual or a single entity, "You") and the operator of the
+PDF Conduit project ("Licensor") for the PDF Conduit software, including the
+executables, bundled runtime, and accompanying documentation ("Software"). By installing, copying,
 or otherwise using the Software, You agree to be bound by this Agreement. If You
 do not agree, do not install or use the Software.
 
@@ -70,8 +60,9 @@ do not agree, do not install or use the Software.
    all copies. Sections 2, 4, 5, 6, and 8 survive termination.
 
 8. GOVERNING LAW
-   This Agreement is governed by the laws of [JURISDICTION], without regard to
-   its conflict-of-laws rules, and the courts of [VENUE] shall have jurisdiction,
+   This Agreement is governed by the laws of Poland, without regard to
+   its conflict-of-laws rules, and the courts competent for the Licensor's
+   registered seat shall have jurisdiction,
    without prejudice to any mandatory consumer-protection rights You have in Your
    country of residence.
 
@@ -80,4 +71,4 @@ do not agree, do not install or use the Software.
    is the entire agreement between You and Licensor regarding the Software and
    supersedes any prior or contemporaneous understandings.
 
-Contact: [SUPPORT/LEGAL EMAIL]
+Contact: hello@pdfconduit.com
