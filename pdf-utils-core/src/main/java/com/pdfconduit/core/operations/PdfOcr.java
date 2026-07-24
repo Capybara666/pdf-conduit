@@ -65,6 +65,15 @@ public final class PdfOcr {
     /** Default tesseract language(s) when none is supplied. */
     public static final String DEFAULT_LANGUAGES = "eng";
 
+    /**
+     * Accepted shape for the tesseract {@code -l} value: one or more language codes joined by
+     * {@code +} (e.g. {@code eng}, {@code eng+pol}, {@code chi_sim}). Passed as an arg-vector element
+     * (no shell), so this is hardening, not an injection fix — it rejects stray metacharacters and
+     * absurd lengths before they reach the process.
+     */
+    private static final java.util.regex.Pattern LANG_PATTERN =
+        java.util.regex.Pattern.compile("^[A-Za-z0-9+_-]{1,64}$");
+
     /** Bundled Unicode TTF (Bitstream Vera / DejaVu, permissive) — encodes arbitrary Unicode words. */
     private static final String FONT_RESOURCE = "/fonts/DejaVuSans.ttf";
 
@@ -148,6 +157,21 @@ public final class PdfOcr {
         return null;
     }
 
+    /**
+     * Normalises and validates the tesseract language spec, defaulting when blank. Rejects anything
+     * outside {@link #LANG_PATTERN} with a clear {@link PdfOperationException} (hardening — the value
+     * is an arg-vector element, never shell-interpreted). Package-visible for unit testing.
+     */
+    static String validateLanguages(String languages) throws PdfOperationException {
+        String lang = (languages == null || languages.isBlank()) ? DEFAULT_LANGUAGES : languages.strip();
+        if (!LANG_PATTERN.matcher(lang).matches()) {
+            throw new PdfOperationException(
+                "Invalid OCR language(s): must be language codes separated by '+' "
+                + "(e.g. 'eng' or 'eng+pol'), letters/digits/+/_/- only, up to 64 chars.");
+        }
+        return lang;
+    }
+
     // --- public API -------------------------------------------------------
 
     /** OCR {@code opts.input()} to a searchable PDF written at {@code opts.output()}. */
@@ -180,13 +204,14 @@ public final class PdfOcr {
 
     /** Adds an invisible text layer to every page of {@code doc} in place. Returns {@code [pages, words]}. */
     private static int[] ocr(PDDocument doc, String languages, int dpiIn) throws PdfOperationException {
+        // Validate the language spec first (fail-fast, independent of whether tesseract is present).
+        String lang = validateLanguages(languages);
         String tesseract = findTesseract();
         if (tesseract == null) {
             throw new PdfOperationException(
                 "OCR is unavailable: the 'tesseract' command is not installed. Install Tesseract OCR "
                 + "to make scanned PDFs searchable.");
         }
-        String lang = (languages == null || languages.isBlank()) ? DEFAULT_LANGUAGES : languages.strip();
         int dpi = Math.min(MAX_DPI, dpiIn > 0 ? dpiIn : DEFAULT_DPI);
 
         PDFont font = loadFont(doc);

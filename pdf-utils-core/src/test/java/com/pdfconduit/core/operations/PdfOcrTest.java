@@ -94,4 +94,22 @@ class PdfOcrTest {
         ImageIO.write(img, "png", png);
         return ImageToPdfConverter.executeBytes(List.of(png.toByteArray()), PageSize.FIT);
     }
+
+    /** Language spec is validated (hardening) — valid codes pass, junk is rejected, blank defaults. */
+    @Test
+    void languagesAreValidated() throws Exception {
+        // Valid forms accepted (normalised/trimmed).
+        assertEquals("eng", PdfOcr.validateLanguages("eng"));
+        assertEquals("eng+pol", PdfOcr.validateLanguages(" eng+pol "));
+        assertEquals("chi_sim", PdfOcr.validateLanguages("chi_sim"));
+        // Blank/null default to the built-in language.
+        assertEquals(PdfOcr.DEFAULT_LANGUAGES, PdfOcr.validateLanguages(null));
+        assertEquals(PdfOcr.DEFAULT_LANGUAGES, PdfOcr.validateLanguages("   "));
+        // Junk / metacharacters / over-length are rejected with a clear error.
+        for (String bad : new String[]{"eng;rm -rf", "eng foo", "../../etc", "eng`id`",
+                "e".repeat(65), "eng$(whoami)"}) {
+            assertThrows(PdfOperationException.class, () -> PdfOcr.validateLanguages(bad),
+                "should reject: " + bad);
+        }
+    }
 }

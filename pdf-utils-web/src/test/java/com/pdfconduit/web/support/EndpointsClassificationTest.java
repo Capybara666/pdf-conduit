@@ -69,6 +69,19 @@ class EndpointsClassificationTest {
     }
 
     @Test
+    void pageMarks_isHeavyAndQuotaCounted_notCheap() {
+        // /api/page-marks is a full mutating PDF op (runs under LoadGuard); it must be rate-limited
+        // and counted against the free-tier daily quota, never on the cheap allow-list.
+        assertTrue(Endpoints.isHeavy("/api/page-marks"), "/api/page-marks should be HEAVY");
+        assertTrue(Endpoints.isQuotaOp("/api/page-marks"),
+            "/api/page-marks should count against quota");
+        assertFalse(Endpoints.isCheap("/api/page-marks"),
+            "/api/page-marks must NOT be on the cheap allow-list");
+        assertTrue(Endpoints.isMetered("/api/page-marks"),
+            "/api/page-marks should be metered by the general rate bucket");
+    }
+
+    @Test
     void intendedCheapEndpoints_areNotHeavyOrQuota() {
         for (String cheap : new String[]{
             "/api/health", "/api/operations", "/api/pipeline/kinds",

@@ -4,6 +4,9 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -70,5 +73,78 @@ class HtmlPdfRendererTest {
         }
         assertTrue(text.contains("Nagłówek"), "heading missing:\n" + text);
         assertTrue(text.contains("ąćęłńóśźż"), "Polish chars missing/garbled:\n" + text);
+    }
+
+    // --- security regressions --------------------------------------------
+
+    /** 1x1 transparent PNG as a data: URI — a legitimate inline image that MUST keep working. */
+    private static final String DATA_PNG =
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8"
+        + "BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+
+    /**
+     * SSRF / local-file defense: HTML referencing {@code http://…} and {@code file:///etc/passwd}
+     * resources must render to a valid PDF WITHOUT attempting those fetches. The offline resolver
+     * returns null for non-{@code data:} URIs (and the jsoup pass strips the tags), so no socket is
+     * opened and no local file is read. A short timeout guarantees we never block on a real fetch,
+     * and the marker text below (a /etc/passwd line prefix) must NOT appear in the output.
+     */
+    @Test
+    @Timeout(value = 60, unit = TimeUnit.SECONDS)
+    void externalHttpAndFileResourcesAreBlocked() throws Exception {
+        String html = "<html><body>"
+            + "<h1>Marker</h1>"
+            + "<img src=\"http://127.0.0.1:1/should-not-be-fetched\"/>"
+            + "<img src=\"file:///etc/passwd\"/>"
+            + "<link rel=\"stylesheet\" href=\"file:///etc/passwd\"/>"
+            + "<img src=\"http://169.254.169.254/latest/meta-data/\"/>"
+            + "</body></html>";
+
+        byte[] pdf = HtmlPdfRenderer.htmlToPdf(html);   // completes = resolver refused, no fetch
+        assertEquals("%PDF", new String(pdf, 0, 4, java.nio.charset.StandardCharsets.US_ASCII));
+
+        String text;
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            text = new PDFTextStripper().getText(doc);
+        }
+        assertTrue(text.contains("Marker"), "page body missing:\n" + text);
+        // /etc/passwd contents (if it had been read) would carry "root:" — it must be absent.
+        assertFalse(text.contains("root:"), "local file contents leaked into PDF:\n" + text);
+    }
+
+    /** Inline {@code data:} images stay allowed — the block is scheme-selective, not blanket. */
+    @Test
+    void inlineDataUriImageStillRenders() throws Exception {
+        byte[] pdf = HtmlPdfRenderer.htmlToPdf(
+            "<html><body><p>With image</p><img src=\"" + DATA_PNG + "\"/></body></html>");
+        assertEquals("%PDF", new String(pdf, 0, 4, java.nio.charset.StandardCharsets.US_ASCII));
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            assertTrue(doc.getNumberOfPages() >= 1);
+            assertTrue(new PDFTextStripper().getText(doc).contains("With image"));
+        }
+    }
+
+    /**
+     * XXE: a DOCTYPE declaring an external SYSTEM entity pointing at {@code file:///etc/passwd} must
+     * NOT be expanded — the DOCTYPE is dropped in the jsoup pass, so no DTD / external entity is ever
+     * resolved. Render completes and the file contents ("root:") never appear.
+     */
+    @Test
+    @Timeout(value = 60, unit = TimeUnit.SECONDS)
+    void xxeExternalEntityIsNotExpanded() throws Exception {
+        String payload =
+            "<?xml version=\"1.0\"?>"
+            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>"
+            + "<html><body><h1>XXE test</h1><p>&xxe;</p></body></html>";
+
+        byte[] pdf = HtmlPdfRenderer.htmlToPdf(payload);
+        assertEquals("%PDF", new String(pdf, 0, 4, java.nio.charset.StandardCharsets.US_ASCII));
+
+        String text;
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            text = new PDFTextStripper().getText(doc);
+        }
+        assertTrue(text.contains("XXE test"), "body missing:\n" + text);
+        assertFalse(text.contains("root:"), "external entity was expanded (file leaked):\n" + text);
     }
 }

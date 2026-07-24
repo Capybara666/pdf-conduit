@@ -22,8 +22,7 @@ public final class Endpoints {
         "/api/pipeline/kinds",
         "/api/pipeline/validate",
         "/api/metadata/read",
-        "/api/form-fields",
-        "/api/page-marks");
+        "/api/form-fields");
 
     /**
      * Expensive endpoints: subject to the heavy rate bucket and the load-guard (concurrency /
@@ -50,6 +49,7 @@ public final class Endpoints {
         "/api/sign",
         "/api/auto-redact",
         "/api/ocr",
+        "/api/page-marks",
         "/api/gdpr-scan",
         "/api/gdpr-scan-batch",
         "/api/pipeline/run",
@@ -73,6 +73,7 @@ public final class Endpoints {
         "/api/sign",
         "/api/auto-redact",
         "/api/ocr",
+        "/api/page-marks",
         "/api/gdpr-scan",
         "/api/gdpr-scan-batch",
         "/api/to-images",
