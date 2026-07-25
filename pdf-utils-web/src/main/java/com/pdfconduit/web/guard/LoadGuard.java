@@ -7,6 +7,8 @@ import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.ProcessingTimeoutException;
 import com.pdfconduit.web.error.ServerBusyException;
 import com.pdfconduit.web.observability.WebMetrics;
+import com.pdfconduit.web.plan.PlanLimits;
+import com.pdfconduit.web.plan.RequestPlan;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +56,11 @@ public class LoadGuard {
     private final long timeoutSeconds;
     private final ExecutorService executor;
     private final WebMetrics metrics;
+    private final RequestPlan requestPlan;
 
-    public LoadGuard(WebProperties props, WebMetrics metrics) {
+    public LoadGuard(WebProperties props, WebMetrics metrics, RequestPlan requestPlan) {
         this.metrics = metrics;
+        this.requestPlan = requestPlan;
         this.permits = new Semaphore(props.concurrency().maxHeavyOps(), true);
         this.maxInFlightBytes = props.concurrency().maxInFlightBytes();
         this.maxHeavyOps = props.concurrency().maxHeavyOps();
@@ -120,12 +124,20 @@ public class LoadGuard {
             throw new ServerBusyException("Server busy (memory pressure), try again shortly.");
         }
 
+        // The caller's entitlements are resolved HERE, on the request thread, and carried onto the
+        // worker: the guards inside the task read their ceilings from the resolved plan, and the
+        // request object itself must not be touched off-thread (a timed-out caller is shed while
+        // the task runs on, by which point Tomcat may have recycled the request).
+        PlanLimits plan = requestPlan.current();
         CompletableFuture<T> result = new CompletableFuture<>();
         Future<?> running = executor.submit(() -> {
+            RequestPlan.bind(plan);
             try {
                 result.complete(task.get());
             } catch (Throwable t) {
                 result.completeExceptionally(t);
+            } finally {
+                RequestPlan.unbind();   // pooled threads outlive the request
             }
         });
         // Release the slot the moment the underlying work terminates (success, failure, or a late

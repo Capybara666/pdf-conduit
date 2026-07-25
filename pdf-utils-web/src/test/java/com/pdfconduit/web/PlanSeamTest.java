@@ -9,6 +9,7 @@ import com.pdfconduit.web.plan.FreePlanLimits;
 import com.pdfconduit.web.plan.FreePlanLimitsResolver;
 import com.pdfconduit.web.plan.PlanLimits;
 import com.pdfconduit.web.plan.PlanLimitsResolver;
+import com.pdfconduit.web.plan.RequestPlan;
 import com.pdfconduit.web.principal.RequestPrincipal;
 import com.pdfconduit.web.quota.QuotaService;
 import com.pdfconduit.web.quota.QuotaStore;
@@ -88,17 +89,27 @@ class PlanSeamTest {
         NamedBytes twoPage = new NamedBytes("a.pdf", TestPdfs.blank(2));
 
         // Default FREE plan (maxPages 3000): a 2-page PDF passes the page-count guard.
-        WebOperations lenient = new WebOperations(officeGuard, ocrGuard, budget, new FreePlanLimitsResolver(props), props);
+        WebOperations lenient = new WebOperations(officeGuard, ocrGuard, budget,
+            requestPlan(new FreePlanLimitsResolver(props)), props);
         assertDoesNotThrow(() -> lenient.readMetadata(twoPage));
 
         // Swap in a stub plan with maxPages=1: the SAME operation is now rejected — proving the guard
         // reads its ceiling from the resolved PlanLimits seam, not from a hard-wired WebProperties field.
         PlanLimitsResolver stub = principal -> new FreePlanLimits(60, 15, 26_214_400L,
             /* maxPages */ 1, 300, 60_000_000L, 40, 10, 15);
-        WebOperations strict = new WebOperations(officeGuard, ocrGuard, budget, stub, props);
+        WebOperations strict = new WebOperations(officeGuard, ocrGuard, budget, requestPlan(stub), props);
         PdfOperationException ex =
             assertThrows(PdfOperationException.class, () -> strict.readMetadata(twoPage));
         assertEquals(true, ex.getMessage().contains("maximum page count"));
+    }
+
+    /**
+     * A {@link RequestPlan} over {@code resolver} with no servlet request in scope, so
+     * {@code current()} falls through to {@link PlanLimitsResolver#resolveDefault()} — the plain
+     * unit-test path. Over HTTP the very same object resolves the caller's plan per request.
+     */
+    private static RequestPlan requestPlan(PlanLimitsResolver resolver) {
+        return new RequestPlan(request -> new com.pdfconduit.web.principal.IpPrincipal("test"), resolver);
     }
 
     /** Minimal in-test {@link QuotaStore} used to prove QuotaService counts through the seam. */

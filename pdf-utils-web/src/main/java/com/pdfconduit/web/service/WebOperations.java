@@ -51,7 +51,7 @@ import com.pdfconduit.web.guard.OcrGuard;
 import com.pdfconduit.web.guard.OfficeGuard;
 import com.pdfconduit.web.guard.OutputBudget;
 import com.pdfconduit.web.plan.PlanLimits;
-import com.pdfconduit.web.plan.PlanLimitsResolver;
+import com.pdfconduit.web.plan.RequestPlan;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -81,27 +81,32 @@ public class WebOperations {
     private final OfficeGuard officeGuard;
     private final OcrGuard ocrGuard;
     private final OutputBudget outputBudget;
-    private final int maxPages;
-    private final int maxDpi;
-    private final long maxOutputPixels;
+    private final RequestPlan requestPlan;
     private final boolean ocrEnabled;
     private final String ocrLanguages;
 
     public WebOperations(OfficeGuard officeGuard, OcrGuard ocrGuard, OutputBudget outputBudget,
-                         PlanLimitsResolver planLimits, WebProperties props) {
+                         RequestPlan requestPlan, WebProperties props) {
         this.officeGuard = officeGuard;
         this.ocrGuard = ocrGuard;
         this.outputBudget = outputBudget;
-        // Page-count and render ceilings are read from the resolved plan (today the constant FREE
-        // plan built from WebProperties, so identical values); office availability stays a
-        // system-level WebProperties toggle. The service guards by value with no request in scope,
-        // so it resolves the default plan — a later per-principal plan would be threaded in here.
-        PlanLimits plan = planLimits.resolveDefault();
-        this.maxPages = plan.maxPages();
-        this.maxDpi = plan.maxDpi();
-        this.maxOutputPixels = plan.maxOutputPixels();
+        // Page-count and render ceilings are read from the plan resolved FOR THE CURRENT REQUEST
+        // (today the constant FREE plan built from WebProperties, so identical values) — never
+        // snapshotted here, or a per-caller paid plan could never move them. Office availability
+        // stays a system-level WebProperties toggle.
+        this.requestPlan = requestPlan;
         this.ocrEnabled = props.ocrEnabled();
         this.ocrLanguages = props.ocr().languages();
+    }
+
+    /** This request's PDF-bomb page ceiling ({@code <= 0} ⇒ no ceiling). */
+    private int maxPages() {
+        return requestPlan.current().maxPages();
+    }
+
+    /** This request's raster-render DPI ceiling ({@code <= 0} ⇒ no ceiling). */
+    private int maxDpi() {
+        return requestPlan.current().maxDpi();
     }
 
     // ------------------------------------------------------------------ MERGE
@@ -509,6 +514,7 @@ public class WebOperations {
      * {@link OcrGuard}'s concurrency + timeout gate. Callers gate on {@link PdfOcr#available()} first.
      */
     private byte[] reOcr(byte[] redacted, Set<Integer> pages) throws PdfOperationException {
+        int maxDpi = maxDpi();
         int ocrDpi = maxDpi > 0 ? Math.min(PdfOcr.DEFAULT_DPI, maxDpi) : PdfOcr.DEFAULT_DPI;
         try (LoadedPdf lp = LoadedPdf.open(redacted)) {
             guardPageCount(lp);
@@ -555,6 +561,7 @@ public class WebOperations {
             throw new OcrDisabledException();
         }
         byte[] pdf = routeToPdf(in);
+        int maxDpi = maxDpi();
         int ocrDpi = maxDpi > 0 ? Math.min(PdfOcr.DEFAULT_DPI, maxDpi) : PdfOcr.DEFAULT_DPI;
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
@@ -909,6 +916,10 @@ public class WebOperations {
      */
     private long guardRender(LoadedPdf lp, int dpi, IntPredicate rendered)
             throws PdfOperationException {
+        // One resolve for the whole check: this request's DPI and per-page pixel ceilings.
+        PlanLimits plan = requestPlan.current();
+        int maxDpi = plan.maxDpi();
+        long maxOutputPixels = plan.maxOutputPixels();
         if (maxDpi > 0 && dpi > maxDpi) {
             throw new IllegalArgumentException(
                 "Requested DPI " + dpi + " exceeds the maximum allowed (" + maxDpi + ").");
@@ -941,7 +952,7 @@ public class WebOperations {
 
     /** PDF-bomb guard: reject a PDF whose page count exceeds the configured ceiling (→ 422). */
     private void guardPageCount(byte[] pdf) throws PdfOperationException {
-        if (maxPages <= 0) return;
+        if (maxPages() <= 0) return;
         guardPageCountValue(pageCount(pdf));
     }
 
@@ -956,6 +967,7 @@ public class WebOperations {
      * guard parse (no separate page-count parse).
      */
     private void guardPageCountValue(int pageCount) throws PdfOperationException {
+        int maxPages = maxPages();
         if (maxPages > 0 && pageCount > maxPages) {
             throw new PdfOperationException("PDF exceeds the maximum page count (" + maxPages + ").");
         }
