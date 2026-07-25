@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "Strona główna PDF Conduit",
-    "quotaFreeLeft": "darmowych na dziś",
+    "quotaFreeLeft": "{count, plural, one {darmowa na dziś} few {darmowe na dziś} many {darmowych na dziś} other {darmowej na dziś}}",
     "quotaTitleSpent": "Dzisiejszy darmowy limit wyczerpany. Zobacz plany Pro",
     "quotaTitleLeft": "Pozostałe darmowe operacje na dziś. Zobacz plany Pro",
     "serverOnline": "Serwer online",

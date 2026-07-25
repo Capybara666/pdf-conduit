@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit ana sayfası",
-    "quotaFreeLeft": "ücretsiz işlem kaldı",
+    "quotaFreeLeft": "{count, plural, other {ücretsiz işlem kaldı}}",
     "quotaTitleSpent": "Günlük ücretsiz sınıra ulaşıldı. Pro planlarına bakın",
     "quotaTitleLeft": "Bugün kalan ücretsiz işlemler. Pro planlarına bakın",
     "serverOnline": "Sunucu çevrimiçi",

@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit 홈",
-    "quotaFreeLeft": "오늘 남은 무료 횟수",
+    "quotaFreeLeft": "{count, plural, other {오늘 남은 무료 횟수}}",
     "quotaTitleSpent": "오늘의 무료 한도에 도달했습니다. Pro 플랜 보기",
     "quotaTitleLeft": "오늘 남은 무료 작업. Pro 플랜 보기",
     "serverOnline": "서버 온라인",

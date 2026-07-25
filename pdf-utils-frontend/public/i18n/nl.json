@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit-startpagina",
-    "quotaFreeLeft": "vandaag nog gratis over",
+    "quotaFreeLeft": "{count, plural, one {vandaag nog gratis over} other {vandaag nog gratis over}}",
     "quotaTitleSpent": "Dagelijkse gratis limiet bereikt. Bekijk Pro-abonnementen",
     "quotaTitleLeft": "Gratis bewerkingen vandaag nog over. Bekijk Pro-abonnementen",
     "serverOnline": "Server online",

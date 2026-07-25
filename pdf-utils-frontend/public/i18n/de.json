@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit-Startseite",
-    "quotaFreeLeft": "heute noch kostenlos",
+    "quotaFreeLeft": "{count, plural, one {heute noch kostenlos} other {heute noch kostenlos}}",
     "quotaTitleSpent": "Kostenloses Tageslimit erreicht. Pro-Tarife ansehen",
     "quotaTitleLeft": "Heute noch verbleibende kostenlose Vorgänge. Pro-Tarife ansehen",
     "serverOnline": "Server online",

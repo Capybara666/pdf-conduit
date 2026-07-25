@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit home",
-    "quotaFreeLeft": "free left today",
+    "quotaFreeLeft": "{count, plural, one {free left today} other {free left today}}",
     "quotaTitleSpent": "Daily free limit reached. See Pro plans",
     "quotaTitleLeft": "Free operations left today. See Pro plans",
     "serverOnline": "Server online",

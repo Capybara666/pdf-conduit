@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "Главная PDF Conduit",
-    "quotaFreeLeft": "бесплатно сегодня",
+    "quotaFreeLeft": "{count, plural, one {бесплатная сегодня} few {бесплатные сегодня} many {бесплатных сегодня} other {бесплатной сегодня}}",
     "quotaTitleSpent": "Дневной бесплатный лимит исчерпан. Смотрите тарифы Pro",
     "quotaTitleLeft": "Осталось бесплатных операций сегодня. Смотрите тарифы Pro",
     "serverOnline": "Сервер в сети",

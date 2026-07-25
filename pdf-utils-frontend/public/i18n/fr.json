@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "Accueil de PDF Conduit",
-    "quotaFreeLeft": "gratuites restantes aujourd'hui",
+    "quotaFreeLeft": "{count, plural, one {gratuite restante aujourd'hui} other {gratuites restantes aujourd'hui}}",
     "quotaTitleSpent": "Limite gratuite quotidienne atteinte. Découvrez les offres Pro",
     "quotaTitleLeft": "Opérations gratuites restantes aujourd'hui. Découvrez les offres Pro",
     "serverOnline": "Serveur en ligne",

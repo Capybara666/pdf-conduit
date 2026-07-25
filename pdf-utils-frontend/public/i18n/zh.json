@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit 首页",
-    "quotaFreeLeft": "今日剩余免费次数",
+    "quotaFreeLeft": "{count, plural, other {今日剩余免费次数}}",
     "quotaTitleSpent": "今日免费额度已用完。查看 Pro 方案",
     "quotaTitleLeft": "今日剩余免费操作次数。查看 Pro 方案",
     "serverOnline": "服务器在线",

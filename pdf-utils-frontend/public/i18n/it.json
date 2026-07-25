@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "Home di PDF Conduit",
-    "quotaFreeLeft": "gratuite rimaste oggi",
+    "quotaFreeLeft": "{count, plural, one {gratuita rimasta oggi} other {gratuite rimaste oggi}}",
     "quotaTitleSpent": "Limite gratuito giornaliero raggiunto. Vedi i piani Pro",
     "quotaTitleLeft": "Operazioni gratuite rimaste oggi. Vedi i piani Pro",
     "serverOnline": "Server online",
