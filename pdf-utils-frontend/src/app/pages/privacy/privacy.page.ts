@@ -13,7 +13,7 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
   standalone: true,
   imports: [PageHeaderComponent, RouterLink, TranslocoModule],
   template: `
-    <section class="op-page">
+    <section class="op-page prose-page">
       <app-page-header
         [title]="'privacy.title' | transloco"
         [description]="'privacy.description' | transloco"
@@ -52,9 +52,10 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
   `,
   styles: [
     `
-      .prose {
-        max-width: 680px;
-      }
+      /* NO max-width here: the reading measure is owned by the shared
+         .op-page.prose-page container (styles.scss), which stays centred in
+         both width modes. Capping this card instead left it flush against the
+         left edge in wide mode. */
       .prose h2 {
         font-size: 1.15rem;
         margin: 1.5rem 0 0.5rem;
