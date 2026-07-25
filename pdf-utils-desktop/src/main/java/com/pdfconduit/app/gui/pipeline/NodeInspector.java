@@ -86,6 +86,8 @@ class NodeInspector extends FlowPane {
             // No parameters — the node scans for PII and redacts every detected value.
             // TODO(i18n): add key pipeline.gdprredact.hint.
             case GDPR_REDACT -> getChildren().add(hint("Scans for personal data and permanently redacts every detected value."));
+            // No parameters — it rebuilds whatever structure survived. Honest about the limits.
+            case REPAIR -> getChildren().add(hint(I18n.t("pipeline.repair.hint")));
             case MERGE -> getChildren().add(hint(I18n.t("pipeline.merge.hint")));
         }
 

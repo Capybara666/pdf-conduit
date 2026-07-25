@@ -10,6 +10,8 @@ import com.pdfconduit.core.model.CompressOptions;
 import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.RedactRegion;
+import com.pdfconduit.core.model.RepairBytesResult;
+import com.pdfconduit.core.model.RepairFinding;
 import com.pdfconduit.core.model.SignPlacement;
 import com.pdfconduit.core.model.TextFormat;
 import com.pdfconduit.core.model.WatermarkOptions;
@@ -336,6 +338,49 @@ public class OperationsController {
                 startNumber != null ? startNumber : 1,
                 prefix));
         return Responses.batch("page-marks", results, MediaType.APPLICATION_PDF);
+    }
+
+    // ------------------------------------------------------------------- REPAIR
+
+    /**
+     * Tries to repair damaged PDFs — not every file can be recovered.
+     *
+     * <p>A single upload streams the rebuilt PDF back and carries the honest outcome in two headers:
+     * {@code X-Repair-Was-Damaged} (the input failed a strict parse or showed a concrete structural
+     * defect) and {@code X-Repair-Recovered} (a damaged input was rebuilt into a file that now
+     * <em>does</em> parse strictly — verified, not assumed). {@code X-Repair-Findings} lists the
+     * defects found, and the byte/page counters mirror compress's metric headers. A batch zips like
+     * every other MAP operation; per-file metrics are not representable in a ZIP, so the headers are
+     * single-file only.
+     *
+     * <p>A file with too little surviving structure fails with 422 {@code repair_failed}.
+     */
+    @PostMapping(value = "/repair", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> repair(@RequestParam("files") List<MultipartFile> files)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        guardCount(files, maxFiles);
+        List<NamedBytes> inputs = uploads.readAll(files);
+        long bytes = totalBytes(inputs);
+        if (inputs.size() == 1) {
+            NamedBytes in = inputs.get(0);
+            RepairBytesResult r = loadGuard.execute(bytes, () -> ops.repair(in));
+            String findings = r.findings().stream().map(RepairFinding::id)
+                .collect(java.util.stream.Collectors.joining(","));
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                    Responses.contentDisposition(WebOperations.repairedName(in)))
+                .header("X-Repair-Recovered", String.valueOf(r.recovered()))
+                .header("X-Repair-Was-Damaged", String.valueOf(r.wasDamaged()))
+                .header("X-Repair-Findings", findings)
+                .header("X-Repair-Pages", String.valueOf(r.pageCount()))
+                .header("X-Original-Bytes", String.valueOf(r.originalBytes()))
+                .header("X-Result-Bytes", String.valueOf(r.resultBytes()))
+                .contentLength(r.bytes().length)
+                .body(r.bytes());
+        }
+        List<NamedBytes> results = loadGuard.execute(bytes, () -> ops.repairBatch(inputs));
+        return Responses.zip(results, "repair_results.zip");
     }
 
     // ------------------------------------------------------------------- REDACT

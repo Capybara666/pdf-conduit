@@ -15,6 +15,7 @@ import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PdfMetadata;
 import com.pdfconduit.core.model.RedactRegion;
+import com.pdfconduit.core.model.RepairBytesResult;
 import com.pdfconduit.core.model.SignPlacement;
 import com.pdfconduit.core.model.TextFormat;
 import com.pdfconduit.core.operations.PdfArranger;
@@ -26,6 +27,7 @@ import com.pdfconduit.core.operations.PdfPageMarker;
 import com.pdfconduit.core.operations.PdfOcr;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRedactor;
+import com.pdfconduit.core.operations.PdfRepairer;
 import com.pdfconduit.core.operations.PdfRotator;
 import com.pdfconduit.core.operations.PdfSigner;
 import com.pdfconduit.core.operations.PdfSplitter;
@@ -340,6 +342,38 @@ public class WebOperations {
             throws PdfOperationException {
         return MemoryOperations.runBatch(OperationType.NUP, pdfData(inputs), names(inputs),
             pdf -> com.pdfconduit.core.operations.PdfNupImposer.executeBytes(pdf, layout, booklet));
+    }
+
+    // ------------------------------------------------------------------ REPAIR
+
+    /**
+     * Rebuild a damaged PDF, reporting what was actually wrong with it.
+     *
+     * <p>Repair is the one operation whose input must survive routing <em>unmodified</em>: the damage
+     * lives in the upload's own byte structure, so re-encoding it first would destroy the very thing
+     * being repaired. That holds here because {@link #routeToPdf} classifies by extension — a
+     * {@code .pdf} upload is handed through byte-for-byte (an image/office upload is still converted,
+     * under the office guard, and then trivially "repairs" to itself).
+     *
+     * <p>The page-count guard can only run <em>after</em> the rebuild, exactly like Unlock: a file we
+     * cannot parse yet has no trustworthy page count to check.
+     */
+    public RepairBytesResult repair(NamedBytes in) throws PdfOperationException {
+        RepairBytesResult r = PdfRepairer.executeBytes(routeToPdf(in));
+        guardPageCountValue(r.pageCount());
+        return r;
+    }
+
+    /** Batch repair: one rebuilt PDF per input, order preserved (per-file metrics are not zipped). */
+    public List<NamedBytes> repairBatch(List<NamedBytes> inputs) throws PdfOperationException {
+        List<NamedBytes> out = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) out.add(new NamedBytes(repairedName(in), repair(in).bytes()));
+        return out;
+    }
+
+    /** Output filename for a repaired upload — {@code <stem>_repaired.pdf}, from the catalog. */
+    public static String repairedName(NamedBytes in) {
+        return MemoryOperations.outputName(OperationType.REPAIR, in.filename());
     }
 
     // -------------------------------------------------------------- PAGE-MARKS

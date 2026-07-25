@@ -192,6 +192,7 @@ class NodeView extends HBox {
                 ? "eng" : node.ocrLanguages) + "  ·  " + node.ocrDpi + " DPI";
             // TODO(i18n): add key pipeline.summary.gdprredact ("auto-redact detected PII").
             case GDPR_REDACT -> "auto-redact detected PII";
+            case REPAIR -> I18n.t("pipeline.summary.repair");
         });
     }
 

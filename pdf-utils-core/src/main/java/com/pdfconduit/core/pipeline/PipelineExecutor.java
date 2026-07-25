@@ -20,6 +20,7 @@ import com.pdfconduit.core.operations.PdfPageMarker;
 import com.pdfconduit.core.operations.PdfOcr;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRedactor;
+import com.pdfconduit.core.operations.PdfRepairer;
 import com.pdfconduit.core.operations.PdfRotator;
 import com.pdfconduit.core.operations.PdfSplitter;
 import com.pdfconduit.core.operations.PdfTextExporter;
@@ -273,6 +274,9 @@ public final class PipelineExecutor {
                     case OCR -> PdfOcr.execute(new OcrOptions(src, n.ocrLanguages, n.ocrDpi, out));
                     case GDPR_REDACT -> PdfRedactor.execute(
                         new RedactOptions(src, redactRegions(PiiScanner.scan(src)), 0, out));
+                    // Repair sees the file as-is: a .pdf input is never re-encoded by ensurePdf,
+                    // so the damaged byte structure reaches the repairer intact.
+                    case REPAIR -> PdfRepairer.execute(new RepairOptions(src, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
@@ -606,6 +610,9 @@ public final class PipelineExecutor {
                 // Scan for PII and feed every detected value's region straight into the redactor —
                 // the same one-click scan→auto-redact hand-off exposed by the web /auto-redact endpoint.
                 case GDPR_REDACT -> PdfRedactor.executeBytes(pdf, redactRegions(PiiScanner.scanBytes(pdf)), 0);
+                // Repair sees the bytes as-is (a PDF MemDoc is passed through unchanged by
+                // ensurePdfBytes) — the damage it repairs lives in the byte structure.
+                case REPAIR    -> PdfRepairer.executeBytes(pdf).bytes();
                 default -> throw new PipelineException("Not a map node: " + n.kind);
             };
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));
