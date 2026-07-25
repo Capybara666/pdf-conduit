@@ -54,6 +54,8 @@ export interface RunResult {
   contentType: string;
   /** Present for compress responses; parsed from `X-*` headers. */
   compression?: CompressionInfo;
+  /** Present for single-file repair responses; parsed from `X-Repair-*` headers. */
+  repair?: RepairInfo;
   /** Comma/semicolon-separated batch failures from `X-Batch-Failures`, if any. */
   batchFailures?: string;
 }
@@ -67,6 +69,19 @@ export interface CompressionInfo {
   targetFeasible?: boolean;
   /** Approximate smallest size reachable for this file, in bytes. */
   estimatedFloorBytes?: number;
+}
+
+/**
+ * Parsed repair response headers (`X-Repair-Was-Damaged`, `X-Repair-Recovered`),
+ * sent only for a single-file repair run. Both fields are optional: a server that
+ * predates the headers (or a batch/ZIP response) simply omits them, and the UI
+ * then shows the plain success state without claiming anything about the file.
+ */
+export interface RepairInfo {
+  /** Whether the input was actually damaged (false = it was already well-formed). */
+  wasDamaged?: boolean;
+  /** Whether the damage could be recovered. */
+  recovered?: boolean;
 }
 
 /** Document metadata from `POST /api/metadata/read`. Mirrors backend `MetadataDto`. */

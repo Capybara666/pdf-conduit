@@ -87,6 +87,10 @@
       "label": "Komprimieren",
       "description": "Ein PDF auf eine Zielgröße verkleinern."
     },
+    "repair": {
+      "label": "Reparieren",
+      "description": "Ein beschädigtes PDF wiederherstellen, damit es sich wieder öffnen lässt."
+    },
     "to-pdf": {
       "label": "In PDF",
       "description": "Bilder, Office-Dokumente, Markdown und HTML in PDF umwandeln."
@@ -328,6 +332,11 @@
       "detail": "Der Vorgang ist bei dieser Eingabe fehlgeschlagen.",
       "hint": "Prüfen Sie, ob die Datei ein gültiges, unverschlüsseltes PDF ist, und versuchen Sie es erneut."
     },
+    "repair_failed": {
+      "title": "Diese Datei konnte nicht repariert werden",
+      "detail": "Der Schaden ist zu groß, um die Datei wiederherzustellen.",
+      "hint": "Falls Sie eine andere Kopie oder eine ältere Version haben, versuchen Sie es damit."
+    },
     "bad_request": {
       "title": "Bitte prüfen Sie Ihre Eingabe",
       "detail": "Die Anfrage war ungültig."
@@ -347,6 +356,9 @@
     "targetReached": "erreicht",
     "targetNotReached": "nicht erreicht",
     "batchFailures": "Einige Eingaben sind fehlgeschlagen: {{count}}",
+    "repairRebuilt": "Die Datei war beschädigt und wurde neu aufgebaut.",
+    "repairAlreadyFine": "Die Datei war bereits in Ordnung und wurde unverändert neu gespeichert.",
+    "repairPartial": "Die Datei war beschädigt und konnte nur teilweise wiederhergestellt werden. Bitte prüfen Sie das Ergebnis.",
     "seeProPlans": "Pro-Tarife ansehen →",
     "seeProPlansShort": "Pro-Tarife ansehen",
     "httpStatus": "· HTTP {{status}}",
@@ -414,6 +426,16 @@
       "grayscale": "Bilder in Graustufen umwandeln",
       "grayscaleHelp": "Bilder ohne Farbe neu kodieren für kleinere Dateien.",
       "floorNotice": "Die kleinstmögliche Größe für diese Datei beträgt etwa {{floor}}. Ihr Ziel von {{target}} kann nicht erreicht werden. Stattdessen wurde die kleinste Version gespeichert."
+    },
+    "repair": {
+      "title": "Reparieren",
+      "description": "Ein beschädigtes PDF wiederherstellen, damit es sich wieder öffnen lässt.",
+      "hint": "PDF-Dateien. Mehrere Dateien kommen als ZIP zurück.",
+      "privacyLine": "Ihre Dateien werden niemals gespeichert. Die Reparatur läuft privat ab.",
+      "honestNote": "Dies ist ein Reparaturversuch für eine beschädigte Datei. Nicht jede Datei lässt sich retten.",
+      "batchNote": "{{count}} Dateien ausgewählt. Jede wird einzeln repariert; Ergebnisse als ZIP.",
+      "submit": "Datei reparieren",
+      "loading": "Wird repariert…"
     },
     "rotate": {
       "title": "Drehen",

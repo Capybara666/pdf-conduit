@@ -187,6 +187,16 @@ export const OP_ICONS: Record<string, string> = {
       '<path d="M9.6 14.2 H12.4"/>',
   ),
 
+  // Repair — an open-end wrench: a duotone head disc, the jaw drawn as a wide
+  // open "C" facing up-right, and a diagonal handle. No page outline: at 24px a
+  // wrench *inside* a document turns to mush, and the tool alone is the clearer
+  // "fix this" signal.
+  repair: g(
+    '<circle cx="16" cy="8" r="3.2" fill="currentColor" stroke="none" opacity=".18"/>' +
+      '<path d="M19.15 8.56 A3.2 3.2 0 1 1 15.44 4.85"/>' +
+      '<path d="M13.9 10.1 L6.4 17.6"/>',
+  ),
+
   // Pipeline SOURCE node (not an operation) — a plain page glyph.
   source: g('<path d="M6 2h9l5 5v15H6z M15 2v5h5"/>'),
 };
@@ -236,6 +246,14 @@ export const NAV_ITEMS: NavItem[] = [
     description: 'Shrink a PDF toward a target size.',
     group: 'optimise',
     icon: OP_ICONS['compress'],
+  },
+
+  {
+    id: 'repair',
+    label: 'Repair',
+    description: 'Try to rebuild a damaged PDF so it opens again.',
+    group: 'optimise',
+    icon: OP_ICONS['repair'],
   },
 
   // Convert

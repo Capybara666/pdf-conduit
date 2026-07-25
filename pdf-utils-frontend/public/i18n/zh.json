@@ -87,6 +87,10 @@
       "label": "压缩",
       "description": "将 PDF 压缩至目标大小。"
     },
+    "repair": {
+      "label": "修复",
+      "description": "尝试重建损坏的 PDF，让它重新打开。"
+    },
     "to-pdf": {
       "label": "转为 PDF",
       "description": "将图片、办公文档、Markdown 和 HTML 转换为 PDF。"
@@ -328,6 +332,11 @@
       "detail": "对此输入的操作失败。",
       "hint": "请确认该文件是有效且未加密的 PDF，然后重试。"
     },
+    "repair_failed": {
+      "title": "无法修复该文件",
+      "detail": "损坏过于严重，无法重建该文件。",
+      "hint": "如果您还有其他副本或较早的版本，请改用那个文件。"
+    },
     "bad_request": {
       "title": "请检查您的输入",
       "detail": "请求无效。"
@@ -347,6 +356,9 @@
     "targetReached": "已达到",
     "targetNotReached": "未达到",
     "batchFailures": "部分输入失败：{{count}}",
+    "repairRebuilt": "文件已损坏，现已重建。",
+    "repairAlreadyFine": "文件本身没有问题，已原样重新保存。",
+    "repairPartial": "文件已损坏，只重建了一部分。请检查结果。",
     "seeProPlans": "查看 Pro 方案 →",
     "seeProPlansShort": "查看 Pro 方案",
     "httpStatus": "· HTTP {{status}}",
@@ -414,6 +426,16 @@
       "grayscale": "将图像转换为灰度",
       "grayscaleHelp": "以无颜色重新编码图像以缩小文件。",
       "floorNotice": "该文件可达到的最小大小约为 {{floor}}。无法达到您设定的 {{target}} 目标。已改为保存最小的版本。"
+    },
+    "repair": {
+      "title": "修复",
+      "description": "尝试重建损坏的 PDF，让它重新打开。",
+      "hint": "PDF 文件。多个文件将以 ZIP 返回。",
+      "privacyLine": "您的文件绝不存储，修复过程完全私密。",
+      "honestNote": "这是对损坏文件的修复尝试，并非所有文件都能恢复。",
+      "batchNote": "已选择 {{count}} 个文件。每个文件单独修复；结果以 ZIP 返回。",
+      "submit": "修复文件",
+      "loading": "正在修复…"
     },
     "rotate": {
       "title": "旋转",

@@ -87,6 +87,10 @@
       "label": "Comprimeren",
       "description": "Verklein een PDF naar een doelgrootte."
     },
+    "repair": {
+      "label": "Repareren",
+      "description": "Probeer een beschadigde PDF te herstellen zodat die weer opent."
+    },
     "to-pdf": {
       "label": "Naar PDF",
       "description": "Converteer afbeeldingen, officedocumenten, Markdown en HTML naar PDF."
@@ -328,6 +332,11 @@
       "detail": "De bewerking is mislukt op deze invoer.",
       "hint": "Controleer of het bestand een geldige, niet-versleutelde PDF is en probeer het opnieuw."
     },
+    "repair_failed": {
+      "title": "Dit bestand kon niet worden gerepareerd",
+      "detail": "De schade is te groot om het bestand te herstellen.",
+      "hint": "Heb je een andere kopie of een oudere versie? Probeer die."
+    },
     "bad_request": {
       "title": "Controleer je invoer",
       "detail": "Het verzoek was niet geldig."
@@ -347,6 +356,9 @@
     "targetReached": "bereikt",
     "targetNotReached": "niet bereikt",
     "batchFailures": "Enkele invoerbestanden zijn mislukt: {{count}}",
+    "repairRebuilt": "Het bestand was beschadigd en is opnieuw opgebouwd.",
+    "repairAlreadyFine": "Het bestand was al in orde en is ongewijzigd opnieuw opgeslagen.",
+    "repairPartial": "Het bestand was beschadigd en is maar deels hersteld. Controleer het resultaat.",
     "seeProPlans": "Bekijk Pro-abonnementen →",
     "seeProPlansShort": "Bekijk Pro-abonnementen",
     "httpStatus": "· HTTP {{status}}",
@@ -414,6 +426,16 @@
       "grayscale": "Afbeeldingen naar grijstinten converteren",
       "grayscaleHelp": "Hercodeer afbeeldingen zonder kleur voor kleinere bestanden.",
       "floorNotice": "De kleinst haalbare grootte voor dit bestand is ongeveer {{floor}}. Je doel van {{target}} kan niet worden bereikt. In plaats daarvan is de kleinste versie opgeslagen."
+    },
+    "repair": {
+      "title": "Repareren",
+      "description": "Probeer een beschadigde PDF te herstellen zodat die weer opent.",
+      "hint": "PDF-bestanden. Meerdere bestanden komen terug als ZIP.",
+      "privacyLine": "Je bestanden worden nooit opgeslagen. De reparatie gebeurt privé.",
+      "honestNote": "Dit is een poging om een beschadigd bestand te herstellen. Niet elk bestand is te redden.",
+      "batchNote": "{{count}} bestanden geselecteerd. Elk bestand wordt apart gerepareerd; resultaten komen terug als ZIP.",
+      "submit": "Bestand repareren",
+      "loading": "Bezig met repareren…"
     },
     "rotate": {
       "title": "Draaien",
