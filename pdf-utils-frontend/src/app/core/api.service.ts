@@ -301,8 +301,6 @@ export class ApiService {
     const original = headers.get('X-Original-Bytes');
     const resultBytes = headers.get('X-Result-Bytes');
     const reached = headers.get('X-Target-Reached');
-    const feasible = headers.get('X-Target-Feasible');
-    const floor = headers.get('X-Estimated-Floor-Bytes');
     if (original == null && resultBytes == null && reached == null) {
       return undefined;
     }
@@ -310,8 +308,6 @@ export class ApiService {
     if (original != null) info.originalBytes = Number(original);
     if (resultBytes != null) info.resultBytes = Number(resultBytes);
     if (reached != null) info.targetReached = reached.toLowerCase() === 'true';
-    if (feasible != null) info.targetFeasible = feasible.toLowerCase() === 'true';
-    if (floor != null) info.estimatedFloorBytes = Number(floor);
     return info;
   }
 
