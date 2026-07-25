@@ -1,4 +1,5 @@
-import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 
@@ -11,6 +12,11 @@ import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
+import {
+  TargetSizeComponent,
+  TargetUnit,
+  composeTargetSize,
+} from '../../shared/target-size/target-size.component';
 
 type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
 
@@ -40,12 +46,14 @@ const STEP_KEYS = [
   selector: 'app-wizard-page',
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
     PageGridComponent,
     PageHeaderComponent,
     ResultPanelComponent,
     SpinnerComponent,
+    TargetSizeComponent,
   ],
   template: `
     <section class="op-page">
@@ -57,8 +65,16 @@ const STEP_KEYS = [
       <ol class="stepper">
         @for (s of steps; track s; let i = $index) {
           <li [class.active]="i === step()" [class.done]="i < step()">
-            <span class="dot">{{ i < step() ? '✓' : i + 1 }}</span>
-            <span class="lbl">{{ s | transloco }}</span>
+            <button
+              type="button"
+              class="step-btn"
+              [disabled]="!canGoTo(i)"
+              [attr.aria-current]="i === step() ? 'step' : null"
+              (click)="goTo(i)"
+            >
+              <span class="dot">{{ i < step() ? '✓' : i + 1 }}</span>
+              <span class="lbl">{{ s | transloco }}</span>
+            </button>
           </li>
         }
       </ol>
@@ -67,9 +83,11 @@ const STEP_KEYS = [
         <!-- Step 1: select -->
         @if (step() === 0) {
           <h2 class="step-h">{{ 'pages.wizard.selectTitle' | transloco }}</h2>
+          <p class="step-desc">{{ 'pages.wizard.selectDesc' | transloco }}</p>
           <app-file-drop-zone
             [multiple]="true"
             accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
+            [hint]="'pages.wizard.selectHint' | transloco"
             (filesChange)="onFiles($event)"
           />
         }
@@ -77,7 +95,7 @@ const STEP_KEYS = [
         <!-- Step 2: arrange + page ranges -->
         @if (step() === 1) {
           <h2 class="step-h">{{ 'pages.wizard.arrangeTitle' | transloco }}</h2>
-          <p class="hint-note">{{ 'pages.wizard.arrangeHint' | transloco }}</p>
+          <p class="step-desc">{{ 'pages.wizard.arrangeDesc' | transloco }}</p>
           <ul
             class="file-list"
             role="list"
@@ -183,6 +201,7 @@ const STEP_KEYS = [
         <!-- Step 3: page settings -->
         @if (step() === 2) {
           <h2 class="step-h">{{ 'pages.wizard.pageSettingsTitle' | transloco }}</h2>
+          <p class="step-desc">{{ 'pages.wizard.pageSettingsDesc' | transloco }}</p>
           <div class="form-grid">
             <div class="field">
               <label for="wz-size">{{ 'pages.wizard.imagePageSize' | transloco }}</label>
@@ -200,6 +219,7 @@ const STEP_KEYS = [
         <!-- Step 4: compression -->
         @if (step() === 3) {
           <h2 class="step-h">{{ 'pages.wizard.compressionTitle' | transloco }}</h2>
+          <p class="step-desc">{{ 'pages.wizard.compressionDesc' | transloco }}</p>
           <label class="check" style="margin-bottom:0.75rem">
             <input type="checkbox" [checked]="compress()" (change)="compress.set($any($event.target).checked)" />
             {{ 'pages.wizard.compressToggle' | transloco }}
@@ -208,7 +228,10 @@ const STEP_KEYS = [
             <div class="form-grid">
               <div class="field">
                 <label for="wz-target">{{ 'pages.wizard.target' | transloco }}</label>
-                <input id="wz-target" type="text" [value]="targetSize()" (input)="targetSize.set($any($event.target).value)" [placeholder]="'pages.wizard.targetPlaceholder' | transloco" />
+                <app-target-size [amount]="targetAmount" [unit]="targetUnit" inputId="wz-target" />
+                @if (targetAmount.invalid) {
+                  <span class="err">{{ 'pages.wizard.targetError' | transloco }}</span>
+                }
               </div>
             </div>
           }
@@ -217,11 +240,39 @@ const STEP_KEYS = [
         <!-- Step 5: export -->
         @if (step() === 4) {
           <h2 class="step-h">{{ 'pages.wizard.reviewTitle' | transloco }}</h2>
+          <p class="step-desc">{{ 'pages.wizard.reviewDesc' | transloco }}</p>
           <ul class="summary">
             <li><span>{{ 'pages.wizard.sumFiles' | transloco }}</span><b>{{ items().length }}</b></li>
-            <li><span>{{ 'pages.wizard.sumOrder' | transloco }}</span><b>{{ orderNames() }}</b></li>
-            <li><span>{{ 'pages.wizard.sumImageSize' | transloco }}</span><b>{{ pageSize() }}</b></li>
-            <li><span>{{ 'pages.wizard.sumCompress' | transloco }}</span><b>{{ compress() ? targetSize() : ('pages.wizard.compressNo' | transloco) }}</b></li>
+            <li>
+              <span>{{ 'pages.wizard.sumOrder' | transloco }}</span>
+              <ol class="order-list">
+                @for (it of items(); track it.file) {
+                  <li [title]="it.file.name">{{ it.file.name }}</li>
+                }
+              </ol>
+            </li>
+            <li>
+              <span>{{ 'pages.wizard.sumImageSize' | transloco }}</span>
+              <b>
+                @switch (pageSize()) {
+                  @case ('FIT') { {{ 'pages.wizard.sizeFit' | transloco }} }
+                  @case ('LETTER') { {{ 'pages.wizard.sizeLetter' | transloco }} }
+                  @default { {{ pageSize() }} }
+                }
+              </b>
+            </li>
+            <li>
+              <span>{{ 'pages.wizard.sumCompress' | transloco }}</span>
+              <b>
+                @if (!compress()) {
+                  {{ 'pages.wizard.compressNo' | transloco }}
+                } @else if (targetAmount.valid) {
+                  {{ composedTarget() }}
+                } @else {
+                  {{ 'pages.wizard.targetError' | transloco }}
+                }
+              </b>
+            </li>
           </ul>
 
           @if (busy() || error() || result()) {
@@ -241,7 +292,12 @@ const STEP_KEYS = [
         @if (step() < steps.length - 1) {
           <button type="button" class="btn btn-primary" [disabled]="!canNext()" (click)="next()">{{ 'common.next' | transloco }}</button>
         } @else {
-          <button type="button" class="btn btn-primary" [disabled]="!items().length || busy()" (click)="runExport()">
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="!items().length || busy() || (compress() && targetAmount.invalid)"
+            (click)="runExport()"
+          >
             {{ (result() ? 'common.reExport' : 'common.export') | transloco }}
           </button>
         }
@@ -262,13 +318,40 @@ const STEP_KEYS = [
       .stepper li {
         display: flex;
         align-items: center;
-        gap: 0.45rem;
         color: var(--text-muted);
         font-size: 0.85rem;
       }
       .stepper li.active {
         color: var(--text);
         font-weight: 600;
+      }
+      /* The step is a real button (jump back to any reached step); it inherits the
+         li's colour/weight so the dot + label keep their step-state styling. */
+      .step-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        font: inherit;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+        border-radius: 6px;
+      }
+      .step-btn:disabled {
+        cursor: default;
+      }
+      /* The dots read as decoration, so a reachable step has to advertise itself
+         on hover — the pointer cursor alone is easy to miss. */
+      .step-btn:not(:disabled):hover .lbl {
+        text-decoration: underline;
+      }
+      .step-btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
       }
       .dot {
         width: 1.5rem;
@@ -292,13 +375,13 @@ const STEP_KEYS = [
         border-color: var(--success);
       }
       .step-h {
-        margin: 0 0 1rem;
+        margin: 0 0 0.35rem;
         font-size: 1.1rem;
       }
-      .hint-note {
+      .step-desc {
         color: var(--text-muted);
         font-size: 0.85rem;
-        margin: 0 0 0.9rem;
+        margin: 0 0 1rem;
       }
       .range-in {
         width: 140px;
@@ -473,31 +556,45 @@ const STEP_KEYS = [
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 0.5rem;
       }
-      .summary li {
+      /* Grid children default to min-width:auto, which lets a long value push the
+         tile (and the card) wider than the column — pin it to 0 so values clip
+         or wrap inside the tile instead. */
+      .summary > li {
         display: flex;
         flex-direction: column;
+        min-width: 0;
         padding: 0.5rem 0.75rem;
         background: var(--surface-2);
         border-radius: 8px;
       }
-      .summary span {
+      .summary > li > span {
         font-size: 0.72rem;
         text-transform: uppercase;
         color: var(--text-muted);
       }
-      .done-box {
-        border: 1px solid var(--success);
-        border-radius: var(--radius);
-        padding: 1rem;
-        margin-top: 0.5rem;
+      .summary > li > b {
+        overflow-wrap: anywhere;
       }
-      .filename {
+      /* One file per line, each ellipsized (full name in the tooltip); the index
+         is a counter so the row's overflow:hidden cannot clip a list marker. */
+      .order-list {
+        list-style: none;
+        counter-reset: order;
+        margin: 0.1rem 0 0;
+        padding: 0;
         font-weight: 600;
-        margin: 0 0 0.75rem;
-        word-break: break-all;
       }
-      .err {
-        color: var(--danger);
+      .order-list li {
+        counter-increment: order;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .order-list li::before {
+        content: counter(order) '. ';
+        color: var(--text-muted);
+        font-weight: 500;
       }
     `,
   ],
@@ -508,6 +605,8 @@ export class WizardPage implements OnDestroy {
   protected readonly formatBytes = formatBytes;
 
   protected readonly step = signal(0);
+  /** Furthest step the user has advanced to; the stepper can jump anywhere up to it. */
+  protected readonly reached = signal(0);
   protected readonly items = signal<WizardFile[]>([]);
   protected readonly dragIndex = signal<number | null>(null);
   /** Insertion index (0..items().length) where a drop would land, or null. */
@@ -524,18 +623,22 @@ export class WizardPage implements OnDestroy {
   private readonly thumbTick = signal(0);
   protected readonly pageSize = signal<PageSize>('FIT');
   protected readonly compress = signal(false);
-  protected readonly targetSize = signal('5MB');
+  // The user types a positive NUMBER and picks a unit; together they compose the
+  // "5MB"-style string the backend's `targetSize` parser expects.
+  protected readonly targetAmount = new FormControl<number | null>(5, {
+    validators: [Validators.required, Validators.min(0.0000001)],
+  });
+  protected readonly targetUnit = new FormControl<TargetUnit>('MB', { nonNullable: true });
 
   protected readonly busy = signal(false);
   protected readonly progress = signal('');
   protected readonly error = signal<ApiError | null>(null);
   protected readonly result = signal<RunResult | null>(null);
 
-  protected readonly orderNames = computed(() =>
-    this.items()
-      .map((i) => i.file.name)
-      .join(', '),
-  );
+  /** The backend `targetSize` string for the current amount + unit (e.g. "5MB"). */
+  protected composedTarget(): string {
+    return composeTargetSize(this.targetAmount.value, this.targetUnit.value);
+  }
 
   constructor(private readonly api: ApiService) {}
 
@@ -707,8 +810,20 @@ export class WizardPage implements OnDestroy {
     return true;
   }
 
+  /** A stepper step is reachable when it is already unlocked and isn't the current one. */
+  canGoTo(i: number): boolean {
+    return !this.busy() && i <= this.reached() && i !== this.step();
+  }
+
+  goTo(i: number): void {
+    if (this.canGoTo(i)) this.step.set(i);
+  }
+
   next(): void {
-    if (this.canNext()) this.step.set(Math.min(this.step() + 1, this.steps.length - 1));
+    if (!this.canNext()) return;
+    const target = Math.min(this.step() + 1, this.steps.length - 1);
+    this.step.set(target);
+    this.reached.update((r) => Math.max(r, target));
   }
   back(): void {
     this.step.set(Math.max(this.step() - 1, 0));
@@ -720,6 +835,7 @@ export class WizardPage implements OnDestroy {
     this.expandedFile.set(null);
     this.items.set([]);
     this.step.set(0);
+    this.reached.set(0);
     this.result.set(null);
     this.error.set(null);
   }
@@ -752,11 +868,12 @@ export class WizardPage implements OnDestroy {
       this.progress.set(this.transloco.translate('pages.wizard.merging'));
       let out = await firstValueFrom(this.api.merge(this.formData('files', parts)));
 
-      if (this.compress() && this.targetSize().trim()) {
+      const amount = this.targetAmount.value;
+      if (this.compress() && this.targetAmount.valid && amount != null && amount > 0) {
         this.progress.set(this.transloco.translate('pages.wizard.compressing'));
         const fd = new FormData();
         fd.append('files', this.asFile(out), out.filename);
-        fd.append('targetSize', this.targetSize().trim());
+        fd.append('targetSize', this.composedTarget());
         out = await firstValueFrom(this.api.compress(fd));
       }
 
