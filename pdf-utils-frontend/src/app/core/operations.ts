@@ -3,17 +3,21 @@
  *
  * Single source of truth for the sidebar and the router config. The backend
  * `GET /api/operations` catalog is the authority on which *operations* exist;
- * this list adds the UI-only entries (wizard, pipeline) and carries labels,
- * icons and route paths. `id` matches the REST endpoint id where applicable.
+ * this list adds the UI-only entries (wizard, pipeline) and carries icons,
+ * grouping and route paths. `id` matches the REST endpoint id where applicable.
+ *
+ * USER-VISIBLE TEXT LIVES IN `public/i18n/*.json`, NOT HERE. Every surface
+ * resolves `op.<id>.label` / `op.<id>.description` through Transloco
+ * (`sidebar.component.html`, `home.page.html`), and `locales.spec.ts` proves
+ * those keys exist for every entry below. English copy in this file would be
+ * rendered by nothing and would rot silently — it already had, which is why the
+ * `label`/`description` fields are gone.
  */
 
 export interface NavItem {
-  /** Operation id / route path segment, e.g. "merge", "to-pdf". */
+  /** Operation id / route path segment, e.g. "merge", "to-pdf". Also the i18n
+   *  key stem: `op.<id>.label` / `op.<id>.description`. */
   id: string;
-  /** Human label shown in the sidebar. */
-  label: string;
-  /** Short blurb for the placeholder / tooltip. */
-  description: string;
   /**
    * Inner SVG markup for a 24×24 glyph — a `<g>` group with `<path>`/`<circle>`
    * children (see {@link OP_ICONS}), rendered via `<app-op-icon [markup]>`.
@@ -205,36 +209,26 @@ export const NAV_ITEMS: NavItem[] = [
   // Organise
   {
     id: 'merge',
-    label: 'Merge',
-    description: 'Combine several PDFs (or images/office docs) into one.',
     group: 'organise',
     icon: OP_ICONS['merge'],
   },
   {
     id: 'extract',
-    label: 'Extract',
-    description: 'Pull selected pages out of a PDF.',
     group: 'organise',
     icon: OP_ICONS['extract'],
   },
   {
     id: 'rotate',
-    label: 'Rotate',
-    description: 'Rotate pages 90°, 180° or 270°.',
     group: 'organise',
     icon: OP_ICONS['rotate'],
   },
   {
     id: 'arrange',
-    label: 'Arrange',
-    description: 'Reorder, reverse or duplicate pages.',
     group: 'organise',
     icon: OP_ICONS['arrange'],
   },
   {
     id: 'nup',
-    label: 'Pages per sheet',
-    description: 'Print several pages on one sheet (2/4/6-up), or fold a booklet.',
     group: 'organise',
     icon: OP_ICONS['nup'],
   },
@@ -242,16 +236,12 @@ export const NAV_ITEMS: NavItem[] = [
   // Optimise
   {
     id: 'compress',
-    label: 'Compress',
-    description: 'Shrink a PDF toward a target size.',
     group: 'optimise',
     icon: OP_ICONS['compress'],
   },
 
   {
     id: 'repair',
-    label: 'Repair',
-    description: 'Try to rebuild a damaged PDF so it opens again.',
     group: 'optimise',
     icon: OP_ICONS['repair'],
   },
@@ -259,29 +249,21 @@ export const NAV_ITEMS: NavItem[] = [
   // Convert
   {
     id: 'to-pdf',
-    label: 'To PDF',
-    description: 'Convert images, office docs, Markdown and HTML to PDF.',
     group: 'convert',
     icon: OP_ICONS['to-pdf'],
   },
   {
     id: 'to-images',
-    label: 'To Images',
-    description: 'Render PDF pages to PNG or JPG.',
     group: 'convert',
     icon: OP_ICONS['to-images'],
   },
   {
     id: 'to-text',
-    label: 'To Text',
-    description: 'Extract the text content of a PDF.',
     group: 'convert',
     icon: OP_ICONS['to-text'],
   },
   {
     id: 'ocr',
-    label: 'OCR',
-    description: 'Make a scanned PDF searchable with OCR.',
     group: 'convert',
     icon: OP_ICONS['ocr'],
   },
@@ -289,36 +271,26 @@ export const NAV_ITEMS: NavItem[] = [
   // Secure
   {
     id: 'protect',
-    label: 'Protect',
-    description: 'Add password encryption to a PDF.',
     group: 'secure',
     icon: OP_ICONS['protect'],
   },
   {
     id: 'unlock',
-    label: 'Unlock',
-    description: 'Remove a known password from a PDF.',
     group: 'secure',
     icon: OP_ICONS['unlock'],
   },
   {
     id: 'redact',
-    label: 'Redact',
-    description: 'Permanently black out regions of a page.',
     group: 'secure',
     icon: OP_ICONS['redact'],
   },
   {
     id: 'sign',
-    label: 'Fill & Sign',
-    description: 'Place a signature and fill form fields, then flatten.',
     group: 'secure',
     icon: OP_ICONS['sign'],
   },
   {
     id: 'gdpr-scan',
-    label: 'GDPR Scan',
-    description: 'Scan a PDF for personal data (GDPR / PII).',
     group: 'advanced',
     icon: OP_ICONS['gdpr-scan'],
   },
@@ -326,29 +298,21 @@ export const NAV_ITEMS: NavItem[] = [
   // Edit
   {
     id: 'metadata',
-    label: 'Metadata',
-    description: 'View, edit or strip document info.',
     group: 'edit',
     icon: OP_ICONS['metadata'],
   },
   {
     id: 'watermark',
-    label: 'Watermark',
-    description: 'Stamp text or an image over every page.',
     group: 'edit',
     icon: OP_ICONS['watermark'],
   },
   {
     id: 'crop',
-    label: 'Crop',
-    description: 'Trim margins off every page.',
     group: 'edit',
     icon: OP_ICONS['crop'],
   },
   {
     id: 'page-marks',
-    label: 'Page Marks',
-    description: 'Add page numbers and header/footer text.',
     group: 'edit',
     icon: OP_ICONS['page-marks'],
   },
@@ -356,30 +320,27 @@ export const NAV_ITEMS: NavItem[] = [
   // Advanced
   {
     id: 'wizard',
-    label: 'Wizard',
-    description: 'Guided step-by-step build & export.',
     group: 'advanced',
     icon: OP_ICONS['wizard'],
   },
   {
     id: 'pipeline',
-    label: 'Pipeline',
-    description: 'Chain operations as a node graph.',
     group: 'advanced',
     icon: OP_ICONS['pipeline'],
   },
 ];
 
 export interface NavGroup {
+  /** Grouping id and i18n key stem — the sidebar renders `nav.groups.<key>`. */
   key: NavItem['group'];
-  label: string;
 }
 
+/** Sidebar section order. Headings come from `nav.groups.*`, not from here. */
 export const NAV_GROUPS: NavGroup[] = [
-  { key: 'organise', label: 'Organise' },
-  { key: 'optimise', label: 'Optimise' },
-  { key: 'convert', label: 'Convert' },
-  { key: 'secure', label: 'Secure' },
-  { key: 'edit', label: 'Edit' },
-  { key: 'advanced', label: 'Advanced' },
+  { key: 'organise' },
+  { key: 'optimise' },
+  { key: 'convert' },
+  { key: 'secure' },
+  { key: 'edit' },
+  { key: 'advanced' },
 ];

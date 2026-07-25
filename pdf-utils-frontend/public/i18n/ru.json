@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "Выше = чётче и больше (36–600).",
       "dpiError": "Введите DPI от 36 до 600.",
+      "dpiHelpRange": "Выше = чётче и больше ({{min}}–{{max}}).",
+      "dpiErrorRange": "Введите DPI от {{min}} до {{max}}.",
       "quality": "Качество JPG",
       "qualityHelp": "Выше = лучше изображение, больше файл.",
       "pages": "Страницы",

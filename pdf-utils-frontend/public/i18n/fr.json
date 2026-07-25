@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "Plus élevé = plus net et plus volumineux (36–600).",
       "dpiError": "Saisissez une résolution (DPI) entre 36 et 600.",
+      "dpiHelpRange": "Plus élevé = plus net et plus volumineux ({{min}}–{{max}}).",
+      "dpiErrorRange": "Saisissez une résolution (DPI) entre {{min}} et {{max}}.",
       "quality": "Qualité JPG",
       "qualityHelp": "Plus élevé = meilleure image, fichier plus volumineux.",
       "pages": "Pages",

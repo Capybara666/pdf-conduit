@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "高いほど鮮明で大きくなります（36〜600）。",
       "dpiError": "36〜600 の DPI を入力してください。",
+      "dpiHelpRange": "高いほど鮮明で大きくなります（{{min}}〜{{max}}）。",
+      "dpiErrorRange": "{{min}}〜{{max}} の DPI を入力してください。",
       "quality": "JPG の画質",
       "qualityHelp": "高いほど画質が良くなり、ファイルは大きくなります。",
       "pages": "ページ",

@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "Più alto = più nitido e più grande (36–600).",
       "dpiError": "Inserisci un valore DPI tra 36 e 600.",
+      "dpiHelpRange": "Più alto = più nitido e più grande ({{min}}–{{max}}).",
+      "dpiErrorRange": "Inserisci un valore DPI tra {{min}} e {{max}}.",
       "quality": "Qualità JPG",
       "qualityHelp": "Più alto = immagine migliore, file più grande.",
       "pages": "Pagine",

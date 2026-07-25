@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "Daha yüksek = daha keskin ve daha büyük (36–600).",
       "dpiError": "36 ile 600 arasında bir DPI girin.",
+      "dpiHelpRange": "Daha yüksek = daha keskin ve daha büyük ({{min}}–{{max}}).",
+      "dpiErrorRange": "{{min}} ile {{max}} arasında bir DPI girin.",
       "quality": "JPG kalitesi",
       "qualityHelp": "Daha yüksek = daha iyi görüntü, daha büyük dosya.",
       "pages": "Sayfalar",

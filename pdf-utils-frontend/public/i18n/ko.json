@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "값이 클수록 선명하지만 파일이 커집니다 (36–600).",
       "dpiError": "36에서 600 사이의 DPI를 입력하세요.",
+      "dpiHelpRange": "값이 클수록 선명하지만 파일이 커집니다 ({{min}}–{{max}}).",
+      "dpiErrorRange": "{{min}}에서 {{max}} 사이의 DPI를 입력하세요.",
       "quality": "JPG 품질",
       "qualityHelp": "값이 클수록 화질이 좋아지고 파일이 커집니다.",
       "pages": "페이지",

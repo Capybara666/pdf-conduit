@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "Hoger = scherper en groter (36–600).",
       "dpiError": "Voer een DPI tussen 36 en 600 in.",
+      "dpiHelpRange": "Hoger = scherper en groter ({{min}}–{{max}}).",
+      "dpiErrorRange": "Voer een DPI tussen {{min}} en {{max}} in.",
       "quality": "JPG-kwaliteit",
       "qualityHelp": "Hoger = betere afbeelding, groter bestand.",
       "pages": "Pagina's",

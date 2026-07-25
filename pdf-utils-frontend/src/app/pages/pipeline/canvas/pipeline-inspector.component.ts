@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
+import { CapabilitiesService, MIN_RENDER_DPI } from '../../../core/capabilities.service';
 import { CanvasNode, KIND_TO_OP } from '../../../core/pipeline.models';
 import { FileDropZoneComponent } from '../../../shared/file-drop-zone/file-drop-zone.component';
 
@@ -172,7 +173,13 @@ import { FileDropZoneComponent } from '../../../shared/file-drop-zone/file-drop-
               <option value="JPEG">JPG</option>
             </select>
           </div>
-          <div class="field"><label>{{ 'pages.pipeline.fieldDpi' | transloco }}</label><input type="number" min="36" max="600" [value]="node.imageDpi" (input)="emit('imageDpi', +$any($event.target).value)" /></div>
+          <div class="field">
+            <label>{{ 'pages.pipeline.fieldDpi' | transloco }}</label>
+            <input type="number" [min]="minDpi" [max]="maxDpi()" step="1" [value]="node.imageDpi" (input)="emit('imageDpi', +$any($event.target).value)" />
+            <span class="help">{{
+              'pages.toImages.dpiHelpRange' | transloco: { min: minDpi, max: maxDpi() }
+            }}</span>
+          </div>
         }
         @case ('TO_TEXT') {
           <div class="field">
@@ -236,6 +243,16 @@ import { FileDropZoneComponent } from '../../../shared/file-drop-zone/file-drop-
 })
 export class PipelineInspectorComponent {
   private readonly transloco = inject(TranslocoService);
+
+  /** Lowest DPI offered by the TO_IMAGES node — a UI floor, not a server limit. */
+  protected readonly minDpi = MIN_RENDER_DPI;
+  /**
+   * Highest DPI the server will render at, advertised by `GET /api/capabilities`
+   * (`environment.maxDpi` until it answers). The same signal the To Images page
+   * uses, so the two DPI fields can never promise different things — and neither
+   * can promise more than `/api/pipeline/run` accepts.
+   */
+  protected readonly maxDpi = inject(CapabilitiesService).maxDpi;
 
   @Input() node: CanvasNode | null = null;
   /** File objects already uploaded into the selected SOURCE node (drives its drop zone). */
