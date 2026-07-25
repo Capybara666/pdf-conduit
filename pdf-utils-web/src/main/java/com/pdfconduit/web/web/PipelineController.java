@@ -11,11 +11,14 @@ import com.pdfconduit.core.pipeline.PipelineNode;
 import com.pdfconduit.core.pipeline.PipelineValidator;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.cost.CostModel;
+import com.pdfconduit.web.cost.WorkEstimate;
 import com.pdfconduit.web.dto.NodeKindInfo;
 import com.pdfconduit.web.dto.ValidationErrorDto;
 import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.guard.OutputBudget;
 import com.pdfconduit.web.guard.PipelineLimitsGuard;
+import com.pdfconduit.web.quota.UploadCaps;
 import com.pdfconduit.web.support.PipelineJson;
 import com.pdfconduit.web.support.Responses;
 import com.pdfconduit.web.support.Uploads;
@@ -51,22 +54,26 @@ public class PipelineController {
     private final LoadGuard loadGuard;
     private final PipelineLimitsGuard limits;
     private final OutputBudget outputBudget;
+    private final CostModel costs;
+    private final UploadCaps uploadCaps;
 
     private final int maxNodes;
     private final int maxConnections;
-    private final int maxSourceDocuments;
 
     public PipelineController(Uploads uploads, LoadGuard loadGuard, PipelineLimitsGuard limits,
-                              OutputBudget outputBudget, WebProperties props) {
+                              OutputBudget outputBudget, CostModel costs, UploadCaps uploadCaps,
+                              WebProperties props) {
         this.uploads = uploads;
         this.loadGuard = loadGuard;
         this.limits = limits;
         this.outputBudget = outputBudget;
+        this.costs = costs;
+        // Deliberately the SAME ceiling that bounds a normal batch upload, resolved through the
+        // same component: a pipeline source list is just another way of naming the files one
+        // request will process.
+        this.uploadCaps = uploadCaps;
         this.maxNodes = props.pipeline().maxNodes();
         this.maxConnections = props.pipeline().maxConnections();
-        // Deliberately the SAME ceiling that bounds a normal batch upload: a pipeline source list is
-        // just another way of naming the files one request will process.
-        this.maxSourceDocuments = props.maxFilesPerRequest();
     }
 
     /**
@@ -89,11 +96,12 @@ public class PipelineController {
         PipelineModel model = PipelineJson.parse(pipeline);
         guardGraphSize(model);
 
+        int maxSourceDocuments = uploadCaps.hardMaxFiles();
+
         // Index uploads by basename (Uploads.read gates office uploads when office is disabled).
         // NB: the parts are only an index here — what this request will actually cost is measured
         // below, per RESOLVED source reference, because the same part may be named many times.
         Map<String, NamedBytes> byName = new HashMap<>();
-        long uploadBytes = 0;
         if (files != null) {
             for (MultipartFile f : files) {
                 NamedBytes nb = uploads.read(f);
@@ -103,11 +111,12 @@ public class PipelineController {
 
         // Index watermark-image assets by basename (raw bytes; never routed through office conversion).
         Map<String, byte[]> assetsByName = new HashMap<>();
+        long assetBytes = 0;
         if (nodeAssets != null) {
             for (MultipartFile f : nodeAssets) {
                 byte[] data = f.getBytes();
                 assetsByName.put(Uploads.filename(f), data);
-                uploadBytes += data.length;
+                assetBytes += data.length;
             }
         }
 
@@ -117,6 +126,9 @@ public class PipelineController {
         // Source bytes per upload name: a name resolved twice is the SAME bytes, so an office
         // upload referenced N times is converted once, not N times.
         Map<String, byte[]> sourceBytes = new HashMap<>();
+        // Resolved bytes entering each source node — what the cost model multiplies through the
+        // graph to work out what this run will cost before any of it is allocated.
+        Map<String, Long> sourceBytesByNode = new HashMap<>();
         int sourceDocuments = 0;
         for (PipelineNode n : model.nodes) {
             if (n.kind == null) {
@@ -153,18 +165,25 @@ public class PipelineController {
                     sourceBytes.put(key, data);
                 }
                 bytes.add(data);
-                // Reserve against what is really processed, so duplicating one upload cannot make
-                // the load guard's in-flight-byte ceiling underestimate the run by that factor.
-                uploadBytes += data.length;
+                // Count what is really processed, so duplicating one upload cannot make the cost
+                // estimate underestimate the run by that factor.
+                sourceBytesByNode.merge(n.id, (long) data.length, Long::sum);
             }
             resolved.put(n.id, bytes);
         }
 
-        // Heavy work: bound concurrency / in-flight bytes / runtime via the load guard, and apply the
+        // What this graph will cost, worked out from the resolved source bytes and the cost each
+        // node kind declares — BEFORE the executor allocates anything. This is the only check that
+        // sees the product the individual ceilings miss: the executor keeps every node's outputs
+        // alive at once, so N legal uploads through an M-stage graph cost N × M, and each of the
+        // per-file, per-node and per-graph caps is satisfied the whole way.
+        WorkEstimate estimate = costs.forPipeline(model, sourceBytesByNode, assetBytes);
+
+        // Heavy work: bound concurrency / work bytes / runtime via the load guard, and apply the
         // per-request ceilings (page count, render DPI/pixels, OCR availability + permit) INSIDE the
         // run via PipelineLimitsGuard — the nodes' DPI/OCR settings are client-supplied, so without
         // it this endpoint would reach the same core operations with every ceiling skipped.
-        Map<String, List<NamedBytes>> terminals = loadGuard.execute(uploadBytes,
+        Map<String, List<NamedBytes>> terminals = loadGuard.execute(estimate,
             () -> PipelineExecutor.runInMemory(
                 model, node -> resolved.getOrDefault(node.id, List.of()), nodeImages, limits, null));
 

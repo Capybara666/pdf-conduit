@@ -47,7 +47,7 @@ public class InfoController {
     @GetMapping("/health")
     public Map<String, Object> health() {
         boolean saturated = loadGuard.availablePermits() <= 0
-            || loadGuard.inFlightBytes() >= loadGuard.maxInFlightBytes();
+            || loadGuard.inFlightBytes() >= loadGuard.maxWorkBytes();
         // Insertion-ordered so `status` is always the first field; nginx/Docker only read that.
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("status", "UP");

@@ -42,7 +42,8 @@ class PerRequestPlanTest {
     private static volatile PlanLimits current = plan(3000, 300);
 
     private static PlanLimits plan(int maxPages, int maxDpi) {
-        return new FreePlanLimits(60, 15, 26_214_400L, maxPages, maxDpi, 60_000_000L, 40, 10, 15);
+        return new FreePlanLimits(60, 15, 26_214_400L, maxPages, maxDpi, 60_000_000L,
+            500_000_000L, 67_108_864L, 40, 10, 15);
     }
 
     @TestConfiguration

@@ -37,7 +37,8 @@ class UploadCapsTest {
     }
 
     private static PlanLimits plan(long maxFileSizeBytes, int maxFiles) {
-        return new FreePlanLimits(60, maxFiles, maxFileSizeBytes, 3000, 300, 60_000_000L, 40, 10, 15);
+        return new FreePlanLimits(60, maxFiles, maxFileSizeBytes, 3000, 300, 60_000_000L,
+            500_000_000L, 67_108_864L, 40, 10, 15);
     }
 
     private static final PrincipalResolver IP = request -> new IpPrincipal("1.2.3.4");

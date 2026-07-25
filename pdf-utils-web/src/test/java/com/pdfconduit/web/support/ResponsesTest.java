@@ -63,6 +63,30 @@ class ResponsesTest {
         assertFalse(header.contains("f6.pdf"), header);
     }
 
+    /**
+     * A failure that already travelled through {@code MemoryOperations.named} carries the file name
+     * in its message; the header formatter puts the name in front of every entry, so joining the
+     * two verbatim said it twice.
+     */
+    @Test
+    void batchFailures_doesNotRepeatAFilenameTheMessageAlreadyCarries() {
+        String header = Responses.batchFailures(List.of(
+            new BatchFailure("locked.pdf", "locked.pdf: The PDF is password-protected."),
+            new BatchFailure("broken.pdf", "Could not read the PDF.")));
+
+        assertEquals("locked.pdf: The PDF is password-protected.; "
+            + "broken.pdf: Could not read the PDF.", header);
+    }
+
+    /** A file name mentioned mid-message is left alone: only a leading "<file>: " is the duplicate. */
+    @Test
+    void batchFailures_keepsAFilenameThatIsNotALeadingPrefix() {
+        String header = Responses.batchFailures(List.of(
+            new BatchFailure("a.pdf", "Cannot merge a.pdf with the others.")));
+
+        assertEquals("a.pdf: Cannot merge a.pdf with the others.", header);
+    }
+
     @Test
     void batchFailures_isSafeToPutInAHeader() {
         String header = Responses.batchFailures(List.of(

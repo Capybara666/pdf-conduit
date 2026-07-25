@@ -7,6 +7,7 @@ package com.pdfconduit.web.plan;
  */
 public record FreePlanLimits(int dailyOperations, int maxFiles, long maxFileSizeBytes,
                              int maxPages, int maxDpi, long maxOutputPixels,
+                             long maxTotalOutputPixels, long maxTotalOutputBytes,
                              int rateRequestsPerMinute, int rateHeavyPerMinute, int rateBurst)
         implements PlanLimits {
 }

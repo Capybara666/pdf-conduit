@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
  *
  * <p>Gauges (all on the internal management port):
  * <ul>
- *   <li>{@code pdfconduit.load.inflight.bytes} — bytes of heavy work currently reserved;</li>
+ *   <li>{@code pdfconduit.load.inflight.bytes} — estimated cost of heavy work currently reserved
+ *       against the work-byte pool;</li>
  *   <li>{@code pdfconduit.load.permits.available} — free heavy-op permits (0 ⇒ shedding);</li>
  *   <li>{@code pdfconduit.office.permits.available} — free LibreOffice-conversion permits.</li>
  * </ul>
@@ -36,7 +37,7 @@ public class GuardGauges {
     @PostConstruct
     void register() {
         Gauge.builder("pdfconduit.load.inflight.bytes", loadGuard, LoadGuard::inFlightBytes)
-            .description("Bytes of heavy work currently in flight (reserved against the OOM cap)")
+            .description("Estimated cost of heavy work in flight (reserved against the work-byte pool)")
             .baseUnit("bytes")
             .register(registry);
         Gauge.builder("pdfconduit.load.permits.available", loadGuard, g -> g.availablePermits())
