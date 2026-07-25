@@ -13,6 +13,7 @@ import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.dto.NodeKindInfo;
 import com.pdfconduit.web.dto.ValidationErrorDto;
 import com.pdfconduit.web.guard.LoadGuard;
+import com.pdfconduit.web.guard.PipelineLimitsGuard;
 import com.pdfconduit.web.support.PipelineJson;
 import com.pdfconduit.web.support.Responses;
 import com.pdfconduit.web.support.Uploads;
@@ -46,10 +47,12 @@ public class PipelineController {
 
     private final Uploads uploads;
     private final LoadGuard loadGuard;
+    private final PipelineLimitsGuard limits;
 
-    public PipelineController(Uploads uploads, LoadGuard loadGuard) {
+    public PipelineController(Uploads uploads, LoadGuard loadGuard, PipelineLimitsGuard limits) {
         this.uploads = uploads;
         this.loadGuard = loadGuard;
+        this.limits = limits;
     }
 
     /**
@@ -96,8 +99,11 @@ public class PipelineController {
         Map<String, List<byte[]>> resolved = new HashMap<>();
         Map<String, byte[]> nodeImages = new HashMap<>();
         for (PipelineNode n : model.nodes) {
+            if (n.kind == null) {
+                throw new IllegalArgumentException("Pipeline node '" + n.id + "' has no kind.");
+            }
             if (n.kind == NodeKind.WATERMARK && n.wmImage != null && !n.wmImage.isBlank()) {
-                String key = Path.of(n.wmImage).getFileName().toString();
+                String key = name(n.wmImage, "watermark image", n.id);
                 byte[] image = assetsByName.get(key);
                 if (image == null) {
                     throw new IllegalArgumentException(
@@ -108,7 +114,7 @@ public class PipelineController {
             if (!n.kind.isSource()) continue;
             List<byte[]> bytes = new ArrayList<>(n.files.size());
             for (Path f : n.files) {
-                String key = f.getFileName().toString();
+                String key = name(f == null ? null : f.toString(), "source file", n.id);
                 NamedBytes nb = byName.get(key);
                 if (nb == null) {
                     throw new IllegalArgumentException(
@@ -119,10 +125,13 @@ public class PipelineController {
             resolved.put(n.id, bytes);
         }
 
-        // Heavy work: bound concurrency / in-flight bytes / runtime via the load guard.
+        // Heavy work: bound concurrency / in-flight bytes / runtime via the load guard, and apply the
+        // per-request ceilings (page count, render DPI/pixels, OCR availability + permit) INSIDE the
+        // run via PipelineLimitsGuard — the nodes' DPI/OCR settings are client-supplied, so without
+        // it this endpoint would reach the same core operations with every ceiling skipped.
         Map<String, List<NamedBytes>> terminals = loadGuard.execute(uploadBytes,
             () -> PipelineExecutor.runInMemory(
-                model, node -> resolved.getOrDefault(node.id, List.of()), nodeImages, null));
+                model, node -> resolved.getOrDefault(node.id, List.of()), nodeImages, limits, null));
 
         List<NamedBytes> all = new ArrayList<>();
         for (List<NamedBytes> nodeOutputs : terminals.values()) all.addAll(nodeOutputs);
@@ -140,6 +149,22 @@ public class PipelineController {
     @GetMapping("/kinds")
     public List<NodeKindInfo> kinds() {
         return Arrays.stream(NodeKind.values()).map(NodeKindInfo::of).toList();
+    }
+
+    /**
+     * The upload name a client-supplied pipeline reference points at — its trailing name component,
+     * never a host path. Every one of these strings comes verbatim from the request's pipeline JSON,
+     * so a crafted value such as {@code "/"} or {@code ""} must be a clean 400, not an NPE (which
+     * {@code Path.of("/").getFileName()} used to produce) surfacing as a 500 plus a stack trace.
+     */
+    private static String name(String reference, String what, String nodeId) {
+        String key = Uploads.basename(reference);
+        if (key.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Pipeline node '" + nodeId + "' has an unusable " + what + " name: '"
+                + (reference == null ? "" : reference) + "'.");
+        }
+        return key;
     }
 
     /** Office uploads → PDF bytes (gated + temp-dir exception); PDFs/images pass through raw. */
