@@ -31,7 +31,7 @@
     "defaultLabel": "Upuść pliki tutaj lub kliknij, aby wybrać",
     "upToSize": "do {{size}} MB",
     "maxFiles": "maks. {{count}} plików",
-    "rejectedTitle": "Niektóre pliki nie zostały dodane",
+    "rejectedTitle": "Niektórych plików nie dodano",
     "dismiss": "Zamknij",
     "pageOverlay": "Upuść pliki tutaj",
     "reason": {
@@ -51,25 +51,25 @@
   "nav": {
     "aria": "Operacje",
     "home": "Strona główna",
-    "homeTitle": "Powrót do strony głównej PDF Conduit",
+    "homeTitle": "Wróć na stronę główną PDF Conduit",
     "groups": {
-      "organise": "Organizowanie",
+      "organise": "Porządkowanie",
       "optimise": "Optymalizacja",
       "convert": "Konwersja",
-      "secure": "Zabezpieczanie",
+      "secure": "Ochrona",
       "edit": "Edycja",
       "advanced": "Zaawansowane"
     },
-    "menuToggle": "Przełącz menu nawigacji"
+    "menuToggle": "Pokaż lub ukryj menu"
   },
   "op": {
     "merge": {
       "label": "Scal",
-      "description": "Połącz kilka plików PDF (lub obrazów/dokumentów biurowych) w jeden."
+      "description": "Połącz kilka PDF-ów (albo obrazów i dokumentów Office) w jeden."
     },
     "extract": {
       "label": "Wyodrębnij",
-      "description": "Wyciągnij wybrane strony z pliku PDF."
+      "description": "Wyciągnij wybrane strony z PDF-a."
     },
     "rotate": {
       "label": "Obróć",
@@ -81,47 +81,47 @@
     },
     "nup": {
       "label": "Stron na arkusz",
-      "description": "Umieść kilka stron na arkuszu lub złóż broszurę."
+      "description": "Zmieść kilka stron na jednym arkuszu lub złóż broszurę."
     },
     "compress": {
       "label": "Kompresuj",
-      "description": "Zmniejsz plik PDF do docelowego rozmiaru."
+      "description": "Zmniejsz PDF do zadanego rozmiaru."
     },
     "to-pdf": {
       "label": "Do PDF",
-      "description": "Konwertuj obrazy, dokumenty biurowe, Markdown i HTML do PDF."
+      "description": "Zamień obrazy, dokumenty Office, Markdown i HTML na PDF."
     },
     "to-images": {
       "label": "Do obrazów",
-      "description": "Renderuj strony PDF do formatu PNG lub JPG."
+      "description": "Zamień strony PDF na obrazy PNG lub JPG."
     },
     "to-text": {
       "label": "Do tekstu",
-      "description": "Wyodrębnij treść tekstową z pliku PDF."
+      "description": "Wyodrębnij tekst z PDF-a."
     },
     "ocr": {
       "label": "OCR",
-      "description": "Umożliw wyszukiwanie w zeskanowanym PDF dzięki OCR."
+      "description": "Rozpoznaj tekst w skanie (OCR), aby dało się go przeszukiwać."
     },
     "protect": {
       "label": "Zabezpiecz",
-      "description": "Dodaj szyfrowanie hasłem do pliku PDF."
+      "description": "Zabezpiecz PDF hasłem (szyfrowanie)."
     },
     "unlock": {
       "label": "Odblokuj",
-      "description": "Usuń znane hasło z pliku PDF."
+      "description": "Usuń znane hasło z PDF-a."
     },
     "redact": {
       "label": "Zamaż",
-      "description": "Trwale zakryj obszary strony na czarno."
+      "description": "Trwale zamaż fragmenty strony."
     },
     "sign": {
       "label": "Wypełnij i podpisz",
-      "description": "Umieść podpis i wypełnij pola formularza, a następnie spłaszcz dokument."
+      "description": "Umieść podpis, wypełnij pola formularza i spłaszcz dokument."
     },
     "metadata": {
       "label": "Metadane",
-      "description": "Wyświetl, edytuj lub usuń informacje o dokumencie."
+      "description": "Wyświetl, edytuj lub usuń metadane dokumentu."
     },
     "watermark": {
       "label": "Znak wodny",
@@ -129,7 +129,7 @@
     },
     "wizard": {
       "label": "Kreator",
-      "description": "Prowadzone krok po kroku tworzenie i eksport."
+      "description": "Tworzenie i eksport PDF-a krok po kroku."
     },
     "pipeline": {
       "label": "Potok",
@@ -137,26 +137,26 @@
     },
     "gdpr-scan": {
       "label": "Skan RODO",
-      "description": "Skanuj PDF w poszukiwaniu danych osobowych (RODO / PII)."
+      "description": "Sprawdź, czy PDF zawiera dane osobowe (RODO)."
     },
     "crop": {
       "label": "Przytnij",
-      "description": "Przytnij marginesy każdej strony."
+      "description": "Przytnij marginesy na każdej stronie."
     },
     "page-marks": {
       "label": "Oznaczenia stron",
-      "description": "Dodaj numery stron oraz tekst nagłówka i stopki."
+      "description": "Dodaj numery stron oraz nagłówek i stopkę."
     },
     "gdpr-redact": {
-      "label": "Auto-zamazanie PII",
-      "description": "Skanuje dokument w poszukiwaniu danych osobowych i automatycznie je zamazuje."
+      "label": "Automatyczne zamazywanie danych",
+      "description": "Znajduje dane osobowe i automatycznie je zamazuje."
     }
   },
   "header": {
     "brandHome": "Strona główna PDF Conduit",
-    "quotaFreeLeft": "darmowych pozostało dziś",
-    "quotaTitleSpent": "Osiągnięto dzienny darmowy limit. Zobacz plany Pro",
-    "quotaTitleLeft": "Darmowe operacje pozostałe na dziś. Zobacz plany Pro",
+    "quotaFreeLeft": "darmowych na dziś",
+    "quotaTitleSpent": "Dzisiejszy darmowy limit wyczerpany. Zobacz plany Pro",
+    "quotaTitleLeft": "Pozostałe darmowe operacje na dziś. Zobacz plany Pro",
     "serverOnline": "Serwer online",
     "serverOffline": "Serwer offline",
     "serverChecking": "Sprawdzanie serwera…",
@@ -179,90 +179,90 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Za darmo · Bez przechowywania plików",
-      "title": "Wszystkie narzędzia PDF, których potrzebujesz, w jednym przejrzystym miejscu.",
-      "lede": "Scalaj, kompresuj, konwertuj, zabezpieczaj i zamazuj pliki PDF w kilka sekund. Przetwarzane natychmiast i nigdy nieprzechowywane na naszych serwerach. Bez konta. Bez instalacji.",
+      "eyebrow": "Za darmo · Nie zapisujemy Twoich plików",
+      "title": "Wszystkie narzędzia PDF w jednym miejscu.",
+      "lede": "Scalaj, kompresuj, konwertuj, zabezpieczaj i zamazuj PDF-y w kilka sekund. Plik jest przetwarzany od razu i nigdy nie trafia na nasze serwery. Bez konta i bez instalacji.",
       "ctaStart": "Zacznij za darmo",
       "ctaExplore": "Poznaj narzędzia",
-      "note": "Pliki nigdy nie są przechowywane · Bez rejestracji · Działa na każdym urządzeniu"
+      "note": "Bez zapisywania plików · Bez rejestracji · Na każdym urządzeniu"
     },
     "trust": {
       "aria": "Dlaczego PDF Conduit",
-      "memoryTitle": "Nigdy nieprzechowywane",
-      "memoryDesc": "Twoje pliki są przetwarzane, a następnie usuwane. Nigdy nie są zapisywane na dysku ani przechowywane na naszych serwerach.",
-      "accountTitle": "Konto niepotrzebne",
-      "accountDesc": "Zaczynasz od razu. Bez e-maila, bez hasła, bez ściany rejestracji.",
-      "browserTitle": "Otwierasz w przeglądarce",
-      "browserDesc": "Nic do zainstalowania. Działa na Windows, macOS, Linux i urządzeniach mobilnych."
+      "memoryTitle": "Nie zapisujemy plików",
+      "memoryDesc": "Twój plik jest przetwarzany i od razu usuwany. Nigdy nie trafia na dysk ani na nasze serwery.",
+      "accountTitle": "Bez konta",
+      "accountDesc": "Zaczynasz od razu, bez e-maila, hasła i rejestracji.",
+      "browserTitle": "Działa w przeglądarce",
+      "browserDesc": "Niczego nie instalujesz. Windows, macOS, Linux i telefon."
     },
     "tools": {
       "title": "Wybierz narzędzie i działaj",
-      "subtitle": "Wszystko, czego potrzebujesz do pracy z PDF. Domyślnie prywatnie.",
+      "subtitle": "Wszystko do pracy z PDF-ami. Prywatność w standardzie.",
       "showMore": "Pokaż wszystkie narzędzia",
       "showLess": "Pokaż mniej"
     },
     "pro": {
       "soon": "Wkrótce",
       "title": "Więcej możliwości z PDF Conduit Pro",
-      "subtitle": "Darmowe narzędzia pozostaną darmowe, na zawsze. Pro dodaje zapas mocy do większych zadań.",
+      "subtitle": "Darmowe narzędzia zostaną darmowe na zawsze. Pro daje więcej mocy przy większych zadaniach.",
       "freeName": "Darmowy",
       "freePrice": "$0",
       "freePer": "/ na zawsze",
       "freeFeat1": "Wszystkie narzędzia PDF",
-      "freeFeat2": "Nic nie jest przechowywane",
+      "freeFeat2": "Żadnych zapisywanych plików",
       "freeFeat3": "Dzienny limit operacji",
       "freeFeat4": "Standardowy limit rozmiaru pliku",
-      "freeFeat5": "Konto niewymagane",
-      "freeCta": "Użyj teraz",
+      "freeFeat5": "Bez konta",
+      "freeCta": "Korzystaj teraz",
       "proName": "Pro",
       "proPrice": "Cennik",
       "proPer": "ogłosimy wkrótce",
-      "proFeat1": "<b>Większe pliki</b>: zdejmij darmowy limit rozmiaru",
-      "proFeat2": "<b>Wyższe dzienne limity</b> dla dużych partii",
-      "proFeat3": "<b>Dostęp wsadowy &amp; API</b> do automatyzacji przepływów pracy",
-      "proFeat4": "<b>Priorytetowe przetwarzanie</b> nawet w godzinach szczytu",
-      "proFeat5": "Wszystko z planu Darmowego, oczywiście",
-      "proCta": "Interesuje mnie to",
+      "proFeat1": "<b>Większe pliki</b>: bez darmowego limitu rozmiaru",
+      "proFeat2": "<b>Wyższe dzienne limity</b> na duże partie plików",
+      "proFeat3": "<b>Przetwarzanie zbiorcze i API</b> do automatyzacji",
+      "proFeat4": "<b>Priorytetowe przetwarzanie</b> nawet w szczycie",
+      "proFeat5": "No i wszystko z planu darmowego",
+      "proCta": "Chcę wiedzieć więcej",
       "proCtaDone": "Dziękujemy za zainteresowanie ✓",
-      "proNote": "Darmowe narzędzia pozostaną darmowe, na zawsze. Cena Pro nie została jeszcze ustalona.",
+      "proNote": "Darmowe narzędzia zostaną darmowe na zawsze. Cennik Pro jeszcze nie jest ustalony.",
       "notifyTitle": "Dziękujemy za zainteresowanie",
-      "notifyMessage": "PDF Conduit Pro pojawi się wkrótce. Darmowe narzędzia i tak pozostaną darmowe."
+      "notifyMessage": "PDF Conduit Pro pojawi się wkrótce. Darmowe narzędzia i tak zostaną darmowe."
     },
     "footer": {
       "aria": "Stopka",
       "tools": "Narzędzia",
       "privacy": "Prywatność",
       "github": "GitHub",
-      "copy": "Twoje pliki są przetwarzane i nigdy nieprzechowywane. Darmowe w użyciu."
+      "copy": "Nie zapisujemy Twoich plików. Korzystanie jest darmowe."
     },
     "how": {
       "title": "Jak to działa",
-      "subtitle": "Trzy kroki. Bez konta, nic do zainstalowania.",
+      "subtitle": "Trzy kroki. Bez konta, nic do instalowania.",
       "step1Title": "Wybierz narzędzie",
-      "step1Desc": "Wybierz to, czego potrzebujesz: scalanie, kompresję, konwersję, zabezpieczanie i więcej.",
+      "step1Desc": "Scalanie, kompresja, konwersja, ochrona hasłem i więcej.",
       "step2Title": "Dodaj plik",
-      "step2Desc": "Przeciągnij go lub wskaż. Twoje pliki nigdy nie są przechowywane na naszych serwerach.",
+      "step2Desc": "Przeciągnij plik albo wybierz go z dysku. Nie zapisujemy go na serwerach.",
       "step3Title": "Pobierz wynik",
-      "step3Desc": "Uruchom, a Twój plik zostanie przetworzony od razu. Gotowy PDF pobierzesz w kilka sekund. Gdy wychodzisz, nic nie pozostaje.",
+      "step3Desc": "Kliknij, a plik zostanie przetworzony od razu i wynik pobierzesz po kilku sekundach. Po wyjściu nie zostaje żaden ślad.",
       "wizardTitle": "Pierwszy raz w PDF Conduit?",
-      "wizardDesc": "Pozwól, aby Kreator przeprowadził Cię krok po kroku przez wybór, uporządkowanie i eksport.",
+      "wizardDesc": "Kreator poprowadzi Cię krok po kroku przez wybór, ułożenie i eksport plików.",
       "wizardCta": "Uruchom Kreatora",
-      "privacyLink": "Zobacz, jak chronimy Twoje pliki →"
+      "privacyLink": "Zobacz, jak dbamy o prywatność plików →"
     },
     "advanced": {
       "title": "Narzędzia zaawansowane",
-      "subtitle": "Chcesz więcej? Twórz wieloetapowe procesy lub sprawdź dokument pod kątem danych osobowych.",
-      "wizardDesc": "Pierwszy raz tutaj? Pozwól, aby kreator przeprowadził Cię krok po kroku.",
-      "pipelineDesc": "Połącz kilka operacji w jeden powtarzalny proces za pomocą wizualnego grafu węzłów.",
-      "gdprDesc": "Przeskanuj plik PDF pod kątem danych osobowych (RODO / PII), a potem od razu je zamaż."
+      "subtitle": "Chcesz więcej? Zbuduj wieloetapowy proces albo sprawdź dokument pod kątem danych osobowych.",
+      "wizardDesc": "Pierwszy raz? Kreator poprowadzi Cię krok po kroku.",
+      "pipelineDesc": "Połącz kilka operacji w jeden powtarzalny proces na wizualnym grafie węzłów.",
+      "gdprDesc": "Przeskanuj PDF pod kątem danych osobowych (RODO) i od razu je zamaż."
     }
   },
   "onboarding": {
     "welcome": {
       "title": "Witamy w PDF Conduit",
-      "message": "Darmowe narzędzia PDF działające bezpośrednio w przeglądarce. Twoje pliki są przetwarzane natychmiast i nigdy nie są przechowywane. Pierwszy raz? Kreator to najłatwiejszy sposób, aby zacząć.",
+      "message": "Darmowe narzędzia PDF prosto w przeglądarce. Pliki są przetwarzane od razu i nigdy ich nie zapisujemy. Nie wiesz, od czego zacząć? Najłatwiej zacząć od Kreatora.",
       "cta": "Wypróbuj Kreatora",
-      "secondary": "Przeglądaj wszystkie narzędzia",
+      "secondary": "Zobacz narzędzia",
       "dismiss": "Zamknij"
     },
     "help": "Pierwsze kroki",
@@ -270,22 +270,22 @@
   },
   "privacy": {
     "title": "Prywatność",
-    "description": "Jak PDF Conduit obchodzi się z Twoimi plikami. W skrócie: nie zatrzymuje ich.",
-    "memoryTitle": "Twoje pliki nigdy nie są przechowywane",
-    "memoryBody": "Twoje pliki nigdy nie są przechowywane. Każda operacja odbywa się w całości w ramach jednego żądania. Przesłany plik jest przetwarzany i zwracany bezpośrednio do Ciebie, a następnie w tej samej chwili usuwany. Nic nie jest zachowywane i nic nigdy nie jest wykorzystywane do innych celów.",
+    "description": "Jak PDF Conduit traktuje Twoje pliki. W skrócie: nie zapisuje ich.",
+    "memoryTitle": "Twoje pliki nie są nigdzie zapisywane",
+    "memoryBody": "Nie zapisujemy Twoich plików. Cała operacja mieści się w jednym żądaniu: przesłany plik jest przetwarzany, odsyłany prosto do Ciebie i natychmiast usuwany. Niczego nie zachowujemy i do niczego innego nie wykorzystujemy.",
     "exceptionTitle": "Jeden tymczasowy wyjątek",
-    "exceptionBody": "Konwersja dokumentów biurowych lub tekstowych (na przykład .docx, .xlsx, .pptx) wymaga bezokienkowego LibreOffice. Tylko na potrzeby tego kroku plik jest zapisywany w odizolowanym folderze tymczasowym, który jest usuwany natychmiast po zakończeniu konwersji. Zwykłe pliki PDF i obrazy nigdy nie dotykają dysku.",
-    "accountTitle": "Bez konta, bez ściany śledzenia",
-    "accountBody": "Nie musisz się rejestrować, logować ani podawać nam adresu e-mail, aby korzystać z darmowych narzędzi. Nie wymagamy danych osobowych do przetworzenia pliku.",
+    "exceptionBody": "Konwersja dokumentów Office i tekstowych (np. .docx, .xlsx, .pptx) wymaga LibreOffice. Tylko na czas tego kroku plik trafia do odizolowanego folderu tymczasowego, usuwanego zaraz po konwersji. PDF-y i obrazy nigdy nie trafiają na dysk.",
+    "accountTitle": "Bez konta i bez śledzenia",
+    "accountBody": "Nie musisz zakładać konta, logować się ani podawać e-maila, aby korzystać z darmowych narzędzi. Do przetworzenia pliku nie potrzebujemy żadnych danych osobowych.",
     "controllerTitle": "Administrator danych",
-    "controllerBody": "Administratorem danych przetwarzanych w ramach PDF Conduit jest operator serwisu PDF Conduit. Kontakt: hello@pdfconduit.com. Ponieważ pliki nie są przechowywane, a korzystanie nie wymaga konta, przetwarzanie danych osobowych ogranicza się do technicznych logów serwera (adres IP) niezbędnych do ochrony usługi przed nadużyciami (art. 6 ust. 1 lit. f RODO).",
-    "limitsTitle": "Limity planu darmowego",
-    "limitsBody1": "Aby utrzymać darmową usługę dostępną dla wszystkich, żądania podlegają dziennemu limitowi operacji, limitowi rozmiaru pojedynczego pliku i podstawowemu ograniczeniu częstotliwości. Gdy osiągniesz limit, aplikacja wyraźnie Cię o tym poinformuje. Wyższe limity, większe pliki oraz dostęp wsadowy/API są planowane w przyszłym płatnym planie. Zobacz",
+    "controllerBody": "Administratorem danych przetwarzanych w PDF Conduit jest operator serwisu PDF Conduit. Kontakt: hello@pdfconduit.com. Ponieważ pliki nie są zapisywane, a konto nie jest wymagane, przetwarzanie danych osobowych ogranicza się do technicznych logów serwera (adres IP), niezbędnych do ochrony usługi przed nadużyciami (art. 6 ust. 1 lit. f RODO).",
+    "limitsTitle": "Limity darmowego planu",
+    "limitsBody1": "Aby darmowa usługa była dostępna dla wszystkich, obowiązują dzienny limit operacji, limit rozmiaru pliku i podstawowe ograniczenie liczby żądań. Gdy osiągniesz limit, aplikacja jasno Ci to zakomunikuje. Wyższe limity, większe pliki i dostęp do API planujemy w płatnym planie. Zobacz",
     "limitsLink": "plany Pro",
     "limitsBody2": "na stronie głównej.",
     "questionsTitle": "Pytania",
-    "questionsBody": "PDF Conduit jest udostępniany w stanie takim, jaki jest. Ta strona opisuje nasze obecne zachowanie i może być aktualizowana w miarę rozwoju produktu.",
-    "backHome": "Powrót do strony głównej"
+    "questionsBody": "PDF Conduit udostępniamy w obecnej postaci. Ta strona opisuje aktualne działanie serwisu i może się zmieniać wraz z jego rozwojem.",
+    "backHome": "Wróć na stronę główną"
   },
   "errors": {
     "generic": {
@@ -293,47 +293,47 @@
       "detail": "Nie udało się ukończyć operacji."
     },
     "quota_exceeded": {
-      "title": "Wykorzystałeś dzisiejsze darmowe operacje",
-      "detail": "Dzienny darmowy limit został na razie osiągnięty.",
-      "hint": "Wyższe dzienne limity nadchodzą z PDF Conduit Pro. Limit resetuje się jutro. Albo uzyskaj wcześniejszy dostęp poniżej."
+      "title": "To już wszystkie darmowe operacje na dziś",
+      "detail": "Dzisiejszy darmowy limit został wyczerpany.",
+      "hint": "Limit odnowi się jutro. Wyższe limity pojawią się w PDF Conduit Pro. Wcześniejszy dostęp możesz zamówić poniżej."
     },
     "rate_limited": {
       "title": "Zwolnij na chwilę",
       "detail": "Zbyt wiele żądań w krótkim czasie.",
-      "hintRetry": "{seconds, plural, one {Spróbuj ponownie za około # sekundę.} few {Spróbuj ponownie za około # sekundy.} many {Spróbuj ponownie za około # sekund.} other {Spróbuj ponownie za około # sekundy.}}",
-      "hintWait": "Poczekaj kilka sekund i spróbuj ponownie."
+      "hintRetry": "{seconds, plural, one {Spróbuj ponownie za ok. # sekundę.} few {Spróbuj ponownie za ok. # sekundy.} many {Spróbuj ponownie za ok. # sekund.} other {Spróbuj ponownie za ok. # sekundy.}}",
+      "hintWait": "Odczekaj kilka sekund i spróbuj ponownie."
     },
     "server_busy": {
-      "title": "Osiągnęliśmy właśnie pełne obciążenie",
-      "detail": "Serwer obsługuje bardzo dużo żądań.",
-      "hint": "Spróbuj ponownie za chwilę. Priorytetowe przetwarzanie nadchodzi z Pro."
+      "title": "Serwer jest chwilowo przeciążony",
+      "detail": "Obsługujemy teraz bardzo dużo żądań.",
+      "hint": "Spróbuj ponownie za chwilę. W Pro pojawi się priorytetowe przetwarzanie."
     },
     "processing_timeout": {
       "title": "To trwało zbyt długo",
-      "detail": "Upłynął limit czasu operacji, zanim się zakończyła.",
-      "hint": "Spróbuj mniejszego lub prostszego pliku albo podziel pracę na etapy."
+      "detail": "Operacja przekroczyła limit czasu.",
+      "hint": "Spróbuj z mniejszym lub prostszym plikiem albo podziel pracę na etapy."
     },
     "too_large": {
-      "title": "Ten plik przekracza darmowy limit rozmiaru",
-      "detail": "Przesyłany plik jest większy, niż pozwala plan darmowy.",
-      "hint": "Większe pliki nadchodzą z PDF Conduit Pro."
+      "title": "Plik przekracza darmowy limit rozmiaru",
+      "detail": "Plik jest większy, niż pozwala darmowy plan.",
+      "hint": "Obsługa większych plików pojawi się w PDF Conduit Pro."
     },
     "office_disabled": {
-      "title": "Konwersja dokumentów biurowych jest niedostępna",
-      "detail": "Konwersja dokumentów biurowych nie jest włączona na tym serwerze.",
-      "hint": "Nadal możesz pracować z plikami PDF i obrazami."
+      "title": "Konwersja dokumentów Office jest niedostępna",
+      "detail": "Ten serwer nie ma włączonej konwersji dokumentów Office.",
+      "hint": "Nadal możesz pracować z PDF-ami i obrazami."
     },
     "operation_failed": {
       "title": "Nie udało się przetworzyć tego pliku",
-      "detail": "Operacja nie powiodła się dla tego pliku wejściowego.",
-      "hint": "Sprawdź, czy plik jest prawidłowym, niezaszyfrowanym plikiem PDF i spróbuj ponownie."
+      "detail": "Operacja nie powiodła się dla tego pliku.",
+      "hint": "Sprawdź, czy to poprawny, niezaszyfrowany PDF, i spróbuj ponownie."
     },
     "bad_request": {
-      "title": "Sprawdź dane wejściowe",
+      "title": "Sprawdź wprowadzone dane",
       "detail": "Żądanie było nieprawidłowe."
     },
     "network_error": {
-      "title": "Nie można połączyć się z serwerem",
+      "title": "Brak połączenia z serwerem",
       "detail": "Żądanie nie dotarło do PDF Conduit.",
       "hint": "Sprawdź połączenie i spróbuj ponownie."
     }
@@ -342,11 +342,11 @@
     "done": "Gotowe",
     "original": "Oryginał",
     "result": "Wynik",
-    "saved": "Zaoszczędzono",
+    "saved": "Oszczędność",
     "target": "Cel",
     "targetReached": "osiągnięto",
     "targetNotReached": "nie osiągnięto",
-    "batchFailures": "Niektóre pliki wejściowe nie powiodły się: {{count}}",
+    "batchFailures": "Nie udało się przetworzyć plików: {{count}}",
     "seeProPlans": "Zobacz plany Pro →",
     "seeProPlansShort": "Zobacz plany Pro",
     "httpStatus": "· HTTP {{status}}",
@@ -356,8 +356,8 @@
     "close": "Zamknij"
   },
   "viewer": {
-    "renderingPreview": "Renderowanie podglądu…",
-    "renderError": "Nie udało się wyrenderować tego pliku PDF.",
+    "renderingPreview": "Generowanie podglądu…",
+    "renderError": "Nie udało się wyświetlić tego PDF-a.",
     "pageCaption": "Strona {{n}}"
   },
   "toast": {
@@ -366,63 +366,63 @@
   "pages": {
     "merge": {
       "title": "Scal",
-      "description": "Połącz kilka plików PDF, obrazów lub dokumentów biurowych w jeden plik PDF.",
-      "hint": "Pliki PDF, obrazy i dokumenty biurowe.",
-      "outputName": "Nazwa pliku wynikowego (opcjonalnie)",
+      "description": "Połącz kilka PDF-ów, obrazów lub dokumentów Office w jeden PDF.",
+      "hint": "Pliki PDF, obrazy i dokumenty Office.",
+      "outputName": "Nazwa wyniku (opcjonalnie)",
       "outputNamePlaceholder": "scalony.pdf",
-      "outputNameHelp": "Domyślnie nazwa pierwszego pliku z sufiksem „_merged”.",
+      "outputNameHelp": "Domyślnie: nazwa pierwszego pliku z końcówką „_merged”.",
       "removeAria": "Usuń",
       "submit": "Scal",
       "loading": "Scalanie…",
-      "reorderHint": "Przeciągaj listę poniżej, aby ustawić kolejność."
+      "reorderHint": "Przeciągaj pliki na liście, aby ustawić kolejność."
     },
     "extract": {
       "title": "Wyodrębnij",
-      "description": "Wyciągnij wybrane strony z pliku PDF.",
-      "hint": "Pliki PDF. Kilka plików wraca jako ZIP.",
-      "batchNote": "Wybrano plików: {{count}}. Zakres stron dotyczy każdego; wyniki wracają jako ZIP.",
+      "description": "Wyciągnij wybrane strony z PDF-a.",
+      "hint": "Pliki PDF. Kilka plików pobierzesz jako ZIP.",
+      "batchNote": "Wybrano plików: {{count}}. Zakres stron dotyczy każdego z nich; wyniki pobierzesz jako ZIP.",
       "pages": "Strony",
       "pagesPlaceholder": "np. 1,3,5-8",
       "pagesHelp": "Puste = wszystkie strony. Składnia:",
       "output": "Wynik",
-      "separate": "Podziel na jeden plik na stronę (ZIP)",
+      "separate": "Każda strona jako osobny plik (ZIP)",
       "submit": "Wyodrębnij",
       "loading": "Wyodrębnianie…"
     },
     "compress": {
       "title": "Kompresuj",
-      "description": "Zmniejsz plik PDF do docelowego rozmiaru.",
-      "hint": "Jeden lub więcej plików PDF (kilka plików → ZIP).",
+      "description": "Zmniejsz PDF do zadanego rozmiaru.",
+      "hint": "Jeden lub więcej PDF-ów (kilka plików → ZIP).",
       "target": "Rozmiar docelowy",
       "targetPlaceholder": "np. 5MB, 800KB",
       "targetHelp1": "Akceptuje",
       "targetHelp2": "lub liczbę bajtów.",
-      "targetError": "Wpisz rozmiar, na przykład",
+      "targetError": "Wpisz rozmiar, np.",
       "amountError": "Podaj liczbę dodatnią.",
       "unitLabel": "Jednostka",
       "submit": "Kompresuj",
       "loading": "Kompresowanie…",
-      "noopWarning": "Cel ≥ rozmiar pliku. Bez zmniejszenia",
-      "blankWarning": "Podaj docelowy rozmiar, aby skompresować.",
-      "allNoopWarning": "Cel jest równy lub większy od każdego pliku. Nie ma czego zmniejszać.",
-      "dpi": "Rozdzielczość obrazu",
-      "dpiHelp": "Ogranicz osadzone obrazy do tej rozdzielczości, aby zaoszczędzić więcej.",
-      "dpiNone": "Oryginał (bez limitu)",
+      "noopWarning": "Cel ≥ rozmiar pliku. Nie ma czego zmniejszać",
+      "blankWarning": "Podaj docelowy rozmiar.",
+      "allNoopWarning": "Cel jest nie mniejszy niż rozmiar każdego z plików. Nie ma czego zmniejszać.",
+      "dpi": "Rozdzielczość obrazów",
+      "dpiHelp": "Ogranicza rozdzielczość osadzonych obrazów, co daje dodatkową oszczędność.",
+      "dpiNone": "Oryginalna (bez limitu)",
       "dpiScreen": "Ekran (72 DPI)",
       "dpiEbook": "E-book (150 DPI)",
       "dpiPrint": "Druk (300 DPI)",
-      "grayscale": "Konwertuj obrazy na skalę szarości",
-      "grayscaleHelp": "Ponownie koduje obrazy bez koloru, aby zmniejszyć pliki.",
-      "floorNotice": "Najmniejszy możliwy rozmiar tego pliku to około {{floor}}. Nie można osiągnąć celu {{target}}. Zamiast tego zapisano najmniejszą wersję."
+      "grayscale": "Zamień obrazy na odcienie szarości",
+      "grayscaleHelp": "Zapisuje obrazy bez kolorów, aby plik był mniejszy.",
+      "floorNotice": "Najmniejszy osiągalny rozmiar tego pliku to ok. {{floor}}. Celu {{target}} nie da się osiągnąć, więc zapisano najmniejszą wersję."
     },
     "rotate": {
       "title": "Obróć",
       "description": "Obróć strony o 90°, 180° lub 270°.",
-      "hint": "Jeden lub więcej plików PDF (kilka plików → ZIP).",
+      "hint": "Jeden lub więcej PDF-ów (kilka plików → ZIP).",
       "angle": "Kąt",
       "angleAria": "Kąt obrotu",
       "dir90": "Obraca o 90° w prawo",
-      "dir180": "Obraca o 180° (odwrócenie)",
+      "dir180": "Obraca o 180° (do góry nogami)",
       "dir270": "Obraca o 270° w prawo",
       "pages": "Strony",
       "pagesPlaceholder": "np. 1,3,5-8 (puste = wszystkie)",
@@ -432,21 +432,21 @@
     "arrange": {
       "title": "Uporządkuj",
       "description": "Zmień kolejność, odwróć lub powiel strony.",
-      "hint": "Jeden plik PDF.",
+      "hint": "Jeden PDF.",
       "order": "Kolejność stron",
       "orderPlaceholder": "np. 3,1,2",
       "orderHelp1": "zmienia kolejność",
       "orderHelp2": "odwraca",
-      "orderHelp3": "powtórzenia duplikują",
+      "orderHelp3": "powtórzenia powielają stronę",
       "submit": "Uporządkuj",
       "loading": "Porządkowanie…"
     },
     "nup": {
       "title": "Stron na arkusz",
-      "description": "Umieść kilka stron na arkuszu lub złóż broszurę szytą zeszytowo.",
-      "privacyLine": "Twoje pliki są układane prywatnie i nigdy nie są przechowywane.",
-      "hint": "Pliki PDF. Wiele plików wraca jako ZIP.",
-      "batchNote": "Wybrano plików: {{count}}. Każdy jest układany osobno; wyniki wracają jako ZIP.",
+      "description": "Zmieść kilka stron na jednym arkuszu lub złóż broszurę.",
+      "privacyLine": "Nie zapisujemy Twoich plików.",
+      "hint": "Pliki PDF. Kilka plików pobierzesz jako ZIP.",
+      "batchNote": "Wybrano plików: {{count}}. Każdy jest układany osobno; wyniki pobierzesz jako ZIP.",
       "layout": "Układ",
       "layout2up": "2 na stronę",
       "layout4up": "4 na stronę (2×2)",
@@ -455,106 +455,106 @@
       "layout9up": "9 na stronę (3×3)",
       "mode": "Tryb",
       "booklet": "Broszura (szycie zeszytowe)",
-      "bookletHelp": "Zmień kolejność stron, aby wydrukowany i złożony plik czytał się po kolei.",
+      "bookletHelp": "Układa strony tak, aby po wydrukowaniu i złożeniu czytało się je po kolei.",
       "submit": "Zastosuj układ",
-      "loading": "Stosowanie układu…"
+      "loading": "Układanie…"
     },
     "toPdf": {
       "title": "Do PDF",
-      "description": "Konwertuj obrazy, dokumenty biurowe, Markdown i HTML do PDF.",
-      "hint": "Obrazy, dokumenty biurowe, Markdown i HTML (z zachowaniem formatowania). Każdy plik wejściowy staje się osobnym PDF (kilka → ZIP).",
-      "hintNoOffice": "Obrazy (PNG, JPG, WebP…). Każdy plik wejściowy staje się osobnym PDF (kilka → ZIP). Ten serwer nie konwertuje dokumentów biurowych.",
+      "description": "Zamień obrazy, dokumenty Office, Markdown i HTML na PDF.",
+      "hint": "Obrazy, dokumenty Office, Markdown i HTML (z zachowaniem formatowania). Każdy plik zamienia się w osobny PDF (kilka → ZIP).",
+      "hintNoOffice": "Obrazy (PNG, JPG, WebP…). Każdy plik zamienia się w osobny PDF (kilka → ZIP). Ten serwer nie konwertuje dokumentów Office.",
       "pageSize": "Rozmiar strony",
       "sizeFit": "Dopasuj do treści",
       "sizeLetter": "Letter",
-      "sizeHelp": "Obrazy są umieszczane na stronie tego rozmiaru (dokumenty biurowe zachowują własny).",
+      "sizeHelp": "Obrazy trafiają na stronę tego rozmiaru (dokumenty Office zachowują własny).",
       "submit": "Konwertuj",
       "loading": "Konwertowanie…"
     },
     "toImages": {
       "title": "Do obrazów",
-      "description": "Renderuj strony PDF do formatu PNG lub JPG.",
-      "privacyLine": "Twoje pliki są konwertowane prywatnie i nigdy nie są przechowywane.",
-      "hint": "Pliki PDF. Wiele stron lub plików wraca jako ZIP.",
-      "batchNote": "Wybrano plików: {{count}}. Zakres stron dotyczy każdego; wyniki wracają jako ZIP.",
+      "description": "Zamień strony PDF na obrazy PNG lub JPG.",
+      "privacyLine": "Konwersja przebiega prywatnie. Nie zapisujemy Twoich plików.",
+      "hint": "Pliki PDF. Wiele stron lub plików pobierzesz jako ZIP.",
+      "batchNote": "Wybrano plików: {{count}}. Zakres stron dotyczy każdego z nich; wyniki pobierzesz jako ZIP.",
       "format": "Format",
       "dpi": "DPI",
-      "dpiHelp": "Wyższe = ostrzejsze i większe (36–600).",
-      "dpiError": "Podaj DPI z zakresu od 36 do 600.",
+      "dpiHelp": "Wyższe = ostrzej i większy plik (36–600).",
+      "dpiError": "Podaj DPI z zakresu 36–600.",
       "quality": "Jakość JPG",
-      "qualityHelp": "Wyższa = lepszy obraz, większy plik.",
+      "qualityHelp": "Wyższa = lepszy obraz i większy plik.",
       "pages": "Strony",
       "pagesPlaceholder": "np. 1-3 (puste = wszystkie)",
-      "submit": "Renderuj obrazy",
-      "loading": "Renderowanie…",
+      "submit": "Generuj obrazy",
+      "loading": "Generowanie…",
       "color": "Kolor",
       "transparent": "Przezroczyste tło",
       "transparentHelp": "Tylko PNG. Tło strony pozostaje przezroczyste.",
-      "grayscale": "Skala szarości"
+      "grayscale": "Odcienie szarości"
     },
     "toText": {
       "title": "Do tekstu",
-      "description": "Wyodrębnij treść tekstową z pliku PDF.",
-      "hint": "Pliki PDF (kilka wraca jako ZIP).",
-      "batchNote": "Wybrano plików: {{count}}. Zakres stron dotyczy każdego; wyniki wracają jako ZIP.",
+      "description": "Wyodrębnij tekst z PDF-a.",
+      "hint": "Pliki PDF (kilka pobierzesz jako ZIP).",
+      "batchNote": "Wybrano plików: {{count}}. Zakres stron dotyczy każdego z nich; wyniki pobierzesz jako ZIP.",
       "format": "Format",
       "formatTxt": "Zwykły tekst (.txt)",
       "formatDocx": "Dokument Word (.docx)",
       "pages": "Strony",
       "pagesPlaceholder": "np. 1-3 (puste = wszystkie)",
       "submit": "Wyodrębnij tekst",
-      "loading": "Wyodrębnianie tekstu…"
+      "loading": "Wyodrębnianie…"
     },
     "ocr": {
       "title": "OCR",
-      "description": "Uczyń zeskanowany PDF przeszukiwalnym. Dodaje niewidoczną warstwę tekstu.",
-      "hint": "Zeskanowany PDF lub obraz. Tekst staje się zaznaczalny.",
+      "description": "Zamień skan w przeszukiwalny PDF. Dodaje niewidoczną warstwę tekstu.",
+      "hint": "Zeskanowany PDF lub obraz. Tekst będzie można zaznaczać.",
       "languages": "Języki",
       "languagesPlaceholder": "np. eng lub eng+deu (puste = eng)",
-      "languagesHelp": "Kody języków Tesseract; pakiet języka musi być zainstalowany na serwerze.",
+      "languagesHelp": "Kody języków Tesseracta; pakiet językowy musi być zainstalowany na serwerze.",
       "langAdvanced": "Zaawansowane: wpisz kody języków ręcznie",
-      "langNone": "Nie wybrano języka — zostanie użyty angielski (eng).",
-      "submit": "Uczyń przeszukiwalnym",
+      "langNone": "Nie wybrano języka, więc użyjemy angielskiego (eng).",
+      "submit": "Rozpoznaj tekst",
       "loading": "Rozpoznawanie tekstu…"
     },
     "protect": {
       "title": "Zabezpiecz",
-      "description": "Dodaj szyfrowanie hasłem do pliku PDF.",
-      "privacyLine": "Twoje pliki i hasła są przetwarzane prywatnie i nigdy nie są przechowywane.",
-      "hint": "Jeden lub więcej plików PDF (kilka plików → ZIP).",
+      "description": "Zabezpiecz PDF hasłem (szyfrowanie).",
+      "privacyLine": "Nie zapisujemy Twoich plików ani haseł.",
+      "hint": "Jeden lub więcej PDF-ów (kilka plików → ZIP).",
       "userPassword": "Hasło użytkownika",
       "userPasswordHelp": "Wymagane do otwarcia dokumentu.",
       "userPasswordError": "Hasło użytkownika jest wymagane.",
       "confirmPassword": "Potwierdź hasło użytkownika",
-      "confirmError": "Hasła nie są zgodne.",
+      "confirmError": "Hasła się różnią.",
       "ownerPassword": "Hasło właściciela (opcjonalnie)",
-      "ownerPasswordHelp": "Kontroluje uprawnienia; domyślnie ustawiane na hasło użytkownika.",
+      "ownerPasswordHelp": "Steruje uprawnieniami; domyślnie takie samo jak hasło użytkownika.",
       "submit": "Zabezpiecz",
       "loading": "Szyfrowanie…",
       "encryption": "Siła szyfrowania",
-      "encryption128": "AES-128 (zgodność)",
-      "encryption256": "AES-256 (silniejsze)",
-      "encryptionHelp": "AES-128 otwiera się w każdym czytniku PDF; AES-256 jest silniejsze, ale wymaga nowoczesnego czytnika."
+      "encryption128": "AES-128 (pełna zgodność)",
+      "encryption256": "AES-256 (mocniejsze)",
+      "encryptionHelp": "AES-128 otworzysz w każdym czytniku PDF; AES-256 jest mocniejsze, ale wymaga nowszego czytnika."
     },
     "unlock": {
       "title": "Odblokuj",
-      "description": "Usuń znane hasło z pliku PDF.",
-      "privacyLine": "Twoje pliki i hasła są przetwarzane prywatnie i nigdy nie są przechowywane.",
-      "hint": "Jeden lub więcej zabezpieczonych plików PDF (kilka plików → ZIP).",
+      "description": "Usuń znane hasło z PDF-a.",
+      "privacyLine": "Nie zapisujemy Twoich plików ani haseł.",
+      "hint": "Jeden lub więcej zabezpieczonych PDF-ów (kilka plików → ZIP).",
       "password": "Hasło",
-      "passwordHelp": "Bieżące hasło używane do otwarcia pliku (plików) PDF.",
+      "passwordHelp": "Obecne hasło otwierające PDF.",
       "passwordError": "Hasło jest wymagane.",
       "submit": "Odblokuj",
       "loading": "Odblokowywanie…"
     },
     "redact": {
       "title": "Zamaż",
-      "description": "Narysuj prostokąty na treści, aby trwale ją zaczernić.",
-      "hint": "Jeden plik PDF. Następnie przeciągnij prostokąty nad obszarami do zamazania.",
+      "description": "Zaznacz obszary, które chcesz trwale zamazać.",
+      "hint": "Jeden PDF. Przeciągnij prostokąty po obszarach do zamazania.",
       "dragHint": "Przeciągnij po stronie, aby zaznaczyć obszar.",
-      "chooseAnother": "Wybierz inny plik PDF",
+      "chooseAnother": "Wybierz inny PDF",
       "regions": "Obszary ({{count}})",
-      "regionsEmpty": "Brak obszarów. Przeciągnij prostokąt nad treścią, którą chcesz usunąć.",
+      "regionsEmpty": "Brak obszarów. Przeciągnij prostokąt po treści, którą chcesz usunąć.",
       "removeRegion": "Usuń obszar",
       "submit": "Zamaż i pobierz",
       "loading": "Zamazywanie…",
@@ -562,65 +562,65 @@
     },
     "sign": {
       "title": "Wypełnij i podpisz",
-      "description": "Wypełnij pola formularza PDF (AcroForm) i dodaj podpis, a następnie spłaszcz dokument. Nic nie jest przechowywane, wszystko dzieje się w Twojej sesji.",
-      "hint": "Jeden plik PDF. Wykrywamy pola formularza do wypełnienia. Następnie utwórz podpis i przeciągnij go na stronę.",
+      "description": "Wypełnij pola formularza (AcroForm), dodaj podpis i spłaszcz dokument. Nic nie zapisujemy, wszystko dzieje się w Twojej sesji.",
+      "hint": "Jeden PDF. Wykrywamy pola formularza; utwórz podpis i przeciągnij go na stronę.",
       "dragHint": "Przeciągnij po stronie, aby umieścić podpis.",
-      "chooseAnother": "Wybierz inny plik PDF",
-      "needSignature": "Najpierw utwórz podpis, a następnie przeciągnij ramkę na stronie, aby go umieścić.",
+      "chooseAnother": "Wybierz inny PDF",
+      "needSignature": "Najpierw utwórz podpis, potem przeciągnij ramkę na stronie, aby go umieścić.",
       "signature": "Twój podpis",
       "tabDraw": "Narysuj",
       "tabType": "Wpisz",
       "tabUpload": "Prześlij",
       "clearPad": "Wyczyść",
       "useSignature": "Użyj tego podpisu",
-      "typePlaceholder": "Wpisz swoje imię i nazwisko",
-      "currentSignature": "Bieżący podpis",
-      "placements": "Rozmieszczenia ({{count}})",
-      "placementsNoSig": "Utwórz podpis, aby zacząć go umieszczać.",
-      "placementsEmpty": "Brak rozmieszczeń. Przeciągnij ramkę w miejsce, w którym ma znaleźć się podpis.",
-      "removePlacement": "Usuń rozmieszczenie",
+      "typePlaceholder": "Wpisz imię i nazwisko",
+      "currentSignature": "Aktualny podpis",
+      "placements": "Umieszczone podpisy ({{count}})",
+      "placementsNoSig": "Utwórz podpis, aby móc go umieszczać.",
+      "placementsEmpty": "Nic tu jeszcze nie ma. Przeciągnij ramkę tam, gdzie ma być podpis.",
+      "removePlacement": "Usuń podpis",
       "flatten": "Spłaszcz dokument",
-      "flattenHint": "Trwale nanosi podpis i pola formularza na stronę, tak aby nie można było ich edytować.",
+      "flattenHint": "Utrwala podpis i pola formularza na stronie, tak aby nie można było ich już edytować.",
       "submit": "Podpisz i pobierz",
       "loading": "Podpisywanie…",
       "formFields": "Pola formularza",
-      "formFieldsHint": "Ten PDF ma pola do wypełnienia. Edytuj je poniżej, a następnie wypełnij formularz.",
+      "formFieldsHint": "Ten PDF ma pola do wypełnienia. Uzupełnij je poniżej, a potem wypełnij formularz.",
       "fillForm": "Wypełnij formularz i pobierz",
-      "fillFlatten": "Spłaszcz (uczyń nieedytowalnym)",
+      "fillFlatten": "Spłaszcz (zablokuj edycję)",
       "noFields": "Nie wykryto pól do wypełnienia."
     },
     "metadata": {
       "title": "Metadane",
-      "description": "Wyświetl, edytuj lub usuń informacje o dokumencie.",
-      "hint": "Pliki PDF. Te same zmiany dotyczą każdego pliku (kilka wraca jako ZIP).",
-      "batchNote": "Te same pola są stosowane do każdego pliku. Podgląd odczytuje tylko pierwszy plik.",
-      "readCurrent": "Odczytaj bieżące",
-      "reading": "Odczytywanie…",
+      "description": "Wyświetl, edytuj lub usuń metadane dokumentu.",
+      "hint": "Pliki PDF. Te same zmiany trafią do każdego (kilka pobierzesz jako ZIP).",
+      "batchNote": "Te same pola zostaną zastosowane do każdego pliku. Podgląd pokazuje tylko pierwszy.",
+      "readCurrent": "Wczytaj obecne",
+      "reading": "Wczytywanie…",
       "titleField": "Tytuł",
       "author": "Autor",
       "subject": "Temat",
       "keywords": "Słowa kluczowe",
-      "strip": "Usuń wszystkie metadane (ignoruje pola powyżej)",
+      "strip": "Usuń wszystkie metadane (pomija pola powyżej)",
       "submitStrip": "Usuń metadane",
-      "submitApply": "Zastosuj metadane",
+      "submitApply": "Zapisz metadane",
       "loading": "Aktualizowanie…"
     },
     "watermark": {
       "title": "Znak wodny",
       "description": "Nanieś tekst lub obraz na każdą stronę.",
-      "privacyLine": "Twoje pliki są znakowane prywatnie i nigdy nie są przechowywane.",
-      "hint": "Jeden lub więcej plików PDF do oznaczenia (kilka plików → ZIP).",
+      "privacyLine": "Nie zapisujemy Twoich plików.",
+      "hint": "Jeden lub więcej PDF-ów (kilka plików → ZIP).",
       "typeAria": "Typ znaku wodnego",
       "typeText": "Tekst",
       "typeImage": "Obraz",
       "text": "Tekst znaku wodnego",
       "textPlaceholder": "np. POUFNE",
       "image": "Obraz znaku wodnego",
-      "imageHint": "Jeden obraz do nałożenia (PNG, JPG, …).",
+      "imageHint": "Jeden obraz do naniesienia (PNG, JPG…).",
       "opacity": "Krycie",
       "rotation": "Obrót",
       "scale": "Skala",
-      "submit": "Zastosuj znak wodny",
+      "submit": "Nanieś znak wodny",
       "needText": "Wpisz tekst znaku wodnego.",
       "needImage": "Wybierz obraz.",
       "loading": "Nanoszenie…",
@@ -630,41 +630,41 @@
       "layoutDiagonal": "Ukośnie",
       "position": "Pozycja",
       "positionCenter": "Środek",
-      "positionTopLeft": "Lewy górny",
-      "positionTopRight": "Prawy górny",
-      "positionBottomLeft": "Lewy dolny",
-      "positionBottomRight": "Prawy dolny",
+      "positionTopLeft": "Lewy górny róg",
+      "positionTopRight": "Prawy górny róg",
+      "positionBottomLeft": "Lewy dolny róg",
+      "positionBottomRight": "Prawy dolny róg",
       "color": "Kolor tekstu"
     },
     "wizard": {
       "title": "Kreator",
-      "description": "Prowadzone krok po kroku tworzenie i eksport.",
-      "step1": "Wybierz",
-      "step2": "Uporządkuj",
+      "description": "Tworzenie i eksport PDF-a krok po kroku.",
+      "step1": "Wybór",
+      "step2": "Kolejność",
       "step3": "Ustawienia stron",
       "step4": "Kompresja",
       "step5": "Eksport",
       "selectTitle": "Wybierz pliki",
-      "selectHint": "Pliki PDF, obrazy i dokumenty biurowe.",
+      "selectHint": "Pliki PDF, obrazy i dokumenty Office.",
       "arrangeTitle": "Kolejność i zakresy stron",
-      "arrangeHint": "Przeciągaj, aby zmienić kolejność. Zakresy stron dotyczą tylko plików PDF (puste = wszystkie).",
-      "rangePlaceholder": "strony np. 1-3",
+      "arrangeHint": "Przeciągaj, aby zmienić kolejność. Zakresy stron dotyczą tylko PDF-ów (puste = wszystkie).",
+      "rangePlaceholder": "strony, np. 1-3",
       "typeImage": "obraz",
       "typeDocument": "dokument",
       "removeAria": "Usuń",
       "pageSettingsTitle": "Ustawienia stron",
-      "imagePageSize": "Rozmiar strony dla obrazów wejściowych",
+      "imagePageSize": "Rozmiar strony dla obrazów",
       "sizeFit": "Dopasuj do obrazu",
       "sizeLetter": "Letter",
-      "imagePageSizeHelp": "Obrazy i dokumenty biurowe są konwertowane do PDF w tym rozmiarze przed scaleniem.",
+      "imagePageSizeHelp": "Obrazy i dokumenty Office są przed scaleniem konwertowane do PDF w tym rozmiarze.",
       "compressionTitle": "Kompresja",
-      "compressToggle": "Kompresuj eksportowany PDF do docelowego rozmiaru",
+      "compressToggle": "Kompresuj wynikowy PDF do docelowego rozmiaru",
       "target": "Rozmiar docelowy",
       "targetPlaceholder": "np. 5MB",
-      "reviewTitle": "Przegląd i eksport",
+      "reviewTitle": "Podsumowanie i eksport",
       "sumFiles": "Pliki",
       "sumOrder": "Kolejność",
-      "sumImageSize": "Rozmiar strony obrazu",
+      "sumImageSize": "Rozmiar strony obrazów",
       "sumCompress": "Kompresja",
       "compressNo": "nie",
       "preparing": "Przygotowywanie {{current}}/{{total}}: {{name}}",
@@ -679,9 +679,9 @@
       "title": "Potok",
       "description": "Połącz operacje w graf węzłów.",
       "sourceTitle": "Pliki źródłowe",
-      "sourceHint": "Zasilają one węzeł SOURCE; węzły niżej odwołują się do nich po nazwie.",
+      "sourceHint": "Te pliki trafiają do węzła SOURCE; kolejne węzły wskazują je po nazwie.",
       "nodes": "Węzły",
-      "nodeCount": "{count, plural, one {# węzeł operacji} few {# węzły operacji} many {# węzłów operacji} other {# węzła operacji}}",
+      "nodeCount": "{count, plural, one {# węzeł} few {# węzły} many {# węzłów} other {# węzła}}",
       "sourceFiles": "Pliki ({{count}})",
       "sourceAddAbove": "Dodaj pliki źródłowe powyżej.",
       "removeNode": "Usuń węzeł",
@@ -714,8 +714,8 @@
       "addNode": "Dodaj węzeł:",
       "validate": "Sprawdź",
       "run": "Uruchom potok",
-      "running": "Uruchamianie…",
-      "valid": "✓ Potok jest prawidłowy.",
+      "running": "Przetwarzanie…",
+      "valid": "✓ Potok jest poprawny.",
       "jsonTitle": "JSON potoku",
       "fieldHeaderCenter": "Nagłówek (środek)",
       "fieldFooterCenter": "Stopka (środek)",
@@ -725,10 +725,10 @@
     },
     "gdprScan": {
       "title": "Skan RODO / PII",
-      "description": "Znajdź dane osobowe w pliku PDF, zanim go udostępnisz.",
-      "hint": "Jeden plik PDF, obraz lub dokument biurowy.",
-      "privacyLine": "Twój plik jest skanowany prywatnie i nigdy nie jest przechowywany ani przesyłany komukolwiek.",
-      "submit": "Skanuj w poszukiwaniu danych osobowych",
+      "description": "Znajdź dane osobowe w PDF-ie, zanim go udostępnisz.",
+      "hint": "Jeden PDF, obraz lub dokument Office.",
+      "privacyLine": "Plik skanujemy prywatnie. Nigdy go nie zapisujemy ani nikomu nie udostępniamy.",
+      "submit": "Znajdź dane osobowe",
       "loading": "Skanowanie…",
       "riskLabel": "ryzyko",
       "riskBadgeAria": "Poziom ryzyka: {{level}}",
@@ -738,15 +738,15 @@
         "medium": "Średnie",
         "high": "Wysokie",
         "noneExplain": "W tym dokumencie nie wykryto danych osobowych.",
-        "lowExplain": "Znaleziono jeden identyfikator o niskim ryzyku.",
-        "mediumExplain": "Znaleziono kilka identyfikatorów o niskim ryzyku, ale nic finansowego, krajowego identyfikatora ani kategorii szczególnej.",
-        "highExplain": "Występują dane finansowe, krajowy identyfikator lub dane szczególnej kategorii. Obchodź się z nimi ostrożnie przed udostępnieniem."
+        "lowExplain": "Wykryto pojedynczy identyfikator niskiego ryzyka.",
+        "mediumExplain": "Wykryto kilka identyfikatorów niskiego ryzyka, bez danych finansowych, numerów identyfikacyjnych i danych szczególnych kategorii.",
+        "highExplain": "Dokument zawiera dane finansowe, numery identyfikacyjne lub dane szczególnych kategorii. Zachowaj ostrożność przed udostępnieniem."
       },
-      "summary": "{count, plural, one {Znaleziono # element danych osobowych na {pages} stronach.} few {Znaleziono # elementy danych osobowych na {pages} stronach.} many {Znaleziono # elementów danych osobowych na {pages} stronach.} other {Znaleziono # elementu danych osobowych na {pages} stronach.}}",
-      "summaryClean": "Nie znaleziono danych osobowych na {{pages}} stronach.",
+      "summary": "{count, plural, one {Wykryto # wystąpienie danych osobowych na {pages} stronach.} few {Wykryto # wystąpienia danych osobowych na {pages} stronach.} many {Wykryto # wystąpień danych osobowych na {pages} stronach.} other {Wykryto # wystąpienia danych osobowych na {pages} stronach.}}",
+      "summaryClean": "Brak danych osobowych na {{pages}} stronach.",
       "byCategory": "Według kategorii",
       "higherRisk": "Wyższe ryzyko",
-      "findings": "Wyniki",
+      "findings": "Wykryte dane",
       "filterBy": "Filtruj wyniki według kategorii",
       "filterAll": "Wszystkie",
       "col": {
@@ -757,48 +757,48 @@
         "occurrences": "Liczba"
       },
       "redactCta": "Zamaż wykryte dane",
-      "redactHint": "Sprawdź zaznaczone obszary i zastosuj. Za darmo.",
-      "hintMulti": "Jeden lub więcej plików PDF, obrazów lub dokumentów biurowych.",
-      "submitBatch": "Skanuj {{count}} plików",
+      "redactHint": "Przejrzyj zaznaczone obszary i zamaż. Za darmo.",
+      "hintMulti": "Pliki PDF, obrazy lub dokumenty Office.",
+      "submitBatch": "{count, plural, one {Skanuj # plik} few {Skanuj # pliki} many {Skanuj # plików} other {Skanuj # pliku}}",
       "highestRiskLabel": "najwyższe ryzyko",
-      "batchSummary": "{count, plural, one {# element danych osobowych w {files} plikach.} few {# elementy danych osobowych w {files} plikach.} many {# elementów danych osobowych w {files} plikach.} other {# elementu danych osobowych w {files} plikach.}}",
+      "batchSummary": "{count, plural, one {Wykryto # wystąpienie danych osobowych w {files} plikach.} few {Wykryto # wystąpienia danych osobowych w {files} plikach.} many {Wykryto # wystąpień danych osobowych w {files} plikach.} other {Wykryto # wystąpienia danych osobowych w {files} plikach.}}",
       "byCategoryAll": "Według kategorii (wszystkie pliki)",
-      "perFile": "Na plik",
-      "fileFindings": "{count, plural, one {# wynik na {pages} stronach} few {# wyniki na {pages} stronach} many {# wyników na {pages} stronach} other {# wyniku na {pages} stronach}}",
+      "perFile": "Według plików",
+      "fileFindings": "{count, plural, one {# wystąpienie na {pages} stronach} few {# wystąpienia na {pages} stronach} many {# wystąpień na {pages} stronach} other {# wystąpienia na {pages} stronach}}",
       "fileClean": "Brak danych osobowych",
-      "autoRedactCta": "Automatycznie zamaż wszystko, co wykryto",
-      "autoRedactAllCta": "Automatycznie zamaż wszystkie pliki",
+      "autoRedactCta": "Zamaż wszystko automatycznie",
+      "autoRedactAllCta": "Zamaż wszystkie pliki",
       "autoRedactFile": "Zamaż automatycznie",
-      "autoRedactHint": "Jedno kliknięcie zaczernia każdą wykrytą wartość i pobiera plik. Za darmo. Twój plik nigdy nie jest przechowywany.",
+      "autoRedactHint": "Jedno kliknięcie zamazuje wszystkie wykryte dane i pobiera plik. Za darmo i bez zapisywania pliku.",
       "autoRedactLoading": "Zamazywanie…"
     },
     "crop": {
       "title": "Przytnij",
-      "description": "Przytnij marginesy każdej strony.",
-      "privacyLine": "Twoje pliki są przycinane prywatnie i nigdy nie są przechowywane.",
-      "hint": "Pliki PDF. Wiele plików wróci jako ZIP.",
-      "batchNote": "Wybrano {{count}} plików. Marginesy dotyczą każdego; wyniki w ZIP.",
+      "description": "Przytnij marginesy na każdej stronie.",
+      "privacyLine": "Nie zapisujemy Twoich plików.",
+      "hint": "Pliki PDF. Kilka plików pobierzesz jako ZIP.",
+      "batchNote": "Wybrano plików: {{count}}. Marginesy dotyczą każdego z nich; wyniki pobierzesz jako ZIP.",
       "top": "Góra",
-      "right": "Prawo",
+      "right": "Prawa",
       "bottom": "Dół",
-      "left": "Lewo",
+      "left": "Lewa",
       "unit": "Jednostka",
       "unitPt": "Punkty (pt)",
       "unitMm": "Milimetry (mm)",
-      "unitHelp": "Każdy margines jest przycinany od odpowiedniej krawędzi strony.",
+      "unitHelp": "Każdy margines jest odcinany od odpowiedniej krawędzi strony.",
       "submit": "Przytnij strony",
       "loading": "Przycinanie…"
     },
     "pageMarks": {
       "title": "Oznaczenia stron",
-      "description": "Dodaj numery stron oraz tekst nagłówka i stopki na każdej stronie.",
-      "hint": "Jeden lub więcej plików PDF do oznaczenia (kilka plików → ZIP).",
-      "privacyLine": "Twoje pliki są oznaczane prywatnie i nigdy nie są przechowywane.",
-      "tokensHelp": "Użyj tokenów w dowolnym polu: {page} bieżąca strona, {pages} łącznie, {n} numer strony, {date} dzisiejsza data.",
+      "description": "Dodaj numery stron oraz nagłówek i stopkę na każdej stronie.",
+      "hint": "Jeden lub więcej PDF-ów (kilka plików → ZIP).",
+      "privacyLine": "Nie zapisujemy Twoich plików.",
+      "tokensHelp": "Tokeny do użycia w dowolnym polu: {page} bieżąca strona, {pages} liczba stron, {n} numer, {date} dzisiejsza data.",
       "header": "Nagłówek",
       "footer": "Stopka",
       "left": "Do lewej",
-      "center": "Do środka",
+      "center": "Na środku",
       "right": "Do prawej",
       "slotPlaceholder": "np. {page} / {pages}",
       "fontSize": "Rozmiar czcionki (pt)",
@@ -807,7 +807,7 @@
       "prefix": "Prefiks Batesa",
       "prefixPlaceholder": "np. ACME-",
       "skipFirst": "Pomiń pierwszą stronę",
-      "submit": "Dodaj oznaczenia stron",
+      "submit": "Dodaj oznaczenia",
       "needSlot": "Wpisz tekst w co najmniej jednym polu (np. {page} / {pages}).",
       "loading": "Oznaczanie…"
     }
@@ -821,7 +821,7 @@
     "odd": "Nieparzyste",
     "even": "Parzyste",
     "ofCount": "Wybrano {{n}} z {{m}}",
-    "count": "{{n}} stron",
+    "count": "{n, plural, one {# strona} few {# strony} many {# stron} other {# strony}}",
     "reset": "Resetuj",
     "reverse": "Odwróć kolejność",
     "pageLabel": "Strona {{n}}",
@@ -829,7 +829,7 @@
     "moveRight": "Przesuń w prawo",
     "duplicate": "Powiel stronę",
     "remove": "Usuń stronę",
-    "tooManyPages": "Ten plik PDF ma {{pages}} stron (ponad {{max}}). Użyj pola tekstowego poniżej, aby wpisać strony.",
+    "tooManyPages": "Ten PDF ma {{pages}} stron (limit: {{max}}). Wpisz strony w polu tekstowym poniżej.",
     "renderFailed": "Nie udało się wygenerować miniatur stron.",
     "appliesToAll": "Ten wybór stron dotyczy wszystkich przesłanych plików."
   },
@@ -840,10 +840,10 @@
       "sourceFiles": "Dołączone pliki",
       "addNode": "Dodaj węzeł",
       "inspector": "Inspektor",
-      "inspectorEmpty": "Wybierz węzeł, aby edytować jego ustawienia.",
+      "inspectorEmpty": "Zaznacz węzeł, aby edytować jego ustawienia.",
       "noParams": "Ten węzeł nie ma ustawień.",
-      "uploadFirst": "Prześlij pliki, aby zasilić to źródło.",
-      "help": "Przeciągnij z prawego portu węzła do lewego portu innego, aby je połączyć. Zaznacz węzeł i naciśnij Delete, aby go usunąć.",
+      "uploadFirst": "Dodaj pliki, aby zasilić to źródło.",
+      "help": "Aby połączyć węzły, przeciągnij z prawego portu jednego do lewego portu drugiego. Zaznacz węzeł i naciśnij Delete, aby go usunąć.",
       "save": "Zapisz",
       "load": "Wczytaj",
       "clear": "Wyczyść",
@@ -854,7 +854,7 @@
       "outPort": "Port wyjściowy (przeciągnij, aby połączyć)",
       "wmImageLabel": "Znak wodny z obrazu",
       "wmImageClear": "Usuń",
-      "wmImageHint": "Przesłany obraz zostanie użyty zamiast tekstowego znaku wodnego.",
+      "wmImageHint": "Przesłany obraz zastąpi tekstowy znak wodny.",
       "summary": {
         "noFiles": "Brak plików",
         "pages": "Strony: {{pages}}",
@@ -870,7 +870,7 @@
         "metaStrip": "Usuń metadane",
         "metaEdit": "Edytuj metadane"
       },
-      "gdprRedactHint": "Skanuje stronę w poszukiwaniu danych osobowych i automatycznie je zamazuje. Bez ustawień."
+      "gdprRedactHint": "Wyszukuje na stronie dane osobowe i automatycznie je zamazuje. Bez ustawień."
     },
     "mobileHint": "Edytor potoków działa najlepiej na większym ekranie."
   },
@@ -882,9 +882,9 @@
       "IDENTIFIER": "Identyfikator",
       "CONTACT": "Kontakt",
       "FINANCIAL": "Dane finansowe",
-      "NATIONAL_ID": "Krajowy identyfikator",
+      "NATIONAL_ID": "Numer identyfikacyjny",
       "ONLINE_IDENTIFIER": "Identyfikator internetowy (IP / URL)",
-      "SPECIAL_CATEGORY": "Kategoria szczególna"
+      "SPECIAL_CATEGORY": "Szczególna kategoria"
     },
     "type": {
       "EMAIL": "Adres e-mail",
@@ -897,12 +897,12 @@
       "PESEL": "PESEL",
       "NIP": "NIP",
       "REGON": "REGON",
-      "US_SSN": "Numer ubezpieczenia społecznego USA",
+      "US_SSN": "Numer SSN (USA)",
       "HEALTH": "Dane o zdrowiu",
       "RELIGION": "Przekonania religijne",
-      "ETHNICITY": "Pochodzenie etniczne / rasa",
+      "ETHNICITY": "Pochodzenie etniczne",
       "POLITICAL_OPINION": "Poglądy polityczne",
-      "TRADE_UNION": "Przynależność do związków zawodowych",
+      "TRADE_UNION": "Przynależność związkowa",
       "SEXUAL_ORIENTATION": "Orientacja seksualna",
       "BIOMETRIC_GENETIC": "Dane biometryczne / genetyczne"
     }
