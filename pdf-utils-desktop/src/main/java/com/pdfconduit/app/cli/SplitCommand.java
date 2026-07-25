@@ -36,18 +36,27 @@ public class SplitCommand implements Callable<Integer> {
             description = "Write one PDF per page into the output folder instead of one combined PDF.")
     private boolean separate;
 
+    @Option(names = "--every", paramLabel = "N",
+            description = "Split into files of N pages each into the output folder "
+                          + "(implies --separate; the last file may be shorter).")
+    private Integer every;
+
     @Option(names = "--verbose") private boolean verbose;
 
     @Override
     public Integer call() {
         try {
+            if (every != null && every < 1) {
+                System.err.println("Invalid --every: must be at least 1.");
+                return 1;
+            }
             PageRange range = pages.isBlank()
                 ? PageRange.ALL
                 : PageRangeParser.parse(pages, countPages(input));
-            if (separate) {
+            if (separate || every != null) {
                 Path dir = output != null ? output : input.resolveSibling(stem(input) + "_pages");
-                SplitResult result = PdfSplitter.execute(
-                    new SplitOptions(input, range, SplitMode.SEPARATE, dir));
+                SplitResult result = PdfSplitter.execute(new SplitOptions(
+                    input, range, SplitMode.SEPARATE, dir, every != null ? every : 1));
                 System.out.printf("Wrote %d file(s) → %s%n", result.fileCount(), dir);
                 return 0;
             }
