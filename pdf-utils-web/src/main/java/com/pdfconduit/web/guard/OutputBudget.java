@@ -2,8 +2,10 @@ package com.pdfconduit.web.guard;
 
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OutputSizeGuard;
-import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.cost.CostModel;
 import com.pdfconduit.web.error.OutputTooLargeException;
+import com.pdfconduit.web.plan.PlanLimits;
+import com.pdfconduit.web.plan.RequestPlan;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,50 +18,53 @@ import java.util.List;
  * A request for many normal pages (one 800-page scan, or 15 files × 200 pages) passes every
  * per-file guard and then materialises one encoded image per page in a {@code List<byte[]>}, which
  * is zipped into a {@code ByteArrayOutputStream} and copied once more into the response body — up
- * to three concurrent full copies of the result in the heap. The container heap is ~1.15 GB, so a
- * request producing ~400 MB of images is already fatal, and {@code LoadGuard} deliberately does not
- * abort timed-out work, so the 503 at the processing deadline does not stop the allocation.
+ * to three concurrent full copies of the result in the heap.
  *
- * <p>Two ceilings, both per request and both env-overridable:
+ * <p>Two ceilings, both per request:
  * <ul>
- *   <li>{@code pdfconduit.web.render.max-total-output-pixels} — summed pixel area of every page the
- *       request will actually rasterise, checked <em>before</em> anything is rendered.</li>
- *   <li>{@code pdfconduit.web.processing.max-total-output-bytes} — running ceiling on the result
- *       bytes accumulated so far, checked after every produced part (see {@link OutputSizeGuard})
- *       on the multi-output paths and after every completed file (see {@link Tally#commitResults})
- *       on the one-output-per-file MAP batches, so a pathological request dies early rather than
- *       at the end.</li>
+ *   <li>the summed pixel area of every page the request will actually rasterise, checked
+ *       <em>before</em> anything is rendered;</li>
+ *   <li>a running ceiling on the result bytes accumulated so far, checked after every produced part
+ *       (see {@link OutputSizeGuard}) on the multi-output paths and after every completed file (see
+ *       {@link Tally#commitResults}) on the one-output-per-file MAP batches, so a pathological
+ *       request dies early rather than at the end.</li>
  * </ul>
  * Both surface as 422 {@code output_too_large} with an actionable message.
  *
- * <p>Reads its ceilings from {@link WebProperties} like the other guards ({@code LoadGuard},
- * {@code OfficeGuard}, {@code OcrGuard}). A later per-plan version would resolve them from
- * {@code PlanLimits} alongside {@code maxOutputPixels}.
+ * <p><b>Where the numbers come from.</b> Both ceilings are the caller's {@link PlanLimits},
+ * resolved per request through {@link RequestPlan} exactly like the page-count and per-page render
+ * ceilings — one resolution path for every per-request limit. The byte ceiling is then narrowed by
+ * {@link CostModel#perRequestOutputBytes(PlanLimits)} to this request's share of the server's
+ * memory pool, so the budget a request is <em>admitted</em> on and the budget it is <em>held</em>
+ * to are the same number.
+ *
+ * <p>This tally is the exact backstop behind the pre-flight estimate in {@link CostModel}: the
+ * estimate refuses the impossible in milliseconds, this refuses what the estimate under-counted.
  */
 @Component
 public class OutputBudget {
 
-    private final long maxTotalOutputPixels;
-    private final long maxTotalOutputBytes;
+    private final RequestPlan requestPlan;
+    private final CostModel costs;
 
-    public OutputBudget(WebProperties props) {
-        this.maxTotalOutputPixels = props.render().maxTotalOutputPixels();
-        this.maxTotalOutputBytes = props.processing().maxTotalOutputBytes().toBytes();
+    public OutputBudget(RequestPlan requestPlan, CostModel costs) {
+        this.requestPlan = requestPlan;
+        this.costs = costs;
     }
 
-    /** The configured per-request render ceiling, in pixels. */
+    /** This request's render ceiling, in pixels. */
     public long maxTotalOutputPixels() {
-        return maxTotalOutputPixels;
+        return requestPlan.current().maxTotalOutputPixels();
     }
 
-    /** The configured per-request result ceiling, in bytes. */
+    /** This request's result ceiling, in bytes (plan value narrowed by the memory pool share). */
     public long maxTotalOutputBytes() {
-        return maxTotalOutputBytes;
+        return costs.perRequestOutputBytes(requestPlan.current());
     }
 
     /** A running tally for ONE request. Single-threaded by construction (one request, one tally). */
     public Tally tally() {
-        return new Tally();
+        return new Tally(maxTotalOutputPixels(), maxTotalOutputBytes());
     }
 
     /** Single-file convenience: check one render's pixel total against the per-request ceiling. */
@@ -76,31 +81,37 @@ public class OutputBudget {
 
     /**
      * The per-request tally: pixels accumulate across the files of one request before any of them
-     * is rendered, bytes accumulate as the parts are produced.
+     * is rendered, bytes accumulate as the parts are produced. Its ceilings are captured once, when
+     * the tally is created, so every file of one batch is measured against the same budget.
      */
-    public final class Tally {
+    public static final class Tally {
 
+        private final long maxPixels;
+        private final long maxBytes;
         private long pixels;
         private long bytes;
 
-        private Tally() {}
+        private Tally(long maxPixels, long maxBytes) {
+            this.maxPixels = maxPixels;
+            this.maxBytes = maxBytes;
+        }
 
         /** Adds a file's about-to-be-rendered pixel area; throws if the request total blows the budget. */
         public void addPixels(long filePixels) throws OutputTooLargeException {
             pixels += Math.max(0, filePixels);
-            if (maxTotalOutputPixels > 0 && pixels > maxTotalOutputPixels) {
+            if (maxPixels > 0 && pixels > maxPixels) {
                 throw new OutputTooLargeException(
                     "This request would render about " + megapixels(pixels) + " megapixels of images, "
-                    + "more than this server produces in one request (" + megapixels(maxTotalOutputPixels)
+                    + "more than this server produces in one request (" + megapixels(maxPixels)
                     + " megapixels). Choose fewer pages or files, or a lower DPI.");
             }
         }
 
         /** Throws if {@code totalBytes} produced so far by this request exceeds the budget. */
         public void checkBytes(long totalBytes) throws OutputTooLargeException {
-            if (maxTotalOutputBytes > 0 && totalBytes > maxTotalOutputBytes) {
+            if (maxBytes > 0 && totalBytes > maxBytes) {
                 throw new OutputTooLargeException(
-                    "This request would produce more than " + megabytes(maxTotalOutputBytes)
+                    "This request would produce more than " + megabytes(maxBytes)
                     + " MB of files, more than this server returns in one request. Choose fewer "
                     + "pages or files, or a lower DPI or quality.");
             }

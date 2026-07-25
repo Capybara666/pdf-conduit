@@ -21,7 +21,7 @@ pdfconduit:
       free-max-files: 500
     concurrency:
       max-heavy-ops: 32
-      max-in-flight-bytes: 4294967296
+      max-work-bytes: 4294967296
     processing:
       timeout-seconds: 600
       max-total-output-bytes: 4GB

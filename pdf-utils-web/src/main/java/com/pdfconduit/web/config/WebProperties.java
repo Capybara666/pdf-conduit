@@ -22,7 +22,7 @@ import java.util.List;
  * @param cors               CORS configuration for the Angular frontend
  * @param ratelimit          per-IP token-bucket rate limiting
  * @param quota              free-tier daily quota + per-file caps
- * @param concurrency        heavy-op concurrency + in-flight-byte anti-OOM guard
+ * @param concurrency        heavy-op slot count + the process-wide work-byte pool (anti-OOM)
  * @param processing         per-operation processing timeout + aggregate output-byte ceiling
  * @param pdf                PDF-bomb guards (max page count)
  * @param pipeline           client-supplied pipeline-graph size ceilings (nodes / connections)
@@ -48,7 +48,7 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
         }
         if (ratelimit == null) ratelimit = new RateLimit(true, null, null, null);
         if (quota == null) quota = new Quota(true, null, null, null);
-        if (concurrency == null) concurrency = new Concurrency(null, null);
+        if (concurrency == null) concurrency = new Concurrency(null, null, null);
         if (processing == null) processing = new Processing(null, null);
         if (pdf == null) pdf = new Pdf(null);
         if (pipeline == null) pipeline = new Pipeline(null, null);
@@ -115,13 +115,25 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
     }
 
     /**
-     * Anti-OOM guard for heavy operations: at most {@code maxHeavyOps} run concurrently and the
-     * summed bytes of in-flight heavy requests may not exceed {@code maxInFlightBytes}.
+     * Anti-OOM guard for heavy operations. {@code maxHeavyOps} bounds how many run at once;
+     * {@code maxWorkBytes} bounds their summed <em>estimated cost</em> — the whole heap share this
+     * process will commit to concurrent heavy work, uploads, intermediates, results and working set
+     * together (see {@link com.pdfconduit.web.cost.CostModel}).
+     *
+     * <p>The two are not independent: the per-request result budget is derived as
+     * {@code maxWorkBytes ÷ maxHeavyOps ÷ 3}, so raising the slot count tightens each request's
+     * budget instead of quietly overcommitting the heap by that factor.
+     *
+     * <p>{@code maxInFlightBytes} is the former name of the same pool, kept so a deployment that
+     * sets it keeps a memory ceiling rather than silently falling back to the default.
      */
-    public record Concurrency(Integer maxHeavyOps, Long maxInFlightBytes) {
+    public record Concurrency(Integer maxHeavyOps, Long maxWorkBytes, Long maxInFlightBytes) {
         public Concurrency {
             if (maxHeavyOps == null || maxHeavyOps < 1) maxHeavyOps = 4;
-            if (maxInFlightBytes == null || maxInFlightBytes < 1) maxInFlightBytes = 536870912L; // 512 MiB
+            if (maxWorkBytes == null || maxWorkBytes < 1) {
+                maxWorkBytes = (maxInFlightBytes != null && maxInFlightBytes > 0)
+                    ? maxInFlightBytes : 805306368L;  // 768 MiB
+            }
         }
     }
 
@@ -133,6 +145,10 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
      * lot again while zipping, so without this ceiling a legal request (many pages × many files)
      * can allocate more than the whole heap; it is checked while the parts accumulate, so a
      * pathological request is rejected (422) early instead of OOM-ing the JVM.
+     *
+     * <p>This value is a <em>ceiling on the ceiling</em>: the budget actually granted is
+     * {@code min(this, concurrency.max-work-bytes ÷ max-heavy-ops ÷ 3)}, so it can never be set
+     * to more than the heap affords once every concurrency slot claims its share.
      */
     public record Processing(Integer timeoutSeconds, DataSize maxTotalOutputBytes) {
         public Processing {

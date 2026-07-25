@@ -47,14 +47,11 @@ import com.pdfconduit.core.util.PdfLoader;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OcrDisabledException;
 import com.pdfconduit.web.error.OutputTooLargeException;
+import com.pdfconduit.web.guard.DocumentLimits;
 import com.pdfconduit.web.guard.OcrGuard;
 import com.pdfconduit.web.guard.OfficeGuard;
 import com.pdfconduit.web.guard.OutputBudget;
-import com.pdfconduit.web.plan.PlanLimits;
-import com.pdfconduit.web.plan.RequestPlan;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -81,32 +78,26 @@ public class WebOperations {
     private final OfficeGuard officeGuard;
     private final OcrGuard ocrGuard;
     private final OutputBudget outputBudget;
-    private final RequestPlan requestPlan;
+    private final DocumentLimits limits;
     private final boolean ocrEnabled;
     private final String ocrLanguages;
 
     public WebOperations(OfficeGuard officeGuard, OcrGuard ocrGuard, OutputBudget outputBudget,
-                         RequestPlan requestPlan, WebProperties props) {
+                         DocumentLimits limits, WebProperties props) {
         this.officeGuard = officeGuard;
         this.ocrGuard = ocrGuard;
         this.outputBudget = outputBudget;
-        // Page-count and render ceilings are read from the plan resolved FOR THE CURRENT REQUEST
-        // (today the constant FREE plan built from WebProperties, so identical values) — never
-        // snapshotted here, or a per-caller paid plan could never move them. Office availability
-        // stays a system-level WebProperties toggle.
-        this.requestPlan = requestPlan;
+        // Page-count and render ceilings live in DocumentLimits, the same object the pipeline guard
+        // uses, and resolve per request from the caller's plan. Office availability stays a
+        // system-level WebProperties toggle.
+        this.limits = limits;
         this.ocrEnabled = props.ocrEnabled();
         this.ocrLanguages = props.ocr().languages();
     }
 
-    /** This request's PDF-bomb page ceiling ({@code <= 0} ⇒ no ceiling). */
-    private int maxPages() {
-        return requestPlan.current().maxPages();
-    }
-
     /** This request's raster-render DPI ceiling ({@code <= 0} ⇒ no ceiling). */
     private int maxDpi() {
-        return requestPlan.current().maxDpi();
+        return limits.maxDpi();
     }
 
     // ------------------------------------------------------------------ MERGE
@@ -894,52 +885,16 @@ public class WebOperations {
 
     /**
      * Raster-render guard (render / to-images / redact / ocr) for a document whose every page will
-     * be rasterised. See {@link #guardRender(LoadedPdf, int, IntPredicate)}.
+     * be rasterised. See {@link DocumentLimits#checkRender(LoadedPdf, int, IntPredicate)}.
      */
     private long guardRender(LoadedPdf lp, int dpi) throws PdfOperationException {
-        return guardRender(lp, dpi, null);
+        return limits.checkRender(lp, dpi, null);
     }
 
-    /**
-     * Raster-render guard: reject a DPI above the configured ceiling (→ 400) and any page whose
-     * rendered pixel area would exceed the per-page {@code maxOutputPixels} (→ 422), BEFORE any
-     * page is rasterised. The per-page check still covers <em>every</em> page of the document,
-     * unchanged.
-     *
-     * <p>Per-page ceilings alone do not bound {@code pages × files}: the summed area of the pages
-     * this call will actually render is returned so the caller can accumulate it into the
-     * per-request {@link OutputBudget} — the guard that stops a legal-looking 800-page 300 DPI
-     * render from allocating more than the whole heap.
-     *
-     * @param rendered 0-based page indices that will really be rasterised; {@code null} ⇒ all pages
-     * @return summed pixel area of the pages that will be rendered
-     */
+    /** As {@link #guardRender(LoadedPdf, int)} for the subset of pages that will really render. */
     private long guardRender(LoadedPdf lp, int dpi, IntPredicate rendered)
             throws PdfOperationException {
-        // One resolve for the whole check: this request's DPI and per-page pixel ceilings.
-        PlanLimits plan = requestPlan.current();
-        int maxDpi = plan.maxDpi();
-        long maxOutputPixels = plan.maxOutputPixels();
-        if (maxDpi > 0 && dpi > maxDpi) {
-            throw new IllegalArgumentException(
-                "Requested DPI " + dpi + " exceeds the maximum allowed (" + maxDpi + ").");
-        }
-        long total = 0;
-        int index = 0;
-        for (PDPage page : lp.document().getPages()) {
-            PDRectangle box = page.getCropBox();
-            double widthPx = box.getWidth() / 72.0 * dpi;
-            double heightPx = box.getHeight() / 72.0 * dpi;
-            double area = widthPx * heightPx;
-            if (maxOutputPixels > 0 && area > maxOutputPixels) {
-                throw new PdfOperationException(
-                    "Rendering this document at " + dpi + " DPI would exceed the output-size "
-                    + "limit; choose a lower DPI.");
-            }
-            if (rendered == null || rendered.test(index)) total += (long) area;
-            index++;
-        }
-        return total;
+        return limits.checkRender(lp, dpi, rendered);
     }
 
     /** The 0-based pages a {@link PageRange} selects, as a predicate ({@code null} ⇒ all pages). */
@@ -952,13 +907,12 @@ public class WebOperations {
 
     /** PDF-bomb guard: reject a PDF whose page count exceeds the configured ceiling (→ 422). */
     private void guardPageCount(byte[] pdf) throws PdfOperationException {
-        if (maxPages() <= 0) return;
-        guardPageCountValue(pageCount(pdf));
+        limits.checkDocument(pdf);
     }
 
     /** As {@link #guardPageCount(byte[])} but off an already-open handle — no re-parse. */
     private void guardPageCount(LoadedPdf lp) throws PdfOperationException {
-        guardPageCountValue(lp.pageCount());
+        limits.checkPageCount(lp);
     }
 
     /**
@@ -967,10 +921,7 @@ public class WebOperations {
      * guard parse (no separate page-count parse).
      */
     private void guardPageCountValue(int pageCount) throws PdfOperationException {
-        int maxPages = maxPages();
-        if (maxPages > 0 && pageCount > maxPages) {
-            throw new PdfOperationException("PDF exceeds the maximum page count (" + maxPages + ").");
-        }
+        limits.checkPageCount(pageCount);
     }
 
     private PageRange range(String expr, byte[] pdf)

@@ -29,6 +29,20 @@ public interface PlanLimits {
     /** Raster-render guard: maximum rendered pixel area for any single page. */
     long maxOutputPixels();
 
+    /**
+     * Aggregate render ceiling: the summed pixel area of every page ONE request may rasterise,
+     * across all its files. The per-page {@link #maxOutputPixels()} does not bound pages × files.
+     */
+    long maxTotalOutputPixels();
+
+    /**
+     * Aggregate result ceiling: the result bytes ONE request may accumulate, across all its files
+     * and pages. The <em>granted</em> budget is this value narrowed by the server's memory pool —
+     * see {@link com.pdfconduit.web.cost.CostModel#perRequestOutputBytes(PlanLimits)} — so a plan
+     * can never entitle a caller to more than the heap affords.
+     */
+    long maxTotalOutputBytes();
+
     /** Rate limit: general-bucket refill (requests per minute). */
     int rateRequestsPerMinute();
 

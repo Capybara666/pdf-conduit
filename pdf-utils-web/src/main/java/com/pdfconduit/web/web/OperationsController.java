@@ -19,11 +19,11 @@ import com.pdfconduit.core.service.BatchOutcome;
 import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OperationType;
-import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.RedactRegionDto;
 import com.pdfconduit.web.dto.SignPlacementDto;
 import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.guard.OutputBudget;
+import com.pdfconduit.web.quota.UploadCaps;
 import com.pdfconduit.web.service.RedactOutcome;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Params;
@@ -79,17 +79,25 @@ public class OperationsController {
 
     private final WebOperations ops;
     private final Uploads uploads;
-    private final int maxFiles;
+    private final UploadCaps uploadCaps;
     private final ObjectMapper json;
     private final LoadGuard loadGuard;
 
-    public OperationsController(WebOperations ops, Uploads uploads, WebProperties props,
+    public OperationsController(WebOperations ops, Uploads uploads, UploadCaps uploadCaps,
                                ObjectMapper json, LoadGuard loadGuard) {
         this.ops = ops;
         this.uploads = uploads;
-        this.maxFiles = props.maxFilesPerRequest();
+        // The absolute per-request file-count guardrail comes from the one component that owns the
+        // upload ceilings — the same number QuotaInterceptor enforces and /api/capabilities
+        // advertises — rather than a second read of the property.
+        this.uploadCaps = uploadCaps;
         this.json = json;
         this.loadGuard = loadGuard;
+    }
+
+    /** The absolute per-request file-count guardrail in force for this request. */
+    private int maxFiles() {
+        return uploadCaps.hardMaxFiles();
     }
 
     // -------------------------------------------------------------------- MERGE
@@ -98,7 +106,7 @@ public class OperationsController {
     public ResponseEntity<byte[]> merge(@RequestParam("files") List<MultipartFile> files,
                                         @RequestParam(required = false) String outputName)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         List<NamedBytes> inputs = uploads.readAll(files);
         NamedBytes merged = loadGuard.execute(totalBytes(inputs), () -> ops.merge(inputs));
         String name = (outputName == null || outputName.isBlank()) ? merged.filename() : ensurePdf(outputName);
@@ -123,7 +131,7 @@ public class OperationsController {
                                           @RequestParam(defaultValue = "false") boolean separate,
                                           @RequestParam(required = false) Integer splitEvery)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         if (splitEvery != null && splitEvery < 1) {
             throw new IllegalArgumentException("splitEvery must be at least 1.");
         }
@@ -155,7 +163,7 @@ public class OperationsController {
                                            @RequestParam(required = false) String dpi,
                                            @RequestParam(defaultValue = "false") boolean grayscale)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         long target = Params.parseSize(targetSize);
         // Optional image-resolution ceiling: SCREEN/EBOOK/PRINT (unknown/blank ⇒ NONE = no cap).
         CompressOptions.DpiPreset preset =
@@ -191,7 +199,7 @@ public class OperationsController {
                                          @RequestParam int angle,
                                          @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         List<NamedBytes> inputs = uploads.readAll(files);
         BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
             ops.newOutputTally(), inputs, in -> ops.rotate(List.of(in), pages, angle)));
@@ -216,7 +224,7 @@ public class OperationsController {
     public ResponseEntity<byte[]> toPdf(@RequestParam("files") List<MultipartFile> files,
                                         @RequestParam(required = false) String pageSize)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         PageSize size = Params.pageSize(pageSize, PageSize.FIT);
         List<NamedBytes> inputs = uploads.readAll(files);
         BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
@@ -232,7 +240,7 @@ public class OperationsController {
                                           @RequestParam(required = false) String ownerPassword,
                                           @RequestParam(required = false) Integer keyLength)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         Params.require(userPassword, "userPassword");
         // Absent / any non-256 value → AES-128 (the compatibility default); 256 → AES-256.
         int bits = keyLength != null && keyLength == 256 ? 256 : 128;
@@ -249,7 +257,7 @@ public class OperationsController {
     public ResponseEntity<byte[]> unlock(@RequestParam("files") List<MultipartFile> files,
                                          @RequestParam String password)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         Params.require(password, "password");
         List<NamedBytes> inputs = uploads.readAll(files);
         BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
@@ -270,7 +278,7 @@ public class OperationsController {
                                             @RequestParam(required = false) String position,
                                             @RequestParam(required = false) String color)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         boolean hasText = text != null && !text.isBlank();
         boolean hasImage = image != null && !image.isEmpty();
         if (hasText == hasImage) {
@@ -311,7 +319,7 @@ public class OperationsController {
                                        @RequestParam(required = false) Double left,
                                        @RequestParam(required = false) String unit)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         // Margins are points by default; "mm" switches to millimetres. Missing edge ⇒ 0 (no trim).
         boolean mm = unit != null && unit.trim().equalsIgnoreCase("mm");
         double t = top != null ? top : 0, r = right != null ? right : 0;
@@ -329,7 +337,7 @@ public class OperationsController {
                                       @RequestParam(required = false) String layout,
                                       @RequestParam(defaultValue = "false") boolean booklet)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         var nupLayout = com.pdfconduit.core.model.NupLayout.fromId(layout);
         List<NamedBytes> inputs = uploads.readAll(files);
         BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
@@ -353,7 +361,7 @@ public class OperationsController {
                                             @RequestParam(required = false) Integer startNumber,
                                             @RequestParam(required = false) String prefix)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         List<NamedBytes> inputs = uploads.readAll(files);
         BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
             ops.newOutputTally(), inputs,
@@ -385,7 +393,7 @@ public class OperationsController {
     @PostMapping(value = "/repair", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> repair(@RequestParam("files") List<MultipartFile> files)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         List<NamedBytes> inputs = uploads.readAll(files);
         long bytes = totalBytes(inputs);
         if (inputs.size() == 1) {
@@ -579,7 +587,7 @@ public class OperationsController {
                                            @RequestParam(required = false) Boolean transparent,
                                            @RequestParam(required = false) Boolean grayscale)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         ImageFormat fmt = Params.imageFormat(format, ImageFormat.PNG);
         int resolvedDpi = dpi != null ? dpi : 150;
         // JPEG quality clamped to [0.05, 1.0]; ignored for PNG (lossless). Default 0.8.
@@ -608,7 +616,7 @@ public class OperationsController {
                                          @RequestParam(required = false) String format,
                                          @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         TextFormat fmt = Params.textFormat(format, TextFormat.TXT);
         List<NamedBytes> inputs = uploads.readAll(files);
         BatchOutcome outputs = loadGuard.execute(totalBytes(inputs), () -> mapBounded(

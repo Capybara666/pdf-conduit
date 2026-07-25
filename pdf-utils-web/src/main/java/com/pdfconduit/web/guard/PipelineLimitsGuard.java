@@ -3,13 +3,8 @@ package com.pdfconduit.web.guard;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.operations.PdfOcr;
 import com.pdfconduit.core.pipeline.PipelineGuard;
-import com.pdfconduit.core.util.LoadedPdf;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OcrDisabledException;
-import com.pdfconduit.web.plan.PlanLimits;
-import com.pdfconduit.web.plan.RequestPlan;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,38 +18,32 @@ import java.io.IOException;
  * page), an OCR node could spawn {@code tesseract} even with OCR switched off, and a page-bomb PDF
  * could walk straight through.
  *
- * <p>The ceilings are read from the {@link PlanLimits} resolved for the CURRENT request via
- * {@link RequestPlan} (today the constant FREE plan built from {@code WebProperties}, so the values
- * are identical to the ones {@code WebOperations} guards with) and OCR availability from the system-level {@code pdfconduit.web.ocr.enabled} toggle plus
- * {@link PdfOcr#available()}, mirroring {@code /api/ocr} exactly — including the exception types, so
- * a rejection maps to the same status/code a client would get from the equivalent single operation
- * (excessive DPI → 400 {@code bad_request}, page bomb → 422 {@code operation_failed}, OCR off → 415
+ * <p>The document ceilings are not re-implemented here: they are {@link DocumentLimits}, the same
+ * object {@code WebOperations} guards with, so a pipeline node and its single-operation twin refuse
+ * the same document with the same message by construction. OCR availability comes from the
+ * system-level {@code pdfconduit.web.ocr.enabled} toggle plus {@link PdfOcr#available()}, mirroring
+ * {@code /api/ocr} exactly — including the exception types, so a rejection maps to the same
+ * status/code a client would get from the equivalent single operation (excessive DPI → 400
+ * {@code bad_request}, page bomb → 422 {@code operation_failed}, OCR off → 415
  * {@code ocr_disabled}, OCR saturated → 503 {@code server_busy}).
  */
 @Component
 public class PipelineLimitsGuard implements PipelineGuard {
 
     private final OcrGuard ocrGuard;
-    private final RequestPlan requestPlan;
+    private final DocumentLimits limits;
     private final boolean ocrEnabled;
 
-    public PipelineLimitsGuard(OcrGuard ocrGuard, RequestPlan requestPlan, WebProperties props) {
+    public PipelineLimitsGuard(OcrGuard ocrGuard, DocumentLimits limits, WebProperties props) {
         this.ocrGuard = ocrGuard;
-        // Resolved per request, exactly like WebOperations — a snapshot here would pin a paid
-        // caller's pipeline to the free plan's ceilings and break single-operation parity.
-        this.requestPlan = requestPlan;
+        this.limits = limits;
         this.ocrEnabled = props.ocrEnabled();
     }
 
     /** PDF-bomb guard: reject a document whose page count exceeds the ceiling (→ 422). */
     @Override
     public void checkDocument(byte[] pdf) throws PdfOperationException {
-        if (requestPlan.current().maxPages() <= 0) return;
-        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
-            checkPageCount(lp.pageCount());
-        } catch (IOException e) {
-            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
-        }
+        limits.checkDocument(pdf);
     }
 
     /**
@@ -65,11 +54,7 @@ public class PipelineLimitsGuard implements PipelineGuard {
      */
     @Override
     public void checkPageCount(int pages) throws PdfOperationException {
-        int maxPages = requestPlan.current().maxPages();
-        if (maxPages > 0 && pages > maxPages) {
-            throw new PdfOperationException(
-                "PDF exceeds the maximum page count (" + maxPages + ").");
-        }
+        limits.checkPageCount(pages);
     }
 
     /**
@@ -78,28 +63,7 @@ public class PipelineLimitsGuard implements PipelineGuard {
      */
     @Override
     public void checkRender(byte[] pdf, int dpi) throws PdfOperationException {
-        PlanLimits plan = requestPlan.current();
-        int maxDpi = plan.maxDpi();
-        long maxOutputPixels = plan.maxOutputPixels();
-        if (maxDpi > 0 && dpi > maxDpi) {
-            throw new IllegalArgumentException(
-                "Requested DPI " + dpi + " exceeds the maximum allowed (" + maxDpi + ").");
-        }
-        if (maxOutputPixels <= 0) return;
-        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
-            for (PDPage page : lp.document().getPages()) {
-                PDRectangle box = page.getCropBox();
-                double widthPx = box.getWidth() / 72.0 * dpi;
-                double heightPx = box.getHeight() / 72.0 * dpi;
-                if (widthPx * heightPx > maxOutputPixels) {
-                    throw new PdfOperationException(
-                        "Rendering this document at " + dpi + " DPI would exceed the output-size "
-                        + "limit; choose a lower DPI.");
-                }
-            }
-        } catch (IOException e) {
-            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
-        }
+        limits.checkRender(pdf, dpi);
     }
 
     /** Same gate as {@code /api/ocr}: OCR off by config or no Tesseract ⇒ 415 {@code ocr_disabled}. */

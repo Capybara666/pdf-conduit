@@ -39,6 +39,29 @@ final class TestPdfs {
         }
     }
 
+    /**
+     * A one-page PDF padded out to roughly {@code approxBytes} with an unfiltered stream of
+     * incompressible bytes — a realistically large upload (a scan, a photo-heavy report) that is
+     * still cheap to parse, so a test can exercise byte-driven ceilings without waiting for real
+     * page content to be processed.
+     */
+    static byte[] bulky(int approxBytes) throws IOException {
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+            byte[] filler = new byte[approxBytes];
+            new java.util.Random(7).nextBytes(filler);
+            org.apache.pdfbox.pdmodel.common.PDStream stream =
+                new org.apache.pdfbox.pdmodel.common.PDStream(
+                    doc, new java.io.ByteArrayInputStream(filler));
+            // Hung off the page so the stream survives a save/reload cycle instead of being
+            // dropped as an unreferenced object.
+            page.getCOSObject().setItem(
+                org.apache.pdfbox.cos.COSName.getPDFName("TestFiller"), stream);
+            return bytes(doc);
+        }
+    }
+
     private static byte[] bytes(PDDocument doc) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         doc.save(bos);

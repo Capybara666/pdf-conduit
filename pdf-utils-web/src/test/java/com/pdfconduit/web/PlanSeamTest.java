@@ -50,6 +50,8 @@ class PlanSeamTest {
         assertEquals(props.pdf().maxPages(), plan.maxPages());
         assertEquals(props.render().maxDpi(), plan.maxDpi());
         assertEquals(props.render().maxOutputPixels(), plan.maxOutputPixels());
+        assertEquals(props.render().maxTotalOutputPixels(), plan.maxTotalOutputPixels());
+        assertEquals(props.processing().maxTotalOutputBytes().toBytes(), plan.maxTotalOutputBytes());
         assertEquals(props.ratelimit().requestsPerMinute(), plan.rateRequestsPerMinute());
         assertEquals(props.ratelimit().heavyPerMinute(), plan.rateHeavyPerMinute());
         assertEquals(props.ratelimit().burst(), plan.rateBurst());
@@ -85,19 +87,21 @@ class PlanSeamTest {
         WebMetrics metrics = new WebMetrics(new SimpleMeterRegistry());
         OfficeGuard officeGuard = new OfficeGuard(props, metrics);
         com.pdfconduit.web.guard.OcrGuard ocrGuard = new com.pdfconduit.web.guard.OcrGuard(props, metrics);
-        com.pdfconduit.web.guard.OutputBudget budget = new com.pdfconduit.web.guard.OutputBudget(props);
         NamedBytes twoPage = new NamedBytes("a.pdf", TestPdfs.blank(2));
 
         // Default FREE plan (maxPages 3000): a 2-page PDF passes the page-count guard.
-        WebOperations lenient = new WebOperations(officeGuard, ocrGuard, budget,
-            requestPlan(new FreePlanLimitsResolver(props)), props);
+        WebOperations lenient = new WebOperations(officeGuard, ocrGuard,
+            outputBudget(props, new FreePlanLimitsResolver(props)),
+            new com.pdfconduit.web.guard.DocumentLimits(requestPlan(new FreePlanLimitsResolver(props))),
+            props);
         assertDoesNotThrow(() -> lenient.readMetadata(twoPage));
 
         // Swap in a stub plan with maxPages=1: the SAME operation is now rejected — proving the guard
         // reads its ceiling from the resolved PlanLimits seam, not from a hard-wired WebProperties field.
         PlanLimitsResolver stub = principal -> new FreePlanLimits(60, 15, 26_214_400L,
-            /* maxPages */ 1, 300, 60_000_000L, 40, 10, 15);
-        WebOperations strict = new WebOperations(officeGuard, ocrGuard, budget, requestPlan(stub), props);
+            /* maxPages */ 1, 300, 60_000_000L, 500_000_000L, 67_108_864L, 40, 10, 15);
+        WebOperations strict = new WebOperations(officeGuard, ocrGuard, outputBudget(props, stub),
+            new com.pdfconduit.web.guard.DocumentLimits(requestPlan(stub)), props);
         PdfOperationException ex =
             assertThrows(PdfOperationException.class, () -> strict.readMetadata(twoPage));
         assertEquals(true, ex.getMessage().contains("maximum page count"));
@@ -110,6 +114,14 @@ class PlanSeamTest {
      */
     private static RequestPlan requestPlan(PlanLimitsResolver resolver) {
         return new RequestPlan(request -> new com.pdfconduit.web.principal.IpPrincipal("test"), resolver);
+    }
+
+    /** An {@link com.pdfconduit.web.guard.OutputBudget} over the same plan seam the guards read. */
+    private static com.pdfconduit.web.guard.OutputBudget outputBudget(WebProperties props,
+                                                                      PlanLimitsResolver resolver) {
+        RequestPlan plan = requestPlan(resolver);
+        return new com.pdfconduit.web.guard.OutputBudget(plan,
+            new com.pdfconduit.web.cost.CostModel(props, plan));
     }
 
     /** Minimal in-test {@link QuotaStore} used to prove QuotaService counts through the seam. */

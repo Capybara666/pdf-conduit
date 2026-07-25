@@ -108,12 +108,26 @@ public final class Responses {
         for (int i = 0; i < listed; i++) {
             if (i > 0) sb.append("; ");
             BatchFailure f = failures.get(i);
-            sb.append(headerSafe(f.filename())).append(": ").append(headerSafe(f.message()));
+            sb.append(headerSafe(f.filename())).append(": ")
+              .append(headerSafe(reason(f.filename(), f.message())));
         }
         if (failures.size() > listed) {
             sb.append("; +").append(failures.size() - listed).append(" more");
         }
         return sb.toString();
+    }
+
+    /**
+     * The failure reason with the file name stripped off the front, because this formatter puts it
+     * back. Some failures reach a batch already named — {@code MemoryOperations.named} prefixes the
+     * file whenever an operation fails inside a multi-file run, since the in-memory loaders have no
+     * name of their own — and joining that with the name again reads as
+     * {@code "locked.pdf: locked.pdf: The PDF is password-protected."}.
+     */
+    private static String reason(String filename, String message) {
+        if (filename == null || filename.isBlank() || message == null) return message;
+        String prefix = filename + ": ";
+        return message.startsWith(prefix) ? message.substring(prefix.length()) : message;
     }
 
     /**
