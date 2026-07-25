@@ -385,7 +385,16 @@
       "pagesPlaceholder": "z. B. 1,3,5-8",
       "pagesHelp": "Leer = alle Seiten. Syntax:",
       "output": "Ausgabe",
-      "separate": "In eine Datei pro Seite aufteilen (ZIP)",
+      "modeOne": "Ein PDF",
+      "modePerPage": "Eine Datei pro Seite",
+      "modeEvery": "Alle N Seiten",
+      "modeHelp": {
+        "one": "Die ausgewählten Seiten kommen als ein einziges PDF zurück.",
+        "perPage": "Jede ausgewählte Seite wird eine eigene Datei (ZIP).",
+        "every": "Die ausgewählten Seiten werden in Dateien mit je N Seiten zerlegt (ZIP)."
+      },
+      "every": "Seiten pro Datei",
+      "everyHelp": "1 bis {{max}}. Die letzte Datei kann weniger Seiten haben.",
       "submit": "Extrahieren",
       "loading": "Wird extrahiert…"
     },

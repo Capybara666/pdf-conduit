@@ -10,7 +10,13 @@ import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
-/** Extract selected pages from a single PDF into one PDF, or one file per page. */
+/** How the selected pages are written out. */
+type ExtractMode = 'one' | 'perPage' | 'every';
+
+/**
+ * Extract selected pages: into one PDF, into one file per page, or split every N pages
+ * (both multi-file modes come back as a ZIP).
+ */
 @Component({
   selector: 'app-extract-page',
   standalone: true,
@@ -62,12 +68,51 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
           </span>
         </div>
         <div class="field">
-          <span class="field-label">{{ 'pages.extract.output' | transloco }}</span>
-          <label class="check">
-            <input type="checkbox" [formControl]="separate" />
-            {{ 'pages.extract.separate' | transloco }}
-          </label>
+          <span class="field-label" id="ex-mode-label">{{ 'pages.extract.output' | transloco }}</span>
+          <div class="seg" role="group" aria-labelledby="ex-mode-label">
+            <button
+              type="button"
+              [class.active]="mode() === 'one'"
+              [attr.aria-pressed]="mode() === 'one'"
+              (click)="mode.set('one')"
+            >
+              {{ 'pages.extract.modeOne' | transloco }}
+            </button>
+            <button
+              type="button"
+              [class.active]="mode() === 'perPage'"
+              [attr.aria-pressed]="mode() === 'perPage'"
+              (click)="mode.set('perPage')"
+            >
+              {{ 'pages.extract.modePerPage' | transloco }}
+            </button>
+            <button
+              type="button"
+              [class.active]="mode() === 'every'"
+              [attr.aria-pressed]="mode() === 'every'"
+              (click)="mode.set('every')"
+            >
+              {{ 'pages.extract.modeEvery' | transloco }}
+            </button>
+          </div>
+          <span class="help">{{ 'pages.extract.modeHelp.' + mode() | transloco }}</span>
         </div>
+
+        @if (mode() === 'every') {
+          <div class="field">
+            <label for="ex-every">{{ 'pages.extract.every' | transloco }}</label>
+            <input
+              id="ex-every"
+              type="number"
+              min="1"
+              [max]="maxEvery"
+              step="1"
+              [value]="every()"
+              (input)="setEvery($any($event.target).value)"
+            />
+            <span class="help">{{ 'pages.extract.everyHelp' | transloco: { max: maxEvery } }}</span>
+          </div>
+        }
       </div>
 
       <div class="btn-row">
@@ -91,17 +136,28 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
   `,
 })
 export class ExtractPage {
+  /** Upper bound for "every N pages" — beyond this the split is one part anyway. */
+  protected readonly maxEvery = 999;
+
   protected readonly files = signal<File[]>([]);
   /** The lone file when exactly one is selected — drives the visual page-select grid. */
   protected readonly singleFile = computed(() => (this.files().length === 1 ? this.files()[0] : null));
   protected readonly pages = new FormControl('', { nonNullable: true });
-  protected readonly separate = new FormControl(false, { nonNullable: true });
+  protected readonly mode = signal<ExtractMode>('one');
+  /** Pages per output file in "every N pages" mode; always kept in 1..maxEvery. */
+  protected readonly every = signal(10);
   protected readonly state = new OperationState();
 
   private readonly workState = inject(WorkStateService);
 
   constructor(private readonly api: ApiService) {
-    this.workState.persist('extract', { pages: this.pages, separate: this.separate });
+    this.workState.persist('extract', { pages: this.pages, mode: this.mode, every: this.every });
+  }
+
+  /** Clamp typed input so an empty / silly value can never reach the API. */
+  setEvery(raw: string): void {
+    const n = Math.floor(Number(raw));
+    this.every.set(Number.isFinite(n) ? Math.min(this.maxEvery, Math.max(1, n)) : 1);
   }
 
   clear(): void {
@@ -117,7 +173,10 @@ export class ExtractPage {
     for (const f of fs) fd.append('files', f, f.name);
     const p = this.pages.value.trim();
     if (p) fd.append('pages', p);
-    fd.append('separate', String(this.separate.value));
+    // The page range keeps its meaning in every mode: it picks WHAT is extracted, the mode only
+    // decides how the picked pages are written out.
+    if (this.mode() === 'perPage') fd.append('separate', 'true');
+    if (this.mode() === 'every') fd.append('splitEvery', String(this.every()));
     this.state.run(this.api.extract(fd));
   }
 }

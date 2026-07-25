@@ -88,17 +88,33 @@ public class OperationsController {
 
     // ------------------------------------------------------------------ EXTRACT
 
+    /**
+     * Extract pages. Three shapes, one endpoint:
+     * <ul>
+     *   <li>default — the selected pages combined into one PDF per input;</li>
+     *   <li>{@code separate=true} — one PDF per selected page (ZIP);</li>
+     *   <li>{@code splitEvery=N} — "split every N pages": the selection cut into parts of N pages
+     *       (ZIP). It is the general form of {@code separate}, which is exactly {@code splitEvery=1},
+     *       so passing it overrides {@code separate}.</li>
+     * </ul>
+     */
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> extract(@RequestParam("files") List<MultipartFile> files,
                                           @RequestParam(required = false) String pages,
-                                          @RequestParam(defaultValue = "false") boolean separate)
+                                          @RequestParam(defaultValue = "false") boolean separate,
+                                          @RequestParam(required = false) Integer splitEvery)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
+        if (splitEvery != null && splitEvery < 1) {
+            throw new IllegalArgumentException("splitEvery must be at least 1.");
+        }
         List<NamedBytes> inputs = uploads.readAll(files);
         long bytes = totalBytes(inputs);
-        if (separate) {
-            // Per-page split is inherently multi-output, so it always zips (even for a single file).
-            return Responses.zip(loadGuard.execute(bytes, () -> ops.extractSeparate(inputs, pages)),
+        if (splitEvery != null || separate) {
+            // A multi-part split is inherently multi-output, so it always zips (even for one file).
+            int perPart = splitEvery != null ? splitEvery : 1;
+            return Responses.zip(
+                loadGuard.execute(bytes, () -> ops.extractSeparate(inputs, pages, perPart)),
                 "extract_results.zip");
         }
         // Combine: one PDF per input — a single file streams, several files zip.

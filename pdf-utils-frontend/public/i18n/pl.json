@@ -385,7 +385,16 @@
       "pagesPlaceholder": "np. 1,3,5-8",
       "pagesHelp": "Puste = wszystkie strony. Składnia:",
       "output": "Wynik",
-      "separate": "Każda strona jako osobny plik (ZIP)",
+      "modeOne": "Jeden PDF",
+      "modePerPage": "Każda strona osobno",
+      "modeEvery": "Co N stron",
+      "modeHelp": {
+        "one": "Wybrane strony wrócą jako jeden PDF.",
+        "perPage": "Każda wybrana strona trafi do osobnego pliku (ZIP).",
+        "every": "Wybrane strony potniemy na pliki po N stron (ZIP)."
+      },
+      "every": "Stron w pliku",
+      "everyHelp": "Od 1 do {{max}}. Ostatni plik może mieć mniej stron.",
       "submit": "Wyodrębnij",
       "loading": "Wyodrębnianie…"
     },

@@ -58,6 +58,25 @@ class OperationsControllerTest {
         return n;
     }
 
+    /** Entry name → entry bytes, in archive order. */
+    private static java.util.LinkedHashMap<String, byte[]> zipEntries(byte[] zip)
+            throws java.io.IOException {
+        java.util.LinkedHashMap<String, byte[]> out = new java.util.LinkedHashMap<>();
+        try (java.util.zip.ZipInputStream in =
+                 new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(zip))) {
+            java.util.zip.ZipEntry e;
+            while ((e = in.getNextEntry()) != null) out.put(e.getName(), in.readAllBytes());
+        }
+        return out;
+    }
+
+    /** Page count of every entry in a ZIP of PDFs, in archive order. */
+    private static java.util.List<Integer> zipPageCounts(byte[] zip) throws java.io.IOException {
+        java.util.List<Integer> counts = new java.util.ArrayList<>();
+        for (byte[] entry : zipEntries(zip).values()) counts.add(TestPdfs.pageCount(entry));
+        return counts;
+    }
+
     // --------------------------------------------------------------- info
 
     @Test
@@ -176,6 +195,64 @@ class OperationsControllerTest {
             .andReturn();
         // Two source files → one combined PDF per file in the archive.
         assertThat(zipEntryCount(result.getResponse().getContentAsByteArray())).isEqualTo(2);
+    }
+
+    @Test
+    void extract_splitEvery_returnsZipOfNPageParts() throws Exception {
+        byte[] a = TestPdfs.blank(7);
+        MvcResult result = mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", a))
+                .param("splitEvery", "3"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andExpect(header().string("Content-Disposition",
+                org.hamcrest.Matchers.containsString("extract_results.zip")))
+            .andReturn();
+
+        // 7 pages every 3 → 3 parts of 3 + 3 + 1, numbered from the source file's name.
+        java.util.LinkedHashMap<String, byte[]> entries =
+            zipEntries(result.getResponse().getContentAsByteArray());
+        assertThat(entries.keySet())
+            .containsExactly("a_extracted_1.pdf", "a_extracted_2.pdf", "a_extracted_3.pdf");
+        assertThat(zipPageCounts(result.getResponse().getContentAsByteArray()))
+            .containsExactly(3, 3, 1);
+    }
+
+    @Test
+    void extract_splitEvery_chunksWithinTheSelectedRange() throws Exception {
+        byte[] a = TestPdfs.blank(10);
+        MvcResult result = mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", a))
+                .param("pages", "2-6")
+                .param("splitEvery", "2"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        // The range narrows what is split (5 pages), splitEvery only cuts it up: 2 + 2 + 1.
+        assertThat(zipPageCounts(result.getResponse().getContentAsByteArray()))
+            .containsExactly(2, 2, 1);
+    }
+
+    @Test
+    void extract_splitEvery_beyondPageCount_returnsOnePart() throws Exception {
+        byte[] a = TestPdfs.blank(3);
+        MvcResult result = mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", a))
+                .param("splitEvery", "99"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andReturn();
+
+        assertThat(zipPageCounts(result.getResponse().getContentAsByteArray())).containsExactly(3);
+    }
+
+    @Test
+    void extract_splitEvery_belowOne_isRejected() throws Exception {
+        mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", TestPdfs.blank(3)))
+                .param("splitEvery", "0"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("bad_request"));
     }
 
     // ------------------------------------------------------------- metadata

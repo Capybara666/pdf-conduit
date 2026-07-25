@@ -123,10 +123,21 @@ public class WebOperations {
     /** Extract {@code pagesExpr} (blank ⇒ all) as one PDF per page. */
     public List<NamedBytes> extractSeparate(NamedBytes in, String pagesExpr)
             throws PdfOperationException, InvalidPageRangeException {
+        return extractSeparate(in, pagesExpr, 1);
+    }
+
+    /**
+     * Extract {@code pagesExpr} (blank ⇒ all) as one PDF per group of {@code pagesPerChunk}
+     * selected pages — the "split every N pages" mode. Chunking happens <em>within</em> the
+     * selection, so the range narrows what is split and N only decides how it is cut up; the last
+     * part may be shorter and an N at or above the selection size yields one part.
+     */
+    public List<NamedBytes> extractSeparate(NamedBytes in, String pagesExpr, int pagesPerChunk)
+            throws PdfOperationException, InvalidPageRangeException {
         byte[] pdf = routeToPdf(in);
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
-            List<byte[]> pages = PdfSplitter.separateBytes(pdf, range(pagesExpr, lp));
+            List<byte[]> pages = PdfSplitter.separateBytes(pdf, range(pagesExpr, lp), pagesPerChunk);
             return nameMulti(OperationType.EXTRACT, in.filename(), pages, "pdf");
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
@@ -151,8 +162,19 @@ public class WebOperations {
      */
     public List<NamedBytes> extractSeparate(List<NamedBytes> inputs, String pagesExpr)
             throws PdfOperationException, InvalidPageRangeException {
+        return extractSeparate(inputs, pagesExpr, 1);
+    }
+
+    /**
+     * Batch "split every N pages": apply {@code pagesExpr} to every input and cut each one's
+     * selection into parts of {@code pagesPerChunk} pages, all inputs' parts concatenated
+     * (order preserved). Parts are chunked per input — a part never spans two source files.
+     */
+    public List<NamedBytes> extractSeparate(List<NamedBytes> inputs, String pagesExpr,
+                                            int pagesPerChunk)
+            throws PdfOperationException, InvalidPageRangeException {
         List<NamedBytes> out = new ArrayList<>();
-        for (NamedBytes in : inputs) out.addAll(extractSeparate(in, pagesExpr));
+        for (NamedBytes in : inputs) out.addAll(extractSeparate(in, pagesExpr, pagesPerChunk));
         return out;
     }
 

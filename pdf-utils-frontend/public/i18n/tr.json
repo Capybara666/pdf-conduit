@@ -385,7 +385,16 @@
       "pagesPlaceholder": "örn. 1,3,5-8",
       "pagesHelp": "Boş = tüm sayfalar. Söz dizimi:",
       "output": "Çıktı",
-      "separate": "Her sayfayı ayrı bir dosyaya böl (ZIP)",
+      "modeOne": "Tek PDF",
+      "modePerPage": "Sayfa başına bir dosya",
+      "modeEvery": "Her N sayfada bir",
+      "modeHelp": {
+        "one": "Seçili sayfalar tek bir PDF olarak döner.",
+        "perPage": "Seçili her sayfa kendi dosyası olur (ZIP).",
+        "every": "Seçili sayfalar N sayfalık dosyalara bölünür (ZIP)."
+      },
+      "every": "Dosya başına sayfa",
+      "everyHelp": "1 ile {{max}} arasında. Son dosyada daha az sayfa olabilir.",
       "submit": "Ayıkla",
       "loading": "Ayıklanıyor…"
     },

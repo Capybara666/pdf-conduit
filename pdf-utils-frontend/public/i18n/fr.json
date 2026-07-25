@@ -385,7 +385,16 @@
       "pagesPlaceholder": "ex. 1,3,5-8",
       "pagesHelp": "Vide = toutes les pages. Syntaxe :",
       "output": "Sortie",
-      "separate": "Diviser en un fichier par page (ZIP)",
+      "modeOne": "Un seul PDF",
+      "modePerPage": "Un fichier par page",
+      "modeEvery": "Toutes les N pages",
+      "modeHelp": {
+        "one": "Les pages sélectionnées reviennent dans un seul PDF.",
+        "perPage": "Chaque page sélectionnée devient un fichier (ZIP).",
+        "every": "Les pages sélectionnées sont découpées en fichiers de N pages (ZIP)."
+      },
+      "every": "Pages par fichier",
+      "everyHelp": "De 1 à {{max}}. Le dernier fichier peut contenir moins de pages.",
       "submit": "Extraire",
       "loading": "Extraction en cours…"
     },

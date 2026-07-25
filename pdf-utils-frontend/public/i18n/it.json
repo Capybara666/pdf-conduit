@@ -385,7 +385,16 @@
       "pagesPlaceholder": "es. 1,3,5-8",
       "pagesHelp": "Vuoto = tutte le pagine. Sintassi:",
       "output": "Risultato",
-      "separate": "Dividi in un file per pagina (ZIP)",
+      "modeOne": "Un solo PDF",
+      "modePerPage": "Un file per pagina",
+      "modeEvery": "Ogni N pagine",
+      "modeHelp": {
+        "one": "Le pagine selezionate tornano in un unico PDF.",
+        "perPage": "Ogni pagina selezionata diventa un file a sé (ZIP).",
+        "every": "Le pagine selezionate vengono divise in file da N pagine (ZIP)."
+      },
+      "every": "Pagine per file",
+      "everyHelp": "Da 1 a {{max}}. L'ultimo file può avere meno pagine.",
       "submit": "Estrai",
       "loading": "Estrazione in corso…"
     },

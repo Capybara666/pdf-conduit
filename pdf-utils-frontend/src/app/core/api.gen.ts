@@ -2534,6 +2534,7 @@ export interface operations {
             query?: {
                 pages?: string;
                 separate?: boolean;
+                splitEvery?: number;
             };
             header?: never;
             path?: never;
