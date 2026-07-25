@@ -87,6 +87,10 @@
       "label": "Comprimir",
       "description": "Reduce un PDF hasta un tamaño objetivo."
     },
+    "repair": {
+      "label": "Reparar",
+      "description": "Intenta reconstruir un PDF dañado para que vuelva a abrirse."
+    },
     "to-pdf": {
       "label": "A PDF",
       "description": "Convierte imágenes, documentos de oficina, Markdown y HTML a PDF."
@@ -328,6 +332,11 @@
       "detail": "La operación falló con esta entrada.",
       "hint": "Comprueba que el archivo sea un PDF válido y sin cifrar e inténtalo de nuevo."
     },
+    "repair_failed": {
+      "title": "No se pudo reparar este archivo",
+      "detail": "El daño es demasiado grave para reconstruir el archivo.",
+      "hint": "Si tienes otra copia o una versión anterior, prueba con ella."
+    },
     "bad_request": {
       "title": "Revisa tu entrada",
       "detail": "La solicitud no era válida."
@@ -347,6 +356,9 @@
     "targetReached": "alcanzado",
     "targetNotReached": "no alcanzado",
     "batchFailures": "Algunas entradas fallaron: {{count}}",
+    "repairRebuilt": "El archivo estaba dañado y se ha reconstruido.",
+    "repairAlreadyFine": "El archivo ya estaba bien, así que se guardó sin cambios.",
+    "repairPartial": "El archivo estaba dañado y solo se reconstruyó en parte. Revisa el resultado.",
     "seeProPlans": "Ver planes Pro →",
     "seeProPlansShort": "Ver planes Pro",
     "httpStatus": "· HTTP {{status}}",
@@ -423,6 +435,16 @@
       "grayscale": "Convertir imágenes a escala de grises",
       "grayscaleHelp": "Recodifica las imágenes sin color para archivos más pequeños.",
       "floorNotice": "El tamaño más pequeño posible para este archivo es de aproximadamente {{floor}}. No se puede alcanzar tu objetivo de {{target}}. En su lugar se guardó la versión más pequeña."
+    },
+    "repair": {
+      "title": "Reparar",
+      "description": "Intenta reconstruir un PDF dañado para que vuelva a abrirse.",
+      "hint": "Archivos PDF. Varios archivos se devuelven como ZIP.",
+      "privacyLine": "Tus archivos nunca se almacenan. La reparación es privada.",
+      "honestNote": "Esto intenta reparar un archivo dañado. No todos los archivos se pueden recuperar.",
+      "batchNote": "{{count}} archivos seleccionados. Cada uno se repara por separado; resultados en ZIP.",
+      "submit": "Reparar archivo",
+      "loading": "Reparando…"
     },
     "rotate": {
       "title": "Rotar",

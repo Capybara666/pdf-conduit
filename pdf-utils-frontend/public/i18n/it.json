@@ -87,6 +87,10 @@
       "label": "Comprimi",
       "description": "Riduci un PDF verso una dimensione desiderata."
     },
+    "repair": {
+      "label": "Ripara",
+      "description": "Prova a ricostruire un PDF danneggiato per riaprirlo."
+    },
     "to-pdf": {
       "label": "In PDF",
       "description": "Converti immagini, documenti office, Markdown e HTML in PDF."
@@ -328,6 +332,11 @@
       "detail": "L'operazione non è riuscita su questo input.",
       "hint": "Verifica che il file sia un PDF valido e non crittografato e riprova."
     },
+    "repair_failed": {
+      "title": "Non è stato possibile riparare questo file",
+      "detail": "Il danno è troppo esteso per ricostruire il file.",
+      "hint": "Se hai un'altra copia o una versione precedente, prova con quella."
+    },
     "bad_request": {
       "title": "Controlla i dati inseriti",
       "detail": "La richiesta non era valida."
@@ -347,6 +356,9 @@
     "targetReached": "raggiunto",
     "targetNotReached": "non raggiunto",
     "batchFailures": "Alcuni input non sono riusciti: {{count}}",
+    "repairRebuilt": "Il file era danneggiato ed è stato ricostruito.",
+    "repairAlreadyFine": "Il file era già integro, quindi è stato salvato di nuovo senza modifiche.",
+    "repairPartial": "Il file era danneggiato ed è stato ricostruito solo in parte. Controlla il risultato.",
     "seeProPlans": "Vedi i piani Pro →",
     "seeProPlansShort": "Vedi i piani Pro",
     "httpStatus": "· HTTP {{status}}",
@@ -423,6 +435,16 @@
       "grayscale": "Converti le immagini in scala di grigi",
       "grayscaleHelp": "Ricodifica le immagini senza colore per file più piccoli.",
       "floorNotice": "La dimensione più piccola ottenibile per questo file è circa {{floor}}. L'obiettivo di {{target}} non può essere raggiunto. È stata salvata invece la versione più piccola."
+    },
+    "repair": {
+      "title": "Ripara",
+      "description": "Prova a ricostruire un PDF danneggiato per riaprirlo.",
+      "hint": "File PDF: se sono più file vengono restituiti come ZIP.",
+      "privacyLine": "I tuoi file non vengono mai memorizzati. La riparazione avviene in privato.",
+      "honestNote": "Questo è un tentativo di riparare un file danneggiato. Non tutti i file si possono recuperare.",
+      "batchNote": "{{count}} file selezionati: ciascuno viene riparato singolarmente; i risultati vengono restituiti come ZIP.",
+      "submit": "Ripara file",
+      "loading": "Riparazione in corso…"
     },
     "rotate": {
       "title": "Ruota",

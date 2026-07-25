@@ -87,6 +87,10 @@
       "label": "Sıkıştır",
       "description": "Bir PDF'i hedef boyuta doğru küçültün."
     },
+    "repair": {
+      "label": "Onar",
+      "description": "Bozuk bir PDF'i yeniden oluşturmayı deneyin, tekrar açılsın."
+    },
     "to-pdf": {
       "label": "PDF'e",
       "description": "Görselleri, ofis belgelerini, Markdown ve HTML dosyalarını PDF'e dönüştürün."
@@ -328,6 +332,11 @@
       "detail": "İşlem bu girdide başarısız oldu.",
       "hint": "Dosyanın geçerli, şifrelenmemiş bir PDF olduğundan emin olun ve tekrar deneyin."
     },
+    "repair_failed": {
+      "title": "Bu dosya onarılamadı",
+      "detail": "Hasar, dosyayı yeniden oluşturmak için fazla ağır.",
+      "hint": "Başka bir kopyanız veya eski bir sürümünüz varsa onu deneyin."
+    },
     "bad_request": {
       "title": "Lütfen girdinizi kontrol edin",
       "detail": "İstek geçerli değildi."
@@ -347,6 +356,9 @@
     "targetReached": "ulaşıldı",
     "targetNotReached": "ulaşılmadı",
     "batchFailures": "Bazı girdiler başarısız oldu: {{count}}",
+    "repairRebuilt": "Dosya bozuktu ve yeniden oluşturuldu.",
+    "repairAlreadyFine": "Dosya zaten sağlamdı, değiştirilmeden yeniden kaydedildi.",
+    "repairPartial": "Dosya bozuktu ve yalnızca kısmen onarıldı. Sonucu kontrol edin.",
     "seeProPlans": "Pro planlarına bakın →",
     "seeProPlansShort": "Pro planlarına bakın",
     "httpStatus": "· HTTP {{status}}",
@@ -423,6 +435,16 @@
       "grayscale": "Görüntüleri gri tonlamaya dönüştür",
       "grayscaleHelp": "Daha küçük dosyalar için görüntüleri renksiz yeniden kodlar.",
       "floorNotice": "Bu dosya için ulaşılabilecek en küçük boyut yaklaşık {{floor}}. Hedefiniz olan {{target}} boyutuna ulaşılamıyor. Bunun yerine en küçük sürüm kaydedildi."
+    },
+    "repair": {
+      "title": "Onar",
+      "description": "Bozuk bir PDF'i yeniden oluşturmayı deneyin, tekrar açılsın.",
+      "hint": "PDF dosyaları. Birden fazla dosya ZIP olarak döner.",
+      "privacyLine": "Dosyalarınız asla saklanmaz. Onarım gizli olarak yapılır.",
+      "honestNote": "Bu, bozuk bir dosyayı onarma denemesidir. Her dosya kurtarılamaz.",
+      "batchNote": "{{count}} dosya seçildi. Her biri ayrı ayrı onarılır; sonuçlar ZIP olarak döner.",
+      "submit": "Dosyayı onar",
+      "loading": "Onarılıyor…"
     },
     "rotate": {
       "title": "Döndür",

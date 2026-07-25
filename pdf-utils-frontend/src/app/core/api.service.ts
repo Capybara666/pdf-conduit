@@ -14,6 +14,7 @@ import {
   MetadataDto,
   OperationInfo,
   PiiReport,
+  RepairInfo,
   RunResult,
 } from './api.models';
 import { errorCopyKeys } from './error-copy';
@@ -192,6 +193,15 @@ export class ApiService {
   ocr(formData: FormData): Observable<RunResult> {
     return this.runOperation('ocr', formData);
   }
+  /**
+   * `POST /api/repair` → the rebuilt PDF (single input) or a ZIP (batch). The
+   * single-file response carries `X-Repair-Was-Damaged` / `X-Repair-Recovered`,
+   * parsed into {@link RunResult.repair}; a 422 `repair_failed` means the file
+   * could not be recovered.
+   */
+  repair(formData: FormData): Observable<RunResult> {
+    return this.runOperation('repair', formData);
+  }
 
   // ---- Pipeline ---------------------------------------------------------
 
@@ -248,6 +258,10 @@ export class ApiService {
     if (compression) {
       result.compression = compression;
     }
+    const repair = this.repairFrom(headers);
+    if (repair) {
+      result.repair = repair;
+    }
     const batchFailures = headers.get('X-Batch-Failures');
     if (batchFailures) {
       result.batchFailures = batchFailures;
@@ -298,6 +312,23 @@ export class ApiService {
     if (reached != null) info.targetReached = reached.toLowerCase() === 'true';
     if (feasible != null) info.targetFeasible = feasible.toLowerCase() === 'true';
     if (floor != null) info.estimatedFloorBytes = Number(floor);
+    return info;
+  }
+
+  /**
+   * Parse the repair outcome headers. Absent on batch (ZIP) responses and on any
+   * server that predates them — then this returns `undefined` and the result
+   * panel stays with the neutral success copy rather than guessing.
+   */
+  private repairFrom(headers: HttpHeaders): RepairInfo | undefined {
+    const wasDamaged = headers.get('X-Repair-Was-Damaged');
+    const recovered = headers.get('X-Repair-Recovered');
+    if (wasDamaged == null && recovered == null) {
+      return undefined;
+    }
+    const info: RepairInfo = {};
+    if (wasDamaged != null) info.wasDamaged = wasDamaged.toLowerCase() === 'true';
+    if (recovered != null) info.recovered = recovered.toLowerCase() === 'true';
     return info;
   }
 

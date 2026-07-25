@@ -87,6 +87,10 @@
       "label": "Comprimir",
       "description": "Reduza um PDF para um tamanho pretendido."
     },
+    "repair": {
+      "label": "Reparar",
+      "description": "Tente reconstruir um PDF danificado para voltar a abrir."
+    },
     "to-pdf": {
       "label": "Para PDF",
       "description": "Converta imagens, documentos office, Markdown e HTML para PDF."
@@ -328,6 +332,11 @@
       "detail": "A operação falhou com esta entrada.",
       "hint": "Verifique se o ficheiro é um PDF válido e não encriptado e tente novamente."
     },
+    "repair_failed": {
+      "title": "Não foi possível reparar este ficheiro",
+      "detail": "Os danos são demasiado graves para reconstruir o ficheiro.",
+      "hint": "Se tiver outra cópia ou uma versão anterior, experimente essa."
+    },
     "bad_request": {
       "title": "Verifique a sua entrada",
       "detail": "O pedido não era válido."
@@ -347,6 +356,9 @@
     "targetReached": "atingido",
     "targetNotReached": "não atingido",
     "batchFailures": "Algumas entradas falharam: {{count}}",
+    "repairRebuilt": "O ficheiro estava danificado e foi reconstruído.",
+    "repairAlreadyFine": "O ficheiro já estava bem, por isso foi guardado sem alterações.",
+    "repairPartial": "O ficheiro estava danificado e só foi reconstruído em parte. Verifique o resultado.",
     "seeProPlans": "Ver planos Pro →",
     "seeProPlansShort": "Ver planos Pro",
     "httpStatus": "· HTTP {{status}}",
@@ -423,6 +435,16 @@
       "grayscale": "Converter imagens em tons de cinza",
       "grayscaleHelp": "Recodifica as imagens sem cor para arquivos menores.",
       "floorNotice": "O menor tamanho possível para este arquivo é cerca de {{floor}}. O seu alvo de {{target}} não pode ser alcançado. Em vez disso, foi salva a versão menor."
+    },
+    "repair": {
+      "title": "Reparar",
+      "description": "Tente reconstruir um PDF danificado para voltar a abrir.",
+      "hint": "Ficheiros PDF. Vários ficheiros voltam num ZIP.",
+      "privacyLine": "Os seus ficheiros nunca são armazenados. A reparação é privada.",
+      "honestNote": "Isto tenta reparar um ficheiro danificado. Nem todos os ficheiros podem ser recuperados.",
+      "batchNote": "{{count}} ficheiros selecionados. Cada um é reparado à parte; os resultados voltam num ZIP.",
+      "submit": "Reparar ficheiro",
+      "loading": "A reparar…"
     },
     "rotate": {
       "title": "Rodar",

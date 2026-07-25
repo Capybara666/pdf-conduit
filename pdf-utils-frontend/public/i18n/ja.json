@@ -87,6 +87,10 @@
       "label": "圧縮",
       "description": "PDF を目標サイズに向けて縮小します。"
     },
+    "repair": {
+      "label": "修復",
+      "description": "破損した PDF を再構築して、もう一度開けるようにします。"
+    },
     "to-pdf": {
       "label": "PDF に変換",
       "description": "画像、オフィス文書、Markdown、HTML を PDF に変換します。"
@@ -328,6 +332,11 @@
       "detail": "この入力に対する操作が失敗しました。",
       "hint": "ファイルが有効で暗号化されていない PDF であることを確認し、もう一度お試しください。"
     },
+    "repair_failed": {
+      "title": "このファイルは修復できませんでした",
+      "detail": "破損が大きく、ファイルを再構築できません。",
+      "hint": "別のコピーや以前のバージョンがあれば、そちらをお試しください。"
+    },
     "bad_request": {
       "title": "入力内容をご確認ください",
       "detail": "リクエストが無効でした。"
@@ -347,6 +356,9 @@
     "targetReached": "達成",
     "targetNotReached": "未達成",
     "batchFailures": "一部の入力が失敗しました：{{count}}",
+    "repairRebuilt": "ファイルは破損しており、再構築されました。",
+    "repairAlreadyFine": "ファイルに問題はなかったため、そのまま保存し直しました。",
+    "repairPartial": "ファイルは破損しており、一部しか復元できませんでした。結果をご確認ください。",
     "seeProPlans": "Pro プランを見る →",
     "seeProPlansShort": "Pro プランを見る",
     "httpStatus": "· HTTP {{status}}",
@@ -423,6 +435,16 @@
       "grayscale": "画像をグレースケールに変換",
       "grayscaleHelp": "画像を色なしで再エンコードしてファイルを小さくします。",
       "floorNotice": "このファイルで実現可能な最小サイズは約 {{floor}} です。目標の {{target}} には到達できません。代わりに最小のバージョンを保存しました。"
+    },
+    "repair": {
+      "title": "修復",
+      "description": "破損した PDF を再構築して、もう一度開けるようにします。",
+      "hint": "PDFファイル。複数のファイルはZIPで返されます。",
+      "privacyLine": "ファイルが保存されることはありません。修復はプライベートに行われます。",
+      "honestNote": "これは破損したファイルの修復を試みる機能です。すべてのファイルを復元できるわけではありません。",
+      "batchNote": "{{count}} 件のファイルが選択されました。各ファイルを個別に修復し、結果はZIPで返されます。",
+      "submit": "ファイルを修復",
+      "loading": "修復中…"
     },
     "rotate": {
       "title": "回転",

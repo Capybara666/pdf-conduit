@@ -87,6 +87,10 @@
       "label": "Compress",
       "description": "Shrink a PDF toward a target size."
     },
+    "repair": {
+      "label": "Repair",
+      "description": "Try to rebuild a damaged PDF so it opens again."
+    },
     "to-pdf": {
       "label": "To PDF",
       "description": "Convert images, office docs, Markdown and HTML to PDF."
@@ -328,6 +332,11 @@
       "detail": "The operation failed on this input.",
       "hint": "Check the file is a valid, unencrypted PDF and try again."
     },
+    "repair_failed": {
+      "title": "This file couldn't be repaired",
+      "detail": "The damage runs too deep to rebuild the file.",
+      "hint": "If you have another copy or an earlier version, try that one."
+    },
     "bad_request": {
       "title": "Please check your input",
       "detail": "The request was not valid."
@@ -347,6 +356,9 @@
     "targetReached": "reached",
     "targetNotReached": "not reached",
     "batchFailures": "Some inputs failed: {{count}}",
+    "repairRebuilt": "The file was damaged and has been rebuilt.",
+    "repairAlreadyFine": "The file was already well-formed, so it was re-saved unchanged.",
+    "repairPartial": "The file was damaged and only partly rebuilt. Check the result before you use it.",
     "seeProPlans": "See Pro plans →",
     "seeProPlansShort": "See Pro plans",
     "httpStatus": "· HTTP {{status}}",
@@ -423,6 +435,16 @@
       "grayscale": "Convert images to grayscale",
       "grayscaleHelp": "Re-encode images without colour for smaller files.",
       "floorNotice": "Smallest achievable for this file is about {{floor}}. Your target of {{target}} can't be reached. The smallest version was saved instead."
+    },
+    "repair": {
+      "title": "Repair",
+      "description": "Try to rebuild a damaged PDF so it opens again.",
+      "hint": "PDF files. Several files come back as a ZIP.",
+      "privacyLine": "Your files are never stored. The repair happens privately.",
+      "honestNote": "This tries to repair a damaged file. Not every file can be recovered.",
+      "batchNote": "{{count}} files selected. Each file is repaired on its own; results come back as a ZIP.",
+      "submit": "Repair file",
+      "loading": "Repairing…"
     },
     "rotate": {
       "title": "Rotate",

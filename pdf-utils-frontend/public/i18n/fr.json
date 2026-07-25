@@ -87,6 +87,10 @@
       "label": "Compresser",
       "description": "Réduisez un PDF vers une taille cible."
     },
+    "repair": {
+      "label": "Réparer",
+      "description": "Tentez de reconstruire un PDF endommagé pour qu'il s'ouvre à nouveau."
+    },
     "to-pdf": {
       "label": "Vers PDF",
       "description": "Convertissez images, documents bureautiques, Markdown et HTML en PDF."
@@ -328,6 +332,11 @@
       "detail": "L'opération a échoué sur ce fichier.",
       "hint": "Vérifiez que le fichier est un PDF valide et non chiffré, puis réessayez."
     },
+    "repair_failed": {
+      "title": "Ce fichier n'a pas pu être réparé",
+      "detail": "Les dommages sont trop importants pour reconstruire le fichier.",
+      "hint": "Si vous avez une autre copie ou une version antérieure, essayez-la."
+    },
     "bad_request": {
       "title": "Veuillez vérifier votre saisie",
       "detail": "La requête n'était pas valide."
@@ -347,6 +356,9 @@
     "targetReached": "atteinte",
     "targetNotReached": "non atteinte",
     "batchFailures": "Certains fichiers ont échoué : {{count}}",
+    "repairRebuilt": "Le fichier était endommagé et a été reconstruit.",
+    "repairAlreadyFine": "Le fichier était déjà valide : il a été réenregistré tel quel.",
+    "repairPartial": "Le fichier était endommagé et n'a été reconstruit qu'en partie. Vérifiez le résultat.",
     "seeProPlans": "Voir les offres Pro →",
     "seeProPlansShort": "Voir les offres Pro",
     "httpStatus": "· HTTP {{status}}",
@@ -423,6 +435,16 @@
       "grayscale": "Convertir les images en niveaux de gris",
       "grayscaleHelp": "Réencode les images sans couleur pour des fichiers plus petits.",
       "floorNotice": "La plus petite taille possible pour ce fichier est d'environ {{floor}}. Votre cible de {{target}} ne peut pas être atteinte. La version la plus petite a été enregistrée à la place."
+    },
+    "repair": {
+      "title": "Réparer",
+      "description": "Tentez de reconstruire un PDF endommagé pour qu'il s'ouvre à nouveau.",
+      "hint": "Fichiers PDF. Plusieurs fichiers reviennent en ZIP.",
+      "privacyLine": "Vos fichiers ne sont jamais conservés. La réparation reste privée.",
+      "honestNote": "Il s'agit d'une tentative de réparation. Tous les fichiers ne peuvent pas être récupérés.",
+      "batchNote": "{{count}} fichiers sélectionnés. Chacun est réparé séparément ; résultats en ZIP.",
+      "submit": "Réparer le fichier",
+      "loading": "Réparation…"
     },
     "rotate": {
       "title": "Pivoter",

@@ -134,6 +134,23 @@ export class ResultPanelComponent implements OnChanges, OnDestroy {
     return Math.max(0, Math.round((1 - c.resultBytes / c.originalBytes) * 100));
   }
 
+  /**
+   * i18n key for the honest one-line repair outcome, or `null` when there is
+   * nothing trustworthy to say. Only a single-file repair response carries the
+   * `X-Repair-*` headers; a batch (ZIP) run, another operation, or a server that
+   * predates the headers leaves the panel on the plain success copy — never a
+   * guessed claim about the file.
+   */
+  get repairNoteKey(): string | null {
+    const r = this.result?.repair;
+    if (!r) return null;
+    if (r.wasDamaged === false) return 'result.repairAlreadyFine';
+    if (r.wasDamaged === true) {
+      return r.recovered === false ? 'result.repairPartial' : 'result.repairRebuilt';
+    }
+    return null;
+  }
+
   /** True when a preview (image or PDF thumbnail) is available to expand. */
   protected hasPreview(): boolean {
     return this.previewImageUrl() !== null || this.previewPdfThumb() !== null;

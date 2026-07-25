@@ -58,6 +58,10 @@
       </ul>
     }
 
+    @if (repairNoteKey; as key) {
+      <p class="note">{{ key | transloco }}</p>
+    }
+
     @if (result.batchFailures) {
       <p class="warn">{{ 'result.batchFailures' | transloco: { count: result.batchFailures } }}</p>
     }

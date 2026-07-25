@@ -84,6 +84,15 @@ const BUILDERS: Record<string, (e: ApiError) => ErrorCopyKeys> = {
     detailKey: 'errors.operation_failed.detail',
     hintKey: 'errors.operation_failed.hint',
   }),
+  // 422 from /api/repair: the file is too damaged to rebuild. Deliberately its
+  // own copy — "try a valid PDF" (the generic operation_failed hint) is useless
+  // advice when the whole point of the page was that the PDF is broken.
+  repair_failed: (e) => ({
+    titleKey: 'errors.repair_failed.title',
+    detailText: e.message,
+    detailKey: 'errors.repair_failed.detail',
+    hintKey: 'errors.repair_failed.hint',
+  }),
   bad_request: (e) => ({
     titleKey: 'errors.bad_request.title',
     detailText: e.message,

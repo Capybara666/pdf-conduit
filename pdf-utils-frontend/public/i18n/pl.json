@@ -87,6 +87,10 @@
       "label": "Kompresuj",
       "description": "Zmniejsz PDF do zadanego rozmiaru."
     },
+    "repair": {
+      "label": "Napraw",
+      "description": "Spróbuj odbudować uszkodzony PDF, żeby znowu się otwierał."
+    },
     "to-pdf": {
       "label": "Do PDF",
       "description": "Zamień obrazy, dokumenty Office, Markdown i HTML na PDF."
@@ -328,6 +332,11 @@
       "detail": "Operacja nie powiodła się dla tego pliku.",
       "hint": "Sprawdź, czy to poprawny, niezaszyfrowany PDF, i spróbuj ponownie."
     },
+    "repair_failed": {
+      "title": "Nie udało się naprawić tego pliku",
+      "detail": "Uszkodzenie jest zbyt duże, żeby odbudować plik.",
+      "hint": "Jeśli masz inną kopię albo wcześniejszą wersję, spróbuj z nią."
+    },
     "bad_request": {
       "title": "Sprawdź wprowadzone dane",
       "detail": "Żądanie było nieprawidłowe."
@@ -347,6 +356,9 @@
     "targetReached": "osiągnięto",
     "targetNotReached": "nie osiągnięto",
     "batchFailures": "Nie udało się przetworzyć plików: {{count}}",
+    "repairRebuilt": "Plik był uszkodzony i został odbudowany.",
+    "repairAlreadyFine": "Plik był w porządku, więc zapisaliśmy go bez zmian.",
+    "repairPartial": "Plik był uszkodzony i udało się go odbudować tylko częściowo. Sprawdź wynik.",
     "seeProPlans": "Zobacz plany Pro →",
     "seeProPlansShort": "Zobacz plany Pro",
     "httpStatus": "· HTTP {{status}}",
@@ -423,6 +435,16 @@
       "grayscale": "Zamień obrazy na odcienie szarości",
       "grayscaleHelp": "Zapisuje obrazy bez kolorów, aby plik był mniejszy.",
       "floorNotice": "Najmniejszy osiągalny rozmiar tego pliku to ok. {{floor}}. Celu {{target}} nie da się osiągnąć, więc zapisano najmniejszą wersję."
+    },
+    "repair": {
+      "title": "Napraw",
+      "description": "Spróbuj odbudować uszkodzony PDF, żeby znowu się otwierał.",
+      "hint": "Pliki PDF. Kilka plików pobierzesz jako ZIP.",
+      "privacyLine": "Nie zapisujemy Twoich plików. Naprawa odbywa się prywatnie.",
+      "honestNote": "To próba naprawy uszkodzonego pliku. Nie każdy plik da się odzyskać.",
+      "batchNote": "Wybrano plików: {{count}}. Każdy naprawiamy osobno, a wyniki pobierzesz jako ZIP.",
+      "submit": "Napraw plik",
+      "loading": "Naprawianie…"
     },
     "rotate": {
       "title": "Obróć",

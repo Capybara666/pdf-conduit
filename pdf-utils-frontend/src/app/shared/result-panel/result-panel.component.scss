@@ -142,6 +142,13 @@
   font-size: 0.9rem;
 }
 
+// Neutral factual line about the outcome (e.g. what repair actually did).
+.note {
+  margin: 0 0 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
 // Grouped output block: the first-page preview (when previewable) sits on top
 // as the hero, with its Download action directly below — a clear, intentional
 // vertical relationship rather than the two floating side-by-side. When there
