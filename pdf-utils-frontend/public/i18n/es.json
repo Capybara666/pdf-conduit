@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "Reparar",
-      "description": "Intenta reconstruir un PDF dañado para que vuelva a abrirse.",
+      "description": "Intenta reconstruir un PDF dañado para que vuelva a abrirse. No todos los archivos se pueden recuperar.",
       "hint": "Archivos PDF. Varios archivos se devuelven como ZIP.",
       "privacyLine": "Nunca guardamos tus archivos. La reparación es privada.",
-      "honestNote": "Esto intenta reparar un archivo dañado. No todos los archivos se pueden recuperar.",
       "batchNote": "{{count}} archivos seleccionados. Cada uno se repara por separado; resultados en ZIP.",
       "submit": "Reparar archivo",
       "loading": "Reparando…"

@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "Repair",
-      "description": "Try to rebuild a damaged PDF so it opens again.",
+      "description": "Try to rebuild a damaged PDF so it opens again. Not every file can be recovered.",
       "hint": "PDF files. Several files come back as a ZIP.",
       "privacyLine": "Your files are never stored. The repair happens privately.",
-      "honestNote": "This tries to repair a damaged file. Not every file can be recovered.",
       "batchNote": "{{count}} files selected. Each file is repaired on its own; results come back as a ZIP.",
       "submit": "Repair file",
       "loading": "Repairing…"

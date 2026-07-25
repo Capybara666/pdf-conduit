@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "Repareren",
-      "description": "Probeer een beschadigde PDF te herstellen zodat die weer opent.",
+      "description": "Probeer een beschadigde PDF te herstellen zodat die weer opent. Niet elk bestand is te redden.",
       "hint": "PDF-bestanden. Meerdere bestanden komen terug als ZIP.",
       "privacyLine": "Je bestanden worden nooit opgeslagen. De reparatie gebeurt privé.",
-      "honestNote": "Dit is een poging om een beschadigd bestand te herstellen. Niet elk bestand is te redden.",
       "batchNote": "{{count}} bestanden geselecteerd. Elk bestand wordt apart gerepareerd; resultaten komen terug als ZIP.",
       "submit": "Bestand repareren",
       "loading": "Bezig met repareren…"

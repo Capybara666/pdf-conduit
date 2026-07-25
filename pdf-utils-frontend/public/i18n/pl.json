@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "Napraw",
-      "description": "Spróbuj odbudować uszkodzony PDF, żeby znowu się otwierał.",
+      "description": "Spróbuj odbudować uszkodzony PDF, żeby znowu się otwierał. Nie każdy plik da się odzyskać.",
       "hint": "Pliki PDF. Kilka plików pobierzesz jako ZIP.",
       "privacyLine": "Nie zapisujemy Twoich plików. Naprawa odbywa się prywatnie.",
-      "honestNote": "To próba naprawy uszkodzonego pliku. Nie każdy plik da się odzyskać.",
       "batchNote": "Wybrano plików: {{count}}. Każdy naprawiamy osobno, a wyniki pobierzesz jako ZIP.",
       "submit": "Napraw plik",
       "loading": "Naprawianie…"

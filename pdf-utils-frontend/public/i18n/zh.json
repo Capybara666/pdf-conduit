@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "修复",
-      "description": "尝试重建损坏的 PDF，让它重新打开。",
+      "description": "尝试重建损坏的 PDF，让它重新打开。并非所有文件都能恢复。",
       "hint": "PDF 文件。多个文件将以 ZIP 返回。",
       "privacyLine": "您的文件以私密方式修复，我们绝不会保存。",
-      "honestNote": "这是对损坏文件的修复尝试，并非所有文件都能恢复。",
       "batchNote": "已选择 {{count}} 个文件。每个文件单独修复；结果以 ZIP 返回。",
       "submit": "修复文件",
       "loading": "正在修复…"

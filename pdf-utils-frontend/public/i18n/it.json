@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "Ripara",
-      "description": "Prova a ricostruire un PDF danneggiato per riaprirlo.",
+      "description": "Prova a ricostruire un PDF danneggiato per riaprirlo. Non tutti i file si possono recuperare.",
       "hint": "File PDF: più file vengono restituiti come ZIP.",
       "privacyLine": "I tuoi file non vengono mai conservati. La riparazione avviene in privato.",
-      "honestNote": "Questo è un tentativo di riparare un file danneggiato. Non tutti i file si possono recuperare.",
       "batchNote": "{{count}} file selezionati: ciascuno viene riparato singolarmente; i risultati vengono restituiti come ZIP.",
       "submit": "Ripara file",
       "loading": "Riparazione in corso…"

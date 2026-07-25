@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "Onar",
-      "description": "Bozuk bir PDF'i onarıp yeniden açılabilir hale getirmeyi deneyin.",
+      "description": "Bozuk bir PDF'i onarıp yeniden açılabilir hale getirmeyi deneyin. Her dosya kurtarılamaz.",
       "hint": "PDF dosyaları. Birden fazla dosya ZIP olarak döner.",
       "privacyLine": "Dosyalarınız asla saklanmaz. Onarım gizli olarak yapılır.",
-      "honestNote": "Bu, bozuk bir dosyayı onarma denemesidir. Her dosya kurtarılamaz.",
       "batchNote": "{{count}} dosya seçildi. Her biri ayrı ayrı onarılır; sonuçlar ZIP olarak döner.",
       "submit": "Dosyayı onar",
       "loading": "Onarılıyor…"

@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "Reparieren",
-      "description": "Ein beschädigtes PDF wiederherstellen, damit es sich wieder öffnen lässt.",
+      "description": "Ein beschädigtes PDF wiederherstellen, damit es sich wieder öffnen lässt. Nicht jede Datei lässt sich retten.",
       "hint": "PDF-Dateien. Mehrere Dateien kommen als ZIP zurück.",
       "privacyLine": "Ihre Dateien werden niemals gespeichert. Die Reparatur läuft privat ab.",
-      "honestNote": "Dies ist ein Reparaturversuch für eine beschädigte Datei. Nicht jede Datei lässt sich retten.",
       "batchNote": "{{count}} Dateien ausgewählt. Jede wird einzeln repariert; Ergebnisse als ZIP.",
       "submit": "Datei reparieren",
       "loading": "Wird repariert…"

@@ -479,10 +479,9 @@
     },
     "repair": {
       "title": "Réparer",
-      "description": "Tentez de reconstruire un PDF endommagé pour qu'il s'ouvre à nouveau.",
+      "description": "Tentez de reconstruire un PDF endommagé pour qu'il s'ouvre à nouveau. Tous les fichiers ne peuvent pas être récupérés.",
       "hint": "Fichiers PDF. Plusieurs fichiers sont renvoyés dans un ZIP.",
       "privacyLine": "Vos fichiers ne sont jamais conservés. La réparation se déroule en toute confidentialité.",
-      "honestNote": "Il s'agit d'une tentative de réparation. Tous les fichiers ne peuvent pas être récupérés.",
       "batchNote": "{{count}} fichiers sélectionnés. Chacun est réparé séparément ; les résultats sont renvoyés dans un ZIP.",
       "submit": "Réparer le fichier",
       "loading": "Réparation en cours…"
