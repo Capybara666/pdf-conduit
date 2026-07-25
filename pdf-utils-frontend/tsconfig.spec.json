@@ -4,12 +4,17 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    /* Specs feed the REAL public/i18n/en.json dictionary to Transloco's
+       TestingLoader (see src/app/testing/transloco-testing.ts). Test-only —
+       the application build (tsconfig.app.json) is unaffected. */
+    "resolveJsonModule": true,
     "types": [
       "jasmine"
     ]
   },
   "include": [
     "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "src/app/testing/**/*.ts"
   ]
 }
