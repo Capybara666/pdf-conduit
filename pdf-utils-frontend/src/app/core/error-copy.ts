@@ -123,6 +123,17 @@ const BUILDERS: Record<string, (e: ApiError) => ErrorCopyKeys> = {
     detailKey: 'errors.ocr_disabled.detail',
     hintKey: 'errors.ocr_disabled.hint',
   }),
+  // 422 from the aggregate output budget: the *result* (pages rasterised, or
+  // bytes accumulated) would exceed what one request may produce. Not a 413 —
+  // the upload was fine. The copy never names which of the two ceilings tripped
+  // because the client cannot tell them apart, and both are fixed by the same
+  // thing: fewer pages/files at a time, or a lower quality/DPI.
+  output_too_large: (e) => ({
+    titleKey: 'errors.output_too_large.title',
+    detailText: e.message,
+    detailKey: 'errors.output_too_large.detail',
+    hintKey: 'errors.output_too_large.hint',
+  }),
   // Server sentence leads: it names the actual failure (wrong password, damaged
   // page tree, LibreOffice missing) where the localised line can only say "the
   // operation failed on this input".

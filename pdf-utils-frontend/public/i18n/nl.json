@@ -337,6 +337,11 @@
       "detail": "De bewerking is mislukt op deze invoer.",
       "hint": "Controleer of het bestand een geldige, niet-versleutelde PDF is en probeer het opnieuw."
     },
+    "output_too_large": {
+      "title": "Dit is te groot voor één keer",
+      "detail": "Het resultaat zou groter zijn dan deze server in één keer kan maken.",
+      "hint": "Probeer minder pagina's of minder bestanden tegelijk, of een lagere kwaliteit of DPI."
+    },
     "repair_failed": {
       "title": "Dit bestand kon niet worden gerepareerd",
       "detail": "De schade is te groot om het bestand te herstellen.",

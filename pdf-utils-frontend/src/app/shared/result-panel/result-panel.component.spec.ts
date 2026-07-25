@@ -98,6 +98,28 @@ describe('ResultPanelComponent', () => {
       );
     }
 
+    it('renders the aggregate output-budget rejection with its own copy', () => {
+      showError(
+        new ApiError(
+          'output_too_large',
+          'This request would produce more than 200 MB of files, more than this server ' +
+            'returns in one request. Choose fewer pages or files, or a lower DPI or quality.',
+          422,
+        ),
+      );
+
+      expect(text()).toContain("That's too big to make in one go");
+      expect(message()).toBe(
+        'The result would be larger than this server can produce in a single run.',
+      );
+      expect(text()).toContain(
+        'Try fewer pages or fewer files at a time, or a lower quality or DPI setting.',
+      );
+      // Not the generic "something went wrong", and not the 413 upload copy.
+      expect(text()).not.toContain('Something went wrong');
+      expect(text()).not.toContain('free size limit');
+    });
+
     it('shows the translated line first and the server sentence underneath', () => {
       showError(new ApiError('processing_timeout', 'Processing exceeded 60 seconds.', 503));
 

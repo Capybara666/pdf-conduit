@@ -337,6 +337,11 @@
       "detail": "The operation failed on this input.",
       "hint": "Check the file is a valid, unencrypted PDF and try again."
     },
+    "output_too_large": {
+      "title": "That's too big to make in one go",
+      "detail": "The result would be larger than this server can produce in a single run.",
+      "hint": "Try fewer pages or fewer files at a time, or a lower quality or DPI setting."
+    },
     "repair_failed": {
       "title": "This file couldn't be repaired",
       "detail": "The damage runs too deep to rebuild the file.",

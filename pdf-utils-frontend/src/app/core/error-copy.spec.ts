@@ -37,6 +37,57 @@ describe('error copy', () => {
     return resolveErrorCopy(error, (key, params) => transloco.translate(key, params));
   }
 
+  // --- output_too_large ---------------------------------------------------
+
+  describe('output_too_large (422)', () => {
+    const SERVER =
+      'This request would render about 900 megapixels of images, more than this server ' +
+      'produces in one request (400 megapixels). Choose fewer pages or files, or a lower DPI.';
+
+    const error = () => new ApiError('output_too_large', SERVER, 422);
+
+    it('has copy of its own rather than falling through to the generic branch', () => {
+      const keys = errorCopyKeys(error());
+      expect(keys.titleKey).toBe('errors.output_too_large.title');
+      expect(keys.detailKey).toBe('errors.output_too_large.detail');
+      expect(keys.hintKey).toBe('errors.output_too_large.hint');
+      // The generic branch is what this code used to hit; it must not any more.
+      expect(keys.titleKey).not.toBe('errors.generic.title');
+    });
+
+    it('reads as localised copy, with actionable advice', () => {
+      const copy = resolve(error());
+      expect(copy.title).toBe("That's too big to make in one go");
+      expect(copy.detail).toBe(
+        'The result would be larger than this server can produce in a single run.',
+      );
+      expect(copy.hint).toBe(
+        'Try fewer pages or fewer files at a time, or a lower quality or DPI setting.',
+      );
+    });
+
+    it('never blames one of the two ceilings it cannot tell apart', () => {
+      // The budget trips on summed render pixels OR accumulated result bytes,
+      // and the response does not say which — so the copy claims neither, and
+      // names the two things the user can change, which fix either one.
+      const copy = resolve(error());
+      const shown = `${copy.title} ${copy.detail} ${copy.hint}`.toLowerCase();
+      for (const jargon of ['megapixel', 'pixel', 'byte', 'megabyte']) {
+        expect(shown).withContext(jargon).not.toContain(jargon);
+      }
+      expect(shown).toContain('pages');
+      expect(shown).toContain('files');
+    });
+
+    it('keeps the server sentence — the only place the real limit is named', () => {
+      expect(resolve(error()).technical).toBe(SERVER);
+    });
+
+    it('is not confused with the 413 upload limit', () => {
+      expect(errorCopyKeys(error()).titleKey).not.toBe(errorCopyKeys(new ApiError('too_large', '', 413)).titleKey);
+    });
+  });
+
   // --- precedence ---------------------------------------------------------
 
   describe('localised copy vs the English server sentence', () => {
@@ -115,6 +166,7 @@ describe('error copy', () => {
       'bad_request',
       'repair_failed',
       'operation_failed',
+      'output_too_large',
       'office_disabled',
       'ocr_disabled',
       'file_too_large',

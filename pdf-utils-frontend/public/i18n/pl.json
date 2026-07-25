@@ -337,6 +337,11 @@
       "detail": "Operacja nie powiodła się dla tego pliku.",
       "hint": "Sprawdź, czy to poprawny, niezaszyfrowany PDF, i spróbuj ponownie."
     },
+    "output_too_large": {
+      "title": "To za dużo jak na jeden raz",
+      "detail": "Wynik byłby większy, niż ten serwer potrafi przygotować za jednym razem.",
+      "hint": "Spróbuj z mniejszą liczbą stron lub plików naraz albo z niższą jakością czy DPI."
+    },
     "repair_failed": {
       "title": "Nie udało się naprawić tego pliku",
       "detail": "Uszkodzenie jest zbyt duże, żeby odbudować plik.",

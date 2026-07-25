@@ -337,6 +337,11 @@
       "detail": "L'opération a échoué sur ce fichier.",
       "hint": "Vérifiez que le fichier est un PDF valide et non chiffré, puis réessayez."
     },
+    "output_too_large": {
+      "title": "C'est trop gros pour une seule fois",
+      "detail": "Le résultat serait plus volumineux que ce que ce serveur peut produire en une fois.",
+      "hint": "Essayez avec moins de pages ou moins de fichiers à la fois, ou avec une qualité ou un DPI plus bas."
+    },
     "repair_failed": {
       "title": "Ce fichier n'a pas pu être réparé",
       "detail": "Les dommages sont trop importants pour reconstruire le fichier.",
