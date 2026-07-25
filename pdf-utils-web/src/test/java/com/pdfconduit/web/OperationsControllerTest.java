@@ -58,6 +58,25 @@ class OperationsControllerTest {
         return n;
     }
 
+    /** Entry name → entry bytes, in archive order. */
+    private static java.util.LinkedHashMap<String, byte[]> zipEntries(byte[] zip)
+            throws java.io.IOException {
+        java.util.LinkedHashMap<String, byte[]> out = new java.util.LinkedHashMap<>();
+        try (java.util.zip.ZipInputStream in =
+                 new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(zip))) {
+            java.util.zip.ZipEntry e;
+            while ((e = in.getNextEntry()) != null) out.put(e.getName(), in.readAllBytes());
+        }
+        return out;
+    }
+
+    /** Page count of every entry in a ZIP of PDFs, in archive order. */
+    private static java.util.List<Integer> zipPageCounts(byte[] zip) throws java.io.IOException {
+        java.util.List<Integer> counts = new java.util.ArrayList<>();
+        for (byte[] entry : zipEntries(zip).values()) counts.add(TestPdfs.pageCount(entry));
+        return counts;
+    }
+
     // --------------------------------------------------------------- info
 
     @Test
@@ -178,6 +197,64 @@ class OperationsControllerTest {
         assertThat(zipEntryCount(result.getResponse().getContentAsByteArray())).isEqualTo(2);
     }
 
+    @Test
+    void extract_splitEvery_returnsZipOfNPageParts() throws Exception {
+        byte[] a = TestPdfs.blank(7);
+        MvcResult result = mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", a))
+                .param("splitEvery", "3"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andExpect(header().string("Content-Disposition",
+                org.hamcrest.Matchers.containsString("extract_results.zip")))
+            .andReturn();
+
+        // 7 pages every 3 → 3 parts of 3 + 3 + 1, numbered from the source file's name.
+        java.util.LinkedHashMap<String, byte[]> entries =
+            zipEntries(result.getResponse().getContentAsByteArray());
+        assertThat(entries.keySet())
+            .containsExactly("a_extracted_1.pdf", "a_extracted_2.pdf", "a_extracted_3.pdf");
+        assertThat(zipPageCounts(result.getResponse().getContentAsByteArray()))
+            .containsExactly(3, 3, 1);
+    }
+
+    @Test
+    void extract_splitEvery_chunksWithinTheSelectedRange() throws Exception {
+        byte[] a = TestPdfs.blank(10);
+        MvcResult result = mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", a))
+                .param("pages", "2-6")
+                .param("splitEvery", "2"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        // The range narrows what is split (5 pages), splitEvery only cuts it up: 2 + 2 + 1.
+        assertThat(zipPageCounts(result.getResponse().getContentAsByteArray()))
+            .containsExactly(2, 2, 1);
+    }
+
+    @Test
+    void extract_splitEvery_beyondPageCount_returnsOnePart() throws Exception {
+        byte[] a = TestPdfs.blank(3);
+        MvcResult result = mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", a))
+                .param("splitEvery", "99"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+            .andReturn();
+
+        assertThat(zipPageCounts(result.getResponse().getContentAsByteArray())).containsExactly(3);
+    }
+
+    @Test
+    void extract_splitEvery_belowOne_isRejected() throws Exception {
+        mvc().perform(multipart("/api/extract")
+                .file(pdf("files", "a.pdf", TestPdfs.blank(3)))
+                .param("splitEvery", "0"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("bad_request"));
+    }
+
     // ------------------------------------------------------------- metadata
 
     @Test
@@ -253,6 +330,112 @@ class OperationsControllerTest {
         assertThat(TestPdfs.pageCount(result.getResponse().getContentAsByteArray())).isEqualTo(1);
     }
 
+    /**
+     * The redaction contract, proved end-to-end: the data is gone from the returned bytes AND the
+     * response says what was actually blacked out, so a client never has to trust the filename.
+     */
+    @Test
+    void redact_reportsWhatWasActuallyBlackedOut() throws Exception {
+        byte[] a = TestPdfs.withText("secret john.doe@example.com data");
+        String regions = "[{\"pageIndex\":0,\"x\":60,\"y\":120,\"width\":420,\"height\":40}]";
+        MvcResult result = mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", regions))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+            .andExpect(header().string("X-Redacted-Pages", "1"))
+            .andExpect(header().string("X-Redacted-Regions", "1"))
+            .andReturn();
+        assertThat(TestPdfs.text(result.getResponse().getContentAsByteArray()))
+            .doesNotContain("john.doe@example.com");
+    }
+
+    /**
+     * A region past the last page must fail — never a 2xx. Dropping it silently would answer
+     * 200 OK with {@code a_redacted.pdf} and the personal data fully intact.
+     */
+    @Test
+    void redact_pageIndexPastLastPage_isRejected() throws Exception {
+        byte[] a = TestPdfs.withText("secret john.doe@example.com data");
+        String regions = "[{\"pageIndex\":5,\"x\":20,\"y\":20,\"width\":100,\"height\":30}]";
+        mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", regions))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.code").value("operation_failed"))
+            .andExpect(jsonPath("$.error").value(org.hamcrest.Matchers.containsString("page 6")));
+    }
+
+    /** A zero-area box covers nothing; accepting it would be a silent non-redaction (400). */
+    @Test
+    void redact_zeroAreaRegion_isRejected() throws Exception {
+        byte[] a = TestPdfs.withText("secret data here");
+        String regions = "[{\"pageIndex\":0,\"x\":20,\"y\":20,\"width\":0,\"height\":30}]";
+        mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", regions))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("bad_request"))
+            .andExpect(jsonPath("$.error").value(org.hamcrest.Matchers.containsString("no area")));
+    }
+
+    /** An empty region list would return the untouched upload named "_redacted" — refuse it. */
+    @Test
+    void redact_emptyRegionList_isRejected() throws Exception {
+        byte[] a = TestPdfs.withText("secret data here");
+        mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", "[]"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("bad_request"));
+    }
+
+    // ---------------------------------------------------------- auto-redact
+
+    /** The happy path of the scan → auto-redact hand-off: values blacked out, counts reported. */
+    @Test
+    void autoRedact_detectedValues_areBlackedOutAndCounted() throws Exception {
+        byte[] a = TestPdfs.withText("Contact john.doe@example.com for details");
+        MvcResult result = mvc().perform(multipart("/api/auto-redact")
+                .file(pdf("file", "a.pdf", a)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+            .andExpect(header().string("X-Redacted-Pages", "1"))
+            .andExpect(header().string("X-Redacted-Regions", "1"))
+            .andReturn();
+        assertThat(TestPdfs.text(result.getResponse().getContentAsByteArray()))
+            .doesNotContain("john.doe@example.com");
+    }
+
+    /**
+     * Art. 9 keyword flags (health, religion, …) carry no coordinates, so there is nothing to
+     * black out. Streaming the ORIGINAL file back as {@code a_redacted.pdf}, 200 OK, would be the
+     * most dangerous possible lie: it must be an honest 422 with no file at all.
+     */
+    @Test
+    void autoRedact_onlyKeywordFindings_refusesInsteadOfFakingARedactedFile() throws Exception {
+        byte[] a = TestPdfs.withText("The patient diagnosis and medication are on file.");
+        mvc().perform(multipart("/api/auto-redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("categories", "SPECIAL_CATEGORY"))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(header().doesNotExist("Content-Disposition"))
+            .andExpect(jsonPath("$.code").value("operation_failed"))
+            .andExpect(jsonPath("$.error")
+                .value(org.hamcrest.Matchers.containsString("Nothing could be redacted")));
+    }
+
+    /** Same refusal when the scan finds nothing at all — no file may claim to be redacted. */
+    @Test
+    void autoRedact_cleanDocument_refusesInsteadOfFakingARedactedFile() throws Exception {
+        byte[] a = TestPdfs.withText("Nothing sensitive here, just a friendly note.");
+        mvc().perform(multipart("/api/auto-redact")
+                .file(pdf("file", "a.pdf", a)))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.code").value("operation_failed"));
+    }
+
     @Test
     void redact_reOcr_whenOcrUnavailable_isNoOpAndStillRedacts() throws Exception {
         // OCR is disabled by default (and tesseract is absent in CI), so reOcr=true must be a clean
@@ -289,6 +472,24 @@ class OperationsControllerTest {
         byte[] a = TestPdfs.blank(1);
         MvcResult result = mvc().perform(multipart("/api/to-images")
                 .file(pdf("files", "a.pdf", a))
+                .param("format", "png")
+                .param("dpi", "72"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG))
+            .andReturn();
+        assertThat(result.getResponse().getContentAsByteArray()).isNotEmpty();
+    }
+
+    /**
+     * A non-PDF upload still renders. The request-wide render pre-flight routes every input to PDF
+     * before anything is rasterised and hands the routed bytes to the per-file pass; routing keys
+     * off the file NAME, so a converted upload that kept its {@code .png} name must be recognised
+     * as the PDF it now is instead of being fed back through the image converter.
+     */
+    @Test
+    void toImages_imageUpload_isConvertedThenRendered() throws Exception {
+        MvcResult result = mvc().perform(multipart("/api/to-images")
+                .file(new MockMultipartFile("files", "logo.png", "image/png", pngLogo()))
                 .param("format", "png")
                 .param("dpi", "72"))
             .andExpect(status().isOk())

@@ -25,16 +25,23 @@ pdfconduit:
       free-max-file-size: 1GB
       free-max-files: 500
     concurrency:
-      # Higher heavy-op parallelism + a 4 GiB in-flight ceiling (base: 4 / 512 MiB).
+      # Higher heavy-op parallelism + a 4 GiB work-byte pool (base: 4 / 768 MiB).
       max-heavy-ops: 32
-      max-in-flight-bytes: 4294967296
+      max-work-bytes: 4294967296
     processing:
       # Longer per-op wall-clock so debugging/big inputs don't abort (base: 60s).
       timeout-seconds: 600
+      # Generous aggregate result ceiling (base: 64MB).
+      max-total-output-bytes: 4GB
     pdf:
       # Allow very large PDFs locally (base: 3000).
       max-pages: 100000
+    pipeline:
+      # Room for experimenting with large graphs locally (base: 50 nodes / 100 connections).
+      max-nodes: 2000
+      max-connections: 4000
     render:
-      # Permit high-DPI / large-pixel renders locally (base: 300 dpi / 60 MP).
+      # Permit high-DPI / large-pixel renders locally (base: 300 dpi / 60 MP / 500 MP per request).
       max-dpi: 1200
       max-output-pixels: 500000000
+      max-total-output-pixels: 20000000000

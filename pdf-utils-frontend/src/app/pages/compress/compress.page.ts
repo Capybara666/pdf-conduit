@@ -8,6 +8,7 @@ import { formatBytes } from '../../core/download.util';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -23,6 +24,7 @@ const UNIT_BYTES: Record<TargetUnit, number> = { KB: 1024, MB: 1024 ** 2, GB: 10
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    OpProgressComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -127,9 +129,14 @@ const UNIT_BYTES: Record<TargetUnit, number> = { KB: 1024, MB: 1024 ** 2, GB: 10
         <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
+      <app-op-progress
+        [run]="state.tracker()"
+        [label]="'pages.compress.loading' | transloco"
+        (cancel)="state.cancel()"
+        (dismiss)="state.dismiss()"
+      />
+
       <app-result-panel
-        [loading]="state.loading()"
-        [loadingLabel]="'pages.compress.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
         (retry)="submit()"
@@ -247,11 +254,15 @@ export class CompressPage {
   /**
    * When the last run could not reach the target, a friendly heads-up: the smallest size that
    * was actually achievable for this file, alongside the target the user asked for.
+   *
+   * `resultBytes` IS that floor here — the backend only reports `targetReached: false` after the
+   * compressor has run its strongest ladder rung, so the delivered file is the smallest it can
+   * make. There is no separate estimate to prefer over it.
    */
   protected readonly floorNotice = computed(() => {
     const c = this.state.result()?.compression;
     if (!c || c.targetReached !== false) return null;
-    const floorBytes = c.estimatedFloorBytes ?? c.resultBytes;
+    const floorBytes = c.resultBytes;
     const target = this.lastTarget();
     if (floorBytes == null || !target) return null;
     return { floor: formatBytes(floorBytes), target };

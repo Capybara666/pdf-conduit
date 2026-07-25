@@ -54,19 +54,92 @@ export interface RunResult {
   contentType: string;
   /** Present for compress responses; parsed from `X-*` headers. */
   compression?: CompressionInfo;
-  /** Comma/semicolon-separated batch failures from `X-Batch-Failures`, if any. */
-  batchFailures?: string;
+  /** Present for single-file repair responses; parsed from `X-Repair-*` headers. */
+  repair?: RepairInfo;
+  /** Present for redact / auto-redact responses; parsed from `X-Redacted-*` headers. */
+  redaction?: RedactionInfo;
+  /** Present only on a partial batch; parsed from `X-Batch-Failures`. */
+  batchFailures?: BatchFailuresInfo;
 }
 
-/** Parsed compress response headers. */
+/**
+ * Parsed compress response headers (`X-Original-Bytes`, `X-Result-Bytes`,
+ * `X-Target-Reached`). That is everything the backend knows: when
+ * `targetReached` is false the compressor has already exhausted its ladder, so
+ * `resultBytes` is the smallest size it could produce for this file.
+ */
 export interface CompressionInfo {
   originalBytes?: number;
   resultBytes?: number;
   targetReached?: boolean;
-  /** Whether the requested target size was achievable (mirrors `targetReached`). */
-  targetFeasible?: boolean;
-  /** Approximate smallest size reachable for this file, in bytes. */
-  estimatedFloorBytes?: number;
+}
+
+/**
+ * Parsed repair response headers (`X-Repair-Was-Damaged`, `X-Repair-Recovered`),
+ * sent only for a single-file repair run. Both fields are optional: a server that
+ * predates the headers (or a batch/ZIP response) simply omits them, and the UI
+ * then shows the plain success state without claiming anything about the file.
+ */
+export interface RepairInfo {
+  /** Whether the input was actually damaged (false = it was already well-formed). */
+  wasDamaged?: boolean;
+  /** Whether the damage could be recovered. */
+  recovered?: boolean;
+  /**
+   * The concrete structural defects found, as backend `RepairFinding` ids
+   * (`header-missing`, `header-offset`, `eof-missing`, `startxref-missing`,
+   * `startxref-invalid`, `xref-rebuilt`, `rebuild-incomplete`).
+   *
+   * `[]` and `undefined` mean the same thing to the UI — **no findings**. The
+   * header is comma-separated and legitimately empty when nothing was wrong, and
+   * an intermediary may drop an empty header entirely, so neither an empty value
+   * nor an absent one may ever read as a failure. Ids are kept raw here and
+   * translated to plain language at the panel; an id this build does not know
+   * (newer backend) is dropped rather than shown.
+   */
+  findings?: string[];
+  /** Page count of the rebuilt document (`X-Repair-Pages`). */
+  pageCount?: number;
+}
+
+/**
+ * Parsed redaction response headers (`X-Redacted-Pages`, `X-Redacted-Regions`),
+ * sent by `/api/redact` and `/api/auto-redact`. This is *what was actually
+ * blacked out* — the one operation where the user must not have to infer safety
+ * from the `_redacted` filename. Both fields are optional: a server that
+ * predates the headers omits them and the panel then says nothing about
+ * coverage rather than implying a measured zero.
+ */
+export interface RedactionInfo {
+  /** Number of pages that had at least one region blacked out. */
+  pages?: number;
+  /** Number of individual regions blacked out. */
+  regions?: number;
+}
+
+/** One input a partial-tolerant batch could not process. */
+export interface BatchFailureEntry {
+  /** The input file's name, as the backend reported it. */
+  filename: string;
+  /** Why it failed; `''` when the backend had no message to give. */
+  reason: string;
+}
+
+/**
+ * Parsed `X-Batch-Failures`: the inputs a partial-tolerant batch skipped while
+ * still returning the rest. The backend lists at most five `<file>: <reason>`
+ * entries joined by `"; "` and summarises the remainder as `"; +N more"`, so
+ * `entries` is a capped sample and {@link total} is the honest failure count.
+ */
+export interface BatchFailuresInfo {
+  /** The named failures (at most five — the backend caps the header). */
+  entries: BatchFailureEntry[];
+  /** Failures beyond the named ones (the `+N more` tail); `0` when all are named. */
+  more: number;
+  /** Total failures = `entries.length + more`. */
+  total: number;
+  /** The raw header value, kept for diagnostics. */
+  raw: string;
 }
 
 /** Document metadata from `POST /api/metadata/read`. Mirrors backend `MetadataDto`. */

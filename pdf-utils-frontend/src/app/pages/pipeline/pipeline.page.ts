@@ -1,12 +1,20 @@
 import { AfterViewInit, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
 
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { downloadRunResult } from '../../core/download.util';
-import { NodeKindInfo, NodeKindName, PipelineValidationError } from '../../core/pipeline.models';
+import {
+  KIND_TO_OP,
+  NodeKindInfo,
+  NodeKindName,
+  PipelineValidationError,
+} from '../../core/pipeline.models';
+import { RunTracker } from '../../core/run-progress';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { OpIconComponent } from '../../shared/op-icon/op-icon.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { PipelineCanvasComponent } from './canvas/pipeline-canvas.component';
 import { PipelineInspectorComponent } from './canvas/pipeline-inspector.component';
@@ -28,33 +36,15 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
   { name: 'UNLOCK', label: 'Unlock', isSource: false, isReduce: false, isExport: false },
   { name: 'METADATA', label: 'Metadata', isSource: false, isReduce: false, isExport: false },
   { name: 'WATERMARK', label: 'Watermark', isSource: false, isReduce: false, isExport: false },
+  { name: 'CROP', label: 'Crop', isSource: false, isReduce: false, isExport: false },
   { name: 'NUP', label: 'N-up', isSource: false, isReduce: false, isExport: false },
   { name: 'PAGE_MARKS', label: 'Page Marks', isSource: false, isReduce: false, isExport: false },
-  // TODO(i18n): op.gdpr-redact.label — palette/inspector label for the GDPR-scan→redact node.
+  { name: 'OCR', label: 'OCR', isSource: false, isReduce: false, isExport: false },
   { name: 'GDPR_REDACT', label: 'GDPR Redact', isSource: false, isReduce: false, isExport: false },
+  { name: 'REPAIR', label: 'Repair', isSource: false, isReduce: false, isExport: false },
   { name: 'TO_IMAGES', label: 'To Images', isSource: false, isReduce: false, isExport: true },
   { name: 'TO_TEXT', label: 'To Text', isSource: false, isReduce: false, isExport: true },
 ];
-
-/** NodeKind → operation id used for i18n label lookup (`op.<id>.label`) + glyph. */
-const KIND_TO_OP: Record<string, string> = {
-  SOURCE: 'source',
-  MERGE: 'merge',
-  IMAGES_TO_PDF: 'to-pdf',
-  EXTRACT: 'extract',
-  COMPRESS: 'compress',
-  ROTATE: 'rotate',
-  ARRANGE: 'arrange',
-  PROTECT: 'protect',
-  UNLOCK: 'unlock',
-  METADATA: 'metadata',
-  WATERMARK: 'watermark',
-  NUP: 'nup',
-  PAGE_MARKS: 'page-marks',
-  GDPR_REDACT: 'gdpr-redact',
-  TO_IMAGES: 'to-images',
-  TO_TEXT: 'to-text',
-};
 
 /**
  * Free-form visual pipeline builder: a draggable-node canvas with drawn
@@ -70,6 +60,7 @@ const KIND_TO_OP: Record<string, string> = {
     TranslocoModule,
     PageHeaderComponent,
     OpIconComponent,
+    OpProgressComponent,
     SpinnerComponent,
     PipelineCanvasComponent,
     PipelineInspectorComponent,
@@ -162,7 +153,16 @@ const KIND_TO_OP: Record<string, string> = {
                   <button type="button" class="btn" [disabled]="busy() || !cv.nodes().length" (click)="validate(cv)">{{ 'pages.pipeline.validate' | transloco }}</button>
                   <button type="button" class="btn btn-primary" [disabled]="!cv.runnable() || busy()" (click)="run(cv)">{{ 'pages.pipeline.run' | transloco }}</button>
                 </div>
-                @if (busy()) { <app-spinner [label]="'pages.pipeline.running' | transloco" /> }
+                @if (runTracker()) {
+                  <app-op-progress
+                    [run]="runTracker()"
+                    [label]="'pages.pipeline.running' | transloco"
+                    (cancel)="cancelRun()"
+                    (dismiss)="runTracker.set(null)"
+                  />
+                } @else if (busy()) {
+                  <app-spinner [label]="'pages.pipeline.running' | transloco" />
+                }
 
                 @if (validationErrors() !== null) {
                   @if (validationErrors()!.length) {
@@ -197,13 +197,16 @@ const KIND_TO_OP: Record<string, string> = {
          FIXED width mode, which is too tight for canvas + 300px drawer and
          forces the drawer to overlap the canvas. Override the cap here so the
          pipeline always gets a GENEROUS width regardless of the global
-         data-width toggle — this rule is component-scoped (Angular emulated
-         encapsulation), and '.op-page.pl-page' outranks the global '.op-page'
-         / '.op-page.wide' selectors, so it wins in both fixed and wide modes
-         and affects ONLY this page. The canvas (minmax(0,1fr)) then keeps the
-         freed width with the dock beside it. */
+         data-width toggle — hence the mode-independent '--content-max-ceiling'
+         token (the widest the content column ever gets) rather than
+         '--content-max-wide', which drops back to 1200px in fixed mode. This
+         rule is component-scoped (Angular emulated encapsulation), and
+         '.op-page.pl-page' outranks the global '.op-page' / '.op-page.wide'
+         selectors, so it wins in both fixed and wide modes and affects ONLY
+         this page. The canvas (minmax(0,1fr)) then keeps the freed width with
+         the dock beside it. */
       .op-page.pl-page {
-        max-width: min(96vw, 1600px);
+        max-width: var(--content-max-ceiling);
       }
       .pl-grid {
         display: grid;
@@ -444,6 +447,15 @@ export class PipelinePage implements OnInit, AfterViewInit {
   protected readonly result = signal<RunResult | null>(null);
   protected readonly validationErrors = signal<PipelineValidationError[] | null>(null);
 
+  /**
+   * Progress of the current `/pipeline/run` upload. A pipeline run is the
+   * heaviest thing this app can ask for (many files, several stages), so it gets
+   * the full waiting indicator; `validate` stays on the plain spinner because it
+   * uploads nothing but the graph.
+   */
+  protected readonly runTracker = signal<RunTracker | null>(null);
+  private runSub: Subscription | null = null;
+
   ngOnInit(): void {
     // Best-effort: use the backend's node-kind catalog; fall back if absent.
     this.api.getPipelineKinds().subscribe({
@@ -523,16 +535,30 @@ export class PipelinePage implements OnInit, AfterViewInit {
     // Each SOURCE node owns its uploads; gather them all (deduped by name) for the multipart request.
     for (const f of cv.allSourceFiles()) fd.append('files', f, f.name);
     for (const a of cv.assetFiles()) fd.append('nodeAssets', a, a.name);
-    this.api.runPipeline(fd).subscribe({
+    const request = this.api.runPipeline(fd);
+    this.runTracker.set(request.run);
+    this.runSub = request.subscribe({
       next: (r) => {
+        this.runSub = null;
+        this.runTracker.set(null);
         this.result.set(r);
         this.busy.set(false);
       },
       error: (e) => {
+        this.runSub = null;
+        this.runTracker.set(null);
         this.error.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
         this.busy.set(false);
       },
     });
+  }
+
+  /** Stop waiting for the pipeline result: aborts the upload and frees the page. */
+  cancelRun(): void {
+    this.runSub?.unsubscribe();
+    this.runSub = null;
+    this.runTracker()?.cancel();
+    this.busy.set(false);
   }
 
   save(): void {

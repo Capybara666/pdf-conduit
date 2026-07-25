@@ -73,19 +73,23 @@
     },
     "rotate": {
       "label": "Rotate",
-      "description": "Turn pages 90° right, flip 180°, or turn 270° left."
+      "description": "Turn pages a quarter-turn right (90°), flip them (180°), or a quarter-turn left (270°)."
     },
     "arrange": {
       "label": "Arrange",
       "description": "Reorder, reverse or duplicate pages."
     },
     "nup": {
-      "label": "Pages per sheet",
+      "label": "Print layout",
       "description": "Place several pages per sheet, or fold a booklet."
     },
     "compress": {
       "label": "Compress",
       "description": "Shrink a PDF toward a target size."
+    },
+    "repair": {
+      "label": "Repair",
+      "description": "Try to rebuild a damaged PDF so it opens again."
     },
     "to-pdf": {
       "label": "To PDF",
@@ -154,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit home",
-    "quotaFreeLeft": "free left today",
+    "quotaFreeLeft": "{count, plural, one {free left today} other {free left today}}",
     "quotaTitleSpent": "Daily free limit reached. See Pro plans",
     "quotaTitleLeft": "Free operations left today. See Pro plans",
     "serverOnline": "Server online",
@@ -188,7 +192,7 @@
     },
     "trust": {
       "aria": "Why PDF Conduit",
-      "memoryTitle": "Never stored",
+      "memoryTitle": "We never store your files",
       "memoryDesc": "Your files are processed and then discarded. Never saved to disk or kept on our servers.",
       "accountTitle": "No account needed",
       "accountDesc": "Jump straight in. No email, no password, no tracking wall.",
@@ -280,9 +284,7 @@
     "controllerTitle": "Data controller",
     "controllerBody": "The data controller for the data processed within PDF Conduit is the operator of the PDF Conduit service. Contact: hello@pdfconduit.com. Because files are never stored and no account is required, the processing of personal data is limited to technical server logs (IP address) needed to protect the service against abuse (Art. 6(1)(f) GDPR).",
     "limitsTitle": "Free-tier limits",
-    "limitsBody1": "To keep the free service available to everyone, requests are subject to a daily operation quota, a per-file size cap and basic rate limiting. When you hit a limit, the app tells you clearly. Higher limits, larger files and batch/API access are planned for a future paid tier. See the",
-    "limitsLink": "Pro plans",
-    "limitsBody2": "teaser on the home page.",
+    "limitsBody": "To keep the free service available to everyone, requests are subject to a daily operation quota, a per-file size cap and basic rate limiting. When you hit a limit, the app tells you clearly. Higher limits, larger files and batch/API access are planned for a future paid tier. See the {linkStart}Pro plans{linkEnd} teaser on the home page.",
     "questionsTitle": "Questions",
     "questionsBody": "PDF Conduit is provided as-is. This page describes our current behaviour and may be updated as the product evolves.",
     "backHome": "Back to home"
@@ -323,10 +325,25 @@
       "detail": "Converting office documents is not enabled on this server.",
       "hint": "You can still work with PDFs and images."
     },
+    "ocr_disabled": {
+      "title": "OCR is unavailable",
+      "detail": "Making scanned pages searchable is not enabled on this server.",
+      "hint": "All the other tools still work as usual."
+    },
     "operation_failed": {
       "title": "That file couldn't be processed",
       "detail": "The operation failed on this input.",
       "hint": "Check the file is a valid, unencrypted PDF and try again."
+    },
+    "output_too_large": {
+      "title": "That's too big to make in one go",
+      "detail": "The result would be larger than this server can produce in a single run.",
+      "hint": "Try fewer pages or fewer files at a time, or a lower quality or DPI setting."
+    },
+    "repair_failed": {
+      "title": "This file couldn't be repaired",
+      "detail": "The damage runs too deep to rebuild the file.",
+      "hint": "If you have another copy or an earlier version, try that one."
     },
     "bad_request": {
       "title": "Please check your input",
@@ -346,7 +363,27 @@
     "target": "Target",
     "targetReached": "reached",
     "targetNotReached": "not reached",
-    "batchFailures": "Some inputs failed: {{count}}",
+    "partialTitle": "Some files were skipped",
+    "partialCounts": "{{done}} of {{total}} files processed.",
+    "partialFailedCount": "{count, plural, one {# file could not be processed:} other {# files could not be processed:}}",
+    "partialMore": "{count, plural, one {…and # more file} other {…and # more files}}",
+    "partialHint": "Everything that did go through is in the download.",
+    "failureNoReason": "No reason given.",
+    "redactionApplied": "{regions, plural, one {# area} other {# areas}} on {pages, plural, one {# page} other {# pages}} permanently blacked out.",
+    "repairFindingsTitle": "What was wrong",
+    "repairPages": "{count, plural, one {# page in the rebuilt file.} other {# pages in the rebuilt file.}}",
+    "repairFinding": {
+      "headerMissing": "The file had no PDF header at all.",
+      "headerOffset": "Extra data sat in front of the PDF header (leftovers from an email or a download).",
+      "eofMissing": "The end-of-file marker was missing, so the file had been cut short.",
+      "startxrefMissing": "The file had no pointer to its internal index of contents.",
+      "startxrefInvalid": "The pointer to the internal index led nowhere usable.",
+      "xrefRebuilt": "The internal index could not be read, so it was rebuilt from the content found in the file.",
+      "rebuildIncomplete": "Even after rebuilding, parts of the file still do not read correctly."
+    },
+    "repairRebuilt": "The file was damaged and has been rebuilt.",
+    "repairAlreadyFine": "The file was already well-formed, so it was re-saved unchanged.",
+    "repairPartial": "The file was damaged and only partly rebuilt. Check the result before you use it.",
     "seeProPlans": "See Pro plans →",
     "seeProPlansShort": "See Pro plans",
     "httpStatus": "· HTTP {{status}}",
@@ -354,6 +391,22 @@
     "tryAgain": "Try again",
     "expandPreview": "Expand preview",
     "close": "Close"
+  },
+  "progress": {
+    "label": "Operation progress",
+    "uploading": "Uploading {{percent}}%",
+    "uploadingPlain": "Uploading…",
+    "bytes": "{{done}} of {{total}}",
+    "sent": "{{done}} sent",
+    "stageWorking": "Working on your files…",
+    "stageLarger": "This is a bigger job. Still going.",
+    "stageLong": "Still working. Large files can take a while.",
+    "stageVeryLong": "This is taking longer than usual. You can keep waiting, or cancel and try a smaller file.",
+    "elapsed": "{{time}} elapsed",
+    "cancel": "Cancel",
+    "cancelled": "Cancelled",
+    "cancelledNote": "You stopped waiting for this result. Our server may still finish the job, and it still counts toward today's free limit.",
+    "dismiss": "Dismiss"
   },
   "viewer": {
     "renderingPreview": "Rendering preview…",
@@ -385,7 +438,16 @@
       "pagesPlaceholder": "e.g. 1,3,5-8",
       "pagesHelp": "Blank = all pages. Syntax:",
       "output": "Output",
-      "separate": "Split into one file per page (ZIP)",
+      "modeOne": "One PDF",
+      "modePerPage": "One file per page",
+      "modeEvery": "Every N pages",
+      "modeHelp": {
+        "one": "The selected pages come back as a single PDF.",
+        "perPage": "Each selected page becomes its own file (ZIP).",
+        "every": "The selected pages are cut into files of N pages (ZIP)."
+      },
+      "every": "Pages per file",
+      "everyHelp": "1 to {{max}}. The last file may have fewer pages.",
       "submit": "Extract",
       "loading": "Extracting…"
     },
@@ -415,6 +477,15 @@
       "grayscaleHelp": "Re-encode images without colour for smaller files.",
       "floorNotice": "Smallest achievable for this file is about {{floor}}. Your target of {{target}} can't be reached. The smallest version was saved instead."
     },
+    "repair": {
+      "title": "Repair",
+      "description": "Try to rebuild a damaged PDF so it opens again. Not every file can be recovered.",
+      "hint": "PDF files. Several files come back as a ZIP.",
+      "privacyLine": "Your files are never stored. The repair happens privately.",
+      "batchNote": "{{count}} files selected. Each file is repaired on its own; results come back as a ZIP.",
+      "submit": "Repair file",
+      "loading": "Repairing…"
+    },
     "rotate": {
       "title": "Rotate",
       "description": "Turn pages a quarter-turn right (90° clockwise), flip them (180°), or a quarter-turn left (270° / 90° counter-clockwise).",
@@ -423,7 +494,7 @@
       "angleAria": "Rotation angle",
       "dir90": "Rotates 90° clockwise",
       "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir270": "Rotates 270° clockwise (a quarter-turn left)",
       "pages": "Pages",
       "pagesPlaceholder": "e.g. 1,3,5-8 (blank = all)",
       "submit": "Rotate",
@@ -442,7 +513,7 @@
       "loading": "Arranging…"
     },
     "nup": {
-      "title": "Pages per sheet",
+      "title": "Print layout",
       "description": "Place several pages per sheet, or fold a saddle-stitch booklet.",
       "privacyLine": "Your files are laid out privately and never stored.",
       "hint": "PDF files. Multiple files come back as a ZIP.",
@@ -481,6 +552,8 @@
       "dpi": "DPI",
       "dpiHelp": "Higher = sharper and larger (36–600).",
       "dpiError": "Enter a DPI between 36 and 600.",
+      "dpiHelpRange": "Higher = sharper and larger ({{min}}–{{max}}).",
+      "dpiErrorRange": "Enter a DPI between {{min}} and {{max}}.",
       "quality": "JPG quality",
       "qualityHelp": "Higher = better image, larger file.",
       "pages": "Pages",
@@ -562,7 +635,7 @@
     },
     "sign": {
       "title": "Fill & Sign",
-      "description": "Fill fillable PDF form fields (AcroForm) and add a signature to your PDF, then flatten. Nothing is stored, everything runs in your session.",
+      "description": "Fill fillable PDF form fields (AcroForm) and add a signature to your PDF, then flatten. Your file is never stored.",
       "hint": "One PDF. We detect any fillable form fields. Then create a signature and drop it onto the page.",
       "dragHint": "Drag on a page to place your signature.",
       "chooseAnother": "Choose another PDF",
@@ -594,7 +667,7 @@
       "description": "View, edit or strip document info.",
       "hint": "PDF files. The same changes apply to each (several come back as a ZIP).",
       "batchNote": "The same fields are applied to every file. The preview reads the first file only.",
-      "readCurrent": "Read current",
+      "readCurrent": "Read current values",
       "reading": "Reading…",
       "titleField": "Title",
       "author": "Author",
@@ -742,8 +815,8 @@
         "mediumExplain": "Several low-risk identifiers were found, but nothing financial, national-ID or special-category.",
         "highExplain": "Financial, national-ID or special-category data is present. Handle with care before sharing."
       },
-      "summary": "{count, plural, one {# piece of personal data found across {pages} pages.} other {# pieces of personal data found across {pages} pages.}}",
-      "summaryClean": "No personal data found across {{pages}} pages.",
+      "summary": "{count, plural, one {# piece of personal data found across {pages, plural, one {# page} other {# pages}}.} other {# pieces of personal data found across {pages, plural, one {# page} other {# pages}}.}}",
+      "summaryClean": "{pages, plural, one {No personal data found across # page.} other {No personal data found across # pages.}}",
       "byCategory": "By category",
       "higherRisk": "Higher risk",
       "findings": "Findings",
@@ -761,10 +834,10 @@
       "hintMulti": "One or more PDFs, images or office documents.",
       "submitBatch": "Scan {{count}} files",
       "highestRiskLabel": "highest risk",
-      "batchSummary": "{count, plural, one {# piece of personal data across {files} files.} other {# pieces of personal data across {files} files.}}",
+      "batchSummary": "{count, plural, one {# piece of personal data across {files, plural, one {# file} other {# files}}.} other {# pieces of personal data across {files, plural, one {# file} other {# files}}.}}",
       "byCategoryAll": "By category (all files)",
       "perFile": "Per file",
-      "fileFindings": "{count, plural, one {# finding across {pages} pages} other {# findings across {pages} pages}}",
+      "fileFindings": "{count, plural, one {# finding across {pages, plural, one {# page} other {# pages}}} other {# findings across {pages, plural, one {# page} other {# pages}}}}",
       "fileClean": "No personal data",
       "autoRedactCta": "Auto-redact everything detected",
       "autoRedactAllCta": "Auto-redact all files",
@@ -794,13 +867,13 @@
       "description": "Add page numbers and header/footer text to every page.",
       "hint": "One or more PDFs to mark (several files → ZIP).",
       "privacyLine": "Your files are marked privately and never stored.",
-      "tokensHelp": "Use tokens in any slot: {page} current page, {pages} total, {n} page number, {date} today.",
+      "tokensHelp": "Use tokens in any slot: '{page}' current page, '{pages}' total, '{n}' page number, '{date}' today.",
       "header": "Header",
       "footer": "Footer",
       "left": "Left",
       "center": "Center",
       "right": "Right",
-      "slotPlaceholder": "e.g. {page} / {pages}",
+      "slotPlaceholder": "e.g. '{page}' / '{pages}'",
       "fontSize": "Font size (pt)",
       "margin": "Margin (pt)",
       "startNumber": "Start number",
@@ -808,7 +881,7 @@
       "prefixPlaceholder": "e.g. ACME-",
       "skipFirst": "Skip the first page",
       "submit": "Add page marks",
-      "needSlot": "Enter text in at least one slot (e.g. {page} / {pages}).",
+      "needSlot": "Enter text in at least one slot (e.g. '{page}' / '{pages}').",
       "loading": "Marking…"
     }
   },

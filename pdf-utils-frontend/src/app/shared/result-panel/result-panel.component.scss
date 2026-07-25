@@ -45,6 +45,14 @@
     background: var(--success-soft);
     color: var(--success);
   }
+
+  // Partial batch: neither success nor failure. No theme ships a
+  // `--warning-soft`, so the tint is mixed from `--warning` itself and stays
+  // correct in all six.
+  &.warn {
+    background: color-mix(in srgb, var(--warning) 18%, transparent);
+    color: var(--warning);
+  }
 }
 
 .error {
@@ -53,6 +61,12 @@
 
 .success {
   border-color: var(--success);
+
+  // A run that skipped inputs is not a clean success and must not be framed as
+  // one — the green frame gives way to the warning colour.
+  &.partial {
+    border-color: var(--warning);
+  }
 }
 
 .message {
@@ -81,6 +95,16 @@
 // Technical error identifiers (code · HTTP status) — kept for debugging /
 // accessibility but deliberately de-emphasised so the human sentence above
 // stays the focus.
+// The server's own sentence. Secondary to the translated copy above it, but
+// still plainly legible — it is where the concrete limit / page / file is named.
+.server-detail {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
 .meta {
   margin: 0.35rem 0 0;
   font-size: 0.72rem;
@@ -140,6 +164,80 @@
   margin: 0 0 0.75rem;
   color: var(--warning);
   font-size: 0.9rem;
+}
+
+// Neutral factual line about the outcome (e.g. what repair actually did).
+.note {
+  margin: 0 0 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+
+  // What a redaction actually blacked out. This is a data-safety statement, so
+  // it carries full-strength text rather than the muted note tone.
+  &.redaction {
+    color: var(--text);
+    font-weight: 600;
+  }
+}
+
+// How many files came back, on a run that skipped some.
+.summary {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+}
+
+// The inputs a partial batch could not process: name on top, reason beneath.
+.failures {
+  list-style: none;
+  margin: 0 0 0.6rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  li {
+    padding: 0.45rem 0.7rem;
+    background: var(--surface-2);
+    border-radius: calc(var(--radius) - 4px);
+    font-size: 0.88rem;
+  }
+
+  .failed-name {
+    display: block;
+    word-break: break-all;
+  }
+
+  .failed-reason {
+    display: block;
+    color: var(--text-muted);
+  }
+
+  .more {
+    background: none;
+    padding: 0.1rem 0.7rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+}
+
+// What a repair found wrong with the file, in plain language.
+.findings-title {
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.findings {
+  margin: 0 0 0.75rem;
+  padding-left: 1.1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+
+  li + li {
+    margin-top: 0.2rem;
+  }
 }
 
 // Grouped output block: the first-page preview (when previewable) sits on top

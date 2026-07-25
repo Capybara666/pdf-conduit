@@ -1,7 +1,32 @@
-# Test defaults: the abuse guards are DISABLED here so the broad end-to-end suites
-# (OperationsControllerTest, OfficeDisabledTest) can fire many requests from one IP
-# without tripping limits. Individual limit tests re-enable + tighten the relevant knob
-# via @SpringBootTest(properties=...), keeping production defaults (application.yml) intact.
+# Test defaults for the web module.
+#
+# THE SHADOWING TRAP — read before adding anything here.
+# This file has the SAME classpath name as src/main/resources/application.yml, and Spring Boot
+# resolves `classpath:/application.yml` to the FIRST match on the classpath, which under test is
+# this file. It therefore REPLACES the deployed configuration instead of layering on top of it:
+# every value the service really ships that is not restated here silently falls back to the
+# FRAMEWORK default, and a test asserting on it measures a limit no deployment has.
+#
+# `pdfconduit.web.*` survives that by design — WebProperties normalises every null to the strict
+# shipped default in its compact constructor — so that namespace may be left out. Anything OUTSIDE
+# it must be restated here (see the multipart block below). Profile files (application-local.yml /
+# -dev / -prod) live in main/resources under distinct names, so they are NOT shadowed and still
+# layer on top of this file.
+#
+# The abuse guards are DISABLED here so the broad end-to-end suites (OperationsControllerTest,
+# OfficeDisabledTest) can fire many requests from one IP without tripping limits. Individual limit
+# tests re-enable + tighten the relevant knob via @SpringBootTest(properties=...), keeping
+# production defaults (application.yml) intact.
+
+spring:
+  servlet:
+    multipart:
+      # RESTATED from src/main/resources/application.yml (which this file shadows — see above).
+      # UploadCaps folds this ceiling into the EFFECTIVE per-file cap that /api/capabilities
+      # advertises and QuotaInterceptor enforces, so Spring's 1 MB / 10 MB defaults would make
+      # every upload-size assertion measure a ceiling the service never deploys with.
+      max-file-size: 100MB
+      max-request-size: 200MB
 
 pdfconduit:
   web:

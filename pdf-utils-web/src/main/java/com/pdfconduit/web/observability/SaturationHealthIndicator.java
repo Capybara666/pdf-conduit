@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
  *
  * <ul>
  *   <li><b>DOWN</b> — fully saturated on BOTH axes at once: no heavy-op permits free AND the
- *       in-flight-byte cap reached. The load guard is shedding every incoming heavy op (503);
+ *       work-byte pool exhausted. The load guard is shedding every incoming heavy op (503);
  *       an orchestrator may briefly steer traffic away.</li>
- *   <li><b>DEGRADED</b> — saturated on one axis (no heavy permits, or the byte cap reached), or
+ *   <li><b>DEGRADED</b> — saturated on one axis (no heavy permits, or the pool exhausted), or
  *       office conversion is enabled but LibreOffice ({@code soffice}) is not resolvable so office
  *       uploads will 415. The service still handles what it can.</li>
  *   <li><b>UP</b> — spare capacity on both axes.</li>
@@ -48,7 +48,7 @@ public class SaturationHealthIndicator implements HealthIndicator {
         int permits = loadGuard.availablePermits();
         int maxPermits = loadGuard.maxHeavyOps();
         long inFlight = loadGuard.inFlightBytes();
-        long maxInFlight = loadGuard.maxInFlightBytes();
+        long maxInFlight = loadGuard.maxWorkBytes();
         int officePermits = officeGuard.availablePermits();
         boolean sofficeAvailable = DocumentConverter.sofficePath() != null;
 
@@ -68,8 +68,8 @@ public class SaturationHealthIndicator implements HealthIndicator {
         return Health.status(status)
             .withDetail("heavyPermitsAvailable", permits)
             .withDetail("heavyPermitsMax", maxPermits)
-            .withDetail("inFlightBytes", inFlight)
-            .withDetail("maxInFlightBytes", maxInFlight)
+            .withDetail("workBytesReserved", inFlight)
+            .withDetail("maxWorkBytes", maxInFlight)
             .withDetail("officeEnabled", officeEnabled)
             .withDetail("officePermitsAvailable", officePermits)
             .withDetail("sofficeAvailable", sofficeAvailable)

@@ -22,11 +22,16 @@ pdfconduit:
       free-max-files: 15
     concurrency:
       max-heavy-ops: 4
-      max-in-flight-bytes: 536870912   # 512 MiB
+      max-work-bytes: 805306368        # 768 MiB of estimated concurrent work
     processing:
       timeout-seconds: 60
+      max-total-output-bytes: 64MB     # ceiling on the ceiling: granted = min(this, pool / 3)
     pdf:
       max-pages: 3000
+    pipeline:
+      max-nodes: 50
+      max-connections: 100
     render:
       max-dpi: 300
       max-output-pixels: 60000000      # ~60 MP/page
+      max-total-output-pixels: 500000000  # ~500 MP per request (all files x all pages)

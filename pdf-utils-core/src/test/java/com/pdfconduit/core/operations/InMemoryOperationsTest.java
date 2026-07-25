@@ -233,8 +233,10 @@ class InMemoryOperationsTest {
     @Test
     void redactBytesPreservesPageCount() throws Exception {
         List<RedactRegion> regions = List.of(new RedactRegion(0, 50, 50, 100, 30));
-        byte[] out = PdfRedactor.executeBytes(pdfBytes(2), regions, 100);
-        assertEquals(2, pageCount(out));
+        var result = PdfRedactor.executeBytes(pdfBytes(2), regions, 100);
+        assertEquals(2, pageCount(result.data()));
+        assertEquals(1, result.redactedPages());
+        assertEquals(1, result.redactedRegions());
     }
 
     // --- to images --------------------------------------------------------

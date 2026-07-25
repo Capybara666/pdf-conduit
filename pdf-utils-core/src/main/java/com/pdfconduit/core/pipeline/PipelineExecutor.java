@@ -8,6 +8,7 @@ import com.pdfconduit.core.analyze.PiiScanResult;
 import com.pdfconduit.core.analyze.PiiScanner;
 import com.pdfconduit.core.pipeline.Document.DocType;
 import com.pdfconduit.core.convert.DocumentConverter;
+import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.*;
 import com.pdfconduit.core.operations.PdfArranger;
@@ -20,6 +21,7 @@ import com.pdfconduit.core.operations.PdfPageMarker;
 import com.pdfconduit.core.operations.PdfOcr;
 import com.pdfconduit.core.operations.PdfProtector;
 import com.pdfconduit.core.operations.PdfRedactor;
+import com.pdfconduit.core.operations.PdfRepairer;
 import com.pdfconduit.core.operations.PdfRotator;
 import com.pdfconduit.core.operations.PdfSplitter;
 import com.pdfconduit.core.operations.PdfTextExporter;
@@ -273,6 +275,9 @@ public final class PipelineExecutor {
                     case OCR -> PdfOcr.execute(new OcrOptions(src, n.ocrLanguages, n.ocrDpi, out));
                     case GDPR_REDACT -> PdfRedactor.execute(
                         new RedactOptions(src, redactRegions(PiiScanner.scan(src)), 0, out));
+                    // Repair sees the file as-is: a .pdf input is never re-encoded by ensurePdf,
+                    // so the damaged byte structure reaches the repairer intact.
+                    case REPAIR -> PdfRepairer.execute(new RepairOptions(src, out));
                     default -> throw new PipelineException("Not a map node: " + n.kind);
                 }
             } catch (PipelineException e) {
@@ -419,8 +424,48 @@ public final class PipelineExecutor {
     public static Map<String, List<NamedBytes>> runInMemory(
             PipelineModel model,
             java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
-            Progress progress) throws PipelineException {
+            Progress progress) throws PipelineException, InvalidPageRangeException {
         return runInMemory(model, sourceResolver, Map.of(), progress);
+    }
+
+    /**
+     * Wraps a runtime exception thrown by a {@link PipelineGuard} check so the executor's blanket
+     * "wrap anything into a PipelineException" handling passes it through untouched — a host's typed
+     * rejection (e.g. "OCR disabled") must reach the caller as itself, not as an operation failure.
+     */
+    private static final class GuardFailure extends RuntimeException {
+        GuardFailure(RuntimeException cause) { super(cause); }
+        RuntimeException cause() { return (RuntimeException) getCause(); }
+    }
+
+    private static void guardDocument(PipelineGuard guard, byte[] pdf) throws PdfOperationException {
+        try { guard.checkDocument(pdf); } catch (RuntimeException e) { throw new GuardFailure(e); }
+    }
+
+    private static void guardRender(PipelineGuard guard, byte[] pdf, int dpi)
+            throws PdfOperationException {
+        try { guard.checkRender(pdf, dpi); } catch (RuntimeException e) { throw new GuardFailure(e); }
+    }
+
+    private static void guardOcr(PipelineGuard guard) throws PdfOperationException {
+        try { guard.checkOcrAllowed(); } catch (RuntimeException e) { throw new GuardFailure(e); }
+    }
+
+    private static void guardPageCount(PipelineGuard guard, int pages) throws PdfOperationException {
+        try { guard.checkPageCount(pages); } catch (RuntimeException e) { throw new GuardFailure(e); }
+    }
+
+    /**
+     * Wraps a checked {@link InvalidPageRangeException} thrown while parsing a node's client-supplied
+     * page/order expression, so the executor's blanket "wrap anything into a PipelineException"
+     * handling passes it through untouched — a bad page range is the client's mistake and must reach
+     * the caller as itself (the web layer maps it to 400 {@code invalid_page_range}, exactly as on
+     * the single-operation endpoints), not as a 422 operation failure. Mirrors {@link GuardFailure};
+     * unwrapped by {@link #runInMemory}.
+     */
+    private static final class RangeFailure extends RuntimeException {
+        RangeFailure(InvalidPageRangeException cause) { super(cause); }
+        InvalidPageRangeException cause() { return (InvalidPageRangeException) getCause(); }
     }
 
     /**
@@ -435,6 +480,38 @@ public final class PipelineExecutor {
             PipelineModel model,
             java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
             Map<String, byte[]> nodeImages,
+            Progress progress) throws PipelineException, InvalidPageRangeException {
+        return runInMemory(model, sourceResolver, nodeImages, PipelineGuard.NONE, progress);
+    }
+
+    /**
+     * As {@link #runInMemory(PipelineModel, java.util.function.Function, Map, Progress)}, but with a
+     * {@link PipelineGuard} applying the host's per-request ceilings (page count, render DPI/pixel
+     * area, OCR availability + concurrency) to the nodes as they run. A multi-tenant host (the web
+     * backend) passes its own guard; desktop/CLI callers use the overloads above and get
+     * {@link PipelineGuard#NONE}, so their behaviour — and cost — is unchanged.
+     */
+    public static Map<String, List<NamedBytes>> runInMemory(
+            PipelineModel model,
+            java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
+            Map<String, byte[]> nodeImages,
+            PipelineGuard guard,
+            Progress progress) throws PipelineException, InvalidPageRangeException {
+        try {
+            return runMemory(model, sourceResolver, nodeImages,
+                guard == null ? PipelineGuard.NONE : guard, progress);
+        } catch (GuardFailure f) {
+            throw f.cause();
+        } catch (RangeFailure f) {
+            throw f.cause();
+        }
+    }
+
+    private static Map<String, List<NamedBytes>> runMemory(
+            PipelineModel model,
+            java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
+            Map<String, byte[]> nodeImages,
+            PipelineGuard guard,
             Progress progress) throws PipelineException {
 
         Map<String, byte[]> images = nodeImages == null ? Map.of() : nodeImages;
@@ -458,7 +535,7 @@ public final class PipelineExecutor {
 
         for (PipelineNode n : order) {
             if (n.kind.isSource()) {
-                outputs.put(n.id, sourceDocs(n, sourceResolver));
+                outputs.put(n.id, sourceDocs(n, sourceResolver, guard));
                 continue;
             }
 
@@ -471,9 +548,16 @@ public final class PipelineExecutor {
 
             List<MemDoc> produced;
             try {
-                produced = n.kind.isReduce() ? runReduceMem(n, inputs) : runMapMem(n, inputs, images);
-            } catch (PipelineException e) {
+                produced = n.kind.isReduce()
+                    ? runReduceMem(n, inputs, guard)
+                    : runMapMem(n, inputs, images, guard);
+            } catch (PipelineException | GuardFailure e) {
                 throw e;
+            } catch (InvalidPageRangeException e) {
+                // A bad page/order expression is a client mistake, not an operation failure: carry
+                // it out unwrapped so it maps to the same status/code the single-operation
+                // endpoints return for the identical expression.
+                throw new RangeFailure(e);
             } catch (Exception e) {
                 throw new PipelineException(n.kind.label + ": " + e.getMessage(), e);
             }
@@ -488,9 +572,21 @@ public final class PipelineExecutor {
         return terminalOutputs;
     }
 
-    /** Reads a source node's uploaded bytes into MemDocs, detecting PDF vs image by magic bytes. */
+    /**
+     * Reads a source node's uploaded bytes into MemDocs, detecting image vs PDF by magic bytes.
+     *
+     * <p>Images are classified first, then PDFs — and PDFs through
+     * {@link com.pdfconduit.core.util.FileTypeDetector#looksLikePdf(byte[]) looksLikePdf}, not the
+     * strict offset-0 header test. A PDF whose header sits behind junk is precisely the input the
+     * REPAIR node exists for, so a source gate that demands {@code %PDF} at offset 0 would refuse
+     * one of the few classes of file the operation is for, before any node could see it (the desktop
+     * pipeline classifies by extension instead). Everything else is classified as what it is — an
+     * image, an office document or random bytes still fails here with the same message, so nothing
+     * unrecognisable reaches PDFBox as a "PDF".
+     */
     private static List<MemDoc> sourceDocs(PipelineNode n,
-                                           java.util.function.Function<PipelineNode, List<byte[]>> resolver)
+                                           java.util.function.Function<PipelineNode, List<byte[]>> resolver,
+                                           PipelineGuard guard)
             throws PipelineException {
         List<byte[]> raw = resolver.apply(n);
         if (raw == null) raw = List.of();
@@ -498,10 +594,25 @@ public final class PipelineExecutor {
         int i = 1;
         for (byte[] b : raw) {
             String baseName = "file" + i++;
-            if (com.pdfconduit.core.util.FileTypeDetector.isPdf(b)) {
-                docs.add(new MemDoc(b, DocType.PDF, baseName, "pdf"));
-            } else if (com.pdfconduit.core.util.FileTypeDetector.isSupportedImage(b)) {
+            if (com.pdfconduit.core.util.FileTypeDetector.isSupportedImage(b)) {
                 docs.add(new MemDoc(b, DocType.IMAGE, baseName, "img"));
+            } else if (com.pdfconduit.core.util.FileTypeDetector.looksLikePdf(b)) {
+                // Host ceilings (e.g. the web PDF-bomb page cap) apply to everything entering here.
+                try {
+                    guardDocument(guard, b);
+                } catch (PdfOperationException e) {
+                    // …with one exception: an ENCRYPTED upload cannot be opened, so the guard has
+                    // no page count to check and refusing here would reject the very input an
+                    // UNLOCK node exists for — with a message telling the user to unlock it first.
+                    // Let it through; the only node that can open it is UNLOCK, which re-applies
+                    // the identical ceiling to the decrypted result (see runMapMem's UNLOCK case),
+                    // and every other node still fails with this same clear message from its own
+                    // load. No ceiling is lost, and none is applied to bytes nobody can read.
+                    if (!isPasswordProtected(e)) {
+                        throw new PipelineException("Source " + baseName + ": " + e.getMessage(), e);
+                    }
+                }
+                docs.add(new MemDoc(b, DocType.PDF, baseName, "pdf"));
             } else {
                 throw new PipelineException(
                     "Source " + baseName + ": unsupported data (expected a PDF or image; "
@@ -509,6 +620,12 @@ public final class PipelineExecutor {
             }
         }
         return docs;
+    }
+
+    /** True when a failed load failed because the document is encrypted, not because it is broken. */
+    private static boolean isPasswordProtected(PdfOperationException e) {
+        return e.getCause() instanceof
+            org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
     }
 
     /** Names a node's produced outputs, disambiguating duplicate stems. */
@@ -523,11 +640,15 @@ public final class PipelineExecutor {
 
     // --- in-memory reduce -------------------------------------------------
 
-    private static List<MemDoc> runReduceMem(PipelineNode n, List<MemDoc> inputs) throws Exception {
+    private static List<MemDoc> runReduceMem(PipelineNode n, List<MemDoc> inputs, PipelineGuard guard)
+            throws Exception {
         if (n.kind != NodeKind.MERGE) throw new PipelineException("Not a reduce node: " + n.kind);
         List<byte[]> pdfs = new ArrayList<>(inputs.size());
         for (MemDoc in : inputs) pdfs.add(ensurePdfBytes(in, PageSize.FIT));
         byte[] merged = PdfMerger.executeBytes(pdfs);
+        // Merge is the one page-count amplifier: N guarded inputs can still exceed the ceiling once
+        // combined, so the result is re-checked (mirrors the single-operation /api/merge behaviour).
+        guardDocument(guard, merged);
         String baseName = inputs.isEmpty()
             ? n.kind.name().toLowerCase() : inputs.get(0).baseName() + n.kind.suffix();
         return List.of(new MemDoc(merged, DocType.PDF, baseName, "pdf"));
@@ -536,7 +657,8 @@ public final class PipelineExecutor {
     // --- in-memory map ----------------------------------------------------
 
     private static List<MemDoc> runMapMem(PipelineNode n, List<MemDoc> inputs,
-                                          Map<String, byte[]> nodeImages) throws Exception {
+                                          Map<String, byte[]> nodeImages,
+                                          PipelineGuard guard) throws Exception {
         List<MemDoc> results = new ArrayList<>();
         for (MemDoc in : inputs) {
             String baseName = in.baseName() + n.kind.suffix();
@@ -557,6 +679,9 @@ public final class PipelineExecutor {
             if (n.kind.isExport()) {
                 byte[] pdf = ensurePdfBytes(in, PageSize.FIT);
                 if (n.kind == NodeKind.TO_IMAGES) {
+                    // The node's DPI is client-supplied: gate it (and the resulting pixel area)
+                    // exactly as the single-operation image endpoint does, BEFORE rasterising.
+                    guardRender(guard, pdf, n.imageDpi);
                     List<byte[]> images = PdfToImageConverter.executeBytes(
                         pdf, n.imageFormat, n.imageDpi, PageRange.ALL, n.jpegQuality);
                     int width = Integer.toString(Math.max(1, images.size())).length();
@@ -587,9 +712,11 @@ public final class PipelineExecutor {
                 case EXTRACT   -> PdfSplitter.combineBytes(pdf, rangeBytes(n.pages, pdf));
                 case COMPRESS  -> PdfCompressor.compressBytes(pdf, n.targetBytes).bytes();
                 case ROTATE    -> PdfRotator.executeBytes(pdf, rangeBytes(n.pages, pdf), n.angle);
-                case ARRANGE   -> PdfArranger.executeBytes(pdf, orderBytes(n.order, pdf));
+                case ARRANGE   -> arrangeBytes(n, pdf, guard);
                 case PROTECT   -> PdfProtector.executeBytes(pdf, n.password, n.ownerPassword);
-                case UNLOCK    -> PdfUnlocker.executeBytes(pdf, n.password);
+                // The upload was encrypted, so the page-count guard could not see inside it —
+                // re-check the decrypted result (mirrors the single-operation /api/unlock).
+                case UNLOCK    -> guarded(guard, PdfUnlocker.executeBytes(pdf, n.password));
                 case METADATA  -> PdfMetadataEditor.executeBytes(pdf,
                     blankToNull(n.metaTitle), blankToNull(n.metaAuthor),
                     blankToNull(n.metaSubject), blankToNull(n.metaKeywords), n.metaStrip);
@@ -602,15 +729,63 @@ public final class PipelineExecutor {
                     n.pmFooterLeft, n.pmFooterCenter, n.pmFooterRight,
                     (float) n.pmFontSize, (float) n.pmMargin, n.pmSkipFirst,
                     n.pmStartNumber, n.pmPrefix);
-                case OCR       -> PdfOcr.executeBytes(pdf, n.ocrLanguages, n.ocrDpi);
+                case OCR       -> ocrBytes(n, pdf, guard);
                 // Scan for PII and feed every detected value's region straight into the redactor —
                 // the same one-click scan→auto-redact hand-off exposed by the web /auto-redact endpoint.
-                case GDPR_REDACT -> PdfRedactor.executeBytes(pdf, redactRegions(PiiScanner.scanBytes(pdf)), 0);
+                case GDPR_REDACT -> {
+                    // Redaction rasterises the affected pages, so it is render-guarded too.
+                    guardRender(guard, pdf, PdfRedactor.DEFAULT_DPI);
+                    yield PdfRedactor.executeBytes(
+                        pdf, redactRegions(PiiScanner.scanBytes(pdf)), 0).data();
+                }
+                // Repair sees the bytes as-is (a PDF MemDoc is passed through unchanged by
+                // ensurePdfBytes) — the damage it repairs lives in the byte structure. It neither
+                // rasterises nor amplifies the page count, so the source guard already covers it.
+                case REPAIR    -> PdfRepairer.executeBytes(pdf).bytes();
                 default -> throw new PipelineException("Not a map node: " + n.kind);
             };
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));
         }
         return results;
+    }
+
+    /**
+     * Arrange in memory. Arrange is the second page-count amplifier (after merge), and the cheaper
+     * one to abuse: repeats in the order expression <em>duplicate</em> pages, so {@code "1,1,1,…"}
+     * blows a one-page upload up to any size the expression names, from a request that satisfies
+     * every input-side ceiling. The parsed order's length <em>is</em> the result's page count, so
+     * the host's ceiling is applied to it BEFORE the document is built — nothing large is ever
+     * materialised.
+     */
+    private static byte[] arrangeBytes(PipelineNode n, byte[] pdf, PipelineGuard guard)
+            throws Exception {
+        List<Integer> order = orderBytes(n.order, pdf);
+        guardPageCount(guard, order.size());
+        return PdfArranger.executeBytes(pdf, order);
+    }
+
+    /** Applies the host's document ceiling to a node's result and returns it unchanged. */
+    private static byte[] guarded(PipelineGuard guard, byte[] pdf) throws PdfOperationException {
+        guardDocument(guard, pdf);
+        return pdf;
+    }
+
+    /**
+     * OCR in memory. Unlike every other node this shells out to an external {@code tesseract} per
+     * page after rendering it, so it is gated three ways by the host: availability (a host may have
+     * OCR switched off entirely), the render ceiling for the client-supplied {@code ocrDpi}, and the
+     * host's own concurrency/timeout wrapper around the actual work.
+     */
+    private static byte[] ocrBytes(PipelineNode n, byte[] pdf, PipelineGuard guard)
+            throws PdfOperationException {
+        guardOcr(guard);
+        int dpi = n.ocrDpi > 0 ? n.ocrDpi : PdfOcr.DEFAULT_DPI;
+        guardRender(guard, pdf, dpi);
+        try {
+            return guard.runOcr(() -> PdfOcr.executeBytes(pdf, n.ocrLanguages, n.ocrDpi));
+        } catch (RuntimeException e) {
+            throw new GuardFailure(e);
+        }
     }
 
     /**

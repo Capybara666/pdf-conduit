@@ -75,7 +75,10 @@ class AutoRedactCoverageTest {
         }
         assertFalse(regions.isEmpty(), "auto-redact must collect at least one region");
 
-        byte[] redacted = PdfRedactor.executeBytes(pdf, regions, DPI);
+        var result = PdfRedactor.executeBytes(pdf, regions, DPI);
+        assertEquals(regions.size(), result.redactedRegions(),
+            "every collected region must actually be painted, never skipped");
+        byte[] redacted = result.data();
 
         // (1) TEXT PROOF — no PII value survives in the extracted text of the output.
         String text = normalise(extractText(redacted));

@@ -1,27 +1,9 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
-import { CanvasNode } from '../../../core/pipeline.models';
+import { CapabilitiesService, MIN_RENDER_DPI } from '../../../core/capabilities.service';
+import { CanvasNode, KIND_TO_OP } from '../../../core/pipeline.models';
 import { FileDropZoneComponent } from '../../../shared/file-drop-zone/file-drop-zone.component';
-
-/** NodeKind → operation id used for the existing `op.<id>.label` i18n lookup. */
-const KIND_TO_OP: Record<string, string> = {
-  MERGE: 'merge',
-  IMAGES_TO_PDF: 'to-pdf',
-  EXTRACT: 'extract',
-  COMPRESS: 'compress',
-  ROTATE: 'rotate',
-  ARRANGE: 'arrange',
-  PROTECT: 'protect',
-  UNLOCK: 'unlock',
-  METADATA: 'metadata',
-  WATERMARK: 'watermark',
-  NUP: 'nup',
-  PAGE_MARKS: 'page-marks',
-  CROP: 'crop',
-  TO_IMAGES: 'to-images',
-  TO_TEXT: 'to-text',
-};
 
 /**
  * Parameter form for the currently-selected canvas node. Each kind renders only
@@ -191,7 +173,13 @@ const KIND_TO_OP: Record<string, string> = {
               <option value="JPEG">JPG</option>
             </select>
           </div>
-          <div class="field"><label>{{ 'pages.pipeline.fieldDpi' | transloco }}</label><input type="number" min="36" max="600" [value]="node.imageDpi" (input)="emit('imageDpi', +$any($event.target).value)" /></div>
+          <div class="field">
+            <label>{{ 'pages.pipeline.fieldDpi' | transloco }}</label>
+            <input type="number" [min]="minDpi" [max]="maxDpi()" step="1" [value]="node.imageDpi" (input)="emit('imageDpi', +$any($event.target).value)" />
+            <span class="help">{{
+              'pages.toImages.dpiHelpRange' | transloco: { min: minDpi, max: maxDpi() }
+            }}</span>
+          </div>
         }
         @case ('TO_TEXT') {
           <div class="field">
@@ -203,8 +191,7 @@ const KIND_TO_OP: Record<string, string> = {
         }
         @case ('GDPR_REDACT') {
           <!-- No parameters — scans for PII and permanently redacts every detected value. -->
-          <!-- TODO(i18n): pipeline.canvas.gdprRedactHint -->
-          <p class="hint-note">Scans for personal data and permanently redacts every detected value.</p>
+          <p class="hint-note">{{ 'pipeline.canvas.gdprRedactHint' | transloco }}</p>
         }
         @default {
           <p class="hint-note">{{ 'pipeline.canvas.noParams' | transloco }}</p>
@@ -256,6 +243,16 @@ const KIND_TO_OP: Record<string, string> = {
 })
 export class PipelineInspectorComponent {
   private readonly transloco = inject(TranslocoService);
+
+  /** Lowest DPI offered by the TO_IMAGES node — a UI floor, not a server limit. */
+  protected readonly minDpi = MIN_RENDER_DPI;
+  /**
+   * Highest DPI the server will render at, advertised by `GET /api/capabilities`
+   * (`environment.maxDpi` until it answers). The same signal the To Images page
+   * uses, so the two DPI fields can never promise different things — and neither
+   * can promise more than `/api/pipeline/run` accepts.
+   */
+  protected readonly maxDpi = inject(CapabilitiesService).maxDpi;
 
   @Input() node: CanvasNode | null = null;
   /** File objects already uploaded into the selected SOURCE node (drives its drop zone). */

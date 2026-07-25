@@ -69,6 +69,39 @@ class CliIntegrationTest {
     }
 
     @Test
+    void splitEveryWritesPartsOfNPages() throws Exception {
+        Path src = createPdf(7);
+        Path dir = tmp.resolve("every");
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("split", src.toString(), "--every", "3", "-o", dir.toString());
+
+        assertEquals(0, exit);
+        try (var stream = java.nio.file.Files.list(dir)) {
+            // 7 pages every 3 → 3 + 3 + 1.
+            var parts = stream.filter(p -> p.toString().endsWith(".pdf")).sorted().toList();
+            assertEquals(3, parts.size());
+            assertEquals(java.util.List.of(3, 3, 1), parts.stream().map(p -> {
+                try (PDDocument doc = Loader.loadPDF(p.toFile())) {
+                    return doc.getNumberOfPages();
+                } catch (Exception e) {
+                    throw new AssertionError(e);
+                }
+            }).toList());
+        }
+    }
+
+    @Test
+    void splitEveryBelowOneIsRejected() throws Exception {
+        Path src = createPdf(3);
+
+        int exit = new CommandLine(new RootCommand())
+            .execute("split", src.toString(), "--every", "0", "-o", tmp.resolve("bad").toString());
+
+        assertEquals(1, exit);
+    }
+
+    @Test
     void rotateCommandRotatesPages() throws Exception {
         Path src = createPdf(3);
         Path out = tmp.resolve("rotated.pdf");

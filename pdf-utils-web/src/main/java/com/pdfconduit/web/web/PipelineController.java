@@ -10,9 +10,15 @@ import com.pdfconduit.core.pipeline.PipelineModel;
 import com.pdfconduit.core.pipeline.PipelineNode;
 import com.pdfconduit.core.pipeline.PipelineValidator;
 import com.pdfconduit.core.service.NamedBytes;
+import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.cost.CostModel;
+import com.pdfconduit.web.cost.WorkEstimate;
 import com.pdfconduit.web.dto.NodeKindInfo;
 import com.pdfconduit.web.dto.ValidationErrorDto;
 import com.pdfconduit.web.guard.LoadGuard;
+import com.pdfconduit.web.guard.OutputBudget;
+import com.pdfconduit.web.guard.PipelineLimitsGuard;
+import com.pdfconduit.web.quota.UploadCaps;
 import com.pdfconduit.web.support.PipelineJson;
 import com.pdfconduit.web.support.Responses;
 import com.pdfconduit.web.support.Uploads;
@@ -46,10 +52,28 @@ public class PipelineController {
 
     private final Uploads uploads;
     private final LoadGuard loadGuard;
+    private final PipelineLimitsGuard limits;
+    private final OutputBudget outputBudget;
+    private final CostModel costs;
+    private final UploadCaps uploadCaps;
 
-    public PipelineController(Uploads uploads, LoadGuard loadGuard) {
+    private final int maxNodes;
+    private final int maxConnections;
+
+    public PipelineController(Uploads uploads, LoadGuard loadGuard, PipelineLimitsGuard limits,
+                              OutputBudget outputBudget, CostModel costs, UploadCaps uploadCaps,
+                              WebProperties props) {
         this.uploads = uploads;
         this.loadGuard = loadGuard;
+        this.limits = limits;
+        this.outputBudget = outputBudget;
+        this.costs = costs;
+        // Deliberately the SAME ceiling that bounds a normal batch upload, resolved through the
+        // same component: a pipeline source list is just another way of naming the files one
+        // request will process.
+        this.uploadCaps = uploadCaps;
+        this.maxNodes = props.pipeline().maxNodes();
+        this.maxConnections = props.pipeline().maxConnections();
     }
 
     /**
@@ -70,34 +94,48 @@ public class PipelineController {
                                       @RequestParam(value = "nodeAssets", required = false) List<MultipartFile> nodeAssets)
             throws IOException, PdfOperationException, PipelineException, InvalidPageRangeException {
         PipelineModel model = PipelineJson.parse(pipeline);
+        guardGraphSize(model);
+
+        int maxSourceDocuments = uploadCaps.hardMaxFiles();
 
         // Index uploads by basename (Uploads.read gates office uploads when office is disabled).
+        // NB: the parts are only an index here — what this request will actually cost is measured
+        // below, per RESOLVED source reference, because the same part may be named many times.
         Map<String, NamedBytes> byName = new HashMap<>();
-        long uploadBytes = 0;
         if (files != null) {
             for (MultipartFile f : files) {
                 NamedBytes nb = uploads.read(f);
                 byName.put(nb.filename(), nb);
-                uploadBytes += nb.data().length;
             }
         }
 
         // Index watermark-image assets by basename (raw bytes; never routed through office conversion).
         Map<String, byte[]> assetsByName = new HashMap<>();
+        long assetBytes = 0;
         if (nodeAssets != null) {
             for (MultipartFile f : nodeAssets) {
                 byte[] data = f.getBytes();
                 assetsByName.put(Uploads.filename(f), data);
-                uploadBytes += data.length;
+                assetBytes += data.length;
             }
         }
 
         // Resolve each source node's bytes eagerly (so checked conversion errors surface cleanly).
         Map<String, List<byte[]>> resolved = new HashMap<>();
         Map<String, byte[]> nodeImages = new HashMap<>();
+        // Source bytes per upload name: a name resolved twice is the SAME bytes, so an office
+        // upload referenced N times is converted once, not N times.
+        Map<String, byte[]> sourceBytes = new HashMap<>();
+        // Resolved bytes entering each source node — what the cost model multiplies through the
+        // graph to work out what this run will cost before any of it is allocated.
+        Map<String, Long> sourceBytesByNode = new HashMap<>();
+        int sourceDocuments = 0;
         for (PipelineNode n : model.nodes) {
+            if (n.kind == null) {
+                throw new IllegalArgumentException("Pipeline node '" + n.id + "' has no kind.");
+            }
             if (n.kind == NodeKind.WATERMARK && n.wmImage != null && !n.wmImage.isBlank()) {
-                String key = Path.of(n.wmImage).getFileName().toString();
+                String key = name(n.wmImage, "watermark image", n.id);
                 byte[] image = assetsByName.get(key);
                 if (image == null) {
                     throw new IllegalArgumentException(
@@ -108,38 +146,109 @@ public class PipelineController {
             if (!n.kind.isSource()) continue;
             List<byte[]> bytes = new ArrayList<>(n.files.size());
             for (Path f : n.files) {
-                String key = f.getFileName().toString();
+                String key = name(f == null ? null : f.toString(), "source file", n.id);
                 NamedBytes nb = byName.get(key);
                 if (nb == null) {
                     throw new IllegalArgumentException(
                         "No uploaded file matches pipeline source '" + key + "'.");
                 }
-                bytes.add(toSourceBytes(nb));
+                // Count the REFERENCE, not the part: every reference is one more document the run
+                // will process, whether or not it names an upload already listed elsewhere.
+                if (++sourceDocuments > maxSourceDocuments) {
+                    throw new IllegalArgumentException(
+                        "Pipeline resolves too many source documents (limit " + maxSourceDocuments
+                        + " per request). A file listed more than once counts each time.");
+                }
+                byte[] data = sourceBytes.get(key);
+                if (data == null) {
+                    data = toSourceBytes(nb);
+                    sourceBytes.put(key, data);
+                }
+                bytes.add(data);
+                // Count what is really processed, so duplicating one upload cannot make the cost
+                // estimate underestimate the run by that factor.
+                sourceBytesByNode.merge(n.id, (long) data.length, Long::sum);
             }
             resolved.put(n.id, bytes);
         }
 
-        // Heavy work: bound concurrency / in-flight bytes / runtime via the load guard.
-        Map<String, List<NamedBytes>> terminals = loadGuard.execute(uploadBytes,
+        // What this graph will cost, worked out from the resolved source bytes and the cost each
+        // node kind declares — BEFORE the executor allocates anything. This is the only check that
+        // sees the product the individual ceilings miss: the executor keeps every node's outputs
+        // alive at once, so N legal uploads through an M-stage graph cost N × M, and each of the
+        // per-file, per-node and per-graph caps is satisfied the whole way.
+        WorkEstimate estimate = costs.forPipeline(model, sourceBytesByNode, assetBytes);
+
+        // Heavy work: bound concurrency / work bytes / runtime via the load guard, and apply the
+        // per-request ceilings (page count, render DPI/pixels, OCR availability + permit) INSIDE the
+        // run via PipelineLimitsGuard — the nodes' DPI/OCR settings are client-supplied, so without
+        // it this endpoint would reach the same core operations with every ceiling skipped.
+        Map<String, List<NamedBytes>> terminals = loadGuard.execute(estimate,
             () -> PipelineExecutor.runInMemory(
-                model, node -> resolved.getOrDefault(node.id, List.of()), nodeImages, null));
+                model, node -> resolved.getOrDefault(node.id, List.of()), nodeImages, limits, null));
 
         List<NamedBytes> all = new ArrayList<>();
         for (List<NamedBytes> nodeOutputs : terminals.values()) all.addAll(nodeOutputs);
+        // Zipping copies the whole result set again (buffer + toByteArray), so refuse a result that
+        // is already over the per-request budget rather than tripling it in the heap first. The
+        // pipeline executor accumulates its terminals internally, so this is the last chokepoint.
+        outputBudget.checkResultBytes(all);
         return Responses.zip(all, "pipeline_results.zip");
     }
 
-    /** Validates a pipeline in-memory; returns the list of problems (empty ⇒ valid), always 200. */
+    /**
+     * Validates a pipeline in-memory; returns the list of problems (empty ⇒ valid), 200 — except for
+     * a graph over the size ceiling, which is a 400 here too so the builder learns it before
+     * uploading anything, and so /validate can never be used to pre-flight a graph /run would refuse.
+     */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/validate")
     public List<ValidationErrorDto> validate(@RequestParam("pipeline") String pipeline) {
         PipelineModel model = PipelineJson.parse(pipeline);
+        guardGraphSize(model);
         return PipelineValidator.validateInMemory(model).stream().map(ValidationErrorDto::of).toList();
+    }
+
+    /**
+     * Bounds the size of a client-supplied graph (→ 400). Every node is a full core operation and
+     * the entire graph runs under a <em>single</em> {@link LoadGuard} permit with one processing
+     * timeout, and timed-out work is not actually aborted — so an unbounded node count is an
+     * unbounded amount of work bought by one request. The ceilings are far above any pipeline a
+     * person builds in the visual editor.
+     */
+    private void guardGraphSize(PipelineModel model) {
+        int nodes = model.nodes == null ? 0 : model.nodes.size();
+        int connections = model.connections == null ? 0 : model.connections.size();
+        if (nodes > maxNodes) {
+            throw new IllegalArgumentException(
+                "Pipeline has too many nodes: " + nodes + " (limit " + maxNodes + ").");
+        }
+        if (connections > maxConnections) {
+            throw new IllegalArgumentException(
+                "Pipeline has too many connections: " + connections
+                + " (limit " + maxConnections + ").");
+        }
     }
 
     /** The node-kind catalog for the builder palette. */
     @GetMapping("/kinds")
     public List<NodeKindInfo> kinds() {
         return Arrays.stream(NodeKind.values()).map(NodeKindInfo::of).toList();
+    }
+
+    /**
+     * The upload name a client-supplied pipeline reference points at — its trailing name component,
+     * never a host path. Every one of these strings comes verbatim from the request's pipeline JSON,
+     * so a crafted value such as {@code "/"} or {@code ""} must be a clean 400, not an NPE —
+     * {@code Path.of("/").getFileName()} is {@code null} — surfacing as a 500 plus a stack trace.
+     */
+    private static String name(String reference, String what, String nodeId) {
+        String key = Uploads.basename(reference);
+        if (key.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Pipeline node '" + nodeId + "' has an unusable " + what + " name: '"
+                + (reference == null ? "" : reference) + "'.");
+        }
+        return key;
     }
 
     /** Office uploads → PDF bytes (gated + temp-dir exception); PDFs/images pass through raw. */

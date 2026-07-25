@@ -1,8 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+
+/**
+ * Sentinels handed to the `{linkStart}` / `{linkEnd}` arguments of
+ * `privacy.limitsBody`, so the rendered sentence can be split back into
+ * before / link-label / after. Control characters: they can never occur in
+ * translated copy, so the split is unambiguous.
+ */
+const LINK_START = '\u0001';
+const LINK_END = '\u0002';
 
 /**
  * Plain, honest privacy page. States the in-memory processing model, that
@@ -13,7 +23,7 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
   standalone: true,
   imports: [PageHeaderComponent, RouterLink, TranslocoModule],
   template: `
-    <section class="op-page">
+    <section class="op-page prose-page">
       <app-page-header
         [title]="'privacy.title' | transloco"
         [description]="'privacy.description' | transloco"
@@ -35,10 +45,16 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
         <p>{{ 'privacy.controllerBody' | transloco }}</p>
 
         <h2>{{ 'privacy.limitsTitle' | transloco }}</h2>
+        <!-- One sentence, one key: the link is spliced INTO privacy.limitsBody
+             (see the "limits" computed below), so every language keeps control
+             of word order, case and the link label itself. No whitespace around
+             the anchor — the spacing lives inside the translated string, which
+             is the only way CJK (no spaces) and European copy both come out
+             right. -->
         <p>
-          {{ 'privacy.limitsBody1' | transloco }}
-          <a routerLink="/" fragment="pro">{{ 'privacy.limitsLink' | transloco }}</a>
-          {{ 'privacy.limitsBody2' | transloco }}
+          {{ limits().before
+          }}<a routerLink="/" fragment="pro">{{ limits().label }}</a
+          >{{ limits().after }}
         </p>
 
         <h2>{{ 'privacy.questionsTitle' | transloco }}</h2>
@@ -52,9 +68,10 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
   `,
   styles: [
     `
-      .prose {
-        max-width: 680px;
-      }
+      /* NO max-width here: the reading measure is owned by the shared
+         .op-page.prose-page container (styles.scss), which stays centred in
+         both width modes. Capping this card instead left it flush against the
+         left edge in wide mode. */
       .prose h2 {
         font-size: 1.15rem;
         margin: 1.5rem 0 0.5rem;
@@ -78,4 +95,41 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
     `,
   ],
 })
-export class PrivacyPage {}
+export class PrivacyPage {
+  private readonly transloco = inject(TranslocoService);
+
+  /**
+   * The free-tier paragraph rendered with the link placeholders replaced by
+   * {@link LINK_START} / {@link LINK_END}. `selectTranslate` (not the
+   * synchronous `translate`) so the paragraph re-renders once the dictionary
+   * loads and on every language switch.
+   */
+  private readonly limitsText = toSignal(
+    this.transloco.selectTranslate<string>('privacy.limitsBody', {
+      linkStart: LINK_START,
+      linkEnd: LINK_END,
+    }),
+    { initialValue: '' },
+  );
+
+  /**
+   * The sentence split around its inline link. It is ONE translated key with
+   * `{linkStart}`/`{linkEnd}` markers, never a `body1 + link + body2` assembly:
+   * gluing fragments around an `<a>` pins every language to English word order,
+   * which is ungrammatical in Polish and Korean.
+   */
+  protected readonly limits = computed(() => {
+    const text = this.limitsText();
+    const start = text.indexOf(LINK_START);
+    const end = text.indexOf(LINK_END, start + 1);
+    if (start < 0 || end < 0) {
+      // Malformed translation: show the sentence rather than nothing.
+      return { before: text, label: '', after: '' };
+    }
+    return {
+      before: text.slice(0, start),
+      label: text.slice(start + LINK_START.length, end),
+      after: text.slice(end + LINK_END.length),
+    };
+  });
+}

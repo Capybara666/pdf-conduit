@@ -96,6 +96,11 @@ public final class Icons {
         "M7 3 H15 L19 7 V21 H7 Z M15 3 V7 H19 "
         + "M9.5 10.5 H16 M9.5 13 H12.5 "
         + "M11 16 a2.5 2.5 0 1 0 5 0 a2.5 2.5 0 1 0 -5 0 M15.3 17.8 L17.6 20";
+    // an open-ended wrench: head at the upper right (jaw open away from the grip),
+    // handle running down to the lower left (repair a damaged file)
+    private static final String REPAIR =
+        "M21 7.5 L18.75 11.4 L14.25 11.4 L12 7.5 L14.25 3.6 L18.75 3.6 "
+        + "M13.1 9.5 L4.5 19.5";
     // sliders: three horizontal rails each with a knob (settings)
     private static final String SETTINGS =
         "M4 7 H20 M4 12 H20 M4 17 H20 "
@@ -145,6 +150,7 @@ public final class Icons {
             case PAGE_MARKS    -> PAGE_MARKS;
             case OCR           -> OCR;
             case GDPR_REDACT   -> REDACT;
+            case REPAIR        -> REPAIR;
             case TO_IMAGES     -> TO_IMAGES;
             case TO_TEXT       -> TO_TEXT;
         }, size);

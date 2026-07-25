@@ -4,9 +4,14 @@ import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.pipeline.PipelineException;
 import com.pdfconduit.web.config.WebProperties;
+import com.pdfconduit.web.cost.CostModel;
+import com.pdfconduit.web.cost.WorkEstimate;
+import com.pdfconduit.web.error.OutputTooLargeException;
 import com.pdfconduit.web.error.ProcessingTimeoutException;
 import com.pdfconduit.web.error.ServerBusyException;
 import com.pdfconduit.web.observability.WebMetrics;
+import com.pdfconduit.web.plan.PlanLimits;
+import com.pdfconduit.web.plan.RequestPlan;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +33,22 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Anti-OOM / anti-runaway admission control for heavy operations. Regardless of Tomcat's 200
  * request threads, at most {@code concurrency.max-heavy-ops} heavy operations run at once and the
- * summed bytes of in-flight heavy requests never exceed {@code concurrency.max-in-flight-bytes}.
- * Each admitted operation runs on a bounded executor with a {@code processing.timeout-seconds}
- * deadline; on timeout the client is shed (503) and the future cancelled.
+ * summed <em>estimated cost</em> of everything in flight never exceeds
+ * {@code concurrency.max-work-bytes}. Each admitted operation runs on a bounded executor with a
+ * {@code processing.timeout-seconds} deadline; on timeout the client is shed (503) and the future
+ * cancelled.
+ *
+ * <p><b>Admission is decided on an estimate, before anything is allocated.</b> Every request
+ * arrives with a {@link WorkEstimate} derived from the cost its endpoint (or, for a pipeline, its
+ * graph) declares — see {@link CostModel}. Two outcomes follow, and they mean different things:
+ * <ul>
+ *   <li>the estimate exceeds the whole pool ⇒ this request can never run here, so it is refused
+ *       outright with 422 {@code output_too_large} in milliseconds — retrying will not help;</li>
+ *   <li>the estimate exceeds what is <em>free</em> right now ⇒ 503 {@code server_busy}, the same
+ *       transient shed as a saturated permit.</li>
+ * </ul>
+ * Counting the estimate rather than a slot is what stops the per-request budget and the slot count
+ * from multiplying: four permits no longer imply four times the largest affordable request.
  *
  * <p>PDFBox work may not honour thread interruption immediately, so {@link Future#cancel(boolean)}
  * only guarantees the <em>caller</em> is released — a stuck task can keep running. Crucially the
@@ -49,16 +67,21 @@ public class LoadGuard {
 
     private final Semaphore permits;
     private final AtomicLong inFlightBytes = new AtomicLong();
-    private final long maxInFlightBytes;
+    private final long maxWorkBytes;
     private final int maxHeavyOps;
     private final long timeoutSeconds;
     private final ExecutorService executor;
     private final WebMetrics metrics;
+    private final RequestPlan requestPlan;
+    private final CostModel costs;
 
-    public LoadGuard(WebProperties props, WebMetrics metrics) {
+    public LoadGuard(WebProperties props, WebMetrics metrics, RequestPlan requestPlan,
+                     CostModel costs) {
         this.metrics = metrics;
+        this.requestPlan = requestPlan;
+        this.costs = costs;
         this.permits = new Semaphore(props.concurrency().maxHeavyOps(), true);
-        this.maxInFlightBytes = props.concurrency().maxInFlightBytes();
+        this.maxWorkBytes = props.concurrency().maxWorkBytes();
         this.maxHeavyOps = props.concurrency().maxHeavyOps();
         this.timeoutSeconds = props.processing().timeoutSeconds();
         ThreadFactory tf = new ThreadFactory() {
@@ -81,15 +104,39 @@ public class LoadGuard {
     }
 
     /**
-     * Admits and runs a heavy operation under the concurrency + in-flight-byte + timeout guards.
+     * Admits and runs a heavy operation, estimating its cost from the endpoint being handled. The
+     * estimate is derived here rather than passed in, so a new endpoint cannot reach the executor
+     * without one — the caller only has to say how many bytes it uploaded.
      *
-     * @param requestBytes best-effort byte estimate of this request's inputs (for the OOM cap)
-     * @throws ServerBusyException        if no permit is free or the byte cap would be exceeded
+     * @param inputBytes summed size of this request's already-read uploads
+     */
+    public <T> T execute(long inputBytes, HeavyTask<T> task)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        return execute(costs.forCurrentRequest(Math.max(0, inputBytes)), task);
+    }
+
+    /**
+     * Admits and runs a heavy operation under the concurrency + work-byte + timeout guards, against
+     * an estimate the caller worked out itself. Used by {@code /api/pipeline/run}, whose cost is a
+     * property of the client-supplied graph rather than of its uploads.
+     *
+     * @param estimate what this request is expected to cost the heap (see {@link CostModel})
+     * @throws OutputTooLargeException    if the estimate exceeds the whole work-byte pool (422)
+     * @throws ServerBusyException        if no permit is free or the pool has no room right now
      * @throws ProcessingTimeoutException if the work exceeds the processing timeout
      */
-    public <T> T execute(long requestBytes, HeavyTask<T> task)
+    public <T> T execute(WorkEstimate estimate, HeavyTask<T> task)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        long bytes = Math.max(0, requestBytes);
+        long bytes = estimate.peakBytes();
+        // Refused before a permit is taken and before a single byte is allocated: a request that
+        // cannot fit even on an idle server is a property of the request, not of the moment.
+        if (maxWorkBytes > 0 && bytes > maxWorkBytes) {
+            throw new OutputTooLargeException(
+                "This request would need about " + estimate.peakMegabytes()
+                + " MB of memory, more than this server commits to one request ("
+                + megabytes(maxWorkBytes) + " MB). Use fewer or smaller files, fewer pipeline "
+                + "steps, or a lower DPI.");
+        }
         boolean acquired;
         try {
             acquired = permits.tryAcquire(ACQUIRE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -114,18 +161,26 @@ public class LoadGuard {
         };
 
         long now = inFlightBytes.addAndGet(bytes);
-        if (now > maxInFlightBytes) {
+        if (maxWorkBytes > 0 && now > maxWorkBytes) {
             releaseOnce.run();  // nothing submitted yet; give the reservation straight back
             metrics.loadShed();
             throw new ServerBusyException("Server busy (memory pressure), try again shortly.");
         }
 
+        // The caller's entitlements are resolved HERE, on the request thread, and carried onto the
+        // worker: the guards inside the task read their ceilings from the resolved plan, and the
+        // request object itself must not be touched off-thread (a timed-out caller is shed while
+        // the task runs on, by which point Tomcat may have recycled the request).
+        PlanLimits plan = requestPlan.current();
         CompletableFuture<T> result = new CompletableFuture<>();
         Future<?> running = executor.submit(() -> {
+            RequestPlan.bind(plan);
             try {
                 result.complete(task.get());
             } catch (Throwable t) {
                 result.completeExceptionally(t);
+            } finally {
+                RequestPlan.unbind();   // pooled threads outlive the request
             }
         });
         // Release the slot the moment the underlying work terminates (success, failure, or a late
@@ -174,14 +229,18 @@ public class LoadGuard {
         return maxHeavyOps;
     }
 
-    /** Summed bytes of the heavy requests currently in flight (reserved against the OOM cap). */
+    /** Summed estimated cost of the heavy requests currently in flight (reserved against the pool). */
     public long inFlightBytes() {
         return inFlightBytes.get();
     }
 
-    /** The in-flight-byte ceiling; requests that would push past it are shed as 503. */
-    public long maxInFlightBytes() {
-        return maxInFlightBytes;
+    /** The work-byte pool; requests that would push past it are shed as 503. */
+    public long maxWorkBytes() {
+        return maxWorkBytes;
+    }
+
+    private static long megabytes(long value) {
+        return Math.max(1, Math.round(value / (1024.0 * 1024.0)));
     }
 
     @PreDestroy

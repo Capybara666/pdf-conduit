@@ -24,6 +24,8 @@ public class FreePlanLimitsResolver implements PlanLimitsResolver {
             props.pdf().maxPages(),
             props.render().maxDpi(),
             props.render().maxOutputPixels(),
+            props.render().maxTotalOutputPixels(),
+            props.processing().maxTotalOutputBytes().toBytes(),
             props.ratelimit().requestsPerMinute(),
             props.ratelimit().heavyPerMinute(),
             props.ratelimit().burst());

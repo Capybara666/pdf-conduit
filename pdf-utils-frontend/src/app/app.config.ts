@@ -1,5 +1,5 @@
 import { ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import {
   TitleStrategy,
   provideRouter,
@@ -22,7 +22,12 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
-    provideHttpClient(withFetch()),
+    // XHR backend (the default), NOT `withFetch()`: the fetch backend cannot
+    // report UPLOAD progress at all — it only surfaces download events. Every
+    // operation here posts multipart files, and a multi-minute upload with no
+    // percentage reads as a hang, so the transport that can measure it wins.
+    // There is no SSR build, which is the usual reason to prefer fetch.
+    provideHttpClient(),
     { provide: TitleStrategy, useClass: TranslatedTitleStrategy },
     provideTransloco({
       config: {
@@ -37,6 +42,10 @@ export const appConfig: ApplicationConfig = {
       },
       loader: TranslocoHttpLoader,
     }),
-    provideTranslocoMessageformat(),
+    // The transpiler only calls setLocale() from onLangChanged, i.e. on a *change*.
+    // Booting straight into a stored language fires no change, so without this the
+    // rules stay English and any non-English plural category (Slavic `few`/`many`)
+    // throws "The plural case few is not valid in this locale" at render time.
+    provideTranslocoMessageformat({ locales: resolveInitialLang() }),
   ],
 };

@@ -1,11 +1,20 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpHeaders,
+  HttpResponse,
+} from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, filter, finalize, map, tap, throwError } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import {
   ApiError,
+  BatchFailureEntry,
+  BatchFailuresInfo,
   BatchPiiReport,
   CapabilitiesInfo,
   CompressionInfo,
@@ -14,10 +23,13 @@ import {
   MetadataDto,
   OperationInfo,
   PiiReport,
+  RedactionInfo,
+  RepairInfo,
   RunResult,
 } from './api.models';
-import { errorCopyKeys } from './error-copy';
+import { resolveErrorCopy } from './error-copy';
 import { QuotaService } from './quota.service';
+import { NOW, RunFile, RunObservable, RunTracker, filesOf, withRunTracker } from './run-progress';
 import { ToastService } from './toast.service';
 import { NodeKindInfo, PipelineModelJson, PipelineValidationError } from './pipeline.models';
 
@@ -37,6 +49,7 @@ export class ApiService {
   private readonly quota = inject(QuotaService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly now = inject(NOW);
   private readonly base = `${environment.apiBase}/api`;
 
   // ---- Catalog / health -------------------------------------------------
@@ -125,15 +138,60 @@ export class ApiService {
    * POST a multipart body to any operation endpoint and stream back the binary
    * result. `endpoint` may be a bare op id (`"merge"`) or an explicit path
    * (`"metadata/read"`); a leading `/api` or `/` is tolerated.
+   *
+   * The request is observed as an event stream (`reportProgress`) so the caller
+   * can show a real upload percentage and then an honest "the server is working"
+   * wait — a 25 MB upload on a slow uplink is minutes of otherwise dead air, and
+   * users read dead air as a hang, reload, and burn a second quota unit. The
+   * progress rides on the returned observable as `.run` ({@link RunObservable}),
+   * so none of the typed wrappers below have to thread a callback.
+   *
+   * Unsubscribing aborts the underlying XHR; `finalize` then marks the tracker
+   * cancelled (a no-op once the request has succeeded or failed).
    */
-  runOperation(endpoint: string, formData: FormData): Observable<RunResult> {
+  runOperation(endpoint: string, formData: FormData): RunObservable {
     const url = this.resolve(endpoint);
-    return this.http
-      .post(url, formData, { observe: 'response', responseType: 'blob' })
+    const run = new RunTracker(this.now);
+    const files = filesOf(formData);
+    const request = this.http
+      .post(url, formData, { observe: 'events', reportProgress: true, responseType: 'blob' })
       .pipe(
-        map((res) => this.toRunResult(res)),
-        catchError((err) => this.toApiError(err)),
+        tap((event) => this.track(run, event, files)),
+        filter((event): event is HttpResponse<Blob> => event.type === HttpEventType.Response),
+        map((res) => {
+          run.succeed();
+          return this.toRunResult(res);
+        }),
+        catchError((err) => {
+          run.fail();
+          return this.toApiError(err);
+        }),
+        finalize(() => run.cancel()),
       );
+    return withRunTracker(request, run);
+  }
+
+  /**
+   * Fold one HTTP event into the tracker. `UploadProgress` without a `total`
+   * (the browser cannot always compute one) leaves the tracker indeterminate
+   * rather than inventing a percentage; the first byte of the RESPONSE means the
+   * server is done thinking, so it also ends the upload phase for that case.
+   */
+  private track(run: RunTracker, event: HttpEvent<unknown>, files: readonly RunFile[]): void {
+    switch (event.type) {
+      case HttpEventType.Sent:
+        run.begin(files);
+        break;
+      case HttpEventType.UploadProgress:
+        run.upload(event.loaded, event.total);
+        break;
+      case HttpEventType.ResponseHeader:
+      case HttpEventType.DownloadProgress:
+        run.processing();
+        break;
+      default:
+        break;
+    }
   }
 
   // ---- Typed convenience wrappers (thin; forms build the FormData) ------
@@ -192,6 +250,15 @@ export class ApiService {
   ocr(formData: FormData): Observable<RunResult> {
     return this.runOperation('ocr', formData);
   }
+  /**
+   * `POST /api/repair` → the rebuilt PDF (single input) or a ZIP (batch). The
+   * single-file response carries `X-Repair-Was-Damaged` / `X-Repair-Recovered`,
+   * parsed into {@link RunResult.repair}; a 422 `repair_failed` means the file
+   * could not be recovered.
+   */
+  repair(formData: FormData): Observable<RunResult> {
+    return this.runOperation('repair', formData);
+  }
 
   // ---- Pipeline ---------------------------------------------------------
 
@@ -217,8 +284,12 @@ export class ApiService {
       .pipe(catchError((err) => this.toApiError(err)));
   }
 
-  /** `POST /api/pipeline/run` → ZIP of terminal outputs. */
-  runPipeline(formData: FormData): Observable<RunResult> {
+  /**
+   * `POST /api/pipeline/run` → ZIP of terminal outputs. Typed as a
+   * {@link RunObservable} because the pipeline page drives the waiting indicator
+   * from `.run` itself (it does not use `OperationState`).
+   */
+  runPipeline(formData: FormData): RunObservable {
     return this.runOperation('pipeline/run', formData);
   }
 
@@ -248,7 +319,15 @@ export class ApiService {
     if (compression) {
       result.compression = compression;
     }
-    const batchFailures = headers.get('X-Batch-Failures');
+    const repair = this.repairFrom(headers);
+    if (repair) {
+      result.repair = repair;
+    }
+    const redaction = this.redactionFrom(headers);
+    if (redaction) {
+      result.redaction = redaction;
+    }
+    const batchFailures = this.batchFailuresFrom(headers);
     if (batchFailures) {
       result.batchFailures = batchFailures;
     }
@@ -287,8 +366,6 @@ export class ApiService {
     const original = headers.get('X-Original-Bytes');
     const resultBytes = headers.get('X-Result-Bytes');
     const reached = headers.get('X-Target-Reached');
-    const feasible = headers.get('X-Target-Feasible');
-    const floor = headers.get('X-Estimated-Floor-Bytes');
     if (original == null && resultBytes == null && reached == null) {
       return undefined;
     }
@@ -296,9 +373,102 @@ export class ApiService {
     if (original != null) info.originalBytes = Number(original);
     if (resultBytes != null) info.resultBytes = Number(resultBytes);
     if (reached != null) info.targetReached = reached.toLowerCase() === 'true';
-    if (feasible != null) info.targetFeasible = feasible.toLowerCase() === 'true';
-    if (floor != null) info.estimatedFloorBytes = Number(floor);
     return info;
+  }
+
+  /**
+   * Parse the repair outcome headers. Absent on batch (ZIP) responses and on any
+   * server that predates them — then this returns `undefined` and the result
+   * panel stays with the neutral success copy rather than guessing.
+   *
+   * `X-Repair-Findings` is a comma-separated list of backend `RepairFinding`
+   * ids, and is legitimately **empty** when a file was well-formed. An empty
+   * value therefore parses to `[]` ("nothing was wrong"), never to an error, and
+   * an absent header (an intermediary may strip an empty one) leaves the field
+   * off — both read as "no findings" in the panel.
+   */
+  private repairFrom(headers: HttpHeaders): RepairInfo | undefined {
+    const wasDamaged = headers.get('X-Repair-Was-Damaged');
+    const recovered = headers.get('X-Repair-Recovered');
+    const findings = headers.get('X-Repair-Findings');
+    const pageCount = ApiService.countHeader(headers.get('X-Repair-Pages'));
+    if (wasDamaged == null && recovered == null && findings == null && pageCount === undefined) {
+      return undefined;
+    }
+    const info: RepairInfo = {};
+    if (wasDamaged != null) info.wasDamaged = wasDamaged.toLowerCase() === 'true';
+    if (recovered != null) info.recovered = recovered.toLowerCase() === 'true';
+    if (findings != null) {
+      info.findings = findings
+        .split(',')
+        .map((id) => id.trim().toLowerCase())
+        .filter((id) => id !== '');
+    }
+    if (pageCount !== undefined) info.pageCount = pageCount;
+    return info;
+  }
+
+  /**
+   * Parse what a redaction actually blacked out (`X-Redacted-Pages` /
+   * `X-Redacted-Regions`). Only the two redaction endpoints send these; anything
+   * else returns `undefined` and the panel makes no coverage claim at all.
+   */
+  private redactionFrom(headers: HttpHeaders): RedactionInfo | undefined {
+    const pages = ApiService.countHeader(headers.get('X-Redacted-Pages'));
+    const regions = ApiService.countHeader(headers.get('X-Redacted-Regions'));
+    if (pages === undefined && regions === undefined) {
+      return undefined;
+    }
+    const info: RedactionInfo = {};
+    if (pages !== undefined) info.pages = pages;
+    if (regions !== undefined) info.regions = regions;
+    return info;
+  }
+
+  /**
+   * Parse `X-Batch-Failures` into the inputs a partial batch skipped:
+   * `<file>: <reason>` entries joined by `"; "`, capped at five with a trailing
+   * `"; +N more"` (see the backend's `Responses.batchFailures`). The backend
+   * scrubs `;` out of both the filename and the reason, so splitting on it is
+   * unambiguous. A blank or unparseable header yields `undefined` — the panel
+   * then shows the plain success state instead of an empty "failures" list.
+   */
+  private batchFailuresFrom(headers: HttpHeaders): BatchFailuresInfo | undefined {
+    const raw = headers.get('X-Batch-Failures');
+    if (raw == null || raw.trim() === '') {
+      return undefined;
+    }
+    const entries: BatchFailureEntry[] = [];
+    let more = 0;
+    for (const part of raw.split(';').map((p) => p.trim())) {
+      if (part === '') continue;
+      const tail = /^\+\s*(\d+)\s+more$/i.exec(part);
+      if (tail) {
+        more += Number(tail[1]);
+        continue;
+      }
+      const colon = part.indexOf(':');
+      if (colon >= 0) {
+        entries.push({ filename: part.slice(0, colon).trim(), reason: part.slice(colon + 1).trim() });
+      } else {
+        entries.push({ filename: part, reason: '' });
+      }
+    }
+    if (entries.length === 0 && more === 0) {
+      return undefined;
+    }
+    return { entries, more, total: entries.length + more, raw };
+  }
+
+  /**
+   * A count header as a non-negative integer, or `undefined` when it is absent,
+   * blank or not a plain number. Never coerces junk to `0` — a fabricated zero
+   * would read as a measurement the server never made.
+   */
+  private static countHeader(raw: string | null): number | undefined {
+    if (raw == null || raw.trim() === '') return undefined;
+    const value = Number(raw.trim());
+    return Number.isInteger(value) && value >= 0 ? value : undefined;
   }
 
   /**
@@ -368,13 +538,34 @@ export class ApiService {
       const message = typeof json.error === 'string' ? json.error : `Request failed (${status})`;
       return new ApiError(code, message, status, retryAfter);
     } catch {
-      return new ApiError(
-        this.codeForStatus(status),
-        text || `Request failed (${status})`,
-        status,
-        retryAfter,
-      );
+      // Not our `{code,error}` JSON. It is most likely a reverse-proxy error
+      // page (nginx answers 502/504 with a full HTML document), so only adopt
+      // the body when it still reads like a short plain-text server message —
+      // otherwise hand back an empty detail and let the localised `detailKey`
+      // in `error-copy.ts` provide the copy the user actually sees.
+      return new ApiError(this.codeForStatus(status), this.serverDetail(text), status, retryAfter);
     }
+  }
+
+  /**
+   * Longest non-JSON error body we will show verbatim. A genuine backend
+   * message is one short sentence; anything longer is infrastructure output,
+   * not copy meant for a user.
+   */
+  private static readonly MAX_DETAIL_CHARS = 200;
+
+  /**
+   * Sanitise a non-JSON error body into a detail line, or `''` when it is not
+   * fit to show (HTML/XML error page, or an implausibly long blob). `''` is the
+   * documented "server gave no message" value: every consumer of
+   * `ErrorCopyKeys.detailText` falls back to `detailKey` on a falsy value.
+   */
+  private serverDetail(text: string): string {
+    if (!text || /^\s*</.test(text)) {
+      return '';
+    }
+    const trimmed = text.trim();
+    return trimmed.length > 0 && trimmed.length <= ApiService.MAX_DETAIL_CHARS ? trimmed : '';
   }
 
   private retryAfterFrom(headers: HttpHeaders): number | undefined {
@@ -396,16 +587,15 @@ export class ApiService {
     if (headers && error.code === 'quota_exceeded') {
       this.quota.update(headers, { quota: true });
     }
-    const copy = errorCopyKeys(error);
+    // Localised first: a toast has room for one sentence, so it must be the one
+    // in the user's language (the server's English text stays reachable on the
+    // result panel as its secondary technical line).
+    const copy = resolveErrorCopy(error, (key, params) => this.transloco.translate(key, params));
     if (copy.global) {
-      const t = (key?: string, params?: Record<string, unknown>) =>
-        key ? this.transloco.translate(key, params) : undefined;
-      const detail = copy.detailText || t(copy.detailKey);
-      const hint = t(copy.hintKey, copy.hintParams);
       this.toasts.show({
         kind: error.code === 'quota_exceeded' ? 'warning' : 'info',
-        title: t(copy.titleKey)!,
-        message: hint ?? detail,
+        title: copy.title,
+        message: copy.hint ?? copy.detail,
         action: copy.proLink
           ? { label: this.transloco.translate('result.seeProPlansShort'), link: ['/'], fragment: 'pro' }
           : undefined,
@@ -414,12 +604,23 @@ export class ApiService {
     return error;
   }
 
+  /**
+   * Map an HTTP status to an `error-copy.ts` builder key.
+   *
+   * The 408/502/504 rows matter in production even though the backend never
+   * emits them: nginx does. A redeploy (backend restarting) answers 502 and an
+   * operation past `proxy_read_timeout` answers 504 — both with an HTML error
+   * page. Without a mapping they fell through to `'error'`, which has no
+   * builder, so the generic copy showed the raw page body as its detail line.
+   */
   private codeForStatus(status: number): string {
     switch (status) {
       case 0:
         return 'network_error';
       case 400:
         return 'bad_request';
+      case 408:
+        return 'processing_timeout';
       case 413:
         return 'too_large';
       case 415:
@@ -430,8 +631,12 @@ export class ApiService {
         return 'rate_limited';
       case 500:
         return 'internal_error';
+      case 502:
+        return 'server_busy';
       case 503:
         return 'server_busy';
+      case 504:
+        return 'processing_timeout';
       default:
         return 'error';
     }

@@ -25,7 +25,7 @@
     "processing": "처리 중…",
     "moveUp": "위로 이동",
     "moveDown": "아래로 이동",
-    "fileCount": "{count, plural, other {파일 # 개}}"
+    "fileCount": "{count, plural, other {파일 #개}}"
   },
   "dropzone": {
     "defaultLabel": "여기에 파일을 놓거나 클릭하여 찾아보기",
@@ -73,19 +73,23 @@
     },
     "rotate": {
       "label": "회전",
-      "description": "페이지를 90°, 180° 또는 270° 회전합니다."
+      "description": "페이지를 오른쪽으로 1/4바퀴(90°), 뒤집기(180°), 왼쪽으로 1/4바퀴(270°) 회전합니다."
     },
     "arrange": {
-      "label": "정렬",
+      "label": "순서 변경",
       "description": "페이지 순서를 바꾸거나, 뒤집거나, 복제합니다."
     },
     "nup": {
-      "label": "한 장에 여러 페이지",
+      "label": "인쇄 레이아웃",
       "description": "여러 페이지를 한 장에 배치하거나 소책자로 접습니다."
     },
     "compress": {
       "label": "압축",
       "description": "PDF를 목표 크기에 맞춰 줄입니다."
+    },
+    "repair": {
+      "label": "복구",
+      "description": "손상된 PDF를 다시 만들어 열 수 있게 시도합니다."
     },
     "to-pdf": {
       "label": "PDF로 변환",
@@ -112,12 +116,12 @@
       "description": "알고 있는 비밀번호를 PDF에서 제거합니다."
     },
     "redact": {
-      "label": "블랙아웃",
+      "label": "가림 처리",
       "description": "페이지의 특정 영역을 영구적으로 가립니다."
     },
     "sign": {
       "label": "작성 및 서명",
-      "description": "서명을 배치하고 양식 필드를 작성한 후 병합합니다."
+      "description": "서명을 배치하고 양식 필드를 작성한 뒤 평면화합니다."
     },
     "metadata": {
       "label": "메타데이터",
@@ -125,7 +129,7 @@
     },
     "watermark": {
       "label": "워터마크",
-      "description": "모든 페이지에 텍스트나 이미지를 찍습니다."
+      "description": "모든 페이지에 텍스트나 이미지 워터마크를 넣습니다."
     },
     "wizard": {
       "label": "마법사",
@@ -148,13 +152,13 @@
       "description": "페이지 번호와 머리글/바닥글 텍스트를 추가합니다."
     },
     "gdpr-redact": {
-      "label": "개인정보 자동 블랙아웃",
-      "description": "문서에서 개인정보를 찾아 자동으로 블랙아웃합니다."
+      "label": "개인정보 자동 가림 처리",
+      "description": "문서에서 개인정보를 찾아 자동으로 가림 처리합니다."
     }
   },
   "header": {
     "brandHome": "PDF Conduit 홈",
-    "quotaFreeLeft": "오늘 남은 무료 횟수",
+    "quotaFreeLeft": "{count, plural, other {오늘 남은 무료 횟수}}",
     "quotaTitleSpent": "오늘의 무료 한도에 도달했습니다. Pro 플랜 보기",
     "quotaTitleLeft": "오늘 남은 무료 작업. Pro 플랜 보기",
     "serverOnline": "서버 온라인",
@@ -179,16 +183,16 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "무료 · 파일은 저장되지 않습니다",
+      "eyebrow": "무료 · 파일을 서버에 저장하지 않습니다",
       "title": "필요한 모든 PDF 도구를 하나의 깔끔한 작업 공간에서.",
-      "lede": "PDF를 병합, 압축, 변환, 보호, 블랙아웃까지 몇 초 만에. 즉시 처리되며 서버에 절대 저장되지 않습니다. 계정 불필요. 설치 불필요.",
+      "lede": "PDF를 병합, 압축, 변환, 보호, 가림 처리까지 몇 초 만에. 즉시 처리되며 서버에 저장되지 않습니다. 계정 불필요. 설치 불필요.",
       "ctaStart": "무료로 시작하기",
       "ctaExplore": "도구 살펴보기",
-      "note": "파일은 절대 저장되지 않습니다 · 가입 불필요 · 모든 기기에서 작동"
+      "note": "파일을 서버에 저장하지 않습니다 · 가입 불필요 · 모든 기기에서 작동"
     },
     "trust": {
       "aria": "PDF Conduit를 선택하는 이유",
-      "memoryTitle": "저장되지 않음",
+      "memoryTitle": "서버에 보관하지 않음",
       "memoryDesc": "파일은 처리된 후 즉시 삭제됩니다. 디스크에 기록하거나 서버에 보관하지 않습니다.",
       "accountTitle": "계정 불필요",
       "accountDesc": "바로 시작하세요. 이메일도, 비밀번호도, 가입 장벽도 없습니다.",
@@ -209,7 +213,7 @@
       "freePrice": "$0",
       "freePer": "/ 영구",
       "freeFeat1": "모든 PDF 도구",
-      "freeFeat2": "아무것도 저장하지 않음",
+      "freeFeat2": "서버에 아무것도 남기지 않음",
       "freeFeat3": "일일 작업 한도",
       "freeFeat4": "표준 파일 크기 제한",
       "freeFeat5": "계정 불필요",
@@ -222,7 +226,7 @@
       "proFeat3": "워크플로 자동화를 위한 <b>배치 &amp; API 접근</b>",
       "proFeat4": "혼잡한 시간에도 <b>우선 처리</b>",
       "proFeat5": "물론 무료의 모든 기능 포함",
-      "proCta": "관심 있어요",
+      "proCta": "관심 있습니다",
       "proCtaDone": "관심 가져 주셔서 감사합니다 ✓",
       "proNote": "무료 도구는 영원히 무료로 유지됩니다. Pro 가격은 아직 미정입니다.",
       "notifyTitle": "관심 가져 주셔서 감사합니다",
@@ -233,7 +237,7 @@
       "tools": "도구",
       "privacy": "개인정보",
       "github": "GitHub",
-      "copy": "파일은 처리되며 절대 저장되지 않습니다. 무료로 사용하세요."
+      "copy": "파일은 처리만 되고 서버에 저장되지 않습니다. 무료로 사용하세요."
     },
     "how": {
       "title": "이용 방법",
@@ -243,9 +247,9 @@
       "step2Title": "파일 추가",
       "step2Desc": "끌어다 놓거나 찾아보세요. 파일은 저희 서버에 절대 저장되지 않습니다.",
       "step3Title": "결과 다운로드",
-      "step3Desc": "실행하면 파일이 즉시 처리되어 완성된 PDF를 몇 초 만에 내려받을 수 있습니다. 페이지를 떠나면 아무것도 남지 않습니다.",
+      "step3Desc": "실행하면 파일이 즉시 처리되어 완성된 PDF를 몇 초 만에 내려받을 수 있습니다. 페이지를 떠나면 서버에 아무것도 남지 않습니다.",
       "wizardTitle": "PDF Conduit이 처음이신가요?",
-      "wizardDesc": "가이드 마법사가 선택, 정렬, 내보내기를 한 단계씩 안내해 드립니다.",
+      "wizardDesc": "가이드 마법사가 선택, 순서 변경, 내보내기를 한 단계씩 안내해 드립니다.",
       "wizardCta": "가이드 마법사 시작하기",
       "privacyLink": "파일을 어떻게 안전하게 보호하는지 확인하세요 →"
     },
@@ -254,13 +258,13 @@
       "subtitle": "더 해보고 싶으신가요? 여러 단계를 연결하는 흐름을 만들거나 문서에서 개인정보를 확인하세요.",
       "wizardDesc": "처음이신가요? 안내 마법사가 한 단계씩 도와드립니다.",
       "pipelineDesc": "여러 작업을 시각적 노드 그래프로 연결해 반복 가능한 흐름으로 묶으세요.",
-      "gdprDesc": "PDF에서 개인정보(GDPR / PII)를 검사한 뒤 바로 가리기로 이어가세요."
+      "gdprDesc": "PDF에서 개인정보(GDPR / PII)를 검사한 뒤 바로 가림 처리로 이어가세요."
     }
   },
   "onboarding": {
     "welcome": {
       "title": "PDF Conduit에 오신 것을 환영합니다",
-      "message": "브라우저에서 바로 실행되는 무료 PDF 도구. 파일은 즉시 처리되며 저장되지 않습니다. 처음이신가요? 가이드 마법사가 가장 쉬운 시작 방법입니다.",
+      "message": "브라우저에서 바로 쓸 수 있는 무료 PDF 도구. 파일은 즉시 처리되며 서버에 저장되지 않습니다. 처음이신가요? 가이드 마법사가 가장 쉬운 시작 방법입니다.",
       "cta": "가이드 마법사 사용해 보기",
       "secondary": "모든 도구 살펴보기",
       "dismiss": "닫기"
@@ -270,9 +274,9 @@
   },
   "privacy": {
     "title": "개인정보",
-    "description": "PDF Conduit가 파일을 다루는 방식. 요약하자면: 보관하지 않습니다.",
-    "memoryTitle": "파일은 절대 저장되지 않습니다",
-    "memoryBody": "파일은 절대 저장되지 않습니다. 모든 작업은 하나의 요청 안에서 완결됩니다. 업로드한 파일은 처리되어 곧바로 사용자에게 반환된 뒤 그 즉시 삭제됩니다. 어떤 것도 보관되지 않으며, 다른 용도로 사용되는 일도 결코 없습니다.",
+    "description": "PDF Conduit가 파일을 다루는 방식. 요약하자면, 저희는 파일을 보관하지 않습니다.",
+    "memoryTitle": "파일을 서버에 저장하지 않습니다",
+    "memoryBody": "저희는 파일을 서버에 저장하지 않습니다. 모든 작업은 하나의 요청 안에서 완결됩니다. 업로드한 파일은 처리되어 곧바로 사용자에게 반환된 뒤 그 즉시 삭제됩니다. 서버에는 어떤 것도 남지 않으며, 다른 용도로 사용되는 일도 결코 없습니다.",
     "exceptionTitle": "단 하나의 임시 예외",
     "exceptionBody": "오피스 또는 텍스트 문서(예: .docx, .xlsx, .pptx) 변환에는 헤드리스 LibreOffice가 필요합니다. 그 단계에서만 파일이 격리된 임시 폴더에 기록되며, 변환이 완료되는 즉시 삭제됩니다. 일반 PDF와 이미지는 디스크에 전혀 닿지 않습니다.",
     "accountTitle": "계정도, 가입 장벽도 없음",
@@ -280,9 +284,7 @@
     "controllerTitle": "데이터 관리자",
     "controllerBody": "PDF Conduit에서 처리되는 데이터의 관리자는 PDF Conduit 서비스 운영자입니다. 연락처: hello@pdfconduit.com. 파일은 저장되지 않고 계정도 필요하지 않으므로, 개인정보 처리는 서비스를 남용으로부터 보호하는 데 필요한 기술적 서버 로그(IP 주소)로 제한됩니다(GDPR 제6조 제1항 (f)호).",
     "limitsTitle": "무료 등급 한도",
-    "limitsBody1": "무료 서비스를 모두에게 제공하기 위해 요청에는 일일 작업 할당량, 파일당 크기 제한, 기본 속도 제한이 적용됩니다. 한도에 도달하면 앱이 명확하게 알려줍니다. 더 높은 한도, 더 큰 파일, 배치/API 접근은 향후 유료 등급에서 제공될 예정입니다.",
-    "limitsLink": "Pro 플랜",
-    "limitsBody2": "홈페이지의 티저를 참고하세요.",
+    "limitsBody": "무료 서비스를 모두에게 제공하기 위해 요청에는 일일 작업 할당량, 파일당 크기 제한, 기본 속도 제한이 적용됩니다. 한도에 도달하면 앱이 명확하게 알려 드립니다. 더 높은 한도, 더 큰 파일, 배치/API 접근은 향후 유료 등급에서 제공될 예정입니다. 자세한 내용은 홈페이지의 {linkStart}Pro 플랜{linkEnd} 안내를 참고하세요.",
     "questionsTitle": "문의",
     "questionsBody": "PDF Conduit는 있는 그대로 제공됩니다. 이 페이지는 현재의 동작을 설명하며 제품이 발전함에 따라 업데이트될 수 있습니다.",
     "backHome": "홈으로 돌아가기"
@@ -323,10 +325,25 @@
       "detail": "이 서버에서는 오피스 문서 변환이 활성화되어 있지 않습니다.",
       "hint": "PDF와 이미지로는 계속 작업할 수 있습니다."
     },
+    "ocr_disabled": {
+      "title": "OCR을 사용할 수 없습니다",
+      "detail": "이 서버에서는 스캔한 페이지를 검색 가능하게 만드는 기능이 켜져 있지 않습니다.",
+      "hint": "다른 도구는 평소대로 사용할 수 있습니다."
+    },
     "operation_failed": {
       "title": "이 파일을 처리할 수 없습니다",
       "detail": "이 입력에 대해 작업이 실패했습니다.",
       "hint": "파일이 유효하고 암호화되지 않은 PDF인지 확인한 후 다시 시도해 주세요."
+    },
+    "output_too_large": {
+      "title": "한 번에 만들기에는 너무 큽니다",
+      "detail": "결과물이 이 서버가 한 번에 만들 수 있는 크기를 넘습니다.",
+      "hint": "한 번에 처리하는 페이지나 파일 수를 줄이거나, 품질 또는 DPI를 낮춰 보세요."
+    },
+    "repair_failed": {
+      "title": "이 파일은 복구할 수 없습니다",
+      "detail": "손상이 심해 파일을 다시 만들 수 없습니다.",
+      "hint": "다른 사본이나 이전 버전이 있다면 그 파일로 시도해 보세요."
     },
     "bad_request": {
       "title": "입력을 확인해 주세요",
@@ -346,7 +363,27 @@
     "target": "목표",
     "targetReached": "도달함",
     "targetNotReached": "도달하지 못함",
-    "batchFailures": "일부 입력이 실패했습니다: {{count}}",
+    "partialTitle": "일부 파일을 건너뛰었습니다",
+    "partialCounts": "{{total}}개 중 {{done}}개를 처리했습니다.",
+    "partialFailedCount": "{count, plural, other {파일 #개를 처리하지 못했습니다:}}",
+    "partialMore": "{count, plural, other {…외 #개}}",
+    "partialHint": "처리에 성공한 파일은 모두 다운로드에 들어 있습니다.",
+    "failureNoReason": "이유가 제공되지 않았습니다.",
+    "redactionApplied": "{pages, plural, other {#페이지}}에서 {regions, plural, other {영역 #개}}를 영구적으로 가림 처리했습니다.",
+    "repairFindingsTitle": "무엇이 잘못되었나",
+    "repairPages": "{count, plural, other {복구된 파일은 #페이지입니다.}}",
+    "repairFinding": {
+      "headerMissing": "파일에 PDF 헤더가 아예 없었습니다.",
+      "headerOffset": "PDF 헤더 앞에 불필요한 데이터가 있었습니다(메일이나 다운로드의 잔여물).",
+      "eofMissing": "파일 끝 표시가 없어 파일이 잘려 있었습니다.",
+      "startxrefMissing": "파일에 내부 목차를 가리키는 정보가 없었습니다.",
+      "startxrefInvalid": "내부 목차를 가리키는 정보가 엉뚱한 곳을 가리켰습니다.",
+      "xrefRebuilt": "내부 목차를 읽을 수 없어 파일에서 찾은 내용으로 다시 만들었습니다.",
+      "rebuildIncomplete": "다시 만든 뒤에도 파일의 일부는 제대로 읽히지 않습니다."
+    },
+    "repairRebuilt": "파일이 손상되어 다시 만들었습니다.",
+    "repairAlreadyFine": "파일에 문제가 없어 그대로 다시 저장했습니다.",
+    "repairPartial": "파일이 손상되어 일부만 복구했습니다. 결과를 확인해 주세요.",
     "seeProPlans": "Pro 플랜 보기 →",
     "seeProPlansShort": "Pro 플랜 보기",
     "httpStatus": "· HTTP {{status}}",
@@ -355,10 +392,26 @@
     "expandPreview": "미리보기 확대",
     "close": "닫기"
   },
+  "progress": {
+    "label": "작업 진행 상황",
+    "uploading": "업로드 중 {{percent}}%",
+    "uploadingPlain": "업로드 중…",
+    "bytes": "{{total}} 중 {{done}}",
+    "sent": "{{done}} 전송됨",
+    "stageWorking": "파일을 처리하는 중입니다…",
+    "stageLarger": "조금 큰 작업입니다. 계속 진행 중입니다.",
+    "stageLong": "아직 처리 중입니다. 큰 파일은 시간이 걸릴 수 있습니다.",
+    "stageVeryLong": "평소보다 오래 걸리고 있습니다. 계속 기다리거나, 취소하고 더 작은 파일로 시도할 수 있습니다.",
+    "elapsed": "{{time}} 경과",
+    "cancel": "취소",
+    "cancelled": "취소됨",
+    "cancelledNote": "이 결과를 기다리지 않기로 했습니다. 서버에서는 작업이 끝날 수도 있으며, 오늘의 무료 사용 횟수에는 그대로 포함됩니다.",
+    "dismiss": "닫기"
+  },
   "viewer": {
     "renderingPreview": "미리보기 렌더링 중…",
     "renderError": "이 PDF를 렌더링할 수 없습니다.",
-    "pageCaption": "{{n}} 페이지"
+    "pageCaption": "{{n}}페이지"
   },
   "toast": {
     "dismiss": "알림 닫기"
@@ -383,9 +436,18 @@
       "batchNote": "{{count}}개 파일 선택됨. 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
       "pages": "페이지",
       "pagesPlaceholder": "예: 1,3,5-8",
-      "pagesHelp": "비워 두면 = 모든 페이지. 문법:",
+      "pagesHelp": "비워 두면 = 모든 페이지. 구문:",
       "output": "출력",
-      "separate": "페이지마다 하나의 파일로 분할 (ZIP)",
+      "modeOne": "하나의 PDF",
+      "modePerPage": "페이지마다 한 파일",
+      "modeEvery": "N페이지마다 분할",
+      "modeHelp": {
+        "one": "선택한 페이지를 하나의 PDF로 돌려줍니다.",
+        "perPage": "선택한 각 페이지가 개별 파일이 됩니다 (ZIP).",
+        "every": "선택한 페이지를 N페이지씩 나눠 파일로 만듭니다 (ZIP)."
+      },
+      "every": "파일당 페이지 수",
+      "everyHelp": "1에서 {{max}}까지. 마지막 파일은 페이지가 더 적을 수 있습니다.",
       "submit": "추출",
       "loading": "추출 중…"
     },
@@ -411,26 +473,35 @@
       "dpiScreen": "화면 (72 DPI)",
       "dpiEbook": "전자책 (150 DPI)",
       "dpiPrint": "인쇄 (300 DPI)",
-      "grayscale": "이미지를 흑백으로 변환",
+      "grayscale": "이미지를 회색조로 변환",
       "grayscaleHelp": "이미지를 색상 없이 다시 인코딩하여 파일을 줄입니다.",
       "floorNotice": "이 파일에서 도달 가능한 최소 크기는 약 {{floor}} 입니다. 목표한 {{target}} 에 도달할 수 없습니다. 대신 가장 작은 버전이 저장되었습니다."
     },
+    "repair": {
+      "title": "복구",
+      "description": "손상된 PDF를 다시 만들어 열 수 있게 시도합니다. 모든 파일을 되살릴 수는 없습니다.",
+      "hint": "PDF 파일. 여러 파일은 ZIP으로 반환됩니다.",
+      "privacyLine": "파일을 서버에 저장하지 않습니다. 복구는 비공개로 진행됩니다.",
+      "batchNote": "{{count}}개 파일 선택됨. 각 파일을 따로 복구하며, 결과는 ZIP으로 반환됩니다.",
+      "submit": "파일 복구",
+      "loading": "복구하는 중…"
+    },
     "rotate": {
       "title": "회전",
-      "description": "페이지를 90°, 180° 또는 270° 회전합니다.",
+      "description": "페이지를 오른쪽으로 1/4바퀴(시계 방향 90°), 뒤집기(180°), 왼쪽으로 1/4바퀴(270° / 반시계 방향 90°) 회전합니다.",
       "hint": "PDF 하나 이상 (여러 파일 → ZIP).",
       "angle": "각도",
       "angleAria": "회전 각도",
       "dir90": "시계 방향으로 90° 회전",
       "dir180": "180° 회전 (뒤집기)",
-      "dir270": "시계 방향으로 270° 회전",
+      "dir270": "시계 방향으로 270° 회전(왼쪽으로 1/4바퀴)",
       "pages": "페이지",
       "pagesPlaceholder": "예: 1,3,5-8 (비워 두면 = 전체)",
       "submit": "회전",
       "loading": "회전 중…"
     },
     "arrange": {
-      "title": "정렬",
+      "title": "순서 변경",
       "description": "페이지 순서를 바꾸거나, 뒤집거나, 복제합니다.",
       "hint": "PDF 한 개.",
       "order": "페이지 순서",
@@ -438,21 +509,21 @@
       "orderHelp1": "순서 변경",
       "orderHelp2": "뒤집기",
       "orderHelp3": "반복으로 복제",
-      "submit": "정렬",
-      "loading": "정렬 중…"
+      "submit": "순서 변경",
+      "loading": "순서 변경 중…"
     },
     "nup": {
-      "title": "한 장에 여러 페이지",
+      "title": "인쇄 레이아웃",
       "description": "여러 페이지를 한 장에 배치하거나 중철 소책자로 접습니다.",
-      "privacyLine": "파일은 비공개로 배치되며 저장되지 않습니다.",
+      "privacyLine": "파일은 비공개로 배치되며 서버에 저장되지 않습니다.",
       "hint": "PDF 파일. 여러 파일은 ZIP으로 반환됩니다.",
       "batchNote": "{{count}}개 파일 선택됨. 각 파일이 개별적으로 배치되며 결과는 ZIP으로 반환됩니다.",
       "layout": "레이아웃",
-      "layout2up": "한 장에 2쪽",
-      "layout4up": "한 장에 4쪽 (2×2)",
-      "layout6up": "한 장에 6쪽 (2×3)",
-      "layout8up": "한 장에 8쪽 (2×4)",
-      "layout9up": "한 장에 9쪽 (3×3)",
+      "layout2up": "한 장에 2페이지",
+      "layout4up": "한 장에 4페이지 (2×2)",
+      "layout6up": "한 장에 6페이지 (2×3)",
+      "layout8up": "한 장에 8페이지 (2×4)",
+      "layout9up": "한 장에 9페이지 (3×3)",
       "mode": "모드",
       "booklet": "소책자 (중철)",
       "bookletHelp": "인쇄해 접은 묶음이 순서대로 읽히도록 페이지를 재배열합니다.",
@@ -466,7 +537,7 @@
       "hintNoOffice": "이미지 (PNG, JPG, WebP 등). 각 입력이 개별 PDF가 됩니다 (여러 개 → ZIP). 이 서버는 오피스 문서를 변환하지 않습니다.",
       "pageSize": "페이지 크기",
       "sizeFit": "내용에 맞춤",
-      "sizeLetter": "Letter",
+      "sizeLetter": "레터",
       "sizeHelp": "이미지 입력은 이 페이지 크기에 배치됩니다 (오피스 문서는 자체 크기를 유지합니다).",
       "submit": "변환",
       "loading": "변환 중…"
@@ -474,15 +545,17 @@
     "toImages": {
       "title": "이미지로 변환",
       "description": "PDF 페이지를 PNG 또는 JPG로 렌더링합니다.",
-      "privacyLine": "파일은 비공개로 변환되며 저장되지 않습니다.",
+      "privacyLine": "파일은 비공개로 변환되며 서버에 저장되지 않습니다.",
       "hint": "PDF 파일. 여러 페이지나 여러 파일은 ZIP으로 반환됩니다.",
       "batchNote": "{{count}}개 파일 선택됨. 페이지 범위가 각 파일에 적용되며 결과는 ZIP으로 반환됩니다.",
       "format": "형식",
       "dpi": "DPI",
-      "dpiHelp": "높을수록 = 더 선명하고 더 큼 (36–600).",
+      "dpiHelp": "값이 클수록 선명하지만 파일이 커집니다 (36–600).",
       "dpiError": "36에서 600 사이의 DPI를 입력하세요.",
+      "dpiHelpRange": "값이 클수록 선명하지만 파일이 커집니다 ({{min}}–{{max}}).",
+      "dpiErrorRange": "{{min}}에서 {{max}} 사이의 DPI를 입력하세요.",
       "quality": "JPG 품질",
-      "qualityHelp": "높을수록 = 더 좋은 이미지, 더 큰 파일.",
+      "qualityHelp": "값이 클수록 화질이 좋아지고 파일이 커집니다.",
       "pages": "페이지",
       "pagesPlaceholder": "예: 1-3 (비워 두면 = 전체)",
       "submit": "이미지 렌더링",
@@ -520,7 +593,7 @@
     "protect": {
       "title": "보호",
       "description": "PDF에 비밀번호 암호화를 추가합니다.",
-      "privacyLine": "파일과 비밀번호는 비공개로 처리되며 저장되지 않습니다.",
+      "privacyLine": "파일과 비밀번호는 비공개로 처리되며 서버에 저장되지 않습니다.",
       "hint": "PDF 하나 이상 (여러 파일 → ZIP).",
       "userPassword": "사용자 비밀번호",
       "userPasswordHelp": "문서를 여는 데 필요합니다.",
@@ -539,7 +612,7 @@
     "unlock": {
       "title": "잠금 해제",
       "description": "알고 있는 비밀번호를 PDF에서 제거합니다.",
-      "privacyLine": "파일과 비밀번호는 비공개로 처리되며 저장되지 않습니다.",
+      "privacyLine": "파일과 비밀번호는 비공개로 처리되며 서버에 저장되지 않습니다.",
       "hint": "보호된 PDF 하나 이상 (여러 파일 → ZIP).",
       "password": "비밀번호",
       "passwordHelp": "PDF를 여는 데 사용하는 현재 비밀번호.",
@@ -548,7 +621,7 @@
       "loading": "잠금 해제 중…"
     },
     "redact": {
-      "title": "블랙아웃",
+      "title": "가림 처리",
       "description": "내용 위에 상자를 그려 영구적으로 가립니다.",
       "hint": "PDF 한 개. 그런 다음 가릴 영역 위에 사각형을 드래그하세요.",
       "dragHint": "페이지에서 드래그하여 영역을 표시하세요.",
@@ -556,13 +629,13 @@
       "regions": "영역 ({{count}})",
       "regionsEmpty": "아직 영역이 없습니다. 제거할 내용 위에 사각형을 드래그하세요.",
       "removeRegion": "영역 제거",
-      "submit": "가리고 다운로드",
-      "loading": "가리는 중…",
+      "submit": "가림 처리 후 다운로드",
+      "loading": "가림 처리 중…",
       "keepSearchable": "텍스트 검색 가능 유지 (OCR)"
     },
     "sign": {
       "title": "작성 및 서명",
-      "description": "입력 가능한 PDF 양식 필드(AcroForm)를 작성하고 서명을 추가한 후 병합하세요. 아무것도 저장되지 않으며 모든 작업은 세션 내에서 실행됩니다.",
+      "description": "입력 가능한 PDF 양식 필드(AcroForm)를 작성하고 서명을 추가한 뒤 평면화하세요. 파일은 저장되지 않습니다.",
       "hint": "PDF 한 개. 입력 가능한 양식 필드를 감지합니다. 서명을 만든 다음 페이지에 놓으세요.",
       "dragHint": "페이지에서 드래그하여 서명을 배치하세요.",
       "chooseAnother": "다른 PDF 선택",
@@ -579,14 +652,14 @@
       "placementsNoSig": "서명을 만들어 배치를 시작하세요.",
       "placementsEmpty": "아직 배치가 없습니다. 서명을 놓을 위치에 상자를 드래그하세요.",
       "removePlacement": "배치 제거",
-      "flatten": "문서 병합",
-      "flattenHint": "서명과 모든 양식 필드를 페이지에 병합하여 편집할 수 없게 합니다.",
+      "flatten": "문서 평면화",
+      "flattenHint": "서명과 모든 양식 필드를 페이지에 고정하여 편집할 수 없게 합니다.",
       "submit": "서명 및 다운로드",
       "loading": "서명하는 중…",
       "formFields": "양식 필드",
       "formFieldsHint": "이 PDF에는 입력 가능한 필드가 있습니다. 아래에서 편집한 후 양식을 채우세요.",
       "fillForm": "양식 채우고 다운로드",
-      "fillFlatten": "병합(편집 불가로 만들기)",
+      "fillFlatten": "평면화 (편집 불가로 만들기)",
       "noFields": "입력 가능한 필드가 없습니다."
     },
     "metadata": {
@@ -607,23 +680,23 @@
     },
     "watermark": {
       "title": "워터마크",
-      "description": "모든 페이지에 텍스트나 이미지를 찍습니다.",
-      "privacyLine": "파일은 비공개로 스탬프 처리되며 저장되지 않습니다.",
-      "hint": "찍을 PDF 하나 이상 (여러 파일 → ZIP).",
+      "description": "모든 페이지에 텍스트나 이미지 워터마크를 넣습니다.",
+      "privacyLine": "파일은 비공개로 처리되며 서버에 저장되지 않습니다.",
+      "hint": "워터마크를 넣을 PDF 하나 이상 (여러 파일 → ZIP).",
       "typeAria": "워터마크 유형",
       "typeText": "텍스트",
       "typeImage": "이미지",
       "text": "워터마크 텍스트",
       "textPlaceholder": "예: 대외비",
       "image": "워터마크 이미지",
-      "imageHint": "찍을 이미지 하나 (PNG, JPG 등).",
+      "imageHint": "워터마크로 넣을 이미지 하나 (PNG, JPG 등).",
       "opacity": "불투명도",
       "rotation": "회전",
-      "scale": "크기",
+      "scale": "배율",
       "submit": "워터마크 적용",
       "needText": "워터마크 텍스트를 입력하세요.",
       "needImage": "이미지를 선택하세요.",
-      "loading": "찍는 중…",
+      "loading": "워터마크 적용 중…",
       "layout": "레이아웃",
       "layoutSingle": "단일",
       "layoutTile": "타일",
@@ -640,13 +713,13 @@
       "title": "마법사",
       "description": "단계별 안내에 따라 만들고 내보냅니다.",
       "step1": "선택",
-      "step2": "정렬",
+      "step2": "순서 변경",
       "step3": "페이지 설정",
       "step4": "압축",
       "step5": "내보내기",
       "selectTitle": "파일 선택",
       "selectHint": "PDF, 이미지, 오피스 문서.",
-      "arrangeTitle": "정렬 및 페이지 범위",
+      "arrangeTitle": "순서 변경 및 페이지 범위",
       "arrangeHint": "드래그하여 순서를 바꾸세요. 페이지 범위는 PDF 입력에만 적용됩니다 (비워 두면 = 전체).",
       "rangePlaceholder": "페이지 예: 1-3",
       "typeImage": "이미지",
@@ -655,7 +728,7 @@
       "pageSettingsTitle": "페이지 설정",
       "imagePageSize": "이미지 입력의 페이지 크기",
       "sizeFit": "이미지에 맞춤",
-      "sizeLetter": "Letter",
+      "sizeLetter": "레터",
       "imagePageSizeHelp": "이미지와 오피스 문서는 병합 전에 이 크기의 PDF로 변환됩니다.",
       "compressionTitle": "압축",
       "compressToggle": "내보낸 PDF를 목표 크기에 맞춰 압축",
@@ -672,7 +745,7 @@
       "compressing": "압축 중…",
       "choosePages": "페이지 선택",
       "allPages": "모든 페이지",
-      "rangeSummary": "{{range}} 페이지",
+      "rangeSummary": "{{range}}페이지",
       "rangeManual": "또는 범위 입력"
     },
     "pipeline": {
@@ -681,7 +754,7 @@
       "sourceTitle": "소스 파일",
       "sourceHint": "이 파일들은 SOURCE 노드에 공급되며, 하위 노드는 이름으로 이를 참조합니다.",
       "nodes": "노드",
-      "nodeCount": "{count, plural, other {작업 노드 # 개}}",
+      "nodeCount": "{count, plural, other {작업 노드 #개}}",
       "sourceFiles": "파일 ({{count}})",
       "sourceAddAbove": "위에서 소스 파일을 추가하세요.",
       "removeNode": "노드 제거",
@@ -707,7 +780,7 @@
       "fieldText": "텍스트",
       "fieldOpacity": "불투명도",
       "fieldRotation": "회전",
-      "fieldScale": "크기",
+      "fieldScale": "배율",
       "fieldFormat": "형식",
       "fieldDpi": "DPI",
       "pagesBlank": "비워 두면 = 전체",
@@ -727,7 +800,7 @@
       "title": "GDPR / PII 검사",
       "description": "공유하기 전에 PDF의 개인정보를 찾습니다.",
       "hint": "PDF, 이미지 또는 오피스 문서 하나.",
-      "privacyLine": "파일은 비공개로 검사되며 저장되거나 누구에게도 전송되지 않습니다.",
+      "privacyLine": "파일은 비공개로 검사되며 서버에 저장되거나 다른 사람에게 전송되지 않습니다.",
       "submit": "개인정보 검사",
       "loading": "검사 중…",
       "riskLabel": "위험도",
@@ -742,8 +815,8 @@
         "mediumExplain": "낮은 위험의 식별자가 여러 개 발견되었지만 금융·국가 ID·특별 범주 정보는 없습니다.",
         "highExplain": "금융·국가 ID·특별 범주 정보가 포함되어 있습니다. 공유하기 전에 주의해서 처리하세요."
       },
-      "summary": "{count, plural, other {{pages}개 페이지에서 개인정보 #건이 발견되었습니다.}}",
-      "summaryClean": "{{pages}}개 페이지에서 개인정보가 발견되지 않았습니다.",
+      "summary": "{count, plural, other {{pages}페이지에서 개인정보 #건이 발견되었습니다.}}",
+      "summaryClean": "{{pages}}페이지에서 개인정보가 발견되지 않았습니다.",
       "byCategory": "범주별",
       "higherRisk": "높은 위험",
       "findings": "발견 항목",
@@ -753,29 +826,29 @@
         "type": "유형",
         "category": "범주",
         "page": "페이지",
-        "sample": "샘플(마스킹됨)",
+        "sample": "샘플 (마스킹됨)",
         "occurrences": "횟수"
       },
-      "redactCta": "감지된 데이터 마스킹",
+      "redactCta": "감지된 데이터 가림 처리",
       "redactHint": "강조된 영역을 확인한 후 적용하세요. 무료입니다.",
       "hintMulti": "하나 이상의 PDF, 이미지 또는 오피스 문서.",
-      "submitBatch": "파일 {{count}}개 스캔",
+      "submitBatch": "파일 {{count}}개 검사",
       "highestRiskLabel": "최고 위험",
       "batchSummary": "{count, plural, other {{files}개 파일에서 개인정보 #건.}}",
-      "byCategoryAll": "카테고리별(전체 파일)",
+      "byCategoryAll": "범주별 (전체 파일)",
       "perFile": "파일별",
-      "fileFindings": "{count, plural, other {{pages}개 페이지에서 #건 발견}}",
+      "fileFindings": "{count, plural, other {{pages}페이지에서 #건 발견}}",
       "fileClean": "개인정보 없음",
-      "autoRedactCta": "감지된 모든 항목 자동 마스킹",
-      "autoRedactAllCta": "모든 파일 자동 마스킹",
-      "autoRedactFile": "자동 마스킹",
-      "autoRedactHint": "클릭 한 번으로 감지된 모든 값을 검게 가리고 파일을 다운로드합니다. 무료이며 파일은 저장되지 않습니다.",
-      "autoRedactLoading": "마스킹 중…"
+      "autoRedactCta": "감지된 모든 항목 자동 가림 처리",
+      "autoRedactAllCta": "모든 파일 자동 가림 처리",
+      "autoRedactFile": "자동 가림 처리",
+      "autoRedactHint": "클릭 한 번으로 감지된 모든 값을 검게 가리고 파일을 다운로드합니다. 무료이며 파일은 서버에 저장되지 않습니다.",
+      "autoRedactLoading": "가림 처리 중…"
     },
     "crop": {
       "title": "자르기",
       "description": "모든 페이지의 여백을 잘라냅니다.",
-      "privacyLine": "파일은 비공개로 잘리며 저장되지 않습니다.",
+      "privacyLine": "파일은 비공개로 잘리며 서버에 저장되지 않습니다.",
       "hint": "PDF 파일. 여러 파일은 ZIP으로 반환됩니다.",
       "batchNote": "{{count}}개 파일 선택됨. 여백이 각 파일에 적용되며, 결과는 ZIP으로 반환됩니다.",
       "top": "위",
@@ -793,14 +866,14 @@
       "title": "페이지 표시",
       "description": "모든 페이지에 페이지 번호와 머리글/바닥글 텍스트를 추가합니다.",
       "hint": "표시할 PDF 한 개 이상 (여러 파일 → ZIP).",
-      "privacyLine": "파일은 비공개로 표시되며 저장되지 않습니다.",
-      "tokensHelp": "어느 슬롯에나 토큰을 사용하세요: {page} 현재 페이지, {pages} 전체, {n} 페이지 번호, {date} 오늘.",
+      "privacyLine": "파일은 비공개로 처리되며 서버에 저장되지 않습니다.",
+      "tokensHelp": "어느 슬롯에나 토큰을 사용하세요: '{page}' 현재 페이지, '{pages}' 전체, '{n}' 페이지 번호, '{date}' 오늘.",
       "header": "머리글",
       "footer": "바닥글",
       "left": "왼쪽",
       "center": "가운데",
       "right": "오른쪽",
-      "slotPlaceholder": "예: {page} / {pages}",
+      "slotPlaceholder": "예: '{page}' / '{pages}'",
       "fontSize": "글꼴 크기 (pt)",
       "margin": "여백 (pt)",
       "startNumber": "시작 번호",
@@ -808,7 +881,7 @@
       "prefixPlaceholder": "예: ACME-",
       "skipFirst": "첫 페이지 건너뛰기",
       "submit": "페이지 표시 추가",
-      "needSlot": "슬롯 하나 이상에 텍스트를 입력하세요 (예: {page} / {pages}).",
+      "needSlot": "슬롯 하나 이상에 텍스트를 입력하세요 (예: '{page}' / '{pages}').",
       "loading": "표시하는 중…"
     }
   },
@@ -870,7 +943,7 @@
         "metaStrip": "메타데이터 삭제",
         "metaEdit": "메타데이터 편집"
       },
-      "gdprRedactHint": "페이지에서 개인정보를 찾아 자동으로 블랙아웃합니다. 설정이 필요 없습니다."
+      "gdprRedactHint": "페이지에서 개인정보를 찾아 자동으로 가림 처리합니다. 설정이 필요 없습니다."
     },
     "mobileHint": "파이프라인 빌더는 큰 화면에서 가장 잘 작동합니다."
   },
@@ -889,14 +962,14 @@
     "type": {
       "EMAIL": "이메일 주소",
       "PHONE": "전화번호",
-      "IPV4": "IP 주소(IPv4)",
-      "IPV6": "IP 주소(IPv6)",
+      "IPV4": "IP 주소 (IPv4)",
+      "IPV6": "IP 주소 (IPv6)",
       "URL_CREDENTIALS": "자격 증명이 포함된 URL",
-      "IBAN": "은행 계좌(IBAN)",
+      "IBAN": "은행 계좌 (IBAN)",
       "CREDIT_CARD": "결제 카드",
-      "PESEL": "PESEL(PL)",
-      "NIP": "NIP(PL)",
-      "REGON": "REGON(PL)",
+      "PESEL": "PESEL (PL)",
+      "NIP": "NIP (PL)",
+      "REGON": "REGON (PL)",
       "US_SSN": "미국 사회보장번호",
       "HEALTH": "건강 정보",
       "RELIGION": "종교적 신념",

@@ -1,12 +1,20 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  FormControl,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ApiService } from '../../core/api.service';
+import { CapabilitiesService, MIN_RENDER_DPI } from '../../core/capabilities.service';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -21,6 +29,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     TranslocoModule,
     FileDropZoneComponent,
     PageGridComponent,
+    OpProgressComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -61,10 +70,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         </div>
         <div class="field">
           <label for="ti-dpi">{{ 'pages.toImages.dpi' | transloco }}</label>
-          <input id="ti-dpi" type="number" min="36" max="600" step="1" [formControl]="dpi" />
-          <span class="help">{{ 'pages.toImages.dpiHelp' | transloco }}</span>
+          <input id="ti-dpi" type="number" [min]="minDpi" [max]="maxDpi()" step="1" [formControl]="dpi" />
+          <span class="help">{{
+            'pages.toImages.dpiHelpRange' | transloco: { min: minDpi, max: maxDpi() }
+          }}</span>
           @if (dpi.invalid && dpi.touched) {
-            <span class="err" aria-live="polite">{{ 'pages.toImages.dpiError' | transloco }}</span>
+            <span class="err" aria-live="polite">{{
+              'pages.toImages.dpiErrorRange' | transloco: { min: minDpi, max: maxDpi() }
+            }}</span>
           }
         </div>
         @if (format() === 'JPG') {
@@ -120,9 +133,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
+      <app-op-progress
+        [run]="state.tracker()"
+        [label]="'pages.toImages.loading' | transloco"
+        (cancel)="state.cancel()"
+        (dismiss)="state.dismiss()"
+      />
+
       <app-result-panel
-        [loading]="state.loading()"
-        [loadingLabel]="'pages.toImages.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
         (retry)="submit()"
@@ -139,9 +157,34 @@ export class ToImagesPage {
   /** Transparent (alpha) background — PNG only; JPEG has no alpha so it is not sent. */
   protected readonly transparentBg = signal(false);
   protected readonly grayscale = signal(false);
+
+  /** Lowest DPI offered — a UI floor, not a server limit. */
+  protected readonly minDpi = MIN_RENDER_DPI;
+  /**
+   * Highest DPI the SERVER will render at, straight off `GET /api/capabilities`
+   * (`environment.maxDpi` until it answers, and if it fails or predates the
+   * field). The `max` attribute, the validator and the help/error copy all read
+   * this one signal, so the form cannot call a value valid that the backend
+   * refuses with 422 `output_too_large`.
+   */
+  protected readonly maxDpi = inject(CapabilitiesService).maxDpi;
+
+  /**
+   * Written as a closure rather than `Validators.max(...)` because the ceiling
+   * arrives asynchronously: a validator baked at construction time would freeze
+   * the fallback. This reads the signal on every validation run.
+   */
+  private readonly withinServerDpi: ValidatorFn = (control): ValidationErrors | null => {
+    const value = control.value;
+    const max = this.maxDpi();
+    return typeof value === 'number' && Number.isFinite(value) && value > max
+      ? { max: { max, actual: value } }
+      : null;
+  };
+
   protected readonly dpi = new FormControl(150, {
     nonNullable: true,
-    validators: [Validators.required, Validators.min(36), Validators.max(600)],
+    validators: [Validators.required, Validators.min(MIN_RENDER_DPI), this.withinServerDpi],
   });
   protected readonly pages = new FormControl('', { nonNullable: true });
   protected readonly state = new OperationState();
@@ -149,6 +192,13 @@ export class ToImagesPage {
   private readonly workState = inject(WorkStateService);
 
   constructor(private readonly api: ApiService) {
+    // Re-run validation when the advertised ceiling lands (or changes), so a
+    // value typed during the pre-response window is re-judged against the real
+    // limit instead of staying "valid" until the next keystroke.
+    effect(() => {
+      this.maxDpi();
+      this.dpi.updateValueAndValidity({ emitEvent: false });
+    });
     this.workState.persist('to-images', {
       format: this.format,
       quality: this.quality,

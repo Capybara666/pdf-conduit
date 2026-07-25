@@ -4,6 +4,7 @@ import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.PdfMetadata;
 import com.pdfconduit.core.pipeline.PipelineException;
+import com.pdfconduit.core.service.BatchOutcome;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.MetadataDto;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.pdfconduit.web.web.ControllerSupport.guardCount;
+import static com.pdfconduit.web.web.ControllerSupport.mapBounded;
 import static com.pdfconduit.web.web.ControllerSupport.totalBytes;
 
 /** Metadata read + edit endpoints (in-memory; split out for clarity from the operation endpoints). */
@@ -60,8 +62,12 @@ public class MetadataController {
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.editMetadata(inputs, title, author, subject, keywords, strip));
+        // Partial-tolerant MAP batch under the request's aggregate output budget (see
+        // ControllerSupport.mapBounded): one unusable file is skipped and named in
+        // X-Batch-Failures, while a blown REQUEST budget fails the whole edit with 422.
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs,
+            in -> ops.editMetadata(List.of(in), title, author, subject, keywords, strip)));
         return Responses.batch("metadata", results, MediaType.APPLICATION_PDF);
     }
 }

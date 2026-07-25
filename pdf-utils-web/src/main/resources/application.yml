@@ -95,21 +95,49 @@ pdfconduit:
       daily-operations: ${PDFCONDUIT_WEB_QUOTA_DAILY_OPERATIONS:60}
       free-max-file-size: ${PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILE_SIZE:25MB}
       free-max-files: ${PDFCONDUIT_WEB_QUOTA_FREE_MAX_FILES:15}
-    # Anti-OOM: bound concurrent heavy ops and total in-flight bytes; excess → 503.
+    # Anti-OOM admission control. max-heavy-ops bounds how many heavy operations run at once;
+    # max-work-bytes bounds their summed ESTIMATED COST -- the whole heap share this process will
+    # commit to concurrent heavy work (uploads + intermediates + results + working set together).
+    # Every heavy request is estimated from the cost its endpoint (or pipeline graph) declares and
+    # reserves that much: over the pool entirely -> 422 output_too_large in milliseconds, over what
+    # is free right now -> 503 server_busy. 768 MiB leaves room for the JVM baseline inside the
+    # container heap (1536m * 75% ~= 1.15 GB).
+    # Raising max-heavy-ops no longer multiplies the memory commitment: extra slots simply stay
+    # empty once the pool is spoken for.
     concurrency:
       max-heavy-ops: ${PDFCONDUIT_WEB_CONCURRENCY_MAX_HEAVY_OPS:4}
-      max-in-flight-bytes: ${PDFCONDUIT_WEB_CONCURRENCY_MAX_IN_FLIGHT_BYTES:536870912}
-    # Per-operation processing timeout (heavy work runs on a bounded executor).
+      max-work-bytes: ${PDFCONDUIT_WEB_CONCURRENCY_MAX_WORK_BYTES:805306368}
+    # Per-operation processing timeout (heavy work runs on a bounded executor) + the aggregate
+    # ceiling on the RESULT bytes one request may accumulate. The multi-output ops (to-images,
+    # extract?separate, pipeline) hold every part in the heap and copy the lot again while zipping,
+    # so ~3x this value peaks in heap per request. This is a CEILING ON THE CEILING: the budget
+    # actually granted is min(this, max-work-bytes / 3), so it can never promise more than the pool
+    # holds. Checked while the parts accumulate, so an over-budget request is rejected
+    # (422 output_too_large) early, not by OOM.
     processing:
       timeout-seconds: ${PDFCONDUIT_WEB_PROCESSING_TIMEOUT_SECONDS:60}
+      max-total-output-bytes: ${PDFCONDUIT_WEB_PROCESSING_MAX_TOTAL_OUTPUT_BYTES:64MB}
     # PDF-bomb guard: reject PDFs whose page count exceeds this ceiling.
     pdf:
       max-pages: ${PDFCONDUIT_WEB_PDF_MAX_PAGES:3000}
+    # Client-supplied pipeline graphs: bound how big one graph may be. Every node is a full core
+    # operation and the whole graph runs under a SINGLE load-guard permit, so without this a
+    # 10k-node graph is 10k operations bought with one request. Generous for a hand-built pipeline.
+    # (How many source documents a graph may resolve is capped by max-files-per-request above,
+    #  counted per resolved reference so repeating one upload buys no extra work.)
+    pipeline:
+      max-nodes: ${PDFCONDUIT_WEB_PIPELINE_MAX_NODES:50}
+      max-connections: ${PDFCONDUIT_WEB_PIPELINE_MAX_CONNECTIONS:100}
     # Raster-render guards (render / to-images / redact): cap requested DPI and per-page output
     # pixels so a huge dpi/dimension request can't allocate gigabytes and OOM the JVM.
+    # max-total-output-pixels additionally bounds pages x files -- the summed area of every page a
+    # single request will really rasterise -- which the per-page caps do NOT: 500 MP is ~57 A4
+    # pages at 300 dpi, ~230 at 150 dpi. Without it one 800-page scan at 300 dpi (~7000 MP) passes
+    # every per-page check and then allocates >1 GB of PNGs.
     render:
       max-dpi: ${PDFCONDUIT_WEB_RENDER_MAX_DPI:300}
       max-output-pixels: ${PDFCONDUIT_WEB_RENDER_MAX_OUTPUT_PIXELS:60000000}
+      max-total-output-pixels: ${PDFCONDUIT_WEB_RENDER_MAX_TOTAL_OUTPUT_PIXELS:500000000}
     # Proxies (CIDRs) trusted to set X-Forwarded-For. The real client IP is resolved as the
     # rightmost address NOT in this list; a forged XFF from an untrusted peer is ignored. Defaults
     # cover loopback + RFC-1918 private ranges (the docker-compose bridge subnet). Comma-separated.

@@ -53,7 +53,7 @@
     "home": "Ana sayfa",
     "homeTitle": "PDF Conduit ana sayfasına dön",
     "groups": {
-      "organise": "Düzenle",
+      "organise": "Sayfaları düzenle",
       "optimise": "Optimize et",
       "convert": "Dönüştür",
       "secure": "Güvenlik",
@@ -69,39 +69,43 @@
     },
     "extract": {
       "label": "Ayıkla",
-      "description": "Seçili sayfaları bir PDF'ten çıkarın."
+      "description": "Seçili sayfaları bir PDF'ten ayıklayın."
     },
     "rotate": {
       "label": "Döndür",
-      "description": "Sayfaları 90°, 180° veya 270° döndürün."
+      "description": "Sayfaları çeyrek tur sağa (90°), ters çevirin (180°) veya çeyrek tur sola (270°) döndürün."
     },
     "arrange": {
-      "label": "Düzenle",
+      "label": "Sırala",
       "description": "Sayfaları yeniden sıralayın, tersine çevirin veya çoğaltın."
     },
     "nup": {
-      "label": "Yaprak başına sayfa",
+      "label": "Baskı düzeni",
       "description": "Bir yaprağa birden fazla sayfa yerleştirin veya bir kitapçık katlayın."
     },
     "compress": {
       "label": "Sıkıştır",
       "description": "Bir PDF'i hedef boyuta doğru küçültün."
     },
+    "repair": {
+      "label": "Onar",
+      "description": "Bozuk bir PDF'i onarıp yeniden açılabilir hale getirmeyi deneyin."
+    },
     "to-pdf": {
-      "label": "PDF'e",
+      "label": "PDF'e dönüştür",
       "description": "Görselleri, ofis belgelerini, Markdown ve HTML dosyalarını PDF'e dönüştürün."
     },
     "to-images": {
-      "label": "Görsele",
+      "label": "Görsele dönüştür",
       "description": "PDF sayfalarını PNG veya JPG olarak oluşturun."
     },
     "to-text": {
-      "label": "Metne",
+      "label": "Metne dönüştür",
       "description": "Bir PDF'in metin içeriğini ayıklayın."
     },
     "ocr": {
       "label": "OCR",
-      "description": "Taranmış bir PDF’i OCR ile aranabilir hale getirin."
+      "description": "Taranmış bir PDF'i OCR ile aranabilir hale getirin."
     },
     "protect": {
       "label": "Koru",
@@ -137,7 +141,7 @@
     },
     "gdpr-scan": {
       "label": "GDPR Taraması",
-      "description": "Bir PDF'yi kişisel veriler açısından tarayın (GDPR / PII)."
+      "description": "Bir PDF'i kişisel veriler açısından tarayın (GDPR / PII)."
     },
     "crop": {
       "label": "Kırp",
@@ -154,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit ana sayfası",
-    "quotaFreeLeft": "bugün için ücretsiz kaldı",
+    "quotaFreeLeft": "{count, plural, other {ücretsiz işlem kaldı}}",
     "quotaTitleSpent": "Günlük ücretsiz sınıra ulaşıldı. Pro planlarına bakın",
     "quotaTitleLeft": "Bugün kalan ücretsiz işlemler. Pro planlarına bakın",
     "serverOnline": "Sunucu çevrimiçi",
@@ -188,10 +192,10 @@
     },
     "trust": {
       "aria": "Neden PDF Conduit",
-      "memoryTitle": "Asla saklanmaz",
+      "memoryTitle": "Dosyalarınızı asla saklamayız",
       "memoryDesc": "Dosyalarınız işlenir ve ardından silinir. Asla diske yazılmaz veya sunucularımızda tutulmaz.",
       "accountTitle": "Hesap gerekmez",
-      "accountDesc": "Doğrudan başlayın. E-posta yok, parola yok, takip duvarı yok.",
+      "accountDesc": "Doğrudan başlayın. E-posta yok, parola yok, takip yok.",
       "browserTitle": "Tarayıcınızda açın",
       "browserDesc": "Kurulacak bir şey yok. Windows, macOS, Linux ve mobilde çalışır."
     },
@@ -245,7 +249,7 @@
       "step3Title": "Sonucunuzu indirin",
       "step3Desc": "Başlatın; dosyanız hemen işlenir. Tamamlanan PDF'niz saniyeler içinde indirmeye hazır olur. Ayrıldığınızda geride hiçbir şey kalmaz.",
       "wizardTitle": "PDF Conduit'te yeni misiniz?",
-      "wizardDesc": "Rehberli Sihirbaz seçme, düzenleme ve dışa aktarma adımlarında size adım adım eşlik etsin.",
+      "wizardDesc": "Rehberli Sihirbaz seçme, sıralama ve dışa aktarma adımlarında size adım adım eşlik etsin.",
       "wizardCta": "Rehberli Sihirbazı başlat",
       "privacyLink": "Dosyalarınızı nasıl gizli tuttuğumuzu görün →"
     },
@@ -254,7 +258,7 @@
       "subtitle": "Daha fazlasına hazır mısınız? Çok adımlı akışlar oluşturun ya da bir belgeyi kişisel veriler açısından tarayın.",
       "wizardDesc": "Burada yeni misiniz? Rehberli sihirbaz adım adım size yol göstersin.",
       "pipelineDesc": "Birden fazla işlemi görsel bir düğüm grafiğiyle tek ve tekrarlanabilir bir akışta birleştirin.",
-      "gdprDesc": "Bir PDF'yi kişisel veriler (GDPR / PII) açısından tarayın, ardından doğrudan karartmaya geçin."
+      "gdprDesc": "Bir PDF'i kişisel veriler (GDPR / PII) açısından tarayın, ardından doğrudan karartmaya geçin."
     }
   },
   "onboarding": {
@@ -271,18 +275,16 @@
   "privacy": {
     "title": "Gizlilik",
     "description": "PDF Conduit dosyalarınızı nasıl işler. Kısacası: onları saklamaz.",
-    "memoryTitle": "Dosyalarınız asla saklanmaz",
+    "memoryTitle": "Dosyalarınızı asla saklamayız",
     "memoryBody": "Dosyalarınız asla saklanmaz. Her işlem tamamen tek bir istek içinde gerçekleşir: yüklediğiniz dosya işlenir, doğrudan size geri gönderilir ve hemen ardından silinir. Hiçbir şey tutulmaz ve hiçbir şey asla başka bir amaçla kullanılmaz.",
     "exceptionTitle": "Tek geçici istisna",
     "exceptionBody": "Ofis veya metin belgelerini (örneğin .docx, .xlsx, .pptx) dönüştürmek için başsız bir LibreOffice gerekir. Yalnızca o adım için dosya, dönüştürme tamamlandıktan hemen sonra silinen izole bir geçici klasöre yazılır. Düz PDF'ler ve görseller diske hiç dokunmaz.",
-    "accountTitle": "Hesap yok, takip duvarı yok",
+    "accountTitle": "Hesap yok, takip yok",
     "accountBody": "Ücretsiz araçları kullanmak için kaydolmanız, oturum açmanız veya bize bir e-posta adresi vermeniz gerekmez. Bir dosyayı işlemek için kişisel bilgi talep etmiyoruz.",
     "controllerTitle": "Veri sorumlusu",
     "controllerBody": "PDF Conduit kapsamında işlenen verilerin veri sorumlusu, PDF Conduit hizmetinin işletmecisidir. İletişim: hello@pdfconduit.com. Dosyalar hiçbir zaman saklanmadığı ve hesap gerekmediği için, kişisel verilerin işlenmesi, hizmeti kötüye kullanıma karşı korumak için gerekli teknik sunucu günlükleriyle (IP adresi) sınırlıdır (GDPR md. 6/1-f).",
     "limitsTitle": "Ücretsiz katman sınırları",
-    "limitsBody1": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır. Ana sayfadaki",
-    "limitsLink": "Pro planları",
-    "limitsBody2": "tanıtımına bakın.",
+    "limitsBody": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır. Ana sayfadaki {linkStart}Pro planları{linkEnd} tanıtımına bakın.",
     "questionsTitle": "Sorular",
     "questionsBody": "PDF Conduit olduğu gibi sunulur. Bu sayfa mevcut davranışımızı açıklar ve ürün geliştikçe güncellenebilir.",
     "backHome": "Ana sayfaya dön"
@@ -323,10 +325,25 @@
       "detail": "Bu sunucuda ofis belgelerini dönüştürme etkin değil.",
       "hint": "Yine de PDF'ler ve görsellerle çalışabilirsiniz."
     },
+    "ocr_disabled": {
+      "title": "OCR kullanılamıyor",
+      "detail": "Bu sunucuda taramalarda metin tanıma etkin değil.",
+      "hint": "Diğer tüm araçlar normal şekilde çalışıyor."
+    },
     "operation_failed": {
       "title": "Bu dosya işlenemedi",
       "detail": "İşlem bu girdide başarısız oldu.",
       "hint": "Dosyanın geçerli, şifrelenmemiş bir PDF olduğundan emin olun ve tekrar deneyin."
+    },
+    "output_too_large": {
+      "title": "Bu tek seferde yapılamayacak kadar büyük",
+      "detail": "Sonuç, bu sunucunun tek seferde üretebileceğinden daha büyük olurdu.",
+      "hint": "Aynı anda daha az sayfa ya da daha az dosya deneyin veya kaliteyi ya da DPI değerini düşürün."
+    },
+    "repair_failed": {
+      "title": "Bu dosya onarılamadı",
+      "detail": "Hasar, dosyanın yeniden oluşturulamayacağı kadar ağır.",
+      "hint": "Başka bir kopyanız veya eski bir sürümünüz varsa onu deneyin."
     },
     "bad_request": {
       "title": "Lütfen girdinizi kontrol edin",
@@ -342,11 +359,31 @@
     "done": "Tamam",
     "original": "Orijinal",
     "result": "Sonuç",
-    "saved": "Kazanılan",
+    "saved": "Tasarruf",
     "target": "Hedef",
     "targetReached": "ulaşıldı",
     "targetNotReached": "ulaşılmadı",
-    "batchFailures": "Bazı girdiler başarısız oldu: {{count}}",
+    "partialTitle": "Bazı dosyalar atlandı",
+    "partialCounts": "{{total}} dosyadan {{done}} tanesi işlendi.",
+    "partialFailedCount": "{count, plural, other {# dosya işlenemedi:}}",
+    "partialMore": "{count, plural, other {…ve # dosya daha}}",
+    "partialHint": "Başarılı olan her şey indirilen dosyanın içinde.",
+    "failureNoReason": "Sebep belirtilmedi.",
+    "redactionApplied": "{pages, plural, other {# sayfadaki}} {regions, plural, other {# alan}} kalıcı olarak karartıldı.",
+    "repairFindingsTitle": "Tespit edilen sorunlar",
+    "repairPages": "{count, plural, other {Onarılan dosyada # sayfa var.}}",
+    "repairFinding": {
+      "headerMissing": "Dosyanın hiç PDF başlığı yoktu.",
+      "headerOffset": "PDF başlığından önce fazladan veri vardı (e-postadan veya indirmeden kalan artıklar).",
+      "eofMissing": "Dosya sonu işareti yoktu, yani dosya yarıda kesilmişti.",
+      "startxrefMissing": "Dosyada iç dizinine giden bir işaret yoktu.",
+      "startxrefInvalid": "İç dizine giden işaret geçerli bir yeri göstermiyordu.",
+      "xrefRebuilt": "İç dizin okunamadığı için dosyada bulunan içerikten yeniden oluşturuldu.",
+      "rebuildIncomplete": "Yeniden oluşturmadan sonra bile dosyanın bazı bölümleri doğru okunmuyor."
+    },
+    "repairRebuilt": "Dosya bozuktu ve yeniden oluşturuldu.",
+    "repairAlreadyFine": "Dosya zaten sağlamdı, değiştirilmeden yeniden kaydedildi.",
+    "repairPartial": "Dosya bozuktu ve yalnızca kısmen onarıldı. Sonucu kontrol edin.",
     "seeProPlans": "Pro planlarına bakın →",
     "seeProPlansShort": "Pro planlarına bakın",
     "httpStatus": "· HTTP {{status}}",
@@ -354,6 +391,22 @@
     "tryAgain": "Tekrar dene",
     "expandPreview": "Önizlemeyi büyüt",
     "close": "Kapat"
+  },
+  "progress": {
+    "label": "İşlem ilerlemesi",
+    "uploading": "Yükleniyor %{{percent}}",
+    "uploadingPlain": "Yükleniyor…",
+    "bytes": "{{total}} içinden {{done}}",
+    "sent": "{{done}} gönderildi",
+    "stageWorking": "Dosyalarınız üzerinde çalışılıyor…",
+    "stageLarger": "Bu daha büyük bir iş. Devam ediyor.",
+    "stageLong": "Hâlâ çalışıyor. Büyük dosyalar biraz zaman alabilir.",
+    "stageVeryLong": "Bu her zamankinden uzun sürüyor. Beklemeye devam edebilir ya da iptal edip daha küçük bir dosyayla deneyebilirsiniz.",
+    "elapsed": "{{time}} geçti",
+    "cancel": "İptal",
+    "cancelled": "İptal edildi",
+    "cancelledNote": "Bu sonucu beklemeyi bıraktınız. Sunucumuz işi yine de bitirebilir ve bu işlem bugünkü ücretsiz sınıra sayılmaya devam eder.",
+    "dismiss": "Kapat"
   },
   "viewer": {
     "renderingPreview": "Önizleme oluşturuluyor…",
@@ -378,14 +431,23 @@
     },
     "extract": {
       "title": "Ayıkla",
-      "description": "Seçili sayfaları bir PDF'ten çıkarın.",
+      "description": "Seçili sayfaları bir PDF'ten ayıklayın.",
       "hint": "PDF dosyaları. Birden fazla dosya ZIP olarak döner.",
       "batchNote": "{{count}} dosya seçildi. Sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
       "pages": "Sayfalar",
       "pagesPlaceholder": "örn. 1,3,5-8",
       "pagesHelp": "Boş = tüm sayfalar. Söz dizimi:",
       "output": "Çıktı",
-      "separate": "Her sayfayı ayrı bir dosyaya böl (ZIP)",
+      "modeOne": "Tek PDF",
+      "modePerPage": "Sayfa başına bir dosya",
+      "modeEvery": "Her N sayfada bir",
+      "modeHelp": {
+        "one": "Seçili sayfalar tek bir PDF olarak döner.",
+        "perPage": "Seçili her sayfa kendi dosyası olur (ZIP).",
+        "every": "Seçili sayfalar N sayfalık dosyalara bölünür (ZIP)."
+      },
+      "every": "Dosya başına sayfa",
+      "everyHelp": "1 ile {{max}} arasında. Son dosyada daha az sayfa olabilir.",
       "submit": "Ayıkla",
       "loading": "Ayıklanıyor…"
     },
@@ -415,22 +477,31 @@
       "grayscaleHelp": "Daha küçük dosyalar için görüntüleri renksiz yeniden kodlar.",
       "floorNotice": "Bu dosya için ulaşılabilecek en küçük boyut yaklaşık {{floor}}. Hedefiniz olan {{target}} boyutuna ulaşılamıyor. Bunun yerine en küçük sürüm kaydedildi."
     },
+    "repair": {
+      "title": "Onar",
+      "description": "Bozuk bir PDF'i onarıp yeniden açılabilir hale getirmeyi deneyin. Her dosya kurtarılamaz.",
+      "hint": "PDF dosyaları. Birden fazla dosya ZIP olarak döner.",
+      "privacyLine": "Dosyalarınız asla saklanmaz. Onarım gizli olarak yapılır.",
+      "batchNote": "{{count}} dosya seçildi. Her biri ayrı ayrı onarılır; sonuçlar ZIP olarak döner.",
+      "submit": "Dosyayı onar",
+      "loading": "Onarılıyor…"
+    },
     "rotate": {
       "title": "Döndür",
-      "description": "Sayfaları 90°, 180° veya 270° döndürün.",
+      "description": "Sayfaları çeyrek tur sağa (saat yönünde 90°), ters çevirin (180°) veya çeyrek tur sola (270° / saat yönünün tersine 90°) döndürün.",
       "hint": "Bir veya daha fazla PDF (birden fazla dosya → ZIP).",
       "angle": "Açı",
       "angleAria": "Döndürme açısı",
       "dir90": "90° saat yönünde döndürür",
       "dir180": "180° döndürür (ters çevir)",
-      "dir270": "270° saat yönünde döndürür",
+      "dir270": "270° saat yönünde döndürür (çeyrek tur sola)",
       "pages": "Sayfalar",
       "pagesPlaceholder": "örn. 1,3,5-8 (boş = tümü)",
       "submit": "Döndür",
       "loading": "Döndürülüyor…"
     },
     "arrange": {
-      "title": "Düzenle",
+      "title": "Sırala",
       "description": "Sayfaları yeniden sıralayın, tersine çevirin veya çoğaltın.",
       "hint": "Bir PDF.",
       "order": "Sayfa sırası",
@@ -438,15 +509,15 @@
       "orderHelp1": "yeniden sıralar",
       "orderHelp2": "tersine çevirir",
       "orderHelp3": "tekrarlar çoğaltır",
-      "submit": "Düzenle",
-      "loading": "Düzenleniyor…"
+      "submit": "Sırala",
+      "loading": "Sıralanıyor…"
     },
     "nup": {
-      "title": "Yaprak başına sayfa",
+      "title": "Yaprak başına çok sayfa",
       "description": "Bir yaprağa birden fazla sayfa yerleştirin veya tel dikişli bir kitapçık katlayın.",
-      "privacyLine": "Dosyalarınız gizli şekilde montajlanır ve asla saklanmaz.",
+      "privacyLine": "Dosyalarınızın sayfa düzeni gizli şekilde hazırlanır ve asla saklanmaz.",
       "hint": "PDF dosyaları. Birden fazla dosya ZIP olarak döner.",
-      "batchNote": "{{count}} dosya seçildi. Her biri ayrı ayrı montajlanır; sonuçlar ZIP olarak döner.",
+      "batchNote": "{{count}} dosya seçildi. Düzen her birine ayrı ayrı uygulanır; sonuçlar ZIP olarak döner.",
       "layout": "Düzen",
       "layout2up": "sayfa başına 2",
       "layout4up": "sayfa başına 4 (2×2)",
@@ -460,7 +531,7 @@
       "loading": "Düzen uygulanıyor…"
     },
     "toPdf": {
-      "title": "PDF'e",
+      "title": "PDF'e dönüştür",
       "description": "Görselleri, ofis belgelerini, Markdown ve HTML dosyalarını PDF'e dönüştürün.",
       "hint": "Görseller, ofis belgeleri, Markdown ve HTML (biçimlendirme korunur). Her girdi kendi PDF'i olur (birden fazla → ZIP).",
       "hintNoOffice": "Görseller (PNG, JPG, WebP…). Her girdi kendi PDF'i olur (birden fazla → ZIP). Bu sunucu ofis belgelerini dönüştürmez.",
@@ -472,7 +543,7 @@
       "loading": "Dönüştürülüyor…"
     },
     "toImages": {
-      "title": "Görsele",
+      "title": "Görsele dönüştür",
       "description": "PDF sayfalarını PNG veya JPG olarak oluşturun.",
       "privacyLine": "Dosyalarınız gizli şekilde dönüştürülür ve asla saklanmaz.",
       "hint": "PDF dosyaları. Birden fazla sayfa veya dosya ZIP olarak döner.",
@@ -481,6 +552,8 @@
       "dpi": "DPI",
       "dpiHelp": "Daha yüksek = daha keskin ve daha büyük (36–600).",
       "dpiError": "36 ile 600 arasında bir DPI girin.",
+      "dpiHelpRange": "Daha yüksek = daha keskin ve daha büyük ({{min}}–{{max}}).",
+      "dpiErrorRange": "{{min}} ile {{max}} arasında bir DPI girin.",
       "quality": "JPG kalitesi",
       "qualityHelp": "Daha yüksek = daha iyi görüntü, daha büyük dosya.",
       "pages": "Sayfalar",
@@ -493,7 +566,7 @@
       "grayscale": "Gri tonlama"
     },
     "toText": {
-      "title": "Metne",
+      "title": "Metne dönüştür",
       "description": "Bir PDF'in metin içeriğini ayıklayın.",
       "hint": "PDF dosyaları (birden fazlası ZIP olarak döner).",
       "batchNote": "{{count}} dosya seçildi. Sayfa aralığı her birine uygulanır; sonuçlar ZIP olarak döner.",
@@ -506,9 +579,9 @@
       "loading": "Metin ayıklanıyor…"
     },
     "ocr": {
-      "title": "OCR",
-      "description": "Taranmış bir PDF’i aranabilir yapın. Görünmez bir metin katmanı ekler.",
-      "hint": "Taranmış bir PDF veya görüntü. Metin seçilebilir hale gelir.",
+      "title": "Metin tanıma (OCR)",
+      "description": "Taranmış bir PDF'i aranabilir yapın. Görünmez bir metin katmanı ekler.",
+      "hint": "Taranmış bir PDF veya görsel. Metin seçilebilir hale gelir.",
       "languages": "Diller",
       "languagesPlaceholder": "örn. eng veya eng+deu (boş = eng)",
       "languagesHelp": "Tesseract dil kodları; dil paketi sunucuda kurulu olmalıdır.",
@@ -562,10 +635,10 @@
     },
     "sign": {
       "title": "Doldur ve imzala",
-      "description": "Doldurulabilir PDF form alanlarını (AcroForm) doldurun ve bir imza ekleyin, ardından düzleştirin. Hiçbir şey saklanmaz, her şey oturumunuzda çalışır.",
+      "description": "Doldurulabilir PDF form alanlarını (AcroForm) doldurun ve bir imza ekleyin, ardından düzleştirin. Dosyanız asla saklanmaz.",
       "hint": "Tek bir PDF. Doldurulabilir form alanlarını algılarız. Ardından bir imza oluşturup sayfaya bırakın.",
       "dragHint": "İmzanızı yerleştirmek için sayfada sürükleyin.",
-      "chooseAnother": "Başka bir PDF seçin",
+      "chooseAnother": "Başka bir PDF seç",
       "needSignature": "Önce bir imza oluşturun, sonra yerleştirmek için sayfada bir kutu sürükleyin.",
       "signature": "İmzanız",
       "tabDraw": "Çiz",
@@ -594,7 +667,7 @@
       "description": "Belge bilgilerini görüntüleyin, düzenleyin veya kaldırın.",
       "hint": "PDF dosyaları. Aynı değişiklikler her dosyaya uygulanır (birden fazlası ZIP olarak döner).",
       "batchNote": "Aynı alanlar her dosyaya uygulanır. Önizleme yalnızca ilk dosyayı okur.",
-      "readCurrent": "Mevcut olanı oku",
+      "readCurrent": "Mevcut değerleri oku",
       "reading": "Okunuyor…",
       "titleField": "Başlık",
       "author": "Yazar",
@@ -640,13 +713,13 @@
       "title": "Sihirbaz",
       "description": "Adım adım rehberli oluşturma ve dışa aktarma.",
       "step1": "Seç",
-      "step2": "Düzenle",
+      "step2": "Sırala",
       "step3": "Sayfa ayarları",
       "step4": "Sıkıştırma",
       "step5": "Dışa aktar",
       "selectTitle": "Dosyaları seçin",
       "selectHint": "PDF'ler, görseller ve ofis belgeleri.",
-      "arrangeTitle": "Düzenleme ve sayfa aralıkları",
+      "arrangeTitle": "Sıralama ve sayfa aralıkları",
       "arrangeHint": "Yeniden sıralamak için sürükleyin. Sayfa aralıkları yalnızca PDF girdilerine uygulanır (boş = tümü).",
       "rangePlaceholder": "sayfalar örn. 1-3",
       "typeImage": "görsel",
@@ -726,7 +799,7 @@
     "gdprScan": {
       "title": "GDPR / PII Taraması",
       "description": "Paylaşmadan önce bir PDF'deki kişisel verileri bulun.",
-      "hint": "Bir PDF, görüntü veya ofis belgesi.",
+      "hint": "Bir PDF, görsel veya ofis belgesi.",
       "privacyLine": "Dosyanız gizli olarak taranır; asla saklanmaz veya kimseye gönderilmez.",
       "submit": "Kişisel verileri tara",
       "loading": "Taranıyor…",
@@ -794,13 +867,13 @@
       "description": "Her sayfaya sayfa numaraları ve üstbilgi/altbilgi metni ekleyin.",
       "hint": "İşaretlenecek bir veya daha fazla PDF (birden fazla dosya → ZIP).",
       "privacyLine": "Dosyalarınız gizli olarak işaretlenir ve asla saklanmaz.",
-      "tokensHelp": "Herhangi bir alanda belirteç kullanın: {page} geçerli sayfa, {pages} toplam, {n} sayfa numarası, {date} bugün.",
+      "tokensHelp": "Herhangi bir alanda belirteç kullanın: '{page}' geçerli sayfa, '{pages}' toplam, '{n}' sayfa numarası, '{date}' bugün.",
       "header": "Üstbilgi",
       "footer": "Altbilgi",
       "left": "Sol",
       "center": "Orta",
       "right": "Sağ",
-      "slotPlaceholder": "örn. {page} / {pages}",
+      "slotPlaceholder": "örn. '{page}' / '{pages}'",
       "fontSize": "Yazı tipi boyutu (pt)",
       "margin": "Kenar boşluğu (pt)",
       "startNumber": "Başlangıç numarası",
@@ -808,7 +881,7 @@
       "prefixPlaceholder": "örn. ACME-",
       "skipFirst": "İlk sayfayı atla",
       "submit": "Sayfa işaretleri ekle",
-      "needSlot": "En az bir alana metin girin (örn. {page} / {pages}).",
+      "needSlot": "En az bir alana metin girin (örn. '{page}' / '{pages}').",
       "loading": "İşaretleniyor…"
     }
   },

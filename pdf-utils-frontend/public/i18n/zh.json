@@ -56,7 +56,7 @@
       "organise": "整理",
       "optimise": "优化",
       "convert": "转换",
-      "secure": "加密",
+      "secure": "安全",
       "edit": "编辑",
       "advanced": "高级"
     },
@@ -73,19 +73,23 @@
     },
     "rotate": {
       "label": "旋转",
-      "description": "将页面旋转 90°、180° 或 270°。"
+      "description": "将页面向右旋转四分之一圈（90°）、翻转 180°，或向左旋转四分之一圈（270°）。"
     },
     "arrange": {
       "label": "排列",
       "description": "重新排序、反转或复制页面。"
     },
     "nup": {
-      "label": "每张多页",
+      "label": "打印版面",
       "description": "在一张纸上放置多页，或折叠成小册子。"
     },
     "compress": {
       "label": "压缩",
       "description": "将 PDF 压缩至目标大小。"
+    },
+    "repair": {
+      "label": "修复",
+      "description": "尝试重建损坏的 PDF，让它重新打开。"
     },
     "to-pdf": {
       "label": "转为 PDF",
@@ -154,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit 首页",
-    "quotaFreeLeft": "今日剩余免费次数",
+    "quotaFreeLeft": "{count, plural, other {今日剩余免费次数}}",
     "quotaTitleSpent": "今日免费额度已用完。查看 Pro 方案",
     "quotaTitleLeft": "今日剩余免费操作次数。查看 Pro 方案",
     "serverOnline": "服务器在线",
@@ -179,19 +183,19 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "免费 · 文件绝不存储",
+      "eyebrow": "免费 · 我们绝不保存您的文件",
       "title": "所需的每一款 PDF 工具，尽在一个简洁的工作区。",
       "lede": "几秒内完成 PDF 的合并、压缩、转换、加密和涂黑。即时处理，绝不存储在我们的服务器上。无需账户，无需安装。",
       "ctaStart": "免费开始",
       "ctaExplore": "浏览工具",
-      "note": "文件绝不存储 · 无需注册 · 适用于任何设备"
+      "note": "我们绝不保存您的文件 · 无需注册 · 适用于任何设备"
     },
     "trust": {
       "aria": "为何选择 PDF Conduit",
-      "memoryTitle": "绝不存储",
+      "memoryTitle": "我们绝不留存",
       "memoryDesc": "您的文件处理完毕后即被丢弃。绝不写入磁盘，也不会保留在我们的服务器上。",
       "accountTitle": "无需账户",
-      "accountDesc": "直接开始。无需邮箱、无需密码、无需跨过跟踪墙。",
+      "accountDesc": "直接开始。无需邮箱、无需密码，也没有强制跟踪的门槛。",
       "browserTitle": "在浏览器中打开",
       "browserDesc": "无需安装。适用于 Windows、macOS、Linux 和移动设备。"
     },
@@ -209,7 +213,7 @@
       "freePrice": "$0",
       "freePer": "／永久",
       "freeFeat1": "全部 PDF 工具",
-      "freeFeat2": "绝不存储任何内容",
+      "freeFeat2": "服务器不留存任何内容",
       "freeFeat3": "每日操作次数上限",
       "freeFeat4": "标准文件大小上限",
       "freeFeat5": "无需账户",
@@ -233,7 +237,7 @@
       "tools": "工具",
       "privacy": "隐私",
       "github": "GitHub",
-      "copy": "您的文件经过处理，绝不存储。免费使用。"
+      "copy": "您的文件只做处理，绝不保存在我们的服务器上。免费使用。"
     },
     "how": {
       "title": "使用方法",
@@ -243,7 +247,7 @@
       "step2Title": "添加文件",
       "step2Desc": "拖入或浏览选择。您的文件绝不会保存在我们的服务器上。",
       "step3Title": "下载结果",
-      "step3Desc": "点击开始，文件即时处理，几秒内即可下载处理好的 PDF。离开后不会留下任何痕迹。",
+      "step3Desc": "点击开始，文件即时处理，几秒内即可下载处理好的 PDF。您离开后，我们的服务器上不会留下任何东西。",
       "wizardTitle": "第一次使用 PDF Conduit？",
       "wizardDesc": "让向导带您一步步完成选择、排列和导出。",
       "wizardCta": "启动向导",
@@ -260,7 +264,7 @@
   "onboarding": {
     "welcome": {
       "title": "欢迎使用 PDF Conduit",
-      "message": "在浏览器中即可使用的免费 PDF 工具。您的文件会被即时处理，绝不会保存。第一次使用？向导是最简单的入门方式。",
+      "message": "在浏览器中即可使用的免费 PDF 工具。您的文件会被即时处理，绝不会保存在我们的服务器上。第一次使用？向导是最简单的入门方式。",
       "cta": "试用向导",
       "secondary": "浏览所有工具",
       "dismiss": "关闭"
@@ -270,19 +274,17 @@
   },
   "privacy": {
     "title": "隐私",
-    "description": "PDF Conduit 如何处理您的文件。简而言之：它不会留存文件。",
-    "memoryTitle": "您的文件绝不存储",
-    "memoryBody": "您的文件绝不会被保存。每一次操作都在一次请求中完整完成：您上传的文件经过处理后直接返回给您，随后即被立即丢弃。任何内容都不会保留，也绝不会用于任何其他用途。",
+    "description": "PDF Conduit 如何处理您的文件。简而言之：我们不会留存您的文件。",
+    "memoryTitle": "我们绝不保存您的文件",
+    "memoryBody": "我们绝不会保存您的文件。每一次操作都在一次请求中完整完成：您上传的文件经过处理后直接返回给您，随后即被立即丢弃。我们不保留任何内容，也绝不会将其用于任何其他用途。",
     "exceptionTitle": "唯一的临时例外",
     "exceptionBody": "转换办公或文本文档（例如 .docx、.xlsx、.pptx）需要无界面的 LibreOffice。仅在该步骤中，文件会被写入一个隔离的临时文件夹，并在转换完成后立即删除。普通的 PDF 和图片绝不接触磁盘。",
-    "accountTitle": "无账户，无跟踪墙",
+    "accountTitle": "无需账户，无跟踪门槛",
     "accountBody": "使用免费工具无需注册、登录或提供邮箱地址。我们不需要个人信息即可处理文件。",
     "controllerTitle": "数据控制者",
     "controllerBody": "PDF Conduit 所处理数据的控制者为 PDF Conduit 服务的运营者。联系方式：hello@pdfconduit.com。由于文件从不被存储，使用也无需账户，个人数据的处理仅限于为保护服务免遭滥用所必需的技术性服务器日志（IP 地址）（GDPR 第 6 条第 1 款 (f) 项）。",
     "limitsTitle": "免费版限制",
-    "limitsBody1": "为了让每个人都能使用免费服务，请求会受到每日操作配额、单个文件大小上限和基本速率限制的约束。当您达到限制时，应用会明确提示。更高的限额、更大的文件以及批处理／API 访问已计划在未来的付费版中提供。请参阅首页上的",
-    "limitsLink": "Pro 方案",
-    "limitsBody2": "预告。",
+    "limitsBody": "为了让每个人都能使用免费服务，请求会受到每日操作配额、单个文件大小上限和基本速率限制的约束。当您达到限制时，应用会明确提示。更高的限额、更大的文件以及批处理／API 访问已计划在未来的付费版中提供。请参阅首页上的{linkStart}Pro 方案{linkEnd}预告。",
     "questionsTitle": "疑问",
     "questionsBody": "PDF Conduit 按现状提供。本页描述我们当前的做法，可能会随产品的演进而更新。",
     "backHome": "返回首页"
@@ -323,10 +325,25 @@
       "detail": "此服务器未启用办公文档转换。",
       "hint": "您仍可处理 PDF 和图片。"
     },
+    "ocr_disabled": {
+      "title": "OCR 不可用",
+      "detail": "此服务器未启用扫描件文字识别。",
+      "hint": "其他工具仍可正常使用。"
+    },
     "operation_failed": {
       "title": "该文件无法处理",
       "detail": "对此输入的操作失败。",
       "hint": "请确认该文件是有效且未加密的 PDF，然后重试。"
+    },
+    "output_too_large": {
+      "title": "一次要生成的内容太大了",
+      "detail": "生成的结果会超过本服务器一次能产出的大小。",
+      "hint": "请减少一次处理的页数或文件数，或降低质量或 DPI。"
+    },
+    "repair_failed": {
+      "title": "无法修复该文件",
+      "detail": "损坏过于严重，无法重建该文件。",
+      "hint": "如果您还有其他副本或较早的版本，请改用那个文件。"
     },
     "bad_request": {
       "title": "请检查您的输入",
@@ -346,7 +363,27 @@
     "target": "目标",
     "targetReached": "已达到",
     "targetNotReached": "未达到",
-    "batchFailures": "部分输入失败：{{count}}",
+    "partialTitle": "部分文件已跳过",
+    "partialCounts": "已处理 {{total}} 个文件中的 {{done}} 个。",
+    "partialFailedCount": "{count, plural, other {有 # 个文件无法处理：}}",
+    "partialMore": "{count, plural, other {…还有 # 个}}",
+    "partialHint": "所有处理成功的文件都在下载内容中。",
+    "failureNoReason": "未说明原因。",
+    "redactionApplied": "已在 {pages, plural, other {# 页}}上永久涂黑 {regions, plural, other {# 处}}。",
+    "repairFindingsTitle": "问题所在",
+    "repairPages": "{count, plural, other {重建后的文件共 # 页。}}",
+    "repairFinding": {
+      "headerMissing": "文件完全没有 PDF 文件头。",
+      "headerOffset": "PDF 文件头前面有多余的数据（邮件或下载的残留）。",
+      "eofMissing": "缺少文件结束标记，说明文件被截断了。",
+      "startxrefMissing": "文件没有指向内部目录的指针。",
+      "startxrefInvalid": "指向内部目录的指针没有指向有效位置。",
+      "xrefRebuilt": "内部目录无法读取，已根据文件中找到的内容重新生成。",
+      "rebuildIncomplete": "即使重建之后，文件的部分内容仍无法正确读取。"
+    },
+    "repairRebuilt": "文件已损坏，现已重建。",
+    "repairAlreadyFine": "文件本身没有问题，已原样重新保存。",
+    "repairPartial": "文件已损坏，只重建了一部分。请检查结果。",
     "seeProPlans": "查看 Pro 方案 →",
     "seeProPlansShort": "查看 Pro 方案",
     "httpStatus": "· HTTP {{status}}",
@@ -354,6 +391,22 @@
     "tryAgain": "重试",
     "expandPreview": "展开预览",
     "close": "关闭"
+  },
+  "progress": {
+    "label": "操作进度",
+    "uploading": "正在上传 {{percent}}%",
+    "uploadingPlain": "正在上传…",
+    "bytes": "{{total}} 中的 {{done}}",
+    "sent": "已发送 {{done}}",
+    "stageWorking": "正在处理您的文件…",
+    "stageLarger": "这是一个较大的任务，仍在进行。",
+    "stageLong": "仍在处理。大文件可能需要一些时间。",
+    "stageVeryLong": "这次比平时更久。您可以继续等待，也可以取消并改用更小的文件重试。",
+    "elapsed": "已用时 {{time}}",
+    "cancel": "取消",
+    "cancelled": "已取消",
+    "cancelledNote": "您已停止等待此结果。服务器仍可能完成该任务，并且它仍会计入今日的免费额度。",
+    "dismiss": "关闭"
   },
   "viewer": {
     "renderingPreview": "正在渲染预览…",
@@ -385,7 +438,16 @@
       "pagesPlaceholder": "例如 1,3,5-8",
       "pagesHelp": "留空 = 所有页面。语法：",
       "output": "输出",
-      "separate": "每页拆分为一个文件（ZIP）",
+      "modeOne": "单个 PDF",
+      "modePerPage": "每页一个文件",
+      "modeEvery": "每 N 页分割",
+      "modeHelp": {
+        "one": "所选页面将合并为一个 PDF 返回。",
+        "perPage": "每个所选页面各成一个文件（ZIP）。",
+        "every": "所选页面按每 N 页切成多个文件（ZIP）。"
+      },
+      "every": "每个文件的页数",
+      "everyHelp": "1 到 {{max}}。最后一个文件的页数可能更少。",
       "submit": "提取",
       "loading": "提取中…"
     },
@@ -405,25 +467,34 @@
       "noopWarning": "目标 ≥ 文件大小。不会缩小",
       "blankWarning": "请输入用于压缩的目标大小。",
       "allNoopWarning": "目标不小于每个文件的大小。无需压缩。",
-      "dpi": "图像分辨率",
-      "dpiHelp": "将嵌入图像限制为此分辨率以进一步节省空间。",
-      "dpiNone": "原始(不限制)",
-      "dpiScreen": "屏幕(72 DPI)",
-      "dpiEbook": "电子书(150 DPI)",
-      "dpiPrint": "打印(300 DPI)",
-      "grayscale": "将图像转换为灰度",
-      "grayscaleHelp": "以无颜色重新编码图像以缩小文件。",
+      "dpi": "图片分辨率",
+      "dpiHelp": "将内嵌图片限制为此分辨率，进一步减小体积。",
+      "dpiNone": "原始（不限制）",
+      "dpiScreen": "屏幕（72 DPI）",
+      "dpiEbook": "电子书（150 DPI）",
+      "dpiPrint": "打印（300 DPI）",
+      "grayscale": "将图片转换为灰度",
+      "grayscaleHelp": "去掉颜色重新编码图片，让文件更小。",
       "floorNotice": "该文件可达到的最小大小约为 {{floor}}。无法达到您设定的 {{target}} 目标。已改为保存最小的版本。"
+    },
+    "repair": {
+      "title": "修复",
+      "description": "尝试重建损坏的 PDF，让它重新打开。并非所有文件都能恢复。",
+      "hint": "PDF 文件。多个文件将以 ZIP 返回。",
+      "privacyLine": "您的文件以私密方式修复，我们绝不会保存。",
+      "batchNote": "已选择 {{count}} 个文件。每个文件单独修复；结果以 ZIP 返回。",
+      "submit": "修复文件",
+      "loading": "正在修复…"
     },
     "rotate": {
       "title": "旋转",
-      "description": "将页面旋转 90°、180° 或 270°。",
+      "description": "将页面向右旋转四分之一圈（顺时针 90°）、翻转 180°，或向左旋转四分之一圈（270° / 逆时针 90°）。",
       "hint": "一个或多个 PDF（多个文件 → ZIP）。",
       "angle": "角度",
       "angleAria": "旋转角度",
       "dir90": "顺时针旋转 90°",
       "dir180": "旋转 180°（翻转）",
-      "dir270": "顺时针旋转 270°",
+      "dir270": "顺时针旋转 270°（相当于向左旋转四分之一圈）",
       "pages": "页面",
       "pagesPlaceholder": "例如 1,3,5-8（留空 = 全部）",
       "submit": "旋转",
@@ -442,17 +513,17 @@
       "loading": "排列中…"
     },
     "nup": {
-      "title": "每张多页",
+      "title": "打印版面",
       "description": "在一张纸上放置多页，或折叠成骑马订小册子。",
-      "privacyLine": "您的文件以私密方式拼版，绝不会被存储。",
+      "privacyLine": "您的文件以私密方式拼版，我们绝不会保存。",
       "hint": "PDF 文件。多个文件将以 ZIP 返回。",
       "batchNote": "已选择 {{count}} 个文件。每个文件单独拼版，结果以 ZIP 返回。",
       "layout": "版式",
       "layout2up": "每张 2 页",
-      "layout4up": "每张 4 页 (2×2)",
-      "layout6up": "每张 6 页 (2×3)",
-      "layout8up": "每张 8 页 (2×4)",
-      "layout9up": "每张 9 页 (3×3)",
+      "layout4up": "每张 4 页（2×2）",
+      "layout6up": "每张 6 页（2×3）",
+      "layout8up": "每张 8 页（2×4）",
+      "layout9up": "每张 9 页（3×3）",
       "mode": "模式",
       "booklet": "小册子（骑马订）",
       "bookletHelp": "重新排列页面，使打印并折叠后的册子按顺序阅读。",
@@ -474,15 +545,17 @@
     "toImages": {
       "title": "转为图片",
       "description": "将 PDF 页面渲染为 PNG 或 JPG。",
-      "privacyLine": "您的文件以私密方式转换，绝不会被存储。",
+      "privacyLine": "您的文件以私密方式转换，我们绝不会保存。",
       "hint": "PDF 文件。多页或多个文件将以 ZIP 返回。",
       "batchNote": "已选择 {{count}} 个文件。页码范围将应用于每个文件，结果以 ZIP 返回。",
       "format": "格式",
       "dpi": "DPI",
-      "dpiHelp": "越高 = 越清晰、文件越大（36–600）。",
+      "dpiHelp": "数值越大越清晰，文件也越大（36–600）。",
       "dpiError": "请输入 36 到 600 之间的 DPI。",
+      "dpiHelpRange": "数值越大越清晰，文件也越大（{{min}}–{{max}}）。",
+      "dpiErrorRange": "请输入 {{min}} 到 {{max}} 之间的 DPI。",
       "quality": "JPG 质量",
-      "qualityHelp": "越高 = 图像越好、文件越大。",
+      "qualityHelp": "数值越大画质越好，文件也越大。",
       "pages": "页面",
       "pagesPlaceholder": "例如 1-3（留空 = 全部）",
       "submit": "渲染图片",
@@ -520,7 +593,7 @@
     "protect": {
       "title": "保护",
       "description": "为 PDF 添加密码加密。",
-      "privacyLine": "您的文件和密码以私密方式处理，绝不会被存储。",
+      "privacyLine": "您的文件和密码以私密方式处理，我们绝不会保存。",
       "hint": "一个或多个 PDF（多个文件 → ZIP）。",
       "userPassword": "用户密码",
       "userPasswordHelp": "打开文档时必需。",
@@ -539,7 +612,7 @@
     "unlock": {
       "title": "解锁",
       "description": "从 PDF 中移除已知密码。",
-      "privacyLine": "您的文件和密码以私密方式处理，绝不会被存储。",
+      "privacyLine": "您的文件和密码以私密方式处理，我们绝不会保存。",
       "hint": "一个或多个受保护的 PDF（多个文件 → ZIP）。",
       "password": "密码",
       "passwordHelp": "用于打开该 PDF 的当前密码。",
@@ -558,11 +631,11 @@
       "removeRegion": "移除区域",
       "submit": "涂黑并下载",
       "loading": "涂黑中…",
-      "keepSearchable": "保持文本可搜索 (OCR)"
+      "keepSearchable": "保持文本可搜索（OCR）"
     },
     "sign": {
       "title": "填写和签名",
-      "description": "填写可填写的 PDF 表单字段（AcroForm）并为 PDF 添加签名，然后将其扁平化。不存储任何内容，全部在您的会话中完成。",
+      "description": "填写可填写的 PDF 表单字段（AcroForm）并为 PDF 添加签名，然后将其扁平化。我们绝不保存您的文件。",
       "hint": "一个 PDF。我们会检测可填写的表单字段。然后创建签名并将其放到页面上。",
       "dragHint": "在页面上拖动以放置您的签名。",
       "chooseAnother": "选择其他 PDF",
@@ -608,7 +681,7 @@
     "watermark": {
       "title": "水印",
       "description": "在每一页上叠加文字或图片。",
-      "privacyLine": "您的文件以私密方式加盖水印，绝不会被存储。",
+      "privacyLine": "您的文件以私密方式加盖水印，我们绝不会保存。",
       "hint": "要添加水印的一个或多个 PDF（多个文件 → ZIP）。",
       "typeAria": "水印类型",
       "typeText": "文字",
@@ -623,7 +696,7 @@
       "submit": "应用水印",
       "needText": "请输入水印文字。",
       "needImage": "请选择一张图片。",
-      "loading": "添加中…",
+      "loading": "添加水印中…",
       "layout": "布局",
       "layoutSingle": "单个",
       "layoutTile": "平铺",
@@ -727,7 +800,7 @@
       "title": "GDPR / PII 扫描",
       "description": "在分享 PDF 之前查找其中的个人数据。",
       "hint": "一个 PDF、图片或办公文档。",
-      "privacyLine": "您的文件以私密方式扫描，绝不存储或发送给任何人。",
+      "privacyLine": "您的文件以私密方式扫描，我们绝不会保存，也不会发送给任何人。",
       "submit": "扫描个人数据",
       "loading": "扫描中…",
       "riskLabel": "风险",
@@ -739,8 +812,8 @@
         "high": "高",
         "noneExplain": "未在此文档中检测到个人数据。",
         "lowExplain": "发现了一个低风险标识符。",
-        "mediumExplain": "发现了多个低风险标识符，但没有金融、国家身份或特殊类别的数据。",
-        "highExplain": "包含金融、国家身份或特殊类别数据。分享前请谨慎处理。"
+        "mediumExplain": "发现了多个低风险标识符，但没有金融、身份证件或特殊类别的数据。",
+        "highExplain": "包含金融、身份证件或特殊类别数据。分享前请谨慎处理。"
       },
       "summary": "{count, plural, other {在 {pages} 页中发现 # 项个人数据。}}",
       "summaryClean": "在 {{pages}} 页中未发现个人数据。",
@@ -769,13 +842,13 @@
       "autoRedactCta": "自动涂黑所有检测到的内容",
       "autoRedactAllCta": "自动涂黑所有文件",
       "autoRedactFile": "自动涂黑",
-      "autoRedactHint": "一键涂黑每个检测到的值并下载文件。免费。您的文件绝不会被存储。",
+      "autoRedactHint": "一键涂黑每个检测到的值并下载文件。免费，而且我们绝不会保存您的文件。",
       "autoRedactLoading": "正在涂黑…"
     },
     "crop": {
       "title": "裁剪",
       "description": "裁去每页的页边距。",
-      "privacyLine": "您的文件将被私密裁剪，绝不存储。",
+      "privacyLine": "您的文件以私密方式裁剪，我们绝不会保存。",
       "hint": "PDF 文件。多个文件将以 ZIP 返回。",
       "batchNote": "已选择 {{count}} 个文件。页边距应用于每个文件；结果以 ZIP 返回。",
       "top": "上",
@@ -783,8 +856,8 @@
       "bottom": "下",
       "left": "左",
       "unit": "单位",
-      "unitPt": "点 (pt)",
-      "unitMm": "毫米 (mm)",
+      "unitPt": "点（pt）",
+      "unitMm": "毫米（mm）",
       "unitHelp": "每个边距从对应的页面边缘裁去。",
       "submit": "裁剪页面",
       "loading": "正在裁剪…"
@@ -793,22 +866,22 @@
       "title": "页面标记",
       "description": "为每一页添加页码和页眉/页脚文本。",
       "hint": "标记一个或多个 PDF（多个文件 → ZIP）。",
-      "privacyLine": "您的文件将被私密标记，绝不存储。",
-      "tokensHelp": "在任意位置使用标记符：{page} 当前页，{pages} 总页数，{n} 页码，{date} 今天。",
+      "privacyLine": "您的文件以私密方式标记，我们绝不会保存。",
+      "tokensHelp": "在任意位置使用标记符：'{page}' 当前页，'{pages}' 总页数，'{n}' 页码，'{date}' 今天。",
       "header": "页眉",
       "footer": "页脚",
       "left": "左",
       "center": "中",
       "right": "右",
-      "slotPlaceholder": "例如 {page} / {pages}",
-      "fontSize": "字号 (pt)",
-      "margin": "页边距 (pt)",
+      "slotPlaceholder": "例如 '{page}' / '{pages}'",
+      "fontSize": "字号（pt）",
+      "margin": "页边距（pt）",
       "startNumber": "起始编号",
       "prefix": "Bates 前缀",
       "prefixPlaceholder": "例如 ACME-",
       "skipFirst": "跳过第一页",
       "submit": "添加页面标记",
-      "needSlot": "至少在一个位置输入文本（例如 {page} / {pages}）。",
+      "needSlot": "至少在一个位置输入文本（例如 '{page}' / '{pages}'）。",
       "loading": "标记中…"
     }
   },
@@ -835,7 +908,7 @@
   },
   "pipeline": {
     "canvas": {
-      "source": "源",
+      "source": "输入源",
       "sourceTitle": "源文件",
       "sourceFiles": "包含的文件",
       "addNode": "添加节点",
@@ -859,7 +932,7 @@
         "noFiles": "无文件",
         "pages": "页面：{{pages}}",
         "all": "全部",
-        "separate": "分开",
+        "separate": "拆分",
         "order": "顺序：{{order}}",
         "natural": "自然顺序",
         "target": "目标：{{size}}",
@@ -882,8 +955,8 @@
       "IDENTIFIER": "标识符",
       "CONTACT": "联系方式",
       "FINANCIAL": "金融数据",
-      "NATIONAL_ID": "国家身份",
-      "ONLINE_IDENTIFIER": "在线标识符 (IP / URL)",
+      "NATIONAL_ID": "身份证件",
+      "ONLINE_IDENTIFIER": "在线标识符（IP / URL）",
       "SPECIAL_CATEGORY": "特殊类别"
     },
     "type": {

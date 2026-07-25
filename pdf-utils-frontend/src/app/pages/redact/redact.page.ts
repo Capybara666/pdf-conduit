@@ -7,6 +7,7 @@ import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { RedactHandoffService } from '../../core/redact-handoff.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { PdfViewerComponent, RegionRect } from '../../shared/pdf-viewer/pdf-viewer.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -20,7 +21,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-redact-page',
   standalone: true,
-  imports: [DecimalPipe, TranslocoModule, FileDropZoneComponent, PageHeaderComponent, PdfViewerComponent, ResultPanelComponent],
+  imports: [DecimalPipe, TranslocoModule, FileDropZoneComponent, OpProgressComponent, PageHeaderComponent, PdfViewerComponent, ResultPanelComponent],
   template: `
     <section class="op-page">
       <app-page-header
@@ -92,9 +93,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
               <button type="button" class="btn" (click)="clearWork()">{{ 'common.clear' | transloco }}</button>
             </div>
 
+            <app-op-progress
+              [run]="state.tracker()"
+              [label]="'pages.redact.loading' | transloco"
+              (cancel)="state.cancel()"
+              (dismiss)="state.dismiss()"
+            />
+
             <app-result-panel
-              [loading]="state.loading()"
-              [loadingLabel]="'pages.redact.loading' | transloco"
               [error]="state.error()"
               [result]="state.result()"
               (retry)="submit()"

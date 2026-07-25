@@ -8,12 +8,13 @@ import {
   OnInit,
   Output,
   PLATFORM_ID,
+  inject,
   signal,
 } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
+import { CapabilitiesService } from '../../core/capabilities.service';
 import { formatBytes } from '../../core/download.util';
-import { environment } from '../../../environments/environment';
 
 /** Why a file was rejected during client-side validation. */
 export type RejectionReason = 'size' | 'type' | 'count';
@@ -30,8 +31,13 @@ export interface FileRejection {
  * - `multiple` toggles single vs multi selection.
  * - `accept` sets the native file-input filter (e.g. `.pdf,image/*`) and is
  *   also enforced client-side.
- * - `maxFileSizeMb` (default from `environment.maxUploadMb`) rejects oversize
- *   files before upload; `maxFiles` (0 = unlimited) caps the count.
+ * - `maxFileSizeMb` rejects oversize files before upload; `maxFiles` (`0` =
+ *   unlimited) caps the count. Left unbound, BOTH follow the limits the server
+ *   advertises via `GET /api/capabilities` (`CapabilitiesService`), falling back
+ *   to the `environment` values only until that response lands. So the drop zone
+ *   refuses exactly what the server would refuse — no earlier, no later — and
+ *   nothing here has to be kept in sync by hand. A host that binds either input
+ *   overrides the advertised value for that drop zone.
  * - `pageDrop` (default off) opts into a whole-page drop overlay + clipboard
  *   paste so a host can enable it with a single prop.
  * - Emits `filesChange` whenever the accepted selection changes and `rejected`
@@ -56,10 +62,33 @@ export class FileDropZoneComponent implements OnInit, OnDestroy {
   /** Show the built-in file list under the drop target. Hide it when the host
    *  renders its own list (e.g. a drag-reorder list for merge/arrange). */
   @Input() showList = true;
-  /** Reject files larger than this many MB (0 disables the size check). */
-  @Input() maxFileSizeMb = environment.maxUploadMb;
-  /** Cap the number of accepted files (0 = unlimited). */
-  @Input() maxFiles = 0;
+  /**
+   * Reject files larger than this many MB (0 disables the size check). Unbound,
+   * it is the server's advertised per-file cap (`environment.maxUploadMb` until
+   * that response lands).
+   */
+  @Input()
+  set maxFileSizeMb(value: number) {
+    this.maxFileSizeMbOverride = typeof value === 'number' ? value : null;
+  }
+  get maxFileSizeMb(): number {
+    return this.maxFileSizeMbOverride ?? this.capabilities.maxUploadMb();
+  }
+
+  /**
+   * Cap the number of accepted files. Unbound, it is the server's advertised
+   * per-request limit (`environment.maxFilesPerRequest` until that response
+   * lands) so a user is told up front instead of waiting out a large upload for
+   * a 413. Bind `0` to opt out explicitly (unlimited); only meaningful with
+   * `multiple`.
+   */
+  @Input()
+  set maxFiles(value: number) {
+    this.maxFilesOverride = typeof value === 'number' ? value : null;
+  }
+  get maxFiles(): number {
+    return this.maxFilesOverride ?? this.capabilities.maxFilesPerRequest();
+  }
   /** Opt into a page-wide drop overlay + clipboard paste. Default off so
    *  existing pages are unaffected. */
   @Input() pageDrop = false;
@@ -85,6 +114,11 @@ export class FileDropZoneComponent implements OnInit, OnDestroy {
   readonly dropIndex = signal<number | null>(null);
 
   protected readonly formatBytes = formatBytes;
+  /** The server's advertised upload ceilings; the source of both caps by default. */
+  private readonly capabilities = inject(CapabilitiesService);
+  /** Set only when a host explicitly binds the input — `null` = follow the server. */
+  private maxFileSizeMbOverride: number | null = null;
+  private maxFilesOverride: number | null = null;
   private readonly isBrowser: boolean;
   private hideTimer: ReturnType<typeof setTimeout> | undefined;
 

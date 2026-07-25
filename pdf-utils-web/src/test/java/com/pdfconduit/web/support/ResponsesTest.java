@@ -1,11 +1,17 @@
 package com.pdfconduit.web.support;
 
+import com.pdfconduit.core.service.BatchFailure;
 import com.pdfconduit.core.service.NamedBytes;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,5 +38,67 @@ class ResponsesTest {
         String header = response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
         assertNotNull(header);
         assertTrue(header.contains("filename*=UTF-8''"), header);
+    }
+
+    // --- X-Batch-Failures: "<file>: <reason>" entries joined by "; " -------
+
+    @Test
+    void batchFailures_joinsFileAndReason() {
+        String header = Responses.batchFailures(List.of(
+            new BatchFailure("a.pdf", "The PDF is password-protected."),
+            new BatchFailure("b.pdf", "Could not read the PDF.")));
+
+        assertEquals("a.pdf: The PDF is password-protected.; b.pdf: Could not read the PDF.", header);
+    }
+
+    @Test
+    void batchFailures_capsTheListSoAHugeBatchCannotBlowTheHeader() {
+        List<BatchFailure> many = new ArrayList<>();
+        for (int i = 1; i <= 8; i++) many.add(new BatchFailure("f" + i + ".pdf", "broken"));
+
+        String header = Responses.batchFailures(many);
+
+        assertTrue(header.startsWith("f1.pdf: broken; "), header);
+        assertTrue(header.endsWith("; +3 more"), header);
+        assertFalse(header.contains("f6.pdf"), header);
+    }
+
+    /**
+     * A failure that already travelled through {@code MemoryOperations.named} carries the file name
+     * in its message; the header formatter puts the name in front of every entry, so joining the
+     * two verbatim said it twice.
+     */
+    @Test
+    void batchFailures_doesNotRepeatAFilenameTheMessageAlreadyCarries() {
+        String header = Responses.batchFailures(List.of(
+            new BatchFailure("locked.pdf", "locked.pdf: The PDF is password-protected."),
+            new BatchFailure("broken.pdf", "Could not read the PDF.")));
+
+        assertEquals("locked.pdf: The PDF is password-protected.; "
+            + "broken.pdf: Could not read the PDF.", header);
+    }
+
+    /** A file name mentioned mid-message is left alone: only a leading "<file>: " is the duplicate. */
+    @Test
+    void batchFailures_keepsAFilenameThatIsNotALeadingPrefix() {
+        String header = Responses.batchFailures(List.of(
+            new BatchFailure("a.pdf", "Cannot merge a.pdf with the others.")));
+
+        assertEquals("a.pdf: Cannot merge a.pdf with the others.", header);
+    }
+
+    @Test
+    void batchFailures_isSafeToPutInAHeader() {
+        String header = Responses.batchFailures(List.of(
+            new BatchFailure("evil\r\nX-Injected: 1.pdf", "bad; message"),
+            new BatchFailure("zażółć.pdf", "damaged")));
+
+        // No response splitting, no stray separator, nothing outside the Latin-1 wire charset.
+        assertFalse(header.contains("\r"), header);
+        assertFalse(header.contains("\n"), header);
+        assertTrue(header.startsWith("evil  X-Injected: 1.pdf: bad  message; "), header);
+        for (int i = 0; i < header.length(); i++) {
+            assertTrue(header.charAt(i) <= 0xff, "non Latin-1 char leaked into header: " + header);
+        }
     }
 }

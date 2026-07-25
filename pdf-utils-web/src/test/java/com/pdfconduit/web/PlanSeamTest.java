@@ -9,6 +9,7 @@ import com.pdfconduit.web.plan.FreePlanLimits;
 import com.pdfconduit.web.plan.FreePlanLimitsResolver;
 import com.pdfconduit.web.plan.PlanLimits;
 import com.pdfconduit.web.plan.PlanLimitsResolver;
+import com.pdfconduit.web.plan.RequestPlan;
 import com.pdfconduit.web.principal.RequestPrincipal;
 import com.pdfconduit.web.quota.QuotaService;
 import com.pdfconduit.web.quota.QuotaStore;
@@ -34,7 +35,8 @@ class PlanSeamTest {
 
     /** All-defaults WebProperties (each null normalised to the documented default in the record). */
     private static WebProperties defaults() {
-        return new WebProperties(null, null, null, null, null, null, null, null, null, null, null, null);
+        return new WebProperties(
+            null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     @Test
@@ -48,6 +50,8 @@ class PlanSeamTest {
         assertEquals(props.pdf().maxPages(), plan.maxPages());
         assertEquals(props.render().maxDpi(), plan.maxDpi());
         assertEquals(props.render().maxOutputPixels(), plan.maxOutputPixels());
+        assertEquals(props.render().maxTotalOutputPixels(), plan.maxTotalOutputPixels());
+        assertEquals(props.processing().maxTotalOutputBytes().toBytes(), plan.maxTotalOutputBytes());
         assertEquals(props.ratelimit().requestsPerMinute(), plan.rateRequestsPerMinute());
         assertEquals(props.ratelimit().heavyPerMinute(), plan.rateHeavyPerMinute());
         assertEquals(props.ratelimit().burst(), plan.rateBurst());
@@ -86,17 +90,38 @@ class PlanSeamTest {
         NamedBytes twoPage = new NamedBytes("a.pdf", TestPdfs.blank(2));
 
         // Default FREE plan (maxPages 3000): a 2-page PDF passes the page-count guard.
-        WebOperations lenient = new WebOperations(officeGuard, ocrGuard, new FreePlanLimitsResolver(props), props);
+        WebOperations lenient = new WebOperations(officeGuard, ocrGuard,
+            outputBudget(props, new FreePlanLimitsResolver(props)),
+            new com.pdfconduit.web.guard.DocumentLimits(requestPlan(new FreePlanLimitsResolver(props))),
+            props);
         assertDoesNotThrow(() -> lenient.readMetadata(twoPage));
 
         // Swap in a stub plan with maxPages=1: the SAME operation is now rejected — proving the guard
         // reads its ceiling from the resolved PlanLimits seam, not from a hard-wired WebProperties field.
         PlanLimitsResolver stub = principal -> new FreePlanLimits(60, 15, 26_214_400L,
-            /* maxPages */ 1, 300, 60_000_000L, 40, 10, 15);
-        WebOperations strict = new WebOperations(officeGuard, ocrGuard, stub, props);
+            /* maxPages */ 1, 300, 60_000_000L, 500_000_000L, 67_108_864L, 40, 10, 15);
+        WebOperations strict = new WebOperations(officeGuard, ocrGuard, outputBudget(props, stub),
+            new com.pdfconduit.web.guard.DocumentLimits(requestPlan(stub)), props);
         PdfOperationException ex =
             assertThrows(PdfOperationException.class, () -> strict.readMetadata(twoPage));
         assertEquals(true, ex.getMessage().contains("maximum page count"));
+    }
+
+    /**
+     * A {@link RequestPlan} over {@code resolver} with no servlet request in scope, so
+     * {@code current()} falls through to {@link PlanLimitsResolver#resolveDefault()} — the plain
+     * unit-test path. Over HTTP the very same object resolves the caller's plan per request.
+     */
+    private static RequestPlan requestPlan(PlanLimitsResolver resolver) {
+        return new RequestPlan(request -> new com.pdfconduit.web.principal.IpPrincipal("test"), resolver);
+    }
+
+    /** An {@link com.pdfconduit.web.guard.OutputBudget} over the same plan seam the guards read. */
+    private static com.pdfconduit.web.guard.OutputBudget outputBudget(WebProperties props,
+                                                                      PlanLimitsResolver resolver) {
+        RequestPlan plan = requestPlan(resolver);
+        return new com.pdfconduit.web.guard.OutputBudget(plan,
+            new com.pdfconduit.web.cost.CostModel(props, plan));
     }
 
     /** Minimal in-test {@link QuotaStore} used to prove QuotaService counts through the seam. */

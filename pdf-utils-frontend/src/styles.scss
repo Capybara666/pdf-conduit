@@ -27,9 +27,20 @@ $bp-rail: 820px;
      FIXED (default): the comfortable reading width. WIDE: fills wide monitors.
      `--content-max` drives the standard `.op-page`; `--content-max-wide` drives
      the roomier `.op-page.wide` variant (canvas-style pages: pipeline, sign,
-     redact). The `data-width="wide"` block below rewrites both. */
+     redact). The `data-width="wide"` block below rewrites both.
+     `--content-max-prose` drives text-only pages (`.op-page.prose-page`:
+     privacy and any future legal/static page). It is deliberately NOT rewritten
+     in wide mode — prose at 1600px is unreadable — but such pages still centre
+     via `.op-page`'s `margin: 0 auto`.
+     `--content-max-ceiling` is the WIDEST the content column can ever get (the
+     wide-mode value). It is mode-INDEPENDENT: surfaces that must stay pinned to
+     that outer boundary whatever the toggle says — the header actions row, the
+     pipeline canvas page — reference it directly, so the ceiling literal lives
+     here once instead of being copied per component. */
   --content-max: 860px;
   --content-max-wide: 1200px;
+  --content-max-prose: 720px;
+  --content-max-ceiling: min(96vw, 1600px);
 
   /* Motion system — durations + easings. Defined once here so all 6 themes
      inherit them (themes override colours only). Consumed across global
@@ -53,8 +64,8 @@ $bp-rail: 820px;
    narrower than the standard page. This attribute is orthogonal to
    `data-theme`, so both can be present on <html> at once. */
 :root[data-width='wide'] {
-  --content-max: min(96vw, 1600px);
-  --content-max-wide: min(96vw, 1600px);
+  --content-max: var(--content-max-ceiling);
+  --content-max-wide: var(--content-max-ceiling);
 }
 
 /* Light theme (default). */
@@ -297,6 +308,16 @@ button {
   max-width: var(--content-max-wide);
 }
 
+/* Text-only pages (privacy / legal / other static prose). They opt OUT of the
+   WIDE regime — a 1600px measure is unreadable — but they must still be
+   CENTERED, which `.op-page`'s `margin: 0 auto` handles once the cap lives on
+   the page container instead of on an inner block. Never cap an inner block
+   inside `.op-page`: it is a column flex container, so a narrower child is
+   stretched-then-clamped and ends up flush LEFT, not centred. */
+.op-page.prose-page {
+  max-width: min(100%, var(--content-max-prose));
+}
+
 /* Reusable scroll wrapper for wide content blocks (tables, code, wide grids)
    so they scroll internally instead of pushing the page sideways. Safe at all
    widths. */
@@ -327,6 +348,13 @@ button {
   display: grid;
   gap: 1.1rem 1.25rem;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* Takes the whole grid row. For a field whose control is a set of choices, the
+   auto-fit column (min 220px) is too narrow: the options get squeezed, and a
+   sibling field appearing later lands beside them instead of below. */
+.form-grid .field.full {
+  grid-column: 1 / -1;
 }
 
 .field {
@@ -489,7 +517,12 @@ input[type='radio'] {
 }
 
 .seg {
-  display: inline-flex;
+  /* Fills the field and splits evenly between its buttons. `inline-flex` sized
+     the control to its text, so it neither filled the panel nor kept the
+     options equal — and a locale with longer labels (pl "Podziel co N stron")
+     broke the row into one line per button. */
+  display: flex;
+  width: 100%;
   flex-wrap: wrap;
   border: 1px solid var(--border-strong);
   border-radius: calc(var(--radius) - 5px);
@@ -501,6 +534,10 @@ input[type='radio'] {
 
 .seg button {
   border: none;
+  /* Equal shares of the row; min-width:0 lets a long label wrap inside its own
+     button (taller control) instead of pushing the row apart. */
+  flex: 1 1 0;
+  min-width: 0;
   background: var(--surface-2);
   color: var(--text);
   padding: 0.45rem 0.9rem;
@@ -523,6 +560,14 @@ input[type='radio'] {
 .hint-note {
   font-size: 0.8rem;
   color: var(--text-muted);
+  /* The page column already spaces its children with `gap`; the browser's
+     default <p> margin was adding to it, which opened a visible hole between
+     two consecutive notes (Repair carries both a privacy line and a caveat). */
+  margin: 0;
+}
+
+.hint-note + .hint-note {
+  margin-top: 0.3rem;
 }
 
 .reorder-list {

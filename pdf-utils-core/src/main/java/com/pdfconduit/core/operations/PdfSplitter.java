@@ -25,7 +25,7 @@ public final class PdfSplitter {
             List<Integer> pageNums = opts.pages().isAll() ? allPages(total) : opts.pages().pageNumbers();
 
             return opts.mode() == SplitMode.SEPARATE
-                ? separate(src, pageNums, total, opts.output(), stem(opts.input()))
+                ? separate(src, pageNums, total, opts.output(), stem(opts.input()), opts.pagesPerChunk())
                 : combine(src, pageNums, opts.output());
 
         } catch (IOException e) {
@@ -55,13 +55,57 @@ public final class PdfSplitter {
      */
     public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages)
             throws PdfOperationException {
+        return separateBytes(pdf, pages, 1, null);
+    }
+
+    /**
+     * In-memory "split every N pages" variant: the selected pages of {@code pdf}, cut into
+     * consecutive groups of {@code pagesPerChunk} in page order, each group → its own PDF's bytes.
+     * The last group may be shorter; {@code pagesPerChunk} at or above the number of selected pages
+     * yields a single output. {@code pagesPerChunk == 1} is exactly
+     * {@link #separateBytes(byte[], com.pdfconduit.core.model.PageRange)}.
+     */
+    public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages,
+                                             int pagesPerChunk) throws PdfOperationException {
+        return separateBytes(pdf, pages, pagesPerChunk, null);
+    }
+
+    /**
+     * As {@link #separateBytes(byte[], com.pdfconduit.core.model.PageRange)}, but reporting the
+     * accumulated output size to {@code outputGuard} after every page so a caller with a memory
+     * budget (the web backend) can abort a pathological split early instead of holding thousands
+     * of single-page PDFs in the heap. {@code null} ⇒ unbounded (the desktop/CLI default).
+     */
+    public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages,
+                                             com.pdfconduit.core.service.OutputSizeGuard outputGuard)
+            throws PdfOperationException {
+        return separateBytes(pdf, pages, 1, outputGuard);
+    }
+
+    /**
+     * The full in-memory SEPARATE variant: the selected pages cut into consecutive groups of
+     * {@code pagesPerChunk} (see {@link #separateBytes(byte[], com.pdfconduit.core.model.PageRange, int)}),
+     * each group → its own PDF's bytes, with the accumulated output size reported to
+     * {@code outputGuard} after every produced part ({@code null} ⇒ unbounded, the desktop/CLI
+     * default) so a memory-budgeted caller can abort a pathological split early.
+     */
+    public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages,
+                                             int pagesPerChunk,
+                                             com.pdfconduit.core.service.OutputSizeGuard outputGuard)
+            throws PdfOperationException {
+        requireChunk(pagesPerChunk);
         try (PDDocument src = PdfLoader.load(pdf)) {
             List<Integer> pageNums = pages.isAll() ? allPages(src.getNumberOfPages()) : pages.pageNumbers();
-            List<byte[]> outputs = new ArrayList<>(pageNums.size());
-            for (int pageNum : pageNums) {
-                try (PDDocument one = singlePageDoc(src, pageNum)) {
-                    outputs.add(PdfLoader.toBytes(one));
+            List<List<Integer>> chunks = chunk(pageNums, pagesPerChunk);
+            List<byte[]> outputs = new ArrayList<>(chunks.size());
+            long accumulated = 0;
+            for (List<Integer> group : chunks) {
+                try (PDDocument part = combineDoc(src, group)) {
+                    byte[] bytes = PdfLoader.toBytes(part);
+                    outputs.add(bytes);
+                    accumulated += bytes.length;
                 }
+                if (outputGuard != null) outputGuard.check(accumulated);
             }
             return outputs;
         } catch (IOException e) {
@@ -79,20 +123,52 @@ public final class PdfSplitter {
         }
     }
 
-    /** Each selected page → its own PDF inside {@code outputDir}. */
+    /**
+     * Each group of {@code pagesPerChunk} selected pages → its own PDF inside {@code outputDir}.
+     * A one-page group keeps the historic {@code <stem>_p07.pdf} name; a longer one is named after
+     * the pages it spans, {@code <stem>_p07-12.pdf}.
+     */
     private static SplitResult separate(PDDocument src, List<Integer> pageNums, int total,
-                                        Path outputDir, String stem) throws IOException {
+                                        Path outputDir, String stem, int pagesPerChunk)
+            throws IOException {
         Files.createDirectories(outputDir);
         int width = Integer.toString(total).length();
-        List<Path> outputs = new ArrayList<>(pageNums.size());
-        for (int pageNum : pageNums) {
-            Path out = outputDir.resolve(stem + "_p" + pad(pageNum, width) + ".pdf");
-            try (PDDocument one = singlePageDoc(src, pageNum)) {
-                one.save(out.toFile());
+        List<Path> outputs = new ArrayList<>();
+        int pageCount = 0;
+        for (List<Integer> group : chunk(pageNums, pagesPerChunk)) {
+            Path out = outputDir.resolve(stem + "_p" + partName(group, width) + ".pdf");
+            try (PDDocument part = combineDoc(src, group)) {
+                part.save(out.toFile());
             }
             outputs.add(out);
+            pageCount += group.size();
         }
-        return new SplitResult(outputs, outputs.size());
+        return new SplitResult(outputs, pageCount);
+    }
+
+    /** {@code 07} for a single page, {@code 07-12} for a group spanning several. */
+    private static String partName(List<Integer> group, int width) {
+        int first = group.get(0);
+        int last = group.get(group.size() - 1);
+        return first == last ? pad(first, width) : pad(first, width) + "-" + pad(last, width);
+    }
+
+    /**
+     * Cuts {@code pageNums} into consecutive groups of at most {@code size}, preserving order.
+     * The last group holds the remainder; a {@code size} at or above the list length gives one group.
+     */
+    private static List<List<Integer>> chunk(List<Integer> pageNums, int size) {
+        List<List<Integer>> chunks = new ArrayList<>();
+        for (int i = 0; i < pageNums.size(); i += size) {
+            chunks.add(List.copyOf(pageNums.subList(i, Math.min(i + size, pageNums.size()))));
+        }
+        return chunks;
+    }
+
+    private static void requireChunk(int pagesPerChunk) {
+        if (pagesPerChunk < 1) {
+            throw new IllegalArgumentException("Pages per file must be at least 1.");
+        }
     }
 
     /** A new document holding the given 1-based pages of {@code src}, in order. */
@@ -100,13 +176,6 @@ public final class PdfSplitter {
         PDDocument out = new PDDocument();
         for (int pageNum : pageNums) out.importPage(src.getPage(pageNum - 1));
         return out;
-    }
-
-    /** A new one-page document holding page {@code pageNum} (1-based) of {@code src}. */
-    private static PDDocument singlePageDoc(PDDocument src, int pageNum) throws IOException {
-        PDDocument one = new PDDocument();
-        one.importPage(src.getPage(pageNum - 1));
-        return one;
     }
 
     private static List<Integer> allPages(int count) {

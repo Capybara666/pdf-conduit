@@ -2,6 +2,7 @@ package com.pdfconduit.web.error;
 
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.exception.PdfUnrecoverableException;
 import com.pdfconduit.core.pipeline.PipelineException;
 import com.pdfconduit.web.dto.ApiError;
 import org.slf4j.Logger;
@@ -41,12 +42,33 @@ public class GlobalExceptionHandler {
         return body(HttpStatus.BAD_REQUEST, "bad_request", e.getMessage());
     }
 
+    /**
+     * A file Repair could not rebuild at all. Same 422 family as any other operation failure, but a
+     * distinct code so the UI can say the honest thing — "this one cannot be recovered" — instead of
+     * a generic failure. Declared before the {@link PdfOperationException} handler it specialises.
+     */
+    @ExceptionHandler(PdfUnrecoverableException.class)
+    public ResponseEntity<ApiError> onUnrecoverable(PdfUnrecoverableException e) {
+        return body(HttpStatus.UNPROCESSABLE_ENTITY, "repair_failed", e.getMessage());
+    }
+
     @ExceptionHandler({PdfOperationException.class, PipelineException.class})
     public ResponseEntity<ApiError> onOperationFailed(Exception e) {
         // The message is already sanitised at the source (core strips LibreOffice stderr / temp
         // paths); log the full cause server-side so operators keep the diagnostics clients don't get.
         log.warn("Operation failed", e);
         return body(HttpStatus.UNPROCESSABLE_ENTITY, "operation_failed", e.getMessage());
+    }
+
+    /**
+     * The result would blow the per-request output budget (too many pages × files to rasterise, or
+     * too many accumulated result bytes). Still 422 — the upload was fine, the *output* is not —
+     * but with its own code so the client can advise "fewer pages/files, lower DPI" precisely.
+     * Declared separately from {@link #onOperationFailed} so this more specific handler wins.
+     */
+    @ExceptionHandler(OutputTooLargeException.class)
+    public ResponseEntity<ApiError> onOutputTooLarge(OutputTooLargeException e) {
+        return body(HttpStatus.UNPROCESSABLE_ENTITY, "output_too_large", e.getMessage());
     }
 
     @ExceptionHandler(OfficeDisabledException.class)

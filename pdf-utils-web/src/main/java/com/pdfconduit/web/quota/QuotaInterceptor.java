@@ -21,19 +21,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The free-tier gate for operation-producing endpoints. Runs after the rate-limit filter and
- * before the controller. It:
+ * The free-tier gate for {@code /api/**}. Runs after the rate-limit filter and before the
+ * controller. It:
  * <ul>
- *   <li>enforces the absolute per-request file-count cap on every operation endpoint (including
- *       the single-file ones and {@code /pipeline/run}, which the controllers' own guardCount
- *       skips) → 400;</li>
- *   <li>enforces the free-tier per-file size cap and per-request file cap → 413 {@code too_large};</li>
+ *   <li>enforces the absolute per-request file-count cap on <em>every</em> uploading endpoint
+ *       (including the single-file ones and {@code /pipeline/run}, which the controllers' own
+ *       guardCount skips) → 400;</li>
+ *   <li>enforces the free-tier per-file size cap and per-request file cap on <em>every</em>
+ *       uploading endpoint → 413 {@code too_large};</li>
  *   <li>rejects requests once the caller's daily free operation count is spent → 429
  *       {@code quota_exceeded}, and emits {@code X-Quota-*} headers;</li>
  *   <li>counts a successful operation (2xx) in {@code afterCompletion} so failures don't burn quota.</li>
  * </ul>
- * The free-tier checks and counting are skipped entirely when {@code quota.enabled=false}; the hard
- * file-count cap always applies.
+ *
+ * <p><strong>Scope split.</strong> The size/count caps apply to any {@code /api/**} multipart POST,
+ * not just the quota-counting ones: {@code /api/render}, {@code /api/metadata/read} and
+ * {@code /api/form-fields} all parse an arbitrary uploaded document, so letting them accept the raw
+ * 100 MB multipart ceiling while every real operation is capped at 25 MB is a free way to pin the
+ * load-guard. Only the <em>daily count</em> (check + increment) stays behind
+ * {@link Endpoints#isQuotaOp(String)}, so inspecting a file still costs no operations.
+ *
+ * <p>The free-tier checks and counting are skipped entirely when {@code quota.enabled=false}; the
+ * hard file-count cap always applies.
+ *
+ * <p><strong>Advertised = enforced.</strong> The per-file byte cap and per-request file count come
+ * from {@link UploadCaps}, the same component {@code GET /api/capabilities} advertises them from, so
+ * the SPA's client-side pre-upload guard is the server's own number rather than a hard-coded copy.
  */
 @Component
 public class QuotaInterceptor implements HandlerInterceptor {
@@ -41,57 +54,72 @@ public class QuotaInterceptor implements HandlerInterceptor {
     private final QuotaService quota;
     private final PrincipalResolver principals;
     private final PlanLimitsResolver planLimits;
+    private final UploadCaps uploadCaps;
     private final WebMetrics metrics;
     private final boolean quotaEnabled;
-    private final int hardMaxFiles;
 
     public QuotaInterceptor(QuotaService quota, PrincipalResolver principals, PlanLimitsResolver planLimits,
-                            WebMetrics metrics, WebProperties props) {
+                            UploadCaps uploadCaps, WebMetrics metrics, WebProperties props) {
         this.quota = quota;
         this.principals = principals;
         this.planLimits = planLimits;
+        // The per-file/per-request ceilings enforced below are the SAME object GET /api/capabilities
+        // advertises, so the client-side guard cannot drift from the server-side one.
+        this.uploadCaps = uploadCaps;
         this.metrics = metrics;
-        // System-level toggle + absolute hard cap stay sourced from WebProperties; the free-tier
-        // ceilings (per-file count/size, daily operations) now come from the resolved PlanLimits.
+        // System-level toggle stays sourced from WebProperties; the free-tier ceilings (per-file
+        // count/size, daily operations) come from the resolved PlanLimits via UploadCaps.
         this.quotaEnabled = props.quota().enabled();
-        this.hardMaxFiles = props.maxFilesPerRequest();
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         String path = Endpoints.path(request);
-        if (!Endpoints.isQuotaOp(path)) return true;
+        if (!Endpoints.isApi(path)) return true;
+        boolean quotaOp = Endpoints.isQuotaOp(path);
 
+        // Every uploading /api endpoint is size-capped, not only the quota-counting ones.
         List<MultipartFile> files = uploadedFiles(request);
 
         // Absolute file-count guard, applied uniformly (single-file endpoints + pipeline/run too).
+        int hardMaxFiles = uploadCaps.hardMaxFiles();
         if (files.size() > hardMaxFiles) {
             throw new IllegalArgumentException(
                 "Too many files: " + files.size() + " (limit " + hardMaxFiles + " per request).");
         }
 
         if (!quotaEnabled) return true;
+        // Nothing left to do for a non-quota endpoint that carries no upload (GET catalogs, the
+        // JSON-only /pipeline/validate): skip the principal/plan resolution entirely.
+        if (files.isEmpty() && !quotaOp) return true;
 
         // The caller's entitlements for this request (today: the constant FREE plan).
         RequestPrincipal principal = principals.resolve(request);
         PlanLimits plan = planLimits.resolve(principal);
-        int freeMaxFiles = plan.maxFiles();
-        long freeMaxFileBytes = plan.maxFileSizeBytes();
         int dailyLimit = plan.dailyOperations();
+        // The EFFECTIVE ceilings (plan value narrowed by the deployment-wide guardrails) — exactly
+        // the pair GET /api/capabilities hands the client, resolved from the same plan.
+        UploadCaps.Caps caps = uploadCaps.forPlan(plan);
+        int maxFiles = caps.maxFilesPerRequest();
+        long maxFileBytes = caps.maxFileSizeBytes();
 
         // Free-tier per-request and per-file caps (stricter than the absolute multipart ceiling).
-        if (files.size() > freeMaxFiles) {
-            throw new TooLargeException("Free tier allows at most " + freeMaxFiles
+        // Applied to EVERY uploading endpoint — /api/render and the read-only analyses included.
+        if (files.size() > maxFiles) {
+            throw new TooLargeException("Free tier allows at most " + maxFiles
                 + " files per request; received " + files.size() + ".");
         }
         for (MultipartFile f : files) {
-            if (f.getSize() > freeMaxFileBytes) {
+            if (f.getSize() > maxFileBytes) {
                 throw new TooLargeException("File \"" + safeName(f)
                     + "\" exceeds the free-tier per-file limit of "
-                    + DataSize.ofBytes(freeMaxFileBytes).toMegabytes() + " MB.");
+                    + DataSize.ofBytes(maxFileBytes).toMegabytes() + " MB.");
             }
         }
+
+        // Beyond this point: the daily free operation count, which only real operations consume.
+        if (!quotaOp) return true;
 
         // Daily free quota.
         String key = principal.id();

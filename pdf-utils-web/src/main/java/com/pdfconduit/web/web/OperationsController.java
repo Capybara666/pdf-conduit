@@ -10,16 +10,21 @@ import com.pdfconduit.core.model.CompressOptions;
 import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.RedactRegion;
+import com.pdfconduit.core.model.RepairBytesResult;
+import com.pdfconduit.core.model.RepairFinding;
 import com.pdfconduit.core.model.SignPlacement;
 import com.pdfconduit.core.model.TextFormat;
 import com.pdfconduit.core.model.WatermarkOptions;
+import com.pdfconduit.core.service.BatchOutcome;
 import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OperationType;
-import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.RedactRegionDto;
 import com.pdfconduit.web.dto.SignPlacementDto;
 import com.pdfconduit.web.guard.LoadGuard;
+import com.pdfconduit.web.guard.OutputBudget;
+import com.pdfconduit.web.quota.UploadCaps;
+import com.pdfconduit.web.service.RedactOutcome;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Params;
 import com.pdfconduit.web.support.Responses;
@@ -42,6 +47,7 @@ import java.util.Map;
 
 import static com.pdfconduit.web.web.ControllerSupport.ensurePdf;
 import static com.pdfconduit.web.web.ControllerSupport.guardCount;
+import static com.pdfconduit.web.web.ControllerSupport.mapBounded;
 import static com.pdfconduit.web.web.ControllerSupport.totalBytes;
 
 /**
@@ -50,6 +56,19 @@ import static com.pdfconduit.web.web.ControllerSupport.totalBytes;
  * flows through the core {@code byte[]} API), and streams the resulting bytes back via
  * {@link ResponseEntity}. Multi-output / multi-file MAP results are zipped in memory. The one
  * disk touch is the documented office conversion, gated by {@code pdfconduit.web.office.enabled}.
+ *
+ * <p><b>MAP batches are partial-tolerant</b>: each uploaded file is run on its own through
+ * {@link MemoryOperations#mapPartial}, so one unusable input (password-protected, damaged, over the
+ * page cap) costs the user that file instead of the whole upload. The successes come back zipped and
+ * the skipped files are named in {@code X-Batch-Failures}; only when <em>every</em> input fails does
+ * the request itself fail, with the first error now naming its file. REDUCE (merge) is untouched —
+ * a merge missing an input is a different document, so it still fails as a whole.
+ *
+ * <p><b>Every MAP batch runs under one request-wide output budget</b>
+ * ({@link ControllerSupport#mapBounded}): the results accumulate in the heap and are copied again
+ * into the ZIP, so the sum is bounded while the batch runs and an over-budget request is refused
+ * with 422 {@code output_too_large} instead of OOM-ing. The budget is per REQUEST, so blowing it is
+ * a whole-request failure, never one file's {@code X-Batch-Failures} entry.
  */
 @RestController
 @RequestMapping("/api")
@@ -60,17 +79,25 @@ public class OperationsController {
 
     private final WebOperations ops;
     private final Uploads uploads;
-    private final int maxFiles;
+    private final UploadCaps uploadCaps;
     private final ObjectMapper json;
     private final LoadGuard loadGuard;
 
-    public OperationsController(WebOperations ops, Uploads uploads, WebProperties props,
+    public OperationsController(WebOperations ops, Uploads uploads, UploadCaps uploadCaps,
                                ObjectMapper json, LoadGuard loadGuard) {
         this.ops = ops;
         this.uploads = uploads;
-        this.maxFiles = props.maxFilesPerRequest();
+        // The absolute per-request file-count guardrail comes from the one component that owns the
+        // upload ceilings — the same number QuotaInterceptor enforces and /api/capabilities
+        // advertises — rather than a second read of the property.
+        this.uploadCaps = uploadCaps;
         this.json = json;
         this.loadGuard = loadGuard;
+    }
+
+    /** The absolute per-request file-count guardrail in force for this request. */
+    private int maxFiles() {
+        return uploadCaps.hardMaxFiles();
     }
 
     // -------------------------------------------------------------------- MERGE
@@ -79,7 +106,7 @@ public class OperationsController {
     public ResponseEntity<byte[]> merge(@RequestParam("files") List<MultipartFile> files,
                                         @RequestParam(required = false) String outputName)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         List<NamedBytes> inputs = uploads.readAll(files);
         NamedBytes merged = loadGuard.execute(totalBytes(inputs), () -> ops.merge(inputs));
         String name = (outputName == null || outputName.isBlank()) ? merged.filename() : ensurePdf(outputName);
@@ -88,21 +115,43 @@ public class OperationsController {
 
     // ------------------------------------------------------------------ EXTRACT
 
+    /**
+     * Extract pages. Three shapes, one endpoint:
+     * <ul>
+     *   <li>default — the selected pages combined into one PDF per input;</li>
+     *   <li>{@code separate=true} — one PDF per selected page (ZIP);</li>
+     *   <li>{@code splitEvery=N} — "split every N pages": the selection cut into parts of N pages
+     *       (ZIP). It is the general form of {@code separate}, which is exactly {@code splitEvery=1},
+     *       so passing it overrides {@code separate}.</li>
+     * </ul>
+     */
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> extract(@RequestParam("files") List<MultipartFile> files,
                                           @RequestParam(required = false) String pages,
-                                          @RequestParam(defaultValue = "false") boolean separate)
+                                          @RequestParam(defaultValue = "false") boolean separate,
+                                          @RequestParam(required = false) Integer splitEvery)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
+        if (splitEvery != null && splitEvery < 1) {
+            throw new IllegalArgumentException("splitEvery must be at least 1.");
+        }
         List<NamedBytes> inputs = uploads.readAll(files);
         long bytes = totalBytes(inputs);
-        if (separate) {
-            // Per-page split is inherently multi-output, so it always zips (even for a single file).
-            return Responses.zip(loadGuard.execute(bytes, () -> ops.extractSeparate(inputs, pages)),
-                "extract_results.zip");
+        if (splitEvery != null || separate) {
+            // A multi-part split is inherently multi-output, so it always zips (even for one file).
+            int perPart = splitEvery != null ? splitEvery : 1;
+            // ONE tally for the request: mapPartial runs a file per call, so each call must be
+            // handed the same budget or the aggregate ceiling silently becomes a per-file one.
+            BatchOutcome outcome = loadGuard.execute(bytes, () -> {
+                OutputBudget.Tally budget = ops.newOutputTally();
+                return MemoryOperations.mapPartial(inputs,
+                    in -> ops.extractSeparate(in, pages, perPart, budget));
+            });
+            return Responses.zip(outcome, "extract_results.zip");
         }
         // Combine: one PDF per input — a single file streams, several files zip.
-        List<NamedBytes> results = loadGuard.execute(bytes, () -> ops.extractCombine(inputs, pages));
+        BatchOutcome results = loadGuard.execute(bytes, () -> mapBounded(ops.newOutputTally(),
+            inputs, in -> ops.extractCombine(List.of(in), pages)));
         return Responses.batch("extract", results, MediaType.APPLICATION_PDF);
     }
 
@@ -114,7 +163,7 @@ public class OperationsController {
                                            @RequestParam(required = false) String dpi,
                                            @RequestParam(defaultValue = "false") boolean grayscale)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         long target = Params.parseSize(targetSize);
         // Optional image-resolution ceiling: SCREEN/EBOOK/PRINT (unknown/blank ⇒ NONE = no cap).
         CompressOptions.DpiPreset preset =
@@ -129,16 +178,17 @@ public class OperationsController {
             return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, Responses.contentDisposition(name))
+                // Only what CompressBytesResult actually knows. There is no separate "feasible"
+                // or "floor estimate": when targetReached is false the compressor has already run
+                // its strongest rung, so X-Result-Bytes IS the smallest size it could produce.
                 .header("X-Target-Reached", String.valueOf(r.targetReached()))
-                .header("X-Target-Feasible", String.valueOf(r.targetReached()))
-                .header("X-Estimated-Floor-Bytes", String.valueOf(r.resultBytes()))
                 .header("X-Original-Bytes", String.valueOf(r.originalBytes()))
                 .header("X-Result-Bytes", String.valueOf(r.resultBytes()))
                 .contentLength(r.bytes().length)
                 .body(r.bytes());
         }
-        List<NamedBytes> results =
-            loadGuard.execute(bytes, () -> ops.compressBatch(inputs, target, preset, grayscale));
+        BatchOutcome results = loadGuard.execute(bytes, () -> mapBounded(ops.newOutputTally(),
+            inputs, in -> ops.compressBatch(List.of(in), target, preset, grayscale)));
         return Responses.zip(results, "compress_results.zip");
     }
 
@@ -149,10 +199,10 @@ public class OperationsController {
                                          @RequestParam int angle,
                                          @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.rotate(inputs, pages, angle));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.rotate(List.of(in), pages, angle)));
         return Responses.batch("rotate", results, MediaType.APPLICATION_PDF);
     }
 
@@ -174,10 +224,11 @@ public class OperationsController {
     public ResponseEntity<byte[]> toPdf(@RequestParam("files") List<MultipartFile> files,
                                         @RequestParam(required = false) String pageSize)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         PageSize size = Params.pageSize(pageSize, PageSize.FIT);
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs), () -> ops.toPdf(inputs, size));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.toPdf(List.of(in), size)));
         return Responses.batch("to-pdf", results, MediaType.APPLICATION_PDF);
     }
 
@@ -189,13 +240,14 @@ public class OperationsController {
                                           @RequestParam(required = false) String ownerPassword,
                                           @RequestParam(required = false) Integer keyLength)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         Params.require(userPassword, "userPassword");
         // Absent / any non-256 value → AES-128 (the compatibility default); 256 → AES-256.
         int bits = keyLength != null && keyLength == 256 ? 256 : 128;
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.protect(inputs, userPassword, ownerPassword, bits));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs,
+            in -> ops.protect(List.of(in), userPassword, ownerPassword, bits)));
         return Responses.batch("protect", results, MediaType.APPLICATION_PDF);
     }
 
@@ -205,11 +257,11 @@ public class OperationsController {
     public ResponseEntity<byte[]> unlock(@RequestParam("files") List<MultipartFile> files,
                                          @RequestParam String password)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         Params.require(password, "password");
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.unlock(inputs, password));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.unlock(List.of(in), password)));
         return Responses.batch("unlock", results, MediaType.APPLICATION_PDF);
     }
 
@@ -226,7 +278,7 @@ public class OperationsController {
                                             @RequestParam(required = false) String position,
                                             @RequestParam(required = false) String color)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         boolean hasText = text != null && !text.isBlank();
         boolean hasImage = image != null && !image.isEmpty();
         if (hasText == hasImage) {
@@ -237,12 +289,12 @@ public class OperationsController {
         var wmPosition = parseEnum(WatermarkOptions.Position.class, position, WatermarkOptions.Position.CENTER);
         List<NamedBytes> inputs = uploads.readAll(files);
         long bytes = totalBytes(inputs) + (imageBytes != null ? imageBytes.length : 0);
-        List<NamedBytes> results = loadGuard.execute(bytes,
-            () -> ops.watermark(inputs, hasText ? text : null, imageBytes,
+        BatchOutcome results = loadGuard.execute(bytes, () -> mapBounded(ops.newOutputTally(),
+            inputs, in -> ops.watermark(List.of(in), hasText ? text : null, imageBytes,
                 opacity != null ? opacity : 0.3,
                 rotation != null ? rotation : 45,
                 scale != null ? scale : 0.5,
-                wmLayout, wmPosition, color));
+                wmLayout, wmPosition, color)));
         return Responses.batch("watermark", results, MediaType.APPLICATION_PDF);
     }
 
@@ -267,14 +319,14 @@ public class OperationsController {
                                        @RequestParam(required = false) Double left,
                                        @RequestParam(required = false) String unit)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         // Margins are points by default; "mm" switches to millimetres. Missing edge ⇒ 0 (no trim).
         boolean mm = unit != null && unit.trim().equalsIgnoreCase("mm");
         double t = top != null ? top : 0, r = right != null ? right : 0;
         double b = bottom != null ? bottom : 0, l = left != null ? left : 0;
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.crop(inputs, t, r, b, l, mm));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.crop(List.of(in), t, r, b, l, mm)));
         return Responses.batch("crop", results, MediaType.APPLICATION_PDF);
     }
 
@@ -285,11 +337,11 @@ public class OperationsController {
                                       @RequestParam(required = false) String layout,
                                       @RequestParam(defaultValue = "false") boolean booklet)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         var nupLayout = com.pdfconduit.core.model.NupLayout.fromId(layout);
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.nup(inputs, nupLayout, booklet));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.nup(List.of(in), nupLayout, booklet)));
         return Responses.batch("nup", results, MediaType.APPLICATION_PDF);
     }
 
@@ -309,17 +361,62 @@ public class OperationsController {
                                             @RequestParam(required = false) Integer startNumber,
                                             @RequestParam(required = false) String prefix)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.pageMarks(inputs, headerLeft, headerCenter, headerRight,
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs,
+            in -> ops.pageMarks(List.of(in), headerLeft, headerCenter, headerRight,
                 footerLeft, footerCenter, footerRight,
                 fontSize != null ? fontSize : 10f,
                 margin != null ? margin : 36f,
                 skipFirst,
                 startNumber != null ? startNumber : 1,
-                prefix));
+                prefix)));
         return Responses.batch("page-marks", results, MediaType.APPLICATION_PDF);
+    }
+
+    // ------------------------------------------------------------------- REPAIR
+
+    /**
+     * Tries to repair damaged PDFs — not every file can be recovered.
+     *
+     * <p>A single upload streams the rebuilt PDF back and carries the honest outcome in two headers:
+     * {@code X-Repair-Was-Damaged} (the input failed a strict parse or showed a concrete structural
+     * defect) and {@code X-Repair-Recovered} (a damaged input was rebuilt into a file that now
+     * <em>does</em> parse strictly — verified, not assumed). {@code X-Repair-Findings} lists the
+     * defects found, and the byte/page counters mirror compress's metric headers. A batch zips like
+     * every other MAP operation; per-file metrics are not representable in a ZIP, so the headers are
+     * single-file only.
+     *
+     * <p>A file with too little surviving structure fails with 422 {@code repair_failed}.
+     */
+    @PostMapping(value = "/repair", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> repair(@RequestParam("files") List<MultipartFile> files)
+            throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
+        guardCount(files, maxFiles());
+        List<NamedBytes> inputs = uploads.readAll(files);
+        long bytes = totalBytes(inputs);
+        if (inputs.size() == 1) {
+            NamedBytes in = inputs.get(0);
+            RepairBytesResult r = loadGuard.execute(bytes, () -> ops.repair(in));
+            String findings = r.findings().stream().map(RepairFinding::id)
+                .collect(java.util.stream.Collectors.joining(","));
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                    Responses.contentDisposition(WebOperations.repairedName(in)))
+                .header("X-Repair-Recovered", String.valueOf(r.recovered()))
+                .header("X-Repair-Was-Damaged", String.valueOf(r.wasDamaged()))
+                .header("X-Repair-Findings", findings)
+                .header("X-Repair-Pages", String.valueOf(r.pageCount()))
+                .header("X-Original-Bytes", String.valueOf(r.originalBytes()))
+                .header("X-Result-Bytes", String.valueOf(r.resultBytes()))
+                .contentLength(r.bytes().length)
+                .body(r.bytes());
+        }
+        BatchOutcome results = loadGuard.execute(bytes, () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.repairBatch(List.of(in))));
+        return Responses.zip(results, "repair_results.zip");
     }
 
     // ------------------------------------------------------------------- REDACT
@@ -333,18 +430,44 @@ public class OperationsController {
         List<RedactRegion> parsed = parseRegions(regions);
         NamedBytes in = uploads.read(file);
         int resolvedDpi = dpi != null ? dpi : 0;
-        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.redact(in, parsed, resolvedDpi, reOcr));
-        return Responses.file(result, MediaType.APPLICATION_PDF);
+        RedactOutcome result = loadGuard.execute(in.data().length,
+            () -> ops.redact(in, parsed, resolvedDpi, reOcr));
+        return redacted(result);
     }
 
     private List<RedactRegion> parseRegions(String regions) {
         Params.require(regions, "regions");
+        List<RedactRegion> parsed;
         try {
             RedactRegionDto[] dtos = json.readValue(regions, RedactRegionDto[].class);
-            return Arrays.stream(dtos).map(RedactRegionDto::toRegion).toList();
+            parsed = Arrays.stream(dtos).map(RedactRegionDto::toRegion).toList();
         } catch (JsonProcessingException e) {
+            // A rectangle rejected by RedactRegionDto arrives wrapped by Jackson; surface its own
+            // message so the client is told exactly which box is unusable, not "invalid JSON".
+            if (e.getCause() instanceof IllegalArgumentException bad) throw bad;
             throw new IllegalArgumentException("Invalid regions JSON: " + e.getOriginalMessage());
         }
+        if (parsed.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Nothing to redact: provide at least one region to black out.");
+        }
+        return parsed;
+    }
+
+    /**
+     * Streams a redaction result together with what was actually blacked out
+     * ({@code X-Redacted-Pages} / {@code X-Redacted-Regions}, both CORS-exposed), so a client never
+     * has to infer safety from the {@code _redacted} filename alone.
+     */
+    private static ResponseEntity<byte[]> redacted(RedactOutcome result) {
+        byte[] data = result.file().data();
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header(HttpHeaders.CONTENT_DISPOSITION, Responses.contentDisposition(result.file().filename()))
+            .header("X-Redacted-Pages", String.valueOf(result.redactedPages()))
+            .header("X-Redacted-Regions", String.valueOf(result.redactedRegions()))
+            .contentLength(data.length)
+            .body(data);
     }
 
     // --------------------------------------------------------------------- SIGN
@@ -421,8 +544,8 @@ public class OperationsController {
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         java.util.Set<com.pdfconduit.core.analyze.PiiCategory> cats = parseCategories(categories);
         NamedBytes in = uploads.read(file);
-        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.autoRedact(in, cats));
-        return Responses.file(result, MediaType.APPLICATION_PDF);
+        RedactOutcome result = loadGuard.execute(in.data().length, () -> ops.autoRedact(in, cats));
+        return redacted(result);
     }
 
     /** Lenient parse of a comma-separated GDPR category filter; unknown names are ignored. */
@@ -464,7 +587,7 @@ public class OperationsController {
                                            @RequestParam(required = false) Boolean transparent,
                                            @RequestParam(required = false) Boolean grayscale)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         ImageFormat fmt = Params.imageFormat(format, ImageFormat.PNG);
         int resolvedDpi = dpi != null ? dpi : 150;
         // JPEG quality clamped to [0.05, 1.0]; ignored for PNG (lossless). Default 0.8.
@@ -473,8 +596,15 @@ public class OperationsController {
         boolean transparentBg = transparent != null && transparent;
         boolean gray = grayscale != null && grayscale;
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> images = loadGuard.execute(totalBytes(inputs),
-            () -> ops.toImages(inputs, fmt, resolvedDpi, pages, q, transparentBg, gray));
+        BatchOutcome images = loadGuard.execute(totalBytes(inputs), () -> {
+            // Two request-wide steps that a per-file map cannot do on its own: sum every file's
+            // pixels BEFORE anything is rasterised, then run the files against one shared byte
+            // budget. Both are the aggregate ceiling the per-page caps do not provide.
+            List<NamedBytes> routed = ops.prepareRender(inputs, resolvedDpi, pages);
+            OutputBudget.Tally budget = ops.newOutputTally();
+            return MemoryOperations.mapPartial(routed, in -> ops.toImages(List.of(in), fmt,
+                resolvedDpi, pages, q, transparentBg, gray, budget));
+        });
         MediaType type = fmt == ImageFormat.PNG ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
         return Responses.batch("to-images", images, type);
     }
@@ -486,10 +616,11 @@ public class OperationsController {
                                          @RequestParam(required = false) String format,
                                          @RequestParam(required = false) String pages)
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
-        guardCount(files, maxFiles);
+        guardCount(files, maxFiles());
         TextFormat fmt = Params.textFormat(format, TextFormat.TXT);
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> outputs = loadGuard.execute(totalBytes(inputs), () -> ops.toText(inputs, fmt, pages));
+        BatchOutcome outputs = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.toText(List.of(in), fmt, pages)));
         MediaType type = fmt == TextFormat.TXT
             ? new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8)
             : DOCX;
