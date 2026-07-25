@@ -300,9 +300,11 @@
   }
 
   /* Inner = mirror of `.op-page` at its WIDE max-width, always — so the controls'
-     right edge sits at the WIDE content boundary even when fixed mode is active. */
+     right edge sits at the WIDE content boundary even when fixed mode is active.
+     That "always" is why this is `--content-max-ceiling` (mode-independent) and
+     not `--content-max-wide`, which falls back to 1200px in fixed mode. */
   .actions-inner {
-    max-width: min(96vw, 1600px);
+    max-width: var(--content-max-ceiling);
     margin: 0 auto;
     padding: 0 1.5rem;
   }
