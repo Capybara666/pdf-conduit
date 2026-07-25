@@ -188,13 +188,13 @@
       "lede": "Scalaj, kompresuj, konwertuj, zabezpieczaj i zamazuj PDF-y w kilka sekund. Plik jest przetwarzany od razu i nigdy nie jest zapisywany na naszych serwerach. Bez konta i bez instalacji.",
       "ctaStart": "Zacznij za darmo",
       "ctaExplore": "Poznaj narzędzia",
-      "note": "Bez zapisywania plików · Bez rejestracji · Na każdym urządzeniu"
+      "note": "Nie zapisujemy plików · Bez rejestracji · Na każdym urządzeniu"
     },
     "trust": {
       "aria": "Dlaczego PDF Conduit",
       "memoryTitle": "Nie zapisujemy plików",
       "memoryDesc": "Twój plik jest przetwarzany i od razu usuwany. Nigdy nie zapisujemy go na dysku ani nie przechowujemy na naszych serwerach.",
-      "accountTitle": "Bez konta",
+      "accountTitle": "Nie potrzebujesz konta",
       "accountDesc": "Zaczynasz od razu, bez e-maila, hasła i rejestracji.",
       "browserTitle": "Działa w przeglądarce",
       "browserDesc": "Niczego nie instalujesz. Windows, macOS, Linux i telefon."
@@ -216,12 +216,12 @@
       "freeFeat2": "Nigdy nie zapisujemy plików",
       "freeFeat3": "Dzienny limit operacji",
       "freeFeat4": "Standardowy limit rozmiaru pliku",
-      "freeFeat5": "Bez konta",
+      "freeFeat5": "Nie musisz zakładać konta",
       "freeCta": "Korzystaj teraz",
       "proName": "Pro",
       "proPrice": "Cennik",
       "proPer": "ogłosimy wkrótce",
-      "proFeat1": "<b>Większe pliki</b>: bez darmowego limitu rozmiaru",
+      "proFeat1": "<b>Większe pliki</b>: znosimy limit rozmiaru z planu darmowego",
       "proFeat2": "<b>Wyższe dzienne limity</b> na duże partie plików",
       "proFeat3": "<b>Przetwarzanie zbiorcze i API</b> do automatyzacji",
       "proFeat4": "<b>Priorytetowe przetwarzanie</b> nawet w szczycie",
@@ -838,7 +838,7 @@
       "autoRedactCta": "Zamaż wszystko automatycznie",
       "autoRedactAllCta": "Zamaż wszystkie pliki",
       "autoRedactFile": "Zamaż automatycznie",
-      "autoRedactHint": "Jedno kliknięcie zamazuje wszystkie wykryte dane i pobiera plik. Za darmo i bez zapisywania pliku.",
+      "autoRedactHint": "Jedno kliknięcie zamazuje wszystkie wykryte dane i pobiera plik. Za darmo. Nie zapisujemy Twojego pliku.",
       "autoRedactLoading": "Zamazywanie…"
     },
     "crop": {
