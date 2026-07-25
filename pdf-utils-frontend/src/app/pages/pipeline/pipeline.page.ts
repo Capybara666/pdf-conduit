@@ -197,13 +197,16 @@ const KIND_TO_OP: Record<string, string> = {
          FIXED width mode, which is too tight for canvas + 300px drawer and
          forces the drawer to overlap the canvas. Override the cap here so the
          pipeline always gets a GENEROUS width regardless of the global
-         data-width toggle — this rule is component-scoped (Angular emulated
-         encapsulation), and '.op-page.pl-page' outranks the global '.op-page'
-         / '.op-page.wide' selectors, so it wins in both fixed and wide modes
-         and affects ONLY this page. The canvas (minmax(0,1fr)) then keeps the
-         freed width with the dock beside it. */
+         data-width toggle — hence the mode-independent '--content-max-ceiling'
+         token (the widest the content column ever gets) rather than
+         '--content-max-wide', which drops back to 1200px in fixed mode. This
+         rule is component-scoped (Angular emulated encapsulation), and
+         '.op-page.pl-page' outranks the global '.op-page' / '.op-page.wide'
+         selectors, so it wins in both fixed and wide modes and affects ONLY
+         this page. The canvas (minmax(0,1fr)) then keeps the freed width with
+         the dock beside it. */
       .op-page.pl-page {
-        max-width: min(96vw, 1600px);
+        max-width: var(--content-max-ceiling);
       }
       .pl-grid {
         display: grid;

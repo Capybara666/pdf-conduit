@@ -31,10 +31,16 @@ $bp-rail: 820px;
      `--content-max-prose` drives text-only pages (`.op-page.prose-page`:
      privacy and any future legal/static page). It is deliberately NOT rewritten
      in wide mode — prose at 1600px is unreadable — but such pages still centre
-     via `.op-page`'s `margin: 0 auto`. */
+     via `.op-page`'s `margin: 0 auto`.
+     `--content-max-ceiling` is the WIDEST the content column can ever get (the
+     wide-mode value). It is mode-INDEPENDENT: surfaces that must stay pinned to
+     that outer boundary whatever the toggle says — the header actions row, the
+     pipeline canvas page — reference it directly, so the ceiling literal lives
+     here once instead of being copied per component. */
   --content-max: 860px;
   --content-max-wide: 1200px;
   --content-max-prose: 720px;
+  --content-max-ceiling: min(96vw, 1600px);
 
   /* Motion system — durations + easings. Defined once here so all 6 themes
      inherit them (themes override colours only). Consumed across global
@@ -58,8 +64,8 @@ $bp-rail: 820px;
    narrower than the standard page. This attribute is orthogonal to
    `data-theme`, so both can be present on <html> at once. */
 :root[data-width='wide'] {
-  --content-max: min(96vw, 1600px);
-  --content-max-wide: min(96vw, 1600px);
+  --content-max: var(--content-max-ceiling);
+  --content-max-wide: var(--content-max-ceiling);
 }
 
 /* Light theme (default). */
