@@ -31,11 +31,34 @@
 }
 
 @if (!loading && !error && result) {
-  <div class="panel success" role="status">
-    <div class="head">
-      <span class="icon ok" aria-hidden="true">✓</span>
-      <strong>{{ 'result.done' | transloco }}</strong>
-    </div>
+  <div class="panel success" [class.partial]="batchFailures" role="status">
+    @if (batchFailures; as failures) {
+      <div class="head">
+        <span class="icon warn" aria-hidden="true">!</span>
+        <strong>{{ 'result.partialTitle' | transloco }}</strong>
+      </div>
+      @if (processedCounts; as counts) {
+        <p class="summary">{{ 'result.partialCounts' | transloco: counts }}</p>
+      }
+      <p class="warn">{{ 'result.partialFailedCount' | transloco: { count: failures.total } }}</p>
+      <ul class="failures">
+        @for (failure of failures.entries; track $index) {
+          <li>
+            <b class="failed-name">{{ failure.filename }}</b>
+            <span class="failed-reason">{{ failure.reason || ('result.failureNoReason' | transloco) }}</span>
+          </li>
+        }
+        @if (failures.more > 0) {
+          <li class="more">{{ 'result.partialMore' | transloco: { count: failures.more } }}</li>
+        }
+      </ul>
+      <p class="hint">{{ 'result.partialHint' | transloco }}</p>
+    } @else {
+      <div class="head">
+        <span class="icon ok" aria-hidden="true">✓</span>
+        <strong>{{ 'result.done' | transloco }}</strong>
+      </div>
+    }
     <p class="filename">{{ result.filename }}</p>
 
     @if (result.compression) {
@@ -58,12 +81,25 @@
       </ul>
     }
 
+    @if (redaction; as redacted) {
+      <p class="note redaction">{{ 'result.redactionApplied' | transloco: redacted }}</p>
+    }
+
     @if (repairNoteKey; as key) {
       <p class="note">{{ key | transloco }}</p>
     }
 
-    @if (result.batchFailures) {
-      <p class="warn">{{ 'result.batchFailures' | transloco: { count: result.batchFailures } }}</p>
+    @if (repairFindingKeys.length) {
+      <p class="findings-title">{{ 'result.repairFindingsTitle' | transloco }}</p>
+      <ul class="findings">
+        @for (key of repairFindingKeys; track key) {
+          <li>{{ key | transloco }}</li>
+        }
+      </ul>
+    }
+
+    @if (repairPageCount; as pages) {
+      <p class="note">{{ 'result.repairPages' | transloco: { count: pages } }}</p>
     }
 
     <div class="output" [class.no-preview]="!hasPreview()">

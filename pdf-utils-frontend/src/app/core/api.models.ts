@@ -56,8 +56,10 @@ export interface RunResult {
   compression?: CompressionInfo;
   /** Present for single-file repair responses; parsed from `X-Repair-*` headers. */
   repair?: RepairInfo;
-  /** Comma/semicolon-separated batch failures from `X-Batch-Failures`, if any. */
-  batchFailures?: string;
+  /** Present for redact / auto-redact responses; parsed from `X-Redacted-*` headers. */
+  redaction?: RedactionInfo;
+  /** Present only on a partial batch; parsed from `X-Batch-Failures`. */
+  batchFailures?: BatchFailuresInfo;
 }
 
 /**
@@ -83,6 +85,61 @@ export interface RepairInfo {
   wasDamaged?: boolean;
   /** Whether the damage could be recovered. */
   recovered?: boolean;
+  /**
+   * The concrete structural defects found, as backend `RepairFinding` ids
+   * (`header-missing`, `header-offset`, `eof-missing`, `startxref-missing`,
+   * `startxref-invalid`, `xref-rebuilt`, `rebuild-incomplete`).
+   *
+   * `[]` and `undefined` mean the same thing to the UI — **no findings**. The
+   * header is comma-separated and legitimately empty when nothing was wrong, and
+   * an intermediary may drop an empty header entirely, so neither an empty value
+   * nor an absent one may ever read as a failure. Ids are kept raw here and
+   * translated to plain language at the panel; an id this build does not know
+   * (newer backend) is dropped rather than shown.
+   */
+  findings?: string[];
+  /** Page count of the rebuilt document (`X-Repair-Pages`). */
+  pageCount?: number;
+}
+
+/**
+ * Parsed redaction response headers (`X-Redacted-Pages`, `X-Redacted-Regions`),
+ * sent by `/api/redact` and `/api/auto-redact`. This is *what was actually
+ * blacked out* — the one operation where the user must not have to infer safety
+ * from the `_redacted` filename. Both fields are optional: a server that
+ * predates the headers omits them and the panel then says nothing about
+ * coverage rather than implying a measured zero.
+ */
+export interface RedactionInfo {
+  /** Number of pages that had at least one region blacked out. */
+  pages?: number;
+  /** Number of individual regions blacked out. */
+  regions?: number;
+}
+
+/** One input a partial-tolerant batch could not process. */
+export interface BatchFailureEntry {
+  /** The input file's name, as the backend reported it. */
+  filename: string;
+  /** Why it failed; `''` when the backend had no message to give. */
+  reason: string;
+}
+
+/**
+ * Parsed `X-Batch-Failures`: the inputs a partial-tolerant batch skipped while
+ * still returning the rest. The backend lists at most five `<file>: <reason>`
+ * entries joined by `"; "` and summarises the remainder as `"; +N more"`, so
+ * `entries` is a capped sample and {@link total} is the honest failure count.
+ */
+export interface BatchFailuresInfo {
+  /** The named failures (at most five — the backend caps the header). */
+  entries: BatchFailureEntry[];
+  /** Failures beyond the named ones (the `+N more` tail); `0` when all are named. */
+  more: number;
+  /** Total failures = `entries.length + more`. */
+  total: number;
+  /** The raw header value, kept for diagnostics. */
+  raw: string;
 }
 
 /** Document metadata from `POST /api/metadata/read`. Mirrors backend `MetadataDto`. */
