@@ -25,13 +25,15 @@ import java.util.List;
  * @param concurrency        heavy-op concurrency + in-flight-byte anti-OOM guard
  * @param processing         per-operation processing timeout
  * @param pdf                PDF-bomb guards (max page count)
+ * @param pipeline           client-supplied pipeline-graph size ceilings (nodes / connections)
  * @param render             raster-render guards (max DPI + total output-pixel ceiling)
  * @param trustedProxies     CIDRs of proxies allowed to set {@code X-Forwarded-For} (client-IP trust)
  */
 @ConfigurationProperties("pdfconduit.web")
 public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Office office, Ocr ocr,
                             Cors cors, RateLimit ratelimit, Quota quota, Concurrency concurrency,
-                            Processing processing, Pdf pdf, Render render, List<String> trustedProxies) {
+                            Processing processing, Pdf pdf, Pipeline pipeline, Render render,
+                            List<String> trustedProxies) {
 
     /** Loopback + RFC-1918 private ranges (covers the docker-compose bridge subnet) trusted by default. */
     private static final List<String> DEFAULT_TRUSTED_PROXIES =
@@ -49,6 +51,7 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
         if (concurrency == null) concurrency = new Concurrency(null, null);
         if (processing == null) processing = new Processing(null);
         if (pdf == null) pdf = new Pdf(null);
+        if (pipeline == null) pipeline = new Pipeline(null, null);
         if (render == null) render = new Render(null, null);
         if (trustedProxies == null || trustedProxies.isEmpty()) trustedProxies = DEFAULT_TRUSTED_PROXIES;
     }
@@ -133,6 +136,24 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
     public record Pdf(Integer maxPages) {
         public Pdf {
             if (maxPages == null || maxPages < 1) maxPages = 3000;
+        }
+    }
+
+    /**
+     * Size ceilings for a client-supplied pipeline <em>graph</em> ({@code POST /api/pipeline/run},
+     * {@code /validate}). Every node in the graph is a full core operation, and the whole graph runs
+     * under a <em>single</em> load-guard permit, so an unbounded node count is an unbounded amount
+     * of work bought with one request; {@code maxNodes}/{@code maxConnections} bound it. The values
+     * are generous for a hand-built visual pipeline and only ever bite on machine-generated abuse.
+     *
+     * <p>How many <em>documents</em> a graph may resolve is deliberately not a knob here: that is
+     * the existing {@code max-files-per-request} ceiling, applied to resolved source references
+     * rather than to uploaded parts.
+     */
+    public record Pipeline(Integer maxNodes, Integer maxConnections) {
+        public Pipeline {
+            if (maxNodes == null || maxNodes < 1) maxNodes = 50;
+            if (maxConnections == null || maxConnections < 1) maxConnections = 100;
         }
     }
 

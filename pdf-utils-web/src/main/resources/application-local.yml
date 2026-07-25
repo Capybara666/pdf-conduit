@@ -34,6 +34,10 @@ pdfconduit:
     pdf:
       # Allow very large PDFs locally (base: 3000).
       max-pages: 100000
+    pipeline:
+      # Room for experimenting with large graphs locally (base: 50 nodes / 100 connections).
+      max-nodes: 2000
+      max-connections: 4000
     render:
       # Permit high-DPI / large-pixel renders locally (base: 300 dpi / 60 MP).
       max-dpi: 1200

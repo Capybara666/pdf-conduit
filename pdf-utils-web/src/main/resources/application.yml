@@ -105,6 +105,14 @@ pdfconduit:
     # PDF-bomb guard: reject PDFs whose page count exceeds this ceiling.
     pdf:
       max-pages: ${PDFCONDUIT_WEB_PDF_MAX_PAGES:3000}
+    # Client-supplied pipeline graphs: bound how big one graph may be. Every node is a full core
+    # operation and the whole graph runs under a SINGLE load-guard permit, so without this a
+    # 10k-node graph is 10k operations bought with one request. Generous for a hand-built pipeline.
+    # (How many source documents a graph may resolve is capped by max-files-per-request above,
+    #  counted per resolved reference so repeating one upload buys no extra work.)
+    pipeline:
+      max-nodes: ${PDFCONDUIT_WEB_PIPELINE_MAX_NODES:50}
+      max-connections: ${PDFCONDUIT_WEB_PIPELINE_MAX_CONNECTIONS:100}
     # Raster-render guards (render / to-images / redact): cap requested DPI and per-page output
     # pixels so a huge dpi/dimension request can't allocate gigabytes and OOM the JVM.
     render:

@@ -34,7 +34,8 @@ class PlanSeamTest {
 
     /** All-defaults WebProperties (each null normalised to the documented default in the record). */
     private static WebProperties defaults() {
-        return new WebProperties(null, null, null, null, null, null, null, null, null, null, null, null);
+        return new WebProperties(
+            null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     @Test
