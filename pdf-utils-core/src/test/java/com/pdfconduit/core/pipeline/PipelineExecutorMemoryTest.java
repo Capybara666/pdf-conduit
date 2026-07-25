@@ -156,6 +156,62 @@ class PipelineExecutorMemoryTest {
         return out.toByteArray();
     }
 
+    /**
+     * A host guard is consulted for the client-supplied render DPI, and its runtime rejection
+     * reaches the caller <em>unchanged</em> (not wrapped into a PipelineException) — that is what
+     * lets the web layer map a pipeline rejection to the same status its single-operation endpoint
+     * would return. The overloads without a guard (desktop/CLI) keep running unguarded, which every
+     * other test in this class exercises.
+     */
+    @Test
+    void guardSeesNodeRenderDpiAndItsRejectionPropagates() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        PipelineNode toImages = new PipelineNode("i", NodeKind.TO_IMAGES, 0, 0);
+        toImages.imageDpi = 1200;
+        m.nodes.add(src);
+        m.nodes.add(toImages);
+        m.connections.add(new Connection("s", "i"));
+
+        int[] seen = {0};
+        PipelineGuard guard = new PipelineGuard() {
+            @Override public void checkRender(byte[] pdf, int dpi) {
+                seen[0] = dpi;
+                throw new IllegalStateException("dpi " + dpi + " too high");
+            }
+        };
+
+        byte[] pdf = pdfBytes(1);
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+            () -> PipelineExecutor.runInMemory(
+                m, node -> List.of(pdf), Map.of(), guard, null));
+        assertEquals(1200, seen[0]);
+        assertEquals("dpi 1200 too high", e.getMessage());
+    }
+
+    /** A guard's checked rejection is reported as a normal pipeline failure. */
+    @Test
+    void guardDocumentRejectionFailsTheRun() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        PipelineNode rotate = new PipelineNode("r", NodeKind.ROTATE, 0, 0);
+        m.nodes.add(src);
+        m.nodes.add(rotate);
+        m.connections.add(new Connection("s", "r"));
+
+        PipelineGuard guard = new PipelineGuard() {
+            @Override public void checkDocument(byte[] pdf)
+                    throws com.pdfconduit.core.exception.PdfOperationException {
+                throw new com.pdfconduit.core.exception.PdfOperationException("too many pages");
+            }
+        };
+
+        byte[] pdf = pdfBytes(2);
+        PipelineException e = assertThrows(PipelineException.class,
+            () -> PipelineExecutor.runInMemory(m, node -> List.of(pdf), Map.of(), guard, null));
+        assertTrue(e.getMessage().contains("too many pages"));
+    }
+
     @Test
     void rejectsUnsupportedSourceBytes() {
         PipelineModel m = new PipelineModel();
