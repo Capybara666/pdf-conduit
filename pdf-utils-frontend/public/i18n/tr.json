@@ -284,9 +284,7 @@
     "controllerTitle": "Veri sorumlusu",
     "controllerBody": "PDF Conduit kapsamında işlenen verilerin veri sorumlusu, PDF Conduit hizmetinin işletmecisidir. İletişim: hello@pdfconduit.com. Dosyalar hiçbir zaman saklanmadığı ve hesap gerekmediği için, kişisel verilerin işlenmesi, hizmeti kötüye kullanıma karşı korumak için gerekli teknik sunucu günlükleriyle (IP adresi) sınırlıdır (GDPR md. 6/1-f).",
     "limitsTitle": "Ücretsiz katman sınırları",
-    "limitsBody1": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır. Ana sayfadaki",
-    "limitsLink": "Pro planları",
-    "limitsBody2": "tanıtımına bakın.",
+    "limitsBody": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır. Ana sayfadaki {linkStart}Pro planları{linkEnd} tanıtımına bakın.",
     "questionsTitle": "Sorular",
     "questionsBody": "PDF Conduit olduğu gibi sunulur. Bu sayfa mevcut davranışımızı açıklar ve ürün geliştikçe güncellenebilir.",
     "backHome": "Ana sayfaya dön"

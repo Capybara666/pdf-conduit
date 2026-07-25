@@ -284,9 +284,7 @@
     "controllerTitle": "Administrator danych",
     "controllerBody": "Administratorem danych przetwarzanych w PDF Conduit jest operator serwisu PDF Conduit. Kontakt: hello@pdfconduit.com. Ponieważ pliki nie są zapisywane, a konto nie jest wymagane, przetwarzanie danych osobowych ogranicza się do technicznych logów serwera (adres IP), niezbędnych do ochrony usługi przed nadużyciami (art. 6 ust. 1 lit. f RODO).",
     "limitsTitle": "Limity darmowego planu",
-    "limitsBody1": "Aby darmowa usługa była dostępna dla wszystkich, obowiązują dzienny limit operacji, limit rozmiaru pliku i podstawowe ograniczenie liczby żądań. Gdy osiągniesz limit, aplikacja jasno Ci to zakomunikuje. Wyższe limity, większe pliki i dostęp do API planujemy w płatnym planie. Zobacz",
-    "limitsLink": "plany Pro",
-    "limitsBody2": "na stronie głównej.",
+    "limitsBody": "Aby darmowa usługa była dostępna dla wszystkich, obowiązują dzienny limit operacji, limit rozmiaru pliku i podstawowe ograniczenie liczby żądań. Gdy osiągniesz limit, aplikacja jasno Ci to zakomunikuje. Wyższe limity, większe pliki i dostęp do API planujemy w płatnym planie. Zobacz zapowiedź {linkStart}planów Pro{linkEnd} na stronie głównej.",
     "questionsTitle": "Pytania",
     "questionsBody": "PDF Conduit udostępniamy w obecnej postaci. Ta strona opisuje aktualne działanie serwisu i może się zmieniać wraz z jego rozwojem.",
     "backHome": "Wróć na stronę główną"

@@ -284,9 +284,7 @@
     "controllerTitle": "Titolare del trattamento",
     "controllerBody": "Il titolare del trattamento dei dati elaborati nell'ambito di PDF Conduit è il gestore del servizio PDF Conduit. Contatto: hello@pdfconduit.com. Poiché i file non vengono mai conservati e non è richiesto alcun account, il trattamento dei dati personali si limita ai log tecnici del server (indirizzo IP) necessari a proteggere il servizio dagli abusi (art. 6, par. 1, lett. f del GDPR).",
     "limitsTitle": "Limiti del piano gratuito",
-    "limitsBody1": "Per mantenere il servizio gratuito disponibile a tutti, le richieste sono soggette a una quota giornaliera di operazioni, a un limite di dimensione per file e a una limitazione di frequenza di base. Quando raggiungi un limite, l'app te lo comunica chiaramente. Limiti più alti, file più grandi e accesso batch/API sono previsti per un futuro piano a pagamento. Vedi l'anteprima",
-    "limitsLink": "piani Pro",
-    "limitsBody2": "nella pagina iniziale.",
+    "limitsBody": "Per mantenere il servizio gratuito disponibile a tutti, le richieste sono soggette a una quota giornaliera di operazioni, a un limite di dimensione per file e a una limitazione di frequenza di base. Quando raggiungi un limite, l'app te lo comunica chiaramente. Limiti più alti, file più grandi e accesso batch/API sono previsti per un futuro piano a pagamento. Guarda l'anteprima dei {linkStart}piani Pro{linkEnd} nella pagina iniziale.",
     "questionsTitle": "Domande",
     "questionsBody": "PDF Conduit è fornito così com'è. Questa pagina descrive il nostro comportamento attuale e potrà essere aggiornata man mano che il prodotto evolve.",
     "backHome": "Torna alla home"

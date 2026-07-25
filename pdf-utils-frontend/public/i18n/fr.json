@@ -284,9 +284,7 @@
     "controllerTitle": "Responsable du traitement",
     "controllerBody": "Le responsable du traitement des données traitées dans le cadre de PDF Conduit est l'opérateur du service PDF Conduit. Contact : hello@pdfconduit.com. Comme les fichiers ne sont jamais conservés et qu'aucun compte n'est requis, le traitement des données personnelles se limite aux journaux techniques du serveur (adresse IP) nécessaires pour protéger le service contre les abus (art. 6, par. 1, point f du RGPD).",
     "limitsTitle": "Limites de l'offre gratuite",
-    "limitsBody1": "Pour garder le service gratuit accessible à tous, les requêtes sont soumises à un quota d'opérations quotidien, à un plafond de taille par fichier et à une limitation de débit de base. Lorsque vous atteignez une limite, l'application vous l'indique clairement. Des limites plus élevées, des fichiers plus volumineux et un accès par lots/API sont prévus pour une future offre payante. Voir le",
-    "limitsLink": "les offres Pro",
-    "limitsBody2": "en aperçu sur la page d'accueil.",
+    "limitsBody": "Pour garder le service gratuit accessible à tous, les requêtes sont soumises à un quota d'opérations quotidien, à un plafond de taille par fichier et à une limitation de débit de base. Lorsque vous atteignez une limite, l'application vous l'indique clairement. Des limites plus élevées, des fichiers plus volumineux et un accès par lots/API sont prévus pour une future offre payante. Découvrez l'aperçu des {linkStart}offres Pro{linkEnd} sur la page d'accueil.",
     "questionsTitle": "Questions",
     "questionsBody": "PDF Conduit est fourni en l'état. Cette page décrit notre comportement actuel et pourra être mise à jour à mesure que le produit évolue.",
     "backHome": "Retour à l'accueil"

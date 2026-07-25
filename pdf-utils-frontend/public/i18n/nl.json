@@ -284,9 +284,7 @@
     "controllerTitle": "Verwerkingsverantwoordelijke",
     "controllerBody": "De verwerkingsverantwoordelijke voor de gegevens die binnen PDF Conduit worden verwerkt, is de beheerder van de dienst PDF Conduit. Contact: hello@pdfconduit.com. Omdat bestanden nooit worden opgeslagen en er geen account nodig is, blijft de verwerking van persoonsgegevens beperkt tot technische serverlogs (IP-adres) die nodig zijn om de dienst tegen misbruik te beschermen (art. 6 lid 1 sub f AVG).",
     "limitsTitle": "Limieten van de gratis versie",
-    "limitsBody1": "Om de gratis dienst voor iedereen beschikbaar te houden, gelden voor verzoeken een dagelijkse bewerkingslimiet, een limiet voor de bestandsgrootte en een basislimiet op het aantal verzoeken. Wanneer je een limiet bereikt, laat de app dat duidelijk weten. Hogere limieten, grotere bestanden en batch-/API-toegang zijn gepland voor een toekomstige betaalde versie. Zie de",
-    "limitsLink": "Pro-abonnementen",
-    "limitsBody2": "teaser op de startpagina.",
+    "limitsBody": "Om de gratis dienst voor iedereen beschikbaar te houden, gelden voor verzoeken een dagelijkse bewerkingslimiet, een limiet voor de bestandsgrootte en een basislimiet op het aantal verzoeken. Wanneer je een limiet bereikt, laat de app dat duidelijk weten. Hogere limieten, grotere bestanden en batch-/API-toegang zijn gepland voor een toekomstige betaalde versie. Bekijk de teaser over de {linkStart}Pro-abonnementen{linkEnd} op de startpagina.",
     "questionsTitle": "Vragen",
     "questionsBody": "PDF Conduit wordt aangeboden zoals het is. Deze pagina beschrijft ons huidige gedrag en kan worden bijgewerkt naarmate het product evolueert.",
     "backHome": "Terug naar start"

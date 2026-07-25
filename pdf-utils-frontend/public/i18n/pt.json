@@ -284,9 +284,7 @@
     "controllerTitle": "Responsável pelo tratamento",
     "controllerBody": "O responsável pelo tratamento dos dados processados no PDF Conduit é o operador do serviço PDF Conduit. Contacto: hello@pdfconduit.com. Como nunca guardamos os ficheiros e não é necessária uma conta, o tratamento de dados pessoais limita-se aos registos técnicos do servidor (endereço IP) necessários para proteger o serviço contra abusos (art. 6.º, n.º 1, alínea f) do RGPD).",
     "limitsTitle": "Limites do plano gratuito",
-    "limitsBody1": "Para manter o serviço gratuito disponível para todos, os pedidos estão sujeitos a uma quota diária de operações, a um limite de tamanho por ficheiro e a limitação de taxa básica. Quando atinge um limite, a aplicação informa-o claramente. Limites mais altos, ficheiros maiores e acesso a lotes/API estão previstos para um futuro plano pago. Veja o",
-    "limitsLink": "planos Pro",
-    "limitsBody2": "teaser na página inicial.",
+    "limitsBody": "Para manter o serviço gratuito disponível para todos, os pedidos estão sujeitos a uma quota diária de operações, a um limite de tamanho por ficheiro e a limitação de taxa básica. Quando atinge um limite, a aplicação informa-o claramente. Limites mais altos, ficheiros maiores e acesso a lotes/API estão previstos para um futuro plano pago. Veja a antevisão dos {linkStart}planos Pro{linkEnd} na página inicial.",
     "questionsTitle": "Questões",
     "questionsBody": "O PDF Conduit é fornecido tal como está. Esta página descreve o nosso comportamento atual e pode ser atualizada à medida que o produto evolui.",
     "backHome": "Voltar ao início"
