@@ -1,11 +1,17 @@
 package com.pdfconduit.web.support;
 
+import com.pdfconduit.core.service.BatchFailure;
 import com.pdfconduit.core.service.NamedBytes;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,5 +38,43 @@ class ResponsesTest {
         String header = response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
         assertNotNull(header);
         assertTrue(header.contains("filename*=UTF-8''"), header);
+    }
+
+    // --- X-Batch-Failures: "<file>: <reason>" entries joined by "; " -------
+
+    @Test
+    void batchFailures_joinsFileAndReason() {
+        String header = Responses.batchFailures(List.of(
+            new BatchFailure("a.pdf", "The PDF is password-protected."),
+            new BatchFailure("b.pdf", "Could not read the PDF.")));
+
+        assertEquals("a.pdf: The PDF is password-protected.; b.pdf: Could not read the PDF.", header);
+    }
+
+    @Test
+    void batchFailures_capsTheListSoAHugeBatchCannotBlowTheHeader() {
+        List<BatchFailure> many = new ArrayList<>();
+        for (int i = 1; i <= 8; i++) many.add(new BatchFailure("f" + i + ".pdf", "broken"));
+
+        String header = Responses.batchFailures(many);
+
+        assertTrue(header.startsWith("f1.pdf: broken; "), header);
+        assertTrue(header.endsWith("; +3 more"), header);
+        assertFalse(header.contains("f6.pdf"), header);
+    }
+
+    @Test
+    void batchFailures_isSafeToPutInAHeader() {
+        String header = Responses.batchFailures(List.of(
+            new BatchFailure("evil\r\nX-Injected: 1.pdf", "bad; message"),
+            new BatchFailure("zażółć.pdf", "damaged")));
+
+        // No response splitting, no stray separator, nothing outside the Latin-1 wire charset.
+        assertFalse(header.contains("\r"), header);
+        assertFalse(header.contains("\n"), header);
+        assertTrue(header.startsWith("evil  X-Injected: 1.pdf: bad  message; "), header);
+        for (int i = 0; i < header.length(); i++) {
+            assertTrue(header.charAt(i) <= 0xff, "non Latin-1 char leaked into header: " + header);
+        }
     }
 }

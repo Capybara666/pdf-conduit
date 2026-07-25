@@ -83,6 +83,96 @@ class MemoryOperationsTest {
         assertEquals(5, pageCount(out.data()));
     }
 
+    // --- batch failures: name the file, keep the good results --------------
+
+    /** A PDF nothing can open without the password — the classic mid-batch spoiler. */
+    private static byte[] encryptedPdf() throws Exception {
+        return com.pdfconduit.core.operations.PdfProtector.executeBytes(pdfBytes(1), "secret", null);
+    }
+
+    private static byte[] rotate(byte[] pdf) throws Exception {
+        return PdfRotator.executeBytes(pdf, com.pdfconduit.core.model.PageRange.ALL, 90);
+    }
+
+    @Test
+    void runBatchFailureNamesTheOffendingFile() throws Exception {
+        var e = assertThrows(com.pdfconduit.core.exception.PdfOperationException.class,
+            () -> MemoryOperations.runBatch(
+                OperationType.ROTATE,
+                List.of(pdfBytes(1), encryptedPdf()),
+                List.of("good.pdf", "locked.pdf"),
+                MemoryOperationsTest::rotate));
+        // Without the name the user has to bisect the upload to find file #2.
+        assertTrue(e.getMessage().startsWith("locked.pdf: "), e.getMessage());
+        assertTrue(e.getMessage().contains("password-protected"), e.getMessage());
+        assertNotNull(e.getCause());
+    }
+
+    @Test
+    void runReduceFailureNamesTheOffendingFile() throws Exception {
+        var e = assertThrows(com.pdfconduit.core.exception.PdfOperationException.class,
+            () -> MemoryOperations.runReduce(
+                OperationType.MERGE,
+                List.of(pdfBytes(1), "not a pdf at all".getBytes(java.nio.charset.StandardCharsets.UTF_8)),
+                List.of("good.pdf", "broken.pdf"),
+                PdfMerger::executeBytes));
+        assertTrue(e.getMessage().startsWith("broken.pdf: "), e.getMessage());
+    }
+
+    @Test
+    void mapPartialKeepsTheGoodFilesAndReportsTheBadOne() throws Exception {
+        List<NamedBytes> inputs = List.of(
+            new NamedBytes("a.pdf", pdfBytes(1)),
+            new NamedBytes("locked.pdf", encryptedPdf()),
+            new NamedBytes("b.pdf", pdfBytes(2)));
+
+        BatchOutcome outcome = MemoryOperations.mapPartial(inputs,
+            in -> List.of(new NamedBytes(MemoryOperations.outputName(OperationType.ROTATE, in.filename()),
+                MemoryOperations.runSingle(in.data(), in.filename(), MemoryOperationsTest::rotate))));
+
+        assertTrue(outcome.partial());
+        assertEquals(2, outcome.outputs().size());
+        assertEquals("a_rotated.pdf", outcome.outputs().get(0).filename());
+        assertEquals("b_rotated.pdf", outcome.outputs().get(1).filename());
+        assertEquals(1, outcome.failures().size());
+        assertEquals("locked.pdf", outcome.failures().get(0).filename());
+        assertTrue(outcome.failures().get(0).message().contains("password-protected"),
+            outcome.failures().get(0).message());
+    }
+
+    @Test
+    void mapPartialWithNoFailuresIsAPlainBatch() throws Exception {
+        BatchOutcome outcome = MemoryOperations.mapPartial(
+            List.of(new NamedBytes("a.pdf", pdfBytes(1)), new NamedBytes("b.pdf", pdfBytes(2))),
+            in -> List.of(new NamedBytes(in.filename(), in.data())));
+        assertFalse(outcome.partial());
+        assertEquals(2, outcome.outputs().size());
+        assertTrue(outcome.failures().isEmpty());
+    }
+
+    @Test
+    void mapPartialThrowsWhenEveryInputFails() throws Exception {
+        List<NamedBytes> inputs = List.of(
+            new NamedBytes("locked1.pdf", encryptedPdf()),
+            new NamedBytes("locked2.pdf", encryptedPdf()));
+
+        // An empty archive would be a worse answer than an error — still fail, but named.
+        var e = assertThrows(com.pdfconduit.core.exception.PdfOperationException.class,
+            () -> MemoryOperations.mapPartial(inputs,
+                in -> List.of(new NamedBytes(in.filename(),
+                    MemoryOperations.runSingle(in.data(), in.filename(), MemoryOperationsTest::rotate)))));
+        assertTrue(e.getMessage().startsWith("locked1.pdf: "), e.getMessage());
+    }
+
+    @Test
+    void mapPartialDoesNotSwallowABadPageRange() throws Exception {
+        // A wrong parameter is the caller's mistake, not one file's problem: it must fail the request.
+        assertThrows(com.pdfconduit.core.exception.InvalidPageRangeException.class,
+            () -> MemoryOperations.mapPartial(
+                List.of(new NamedBytes("a.pdf", pdfBytes(1))),
+                in -> { throw new com.pdfconduit.core.exception.InvalidPageRangeException("9-9"); }));
+    }
+
     @Test
     void runMultiNamesEachPart() throws Exception {
         List<NamedBytes> parts = MemoryOperations.runMulti(
