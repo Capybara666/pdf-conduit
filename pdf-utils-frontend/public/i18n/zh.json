@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit 首页",
-    "quotaFreeLeft": "今日剩余免费次数",
+    "quotaFreeLeft": "{count, plural, other {今日剩余免费次数}}",
     "quotaTitleSpent": "今日免费额度已用完。查看 Pro 方案",
     "quotaTitleLeft": "今日剩余免费操作次数。查看 Pro 方案",
     "serverOnline": "服务器在线",
@@ -284,9 +284,7 @@
     "controllerTitle": "数据控制者",
     "controllerBody": "PDF Conduit 所处理数据的控制者为 PDF Conduit 服务的运营者。联系方式：hello@pdfconduit.com。由于文件从不被存储，使用也无需账户，个人数据的处理仅限于为保护服务免遭滥用所必需的技术性服务器日志（IP 地址）（GDPR 第 6 条第 1 款 (f) 项）。",
     "limitsTitle": "免费版限制",
-    "limitsBody1": "为了让每个人都能使用免费服务，请求会受到每日操作配额、单个文件大小上限和基本速率限制的约束。当您达到限制时，应用会明确提示。更高的限额、更大的文件以及批处理／API 访问已计划在未来的付费版中提供。请参阅首页上的",
-    "limitsLink": "Pro 方案",
-    "limitsBody2": "预告。",
+    "limitsBody": "为了让每个人都能使用免费服务，请求会受到每日操作配额、单个文件大小上限和基本速率限制的约束。当您达到限制时，应用会明确提示。更高的限额、更大的文件以及批处理／API 访问已计划在未来的付费版中提供。请参阅首页上的{linkStart}Pro 方案{linkEnd}预告。",
     "questionsTitle": "疑问",
     "questionsBody": "PDF Conduit 按现状提供。本页描述我们当前的做法，可能会随产品的演进而更新。",
     "backHome": "返回首页"
@@ -638,7 +636,7 @@
     },
     "sign": {
       "title": "填写和签名",
-      "description": "填写可填写的 PDF 表单字段（AcroForm）并为 PDF 添加签名，然后将其扁平化。我们不保存任何内容，全部在您的会话中完成。",
+      "description": "填写可填写的 PDF 表单字段（AcroForm）并为 PDF 添加签名，然后将其扁平化。我们绝不保存您的文件。",
       "hint": "一个 PDF。我们会检测可填写的表单字段。然后创建签名并将其放到页面上。",
       "dragHint": "在页面上拖动以放置您的签名。",
       "chooseAnother": "选择其他 PDF",

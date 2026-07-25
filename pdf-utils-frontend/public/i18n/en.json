@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit home",
-    "quotaFreeLeft": "free left today",
+    "quotaFreeLeft": "{count, plural, one {free left today} other {free left today}}",
     "quotaTitleSpent": "Daily free limit reached. See Pro plans",
     "quotaTitleLeft": "Free operations left today. See Pro plans",
     "serverOnline": "Server online",
@@ -284,9 +284,7 @@
     "controllerTitle": "Data controller",
     "controllerBody": "The data controller for the data processed within PDF Conduit is the operator of the PDF Conduit service. Contact: hello@pdfconduit.com. Because files are never stored and no account is required, the processing of personal data is limited to technical server logs (IP address) needed to protect the service against abuse (Art. 6(1)(f) GDPR).",
     "limitsTitle": "Free-tier limits",
-    "limitsBody1": "To keep the free service available to everyone, requests are subject to a daily operation quota, a per-file size cap and basic rate limiting. When you hit a limit, the app tells you clearly. Higher limits, larger files and batch/API access are planned for a future paid tier. See the",
-    "limitsLink": "Pro plans",
-    "limitsBody2": "teaser on the home page.",
+    "limitsBody": "To keep the free service available to everyone, requests are subject to a daily operation quota, a per-file size cap and basic rate limiting. When you hit a limit, the app tells you clearly. Higher limits, larger files and batch/API access are planned for a future paid tier. See the {linkStart}Pro plans{linkEnd} teaser on the home page.",
     "questionsTitle": "Questions",
     "questionsBody": "PDF Conduit is provided as-is. This page describes our current behaviour and may be updated as the product evolves.",
     "backHome": "Back to home"
@@ -638,7 +636,7 @@
     },
     "sign": {
       "title": "Fill & Sign",
-      "description": "Fill fillable PDF form fields (AcroForm) and add a signature to your PDF, then flatten. Nothing is stored, everything runs in your session.",
+      "description": "Fill fillable PDF form fields (AcroForm) and add a signature to your PDF, then flatten. Your file is never stored.",
       "hint": "One PDF. We detect any fillable form fields. Then create a signature and drop it onto the page.",
       "dragHint": "Drag on a page to place your signature.",
       "chooseAnother": "Choose another PDF",

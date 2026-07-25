@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "Accueil de PDF Conduit",
-    "quotaFreeLeft": "gratuites restantes aujourd'hui",
+    "quotaFreeLeft": "{count, plural, one {gratuite restante aujourd'hui} other {gratuites restantes aujourd'hui}}",
     "quotaTitleSpent": "Limite gratuite quotidienne atteinte. Découvrez les offres Pro",
     "quotaTitleLeft": "Opérations gratuites restantes aujourd'hui. Découvrez les offres Pro",
     "serverOnline": "Serveur en ligne",
@@ -275,7 +275,7 @@
   "privacy": {
     "title": "Confidentialité",
     "description": "Comment PDF Conduit traite vos fichiers. En bref : il ne les conserve pas.",
-    "memoryTitle": "Vos fichiers ne sont jamais conservés",
+    "memoryTitle": "Nous ne conservons jamais vos fichiers",
     "memoryBody": "Vos fichiers ne sont jamais conservés. Chaque opération se déroule entièrement au sein d'une seule requête : votre fichier est traité puis renvoyé directement, avant d'être supprimé dans l'instant. Nous ne gardons rien, et rien n'est jamais utilisé à d'autres fins.",
     "exceptionTitle": "La seule exception temporaire",
     "exceptionBody": "La conversion de documents bureautiques ou texte (par exemple .docx, .xlsx, .pptx) nécessite un LibreOffice en mode sans interface. Pour cette étape uniquement, le fichier est écrit dans un dossier temporaire isolé qui est supprimé immédiatement après la fin de la conversion. Les simples PDF et images ne touchent jamais le disque.",
@@ -284,9 +284,7 @@
     "controllerTitle": "Responsable du traitement",
     "controllerBody": "Le responsable du traitement des données traitées dans le cadre de PDF Conduit est l'opérateur du service PDF Conduit. Contact : hello@pdfconduit.com. Comme les fichiers ne sont jamais conservés et qu'aucun compte n'est requis, le traitement des données personnelles se limite aux journaux techniques du serveur (adresse IP) nécessaires pour protéger le service contre les abus (art. 6, par. 1, point f du RGPD).",
     "limitsTitle": "Limites de l'offre gratuite",
-    "limitsBody1": "Pour garder le service gratuit accessible à tous, les requêtes sont soumises à un quota d'opérations quotidien, à un plafond de taille par fichier et à une limitation de débit de base. Lorsque vous atteignez une limite, l'application vous l'indique clairement. Des limites plus élevées, des fichiers plus volumineux et un accès par lots/API sont prévus pour une future offre payante. Voir le",
-    "limitsLink": "les offres Pro",
-    "limitsBody2": "en aperçu sur la page d'accueil.",
+    "limitsBody": "Pour garder le service gratuit accessible à tous, les requêtes sont soumises à un quota d'opérations quotidien, à un plafond de taille par fichier et à une limitation de débit de base. Lorsque vous atteignez une limite, l'application vous l'indique clairement. Des limites plus élevées, des fichiers plus volumineux et un accès par lots/API sont prévus pour une future offre payante. Découvrez l'aperçu des {linkStart}offres Pro{linkEnd} sur la page d'accueil.",
     "questionsTitle": "Questions",
     "questionsBody": "PDF Conduit est fourni en l'état. Cette page décrit notre comportement actuel et pourra être mise à jour à mesure que le produit évolue.",
     "backHome": "Retour à l'accueil"
@@ -638,7 +636,7 @@
     },
     "sign": {
       "title": "Remplir et signer",
-      "description": "Remplissez les champs de formulaire PDF (AcroForm) et ajoutez une signature, puis aplatissez. Rien n'est conservé, tout se déroule dans votre session.",
+      "description": "Remplissez les champs de formulaire PDF (AcroForm) et ajoutez une signature, puis aplatissez. Votre fichier n'est jamais conservé.",
       "hint": "Un seul PDF. Nous détectons les champs de formulaire à remplir. Créez ensuite une signature et déposez-la sur la page.",
       "dragHint": "Faites glisser sur une page pour placer votre signature.",
       "chooseAnother": "Choisir un autre PDF",

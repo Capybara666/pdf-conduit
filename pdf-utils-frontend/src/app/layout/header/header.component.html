@@ -71,8 +71,13 @@
           (quotaState === 'spent' ? 'header.quotaTitleSpent' : 'header.quotaTitleLeft') | transloco
         "
       >
+        <!-- The count stays its own element (it is the ONLY part left below
+             640px, where `.quota-text` is hidden), but the trailing noun phrase
+             has to agree with it — hence the ICU plural on the same number. -->
         <span class="quota-count">{{ quota.remaining() }}</span>
-        <span class="quota-text">{{ 'header.quotaFreeLeft' | transloco }}</span>
+        <span class="quota-text">{{
+          'header.quotaFreeLeft' | transloco: { count: quota.remaining() }
+        }}</span>
       </a>
     }
 

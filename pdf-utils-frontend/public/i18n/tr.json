@@ -158,7 +158,7 @@
   },
   "header": {
     "brandHome": "PDF Conduit ana sayfası",
-    "quotaFreeLeft": "ücretsiz işlem kaldı",
+    "quotaFreeLeft": "{count, plural, other {ücretsiz işlem kaldı}}",
     "quotaTitleSpent": "Günlük ücretsiz sınıra ulaşıldı. Pro planlarına bakın",
     "quotaTitleLeft": "Bugün kalan ücretsiz işlemler. Pro planlarına bakın",
     "serverOnline": "Sunucu çevrimiçi",
@@ -275,7 +275,7 @@
   "privacy": {
     "title": "Gizlilik",
     "description": "PDF Conduit dosyalarınızı nasıl işler. Kısacası: onları saklamaz.",
-    "memoryTitle": "Dosyalarınız asla saklanmaz",
+    "memoryTitle": "Dosyalarınızı asla saklamayız",
     "memoryBody": "Dosyalarınız asla saklanmaz. Her işlem tamamen tek bir istek içinde gerçekleşir: yüklediğiniz dosya işlenir, doğrudan size geri gönderilir ve hemen ardından silinir. Hiçbir şey tutulmaz ve hiçbir şey asla başka bir amaçla kullanılmaz.",
     "exceptionTitle": "Tek geçici istisna",
     "exceptionBody": "Ofis veya metin belgelerini (örneğin .docx, .xlsx, .pptx) dönüştürmek için başsız bir LibreOffice gerekir. Yalnızca o adım için dosya, dönüştürme tamamlandıktan hemen sonra silinen izole bir geçici klasöre yazılır. Düz PDF'ler ve görseller diske hiç dokunmaz.",
@@ -284,9 +284,7 @@
     "controllerTitle": "Veri sorumlusu",
     "controllerBody": "PDF Conduit kapsamında işlenen verilerin veri sorumlusu, PDF Conduit hizmetinin işletmecisidir. İletişim: hello@pdfconduit.com. Dosyalar hiçbir zaman saklanmadığı ve hesap gerekmediği için, kişisel verilerin işlenmesi, hizmeti kötüye kullanıma karşı korumak için gerekli teknik sunucu günlükleriyle (IP adresi) sınırlıdır (GDPR md. 6/1-f).",
     "limitsTitle": "Ücretsiz katman sınırları",
-    "limitsBody1": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır. Ana sayfadaki",
-    "limitsLink": "Pro planları",
-    "limitsBody2": "tanıtımına bakın.",
+    "limitsBody": "Ücretsiz hizmeti herkes için erişilebilir tutmak amacıyla, istekler günlük işlem kotasına, dosya başına boyut sınırına ve temel hız sınırlamasına tabidir. Bir sınıra ulaştığınızda, uygulama bunu açıkça belirtir. Daha yüksek sınırlar, daha büyük dosyalar ve toplu/API erişimi gelecekteki ücretli bir katman için planlanmaktadır. Ana sayfadaki {linkStart}Pro planları{linkEnd} tanıtımına bakın.",
     "questionsTitle": "Sorular",
     "questionsBody": "PDF Conduit olduğu gibi sunulur. Bu sayfa mevcut davranışımızı açıklar ve ürün geliştikçe güncellenebilir.",
     "backHome": "Ana sayfaya dön"
@@ -638,7 +636,7 @@
     },
     "sign": {
       "title": "Doldur ve imzala",
-      "description": "Doldurulabilir PDF form alanlarını (AcroForm) doldurun ve bir imza ekleyin, ardından düzleştirin. Hiçbir şey saklanmaz, her şey oturumunuzda çalışır.",
+      "description": "Doldurulabilir PDF form alanlarını (AcroForm) doldurun ve bir imza ekleyin, ardından düzleştirin. Dosyanız asla saklanmaz.",
       "hint": "Tek bir PDF. Doldurulabilir form alanlarını algılarız. Ardından bir imza oluşturup sayfaya bırakın.",
       "dragHint": "İmzanızı yerleştirmek için sayfada sürükleyin.",
       "chooseAnother": "Başka bir PDF seç",
