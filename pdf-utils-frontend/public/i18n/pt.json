@@ -385,7 +385,16 @@
       "pagesPlaceholder": "ex.: 1,3,5-8",
       "pagesHelp": "Em branco = todas as páginas. Sintaxe:",
       "output": "Resultado",
-      "separate": "Dividir num ficheiro por página (ZIP)",
+      "modeOne": "Um PDF",
+      "modePerPage": "Um ficheiro por página",
+      "modeEvery": "A cada N páginas",
+      "modeHelp": {
+        "one": "As páginas selecionadas são devolvidas num único PDF.",
+        "perPage": "Cada página selecionada fica num ficheiro próprio (ZIP).",
+        "every": "As páginas selecionadas são divididas em ficheiros de N páginas (ZIP)."
+      },
+      "every": "Páginas por ficheiro",
+      "everyHelp": "De 1 a {{max}}. O último ficheiro pode ter menos páginas.",
       "submit": "Extrair",
       "loading": "A extrair…"
     },

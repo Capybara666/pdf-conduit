@@ -385,7 +385,16 @@
       "pagesPlaceholder": "例：1,3,5-8",
       "pagesHelp": "空欄 = すべてのページ。書式：",
       "output": "出力",
-      "separate": "1 ページごとに 1 ファイルに分割（ZIP）",
+      "modeOne": "1 つの PDF",
+      "modePerPage": "1 ページごとに 1 ファイル",
+      "modeEvery": "N ページごと",
+      "modeHelp": {
+        "one": "選択したページを 1 つの PDF にまとめて返します。",
+        "perPage": "選択した各ページが個別のファイルになります（ZIP）。",
+        "every": "選択したページを N ページずつのファイルに分割します（ZIP）。"
+      },
+      "every": "1 ファイルあたりのページ数",
+      "everyHelp": "1〜{{max}}。最後のファイルはページ数が少なくなることがあります。",
       "submit": "抽出",
       "loading": "抽出中…"
     },

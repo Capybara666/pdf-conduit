@@ -149,6 +149,11 @@ settings → compression → export flow) and the visual **Pipeline** builder
 the result in your browser. When an operation produces several files, they come
 back as a single `.zip`.
 
+**Extract** offers three outputs online: the selected pages as **one PDF**, **one
+file per page**, or **split every N pages** — parts of N pages each (the last one
+may be shorter), zipped. The page range still decides *what* is extracted; the
+mode only decides how it is cut up.
+
 **Redaction** runs right in the browser: the PDF is rendered on screen and you
 **draw boxes** over what to hide; the marked areas are permanently burned out of
 the result.
@@ -182,6 +187,7 @@ Running the app with arguments invokes the CLI (the launcher is `pdf-conduit`):
 pdf-conduit merge a.pdf b.pdf images/*.png -o combined.pdf
 pdf-conduit split report.pdf --pages 1-3,5,end-2 -o pages.pdf
 pdf-conduit split report.pdf --separate -o pages/          # one PDF per page into a folder
+pdf-conduit split report.pdf --every 10 -o parts/          # parts of 10 pages (last one may be shorter)
 pdf-conduit compress scan.pdf --target-size 5MB -o smaller.pdf
 pdf-conduit rotate doc.pdf --pages 1,3 --angle 90 -o rotated.pdf
 pdf-conduit arrange doc.pdf --order 3,1,2 -o reordered.pdf  # 5-1 reverses; repeat to duplicate

@@ -385,7 +385,16 @@
       "pagesPlaceholder": "bijv. 1,3,5-8",
       "pagesHelp": "Leeg = alle pagina's. Syntaxis:",
       "output": "Uitvoer",
-      "separate": "Splitsen in één bestand per pagina (ZIP)",
+      "modeOne": "Eén PDF",
+      "modePerPage": "Eén bestand per pagina",
+      "modeEvery": "Elke N pagina's",
+      "modeHelp": {
+        "one": "Je krijgt de geselecteerde pagina's terug als één PDF.",
+        "perPage": "Elke geselecteerde pagina wordt een eigen bestand (ZIP).",
+        "every": "De geselecteerde pagina's worden opgeknipt in bestanden van N pagina's (ZIP)."
+      },
+      "every": "Pagina's per bestand",
+      "everyHelp": "1 tot {{max}}. Het laatste bestand kan minder pagina's hebben.",
       "submit": "Extraheren",
       "loading": "Extraheren…"
     },
