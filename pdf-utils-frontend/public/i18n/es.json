@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Girar",
-      "description": "Gira las páginas 90° a la derecha, 180° o 270° a la izquierda."
+      "description": "Gira las páginas un cuarto de vuelta a la derecha (90°), del revés (180°) o un cuarto de vuelta a la izquierda (270°)."
     },
     "arrange": {
       "label": "Ordenar",
@@ -497,7 +497,7 @@
       "angleAria": "Ángulo de rotación",
       "dir90": "Gira 90° en sentido horario",
       "dir180": "Gira 180° (voltear)",
-      "dir270": "Gira 270° en sentido horario",
+      "dir270": "Gira 270° en sentido horario (un cuarto de vuelta a la izquierda)",
       "pages": "Páginas",
       "pagesPlaceholder": "p. ej. 1,3,5-8 (en blanco = todas)",
       "submit": "Girar",

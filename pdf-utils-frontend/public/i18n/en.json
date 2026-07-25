@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Rotate",
-      "description": "Turn pages 90° right, flip 180°, or turn 270° left."
+      "description": "Turn pages a quarter-turn right (90°), flip them (180°), or a quarter-turn left (270°)."
     },
     "arrange": {
       "label": "Arrange",
@@ -497,7 +497,7 @@
       "angleAria": "Rotation angle",
       "dir90": "Rotates 90° clockwise",
       "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir270": "Rotates 270° clockwise (a quarter-turn left)",
       "pages": "Pages",
       "pagesPlaceholder": "e.g. 1,3,5-8 (blank = all)",
       "submit": "Rotate",

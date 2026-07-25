@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Ruota",
-      "description": "Ruota le pagine di 90° a destra, capovolgile di 180° o ruotale di 270° a sinistra."
+      "description": "Ruota le pagine di un quarto di giro a destra (90°), capovolgile (180°) o ruotale di un quarto di giro a sinistra (270°)."
     },
     "arrange": {
       "label": "Riordina",
@@ -497,7 +497,7 @@
       "angleAria": "Angolo di rotazione",
       "dir90": "Ruota di 90° in senso orario",
       "dir180": "Ruota di 180° (capovolge)",
-      "dir270": "Ruota di 270° in senso orario",
+      "dir270": "Ruota di 270° in senso orario (un quarto di giro a sinistra)",
       "pages": "Pagine",
       "pagesPlaceholder": "es. 1,3,5-8 (vuoto = tutte)",
       "submit": "Ruota",

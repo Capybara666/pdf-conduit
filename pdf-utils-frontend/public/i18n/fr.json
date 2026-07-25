@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Pivoter",
-      "description": "Pivotez les pages de 90° vers la droite, de 180° (retournement) ou de 270° vers la gauche."
+      "description": "Pivotez les pages d'un quart de tour vers la droite (90°), retournez-les (180°) ou pivotez d'un quart de tour vers la gauche (270°)."
     },
     "arrange": {
       "label": "Réorganiser",
@@ -497,7 +497,7 @@
       "angleAria": "Angle de rotation",
       "dir90": "Pivote de 90° dans le sens horaire",
       "dir180": "Pivote de 180° (retournement)",
-      "dir270": "Pivote de 270° dans le sens horaire",
+      "dir270": "Pivote de 270° dans le sens horaire (un quart de tour vers la gauche)",
       "pages": "Pages",
       "pagesPlaceholder": "ex. 1,3,5-8 (vide = toutes)",
       "submit": "Pivoter",

@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Draaien",
-      "description": "Draai pagina's 90° naar rechts, 180° of 270° naar links."
+      "description": "Draai pagina's een kwartslag naar rechts (90°), 180° (ondersteboven) of een kwartslag naar links (270°)."
     },
     "arrange": {
       "label": "Herschikken",
@@ -497,7 +497,7 @@
       "angleAria": "Rotatiehoek",
       "dir90": "Draait 90° met de klok mee",
       "dir180": "Draait 180° (ondersteboven)",
-      "dir270": "Draait 270° met de klok mee",
+      "dir270": "Draait 270° met de klok mee (een kwartslag naar links)",
       "pages": "Pagina's",
       "pagesPlaceholder": "bijv. 1,3,5-8 (leeg = alle)",
       "submit": "Draaien",

@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Obróć",
-      "description": "Obróć strony o 90°, 180° lub 270°."
+      "description": "Obróć strony o ćwierć obrotu w prawo (90°), do góry nogami (180°) lub o ćwierć obrotu w lewo (270°)."
     },
     "arrange": {
       "label": "Uporządkuj",
@@ -491,13 +491,13 @@
     },
     "rotate": {
       "title": "Obróć",
-      "description": "Obróć strony o 90°, 180° lub 270°.",
+      "description": "Obróć strony o ćwierć obrotu w prawo (90° w prawo), do góry nogami (180°) lub o ćwierć obrotu w lewo (270° w prawo, czyli 90° w lewo).",
       "hint": "Jeden lub więcej PDF-ów (kilka plików → ZIP).",
       "angle": "Kąt",
       "angleAria": "Kąt obrotu",
       "dir90": "Obraca o 90° w prawo",
       "dir180": "Obraca o 180° (do góry nogami)",
-      "dir270": "Obraca o 270° w prawo",
+      "dir270": "Obraca o 270° w prawo (ćwierć obrotu w lewo)",
       "pages": "Strony",
       "pagesPlaceholder": "np. 1,3,5-8 (puste = wszystkie)",
       "submit": "Obróć",

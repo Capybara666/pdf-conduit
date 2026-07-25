@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Rodar",
-      "description": "Rode as páginas 90° para a direita, 180° ou 270° para a esquerda."
+      "description": "Rode as páginas um quarto de volta para a direita (90°), vire-as (180°) ou um quarto de volta para a esquerda (270°)."
     },
     "arrange": {
       "label": "Ordenar",
@@ -497,7 +497,7 @@
       "angleAria": "Ângulo de rotação",
       "dir90": "Roda 90° para a direita",
       "dir180": "Roda 180° (inverter)",
-      "dir270": "Roda 270° para a direita",
+      "dir270": "Roda 270° para a direita (um quarto de volta para a esquerda)",
       "pages": "Páginas",
       "pagesPlaceholder": "ex.: 1,3,5-8 (em branco = todas)",
       "submit": "Rodar",
