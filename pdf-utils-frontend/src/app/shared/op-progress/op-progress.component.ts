@@ -106,15 +106,14 @@ const ELAPSED_VISIBLE_AFTER_MS = 3_000;
           }
         </div>
 
+        <!-- No file summary here: the page's own file list sits directly above this
+             card, so repeating the names/count read as a second list of the same
+             thing. Only the total size is worth restating, since it is what the
+             percentage is measured against. -->
         <div class="row foot">
-          <span class="files" [title]="fileNames()">
-            @if (files().length === 1) {
-              {{ files()[0].name }}
-            } @else if (files().length) {
-              {{ 'common.fileCount' | transloco: { count: files().length } }}
-            }
+          <span class="files">
             @if (files().length) {
-              · {{ bytes(totalSize()) }}
+              {{ bytes(totalSize()) }}
             }
           </span>
           <button type="button" class="btn btn-ghost cancel" (click)="cancel.emit()">

@@ -510,7 +510,12 @@ input[type='radio'] {
 }
 
 .seg {
-  display: inline-flex;
+  /* Fills the field and splits evenly between its buttons. `inline-flex` sized
+     the control to its text, so it neither filled the panel nor kept the
+     options equal — and a locale with longer labels (pl "Podziel co N stron")
+     broke the row into one line per button. */
+  display: flex;
+  width: 100%;
   flex-wrap: wrap;
   border: 1px solid var(--border-strong);
   border-radius: calc(var(--radius) - 5px);
@@ -522,6 +527,10 @@ input[type='radio'] {
 
 .seg button {
   border: none;
+  /* Equal shares of the row; min-width:0 lets a long label wrap inside its own
+     button (taller control) instead of pushing the row apart. */
+  flex: 1 1 0;
+  min-width: 0;
   background: var(--surface-2);
   color: var(--text);
   padding: 0.45rem 0.9rem;

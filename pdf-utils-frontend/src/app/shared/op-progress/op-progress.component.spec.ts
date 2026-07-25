@@ -172,11 +172,15 @@ describe('OpProgressComponent', () => {
     fixture.destroy();
   }));
 
-  it('summarises what is being processed', () => {
+  it('states the total size but never re-lists the files', () => {
+    // The page's own file list sits directly above this card, so repeating the
+    // names (or the count) read as a second list of the same thing. Only the
+    // total survives: it is what the percentage is measured against.
     const single = tracker();
     single.begin([{ name: 'report.pdf', size: 2048 }]);
     show(single);
-    expect(text('.files')).toBe('report.pdf · 2.0 KB');
+    expect(text('.files')).toBe('2.0 KB');
+    expect(text('.files')).not.toContain('report.pdf');
 
     const batch = tracker();
     batch.begin([
@@ -185,7 +189,8 @@ describe('OpProgressComponent', () => {
       { name: 'c.pdf', size: 1024 },
     ]);
     show(batch);
-    expect(text('.files')).toBe('3 files · 3.0 KB');
+    expect(text('.files')).toBe('3.0 KB');
+    expect(text('.files')).not.toContain('3 files');
   });
 
   it('offers cancel while waiting and emits it', () => {

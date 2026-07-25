@@ -52,6 +52,12 @@ a {
   align-items: center;
   gap: 0.7rem;
   padding: 0.55rem 0.75rem;
+  /* Several operation names need two lines in most locales (fr 27, ru 26,
+     tr 29 chars), so wrapping is the normal case, not the exception: tighten
+     the leading and break on word boundaries so it reads as one label rather
+     than two stray lines. The icon stays vertically centred against the block. */
+  line-height: 1.25;
+  overflow-wrap: break-word;
   border-radius: calc(var(--radius) - 4px);
   color: var(--text);
   text-decoration: none;

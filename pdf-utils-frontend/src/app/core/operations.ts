@@ -195,10 +195,13 @@ export const OP_ICONS: Record<string, string> = {
   // open "C" facing up-right, and a diagonal handle. No page outline: at 24px a
   // wrench *inside* a document turns to mush, and the tool alone is the clearer
   // "fix this" signal.
+  // Sized to the same optical extent as its neighbours: the ink spans ~4-20 on
+  // both axes, like compress (3.5-20.5). The first draft only reached 4.8-19.2
+  // *diagonally*, so it read noticeably smaller than every other glyph.
   repair: g(
-    '<circle cx="16" cy="8" r="3.2" fill="currentColor" stroke="none" opacity=".18"/>' +
-      '<path d="M19.15 8.56 A3.2 3.2 0 1 1 15.44 4.85"/>' +
-      '<path d="M13.9 10.1 L6.4 17.6"/>',
+    '<circle cx="16.4" cy="7.6" r="3.7" fill="currentColor" stroke="none" opacity=".18"/>' +
+      '<path d="M20.04 8.24 A3.7 3.7 0 1 1 15.76 3.96"/>' +
+      '<path d="M13.78 10.22 L4.4 19.6"/>',
   ),
 
   // Pipeline SOURCE node (not an operation) — a plain page glyph.

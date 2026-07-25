@@ -42,6 +42,10 @@ export const appConfig: ApplicationConfig = {
       },
       loader: TranslocoHttpLoader,
     }),
-    provideTranslocoMessageformat(),
+    // The transpiler only calls setLocale() from onLangChanged, i.e. on a *change*.
+    // Booting straight into a stored language fires no change, so without this the
+    // rules stay English and any non-English plural category (Slavic `few`/`many`)
+    // throws "The plural case few is not valid in this locale" at render time.
+    provideTranslocoMessageformat({ locales: resolveInitialLang() }),
   ],
 };
