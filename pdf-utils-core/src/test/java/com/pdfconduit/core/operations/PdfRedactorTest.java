@@ -1,5 +1,6 @@
 package com.pdfconduit.core.operations;
 
+import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.RedactOptions;
 import com.pdfconduit.core.model.RedactRegion;
 import com.pdfconduit.core.model.RedactResult;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -80,18 +82,42 @@ class PdfRedactorTest {
         }
     }
 
+    /**
+     * A zero-area rectangle can cover nothing. It used to be dropped silently, so the caller got
+     * the untouched document back at a path they had named "redacted" — with the data still
+     * readable. Both APIs must now refuse, and write no output at all.
+     */
     @Test
-    void emptyRectanglesAreIgnored() throws Exception {
+    void emptyRectanglesAreRejected() throws Exception {
         Path src = createPdf("ALPHA");
         Path out = tmp.resolve("empty.pdf");
 
-        RedactResult result = PdfRedactor.execute(new RedactOptions(
-            src, List.of(new RedactRegion(0, 10, 10, 0, 50)), 150, out));
+        PdfOperationException e = assertThrows(PdfOperationException.class,
+            () -> PdfRedactor.execute(new RedactOptions(
+                src, List.of(new RedactRegion(0, 10, 10, 0, 50)), 150, out)));
+        assertTrue(e.getMessage().contains("no area"), e.getMessage());
+        assertFalse(Files.exists(out), "no output file may be produced for a rejected redaction");
+    }
 
-        assertEquals(0, result.redactedPages(), "a zero-area rectangle is a no-op");
-        try (PDDocument doc = Loader.loadPDF(out.toFile())) {
-            assertTrue(textOfPage(doc, 1).contains("ALPHA"), "page left untouched, text intact");
-        }
+    /**
+     * Out-of-range page: the {@code Path} and {@code byte[]} APIs must fail identically (same
+     * message), so no surface can quietly hand back an unredacted document.
+     */
+    @Test
+    void regionPastTheLastPageIsRejectedByBothApis() throws Exception {
+        Path src = createPdf("ALPHA", "BETA");
+        Path out = tmp.resolve("offpage.pdf");
+        RedactRegion offPage = new RedactRegion(2, 10, 10, 100, 50);
+
+        PdfOperationException viaPath = assertThrows(PdfOperationException.class,
+            () -> PdfRedactor.execute(new RedactOptions(src, List.of(offPage), 150, out)));
+        assertTrue(viaPath.getMessage().contains("page 3") && viaPath.getMessage().contains("2 page"),
+            viaPath.getMessage());
+        assertFalse(Files.exists(out), "no output file may be produced for a rejected redaction");
+
+        PdfOperationException viaBytes = assertThrows(PdfOperationException.class,
+            () -> PdfRedactor.executeBytes(Files.readAllBytes(src), List.of(offPage), 150));
+        assertEquals(viaPath.getMessage(), viaBytes.getMessage(), "both APIs fail the same way");
     }
 
     // --- coordinate correctness on rotated / offset-cropbox pages (audit finding L1) ---

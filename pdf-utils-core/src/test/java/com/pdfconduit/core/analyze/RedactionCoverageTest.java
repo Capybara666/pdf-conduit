@@ -1,5 +1,7 @@
 package com.pdfconduit.core.analyze;
 
+import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.model.RedactBytesResult;
 import com.pdfconduit.core.model.RedactRegion;
 import com.pdfconduit.core.operations.PdfRedactor;
 import org.apache.pdfbox.Loader;
@@ -74,7 +76,13 @@ class RedactionCoverageTest {
         assertTrue(box.width() > 40, "box spans the whole address: width=" + box.width());
 
         // Redact using EXACTLY what the scanner produced.
-        byte[] redacted = PdfRedactor.executeBytes(pdf, List.of(toRedact(box)), DPI);
+        RedactBytesResult res = PdfRedactor.executeBytes(pdf, List.of(toRedact(box)), DPI);
+        byte[] redacted = res.data();
+
+        // (0) COUNTS PROOF — the redactor reports what it really applied, so a caller can tell a
+        // real redaction from a silent no-op (the file must never be named "_redacted" for nothing).
+        assertEquals(1, res.redactedPages(), "one page was rasterised");
+        assertEquals(1, res.redactedRegions(), "the requested region was painted");
 
         // (1) TEXT PROOF — the value is gone from the extracted text of the redacted output.
         String text = normalise(extractText(redacted));
@@ -107,9 +115,50 @@ class RedactionCoverageTest {
         assertEquals(0, r.totalFindings(), "control document has no PII: " + r.findings());
 
         // Nothing to redact → the page is copied through and its text survives intact.
-        byte[] out = PdfRedactor.executeBytes(pdf, List.of(), DPI);
-        assertTrue(normalise(extractText(out)).contains(normalise(clean)),
+        RedactBytesResult out = PdfRedactor.executeBytes(pdf, List.of(), DPI);
+        assertEquals(0, out.redactedPages());
+        assertEquals(0, out.redactedRegions());
+        assertTrue(normalise(extractText(out.data())).contains(normalise(clean)),
             "clean text must be preserved when there is nothing to redact");
+    }
+
+    // --- fail-loudly guards: a region that cannot be applied must never yield a "redacted" file ---
+
+    /**
+     * A region pointing past the last page used to be dropped on the floor: the caller got a
+     * byte-for-byte copy of the input back, with the PII fully readable, and no signal at all.
+     * Ground truth: the operation now fails, and no output bytes are produced to be mislabelled.
+     */
+    @Test
+    void regionOnANonExistentPageIsRejected() throws Exception {
+        byte[] pdf = onePageWith(EMAIL);
+        PiiRegion box = find(PiiScanner.scanBytes(pdf), PiiType.EMAIL).regions().get(0);
+        RedactRegion offPage = new RedactRegion(5, box.x(), box.y(), box.width(), box.height());
+
+        PdfOperationException e = assertThrows(PdfOperationException.class,
+            () -> PdfRedactor.executeBytes(pdf, List.of(offPage), DPI));
+        assertTrue(e.getMessage().contains("page 6") && e.getMessage().contains("1 page"),
+            "message must name the bad page and the real page count: " + e.getMessage());
+
+        // And the input is untouched — the PII is still there, which is exactly why the caller
+        // must never be handed these bytes under a "_redacted" name.
+        assertTrue(normalise(extractText(pdf)).contains(normalise(EMAIL)));
+    }
+
+    /** A degenerate (zero-area) rectangle covers nothing; accepting it would be a silent no-op. */
+    @Test
+    void zeroAreaRegionIsRejected() throws Exception {
+        byte[] pdf = onePageWith(EMAIL);
+        PiiRegion box = find(PiiScanner.scanBytes(pdf), PiiType.EMAIL).regions().get(0);
+
+        for (RedactRegion degenerate : List.of(
+                new RedactRegion(0, box.x(), box.y(), 0, box.height()),
+                new RedactRegion(0, box.x(), box.y(), box.width(), 0))) {
+            PdfOperationException e = assertThrows(PdfOperationException.class,
+                () -> PdfRedactor.executeBytes(pdf, List.of(degenerate), DPI));
+            assertTrue(e.getMessage().toLowerCase().contains("area"),
+                "message must explain the empty rectangle: " + e.getMessage());
+        }
     }
 
     // --- helpers -----------------------------------------------------------

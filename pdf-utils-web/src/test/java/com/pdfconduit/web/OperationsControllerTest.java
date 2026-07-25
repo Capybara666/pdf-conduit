@@ -253,6 +253,112 @@ class OperationsControllerTest {
         assertThat(TestPdfs.pageCount(result.getResponse().getContentAsByteArray())).isEqualTo(1);
     }
 
+    /**
+     * The redaction contract, proved end-to-end: the data is gone from the returned bytes AND the
+     * response says what was actually blacked out, so a client never has to trust the filename.
+     */
+    @Test
+    void redact_reportsWhatWasActuallyBlackedOut() throws Exception {
+        byte[] a = TestPdfs.withText("secret john.doe@example.com data");
+        String regions = "[{\"pageIndex\":0,\"x\":60,\"y\":120,\"width\":420,\"height\":40}]";
+        MvcResult result = mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", regions))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+            .andExpect(header().string("X-Redacted-Pages", "1"))
+            .andExpect(header().string("X-Redacted-Regions", "1"))
+            .andReturn();
+        assertThat(TestPdfs.text(result.getResponse().getContentAsByteArray()))
+            .doesNotContain("john.doe@example.com");
+    }
+
+    /**
+     * A region past the last page used to be dropped silently: 200 OK, {@code a_redacted.pdf},
+     * personal data fully intact. It must now fail — never a 2xx.
+     */
+    @Test
+    void redact_pageIndexPastLastPage_isRejected() throws Exception {
+        byte[] a = TestPdfs.withText("secret john.doe@example.com data");
+        String regions = "[{\"pageIndex\":5,\"x\":20,\"y\":20,\"width\":100,\"height\":30}]";
+        mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", regions))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.code").value("operation_failed"))
+            .andExpect(jsonPath("$.error").value(org.hamcrest.Matchers.containsString("page 6")));
+    }
+
+    /** A zero-area box covers nothing; accepting it would be a silent non-redaction (400). */
+    @Test
+    void redact_zeroAreaRegion_isRejected() throws Exception {
+        byte[] a = TestPdfs.withText("secret data here");
+        String regions = "[{\"pageIndex\":0,\"x\":20,\"y\":20,\"width\":0,\"height\":30}]";
+        mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", regions))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("bad_request"))
+            .andExpect(jsonPath("$.error").value(org.hamcrest.Matchers.containsString("no area")));
+    }
+
+    /** An empty region list would return the untouched upload named "_redacted" — refuse it. */
+    @Test
+    void redact_emptyRegionList_isRejected() throws Exception {
+        byte[] a = TestPdfs.withText("secret data here");
+        mvc().perform(multipart("/api/redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("regions", "[]"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("bad_request"));
+    }
+
+    // ---------------------------------------------------------- auto-redact
+
+    /** The happy path of the scan → auto-redact hand-off: values blacked out, counts reported. */
+    @Test
+    void autoRedact_detectedValues_areBlackedOutAndCounted() throws Exception {
+        byte[] a = TestPdfs.withText("Contact john.doe@example.com for details");
+        MvcResult result = mvc().perform(multipart("/api/auto-redact")
+                .file(pdf("file", "a.pdf", a)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+            .andExpect(header().string("X-Redacted-Pages", "1"))
+            .andExpect(header().string("X-Redacted-Regions", "1"))
+            .andReturn();
+        assertThat(TestPdfs.text(result.getResponse().getContentAsByteArray()))
+            .doesNotContain("john.doe@example.com");
+    }
+
+    /**
+     * Art. 9 keyword flags (health, religion, …) carry no coordinates, so there is nothing to
+     * black out. This used to stream the ORIGINAL file back as {@code a_redacted.pdf}, 200 OK —
+     * the most dangerous possible lie. It must be an honest 422 with no file at all.
+     */
+    @Test
+    void autoRedact_onlyKeywordFindings_refusesInsteadOfFakingARedactedFile() throws Exception {
+        byte[] a = TestPdfs.withText("The patient diagnosis and medication are on file.");
+        mvc().perform(multipart("/api/auto-redact")
+                .file(pdf("file", "a.pdf", a))
+                .param("categories", "SPECIAL_CATEGORY"))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(header().doesNotExist("Content-Disposition"))
+            .andExpect(jsonPath("$.code").value("operation_failed"))
+            .andExpect(jsonPath("$.error")
+                .value(org.hamcrest.Matchers.containsString("Nothing could be redacted")));
+    }
+
+    /** Same refusal when the scan finds nothing at all — no file may claim to be redacted. */
+    @Test
+    void autoRedact_cleanDocument_refusesInsteadOfFakingARedactedFile() throws Exception {
+        byte[] a = TestPdfs.withText("Nothing sensitive here, just a friendly note.");
+        mvc().perform(multipart("/api/auto-redact")
+                .file(pdf("file", "a.pdf", a)))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.code").value("operation_failed"));
+    }
+
     @Test
     void redact_reOcr_whenOcrUnavailable_isNoOpAndStillRedacts() throws Exception {
         // OCR is disabled by default (and tesseract is absent in CI), so reOcr=true must be a clean

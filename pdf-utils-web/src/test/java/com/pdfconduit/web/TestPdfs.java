@@ -45,6 +45,13 @@ final class TestPdfs {
         return bos.toByteArray();
     }
 
+    /** Extracted text of a PDF byte array — the ground truth for "did the data really go?". */
+    static String text(byte[] pdf) throws IOException {
+        try (PDDocument doc = org.apache.pdfbox.Loader.loadPDF(pdf)) {
+            return new org.apache.pdfbox.text.PDFTextStripper().getText(doc);
+        }
+    }
+
     /** Number of pages in a PDF byte array (for assertions). */
     static int pageCount(byte[] pdf) throws IOException {
         try (PDDocument doc = org.apache.pdfbox.Loader.loadPDF(pdf)) {

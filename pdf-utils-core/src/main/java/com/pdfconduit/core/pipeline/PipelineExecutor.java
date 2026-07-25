@@ -605,7 +605,8 @@ public final class PipelineExecutor {
                 case OCR       -> PdfOcr.executeBytes(pdf, n.ocrLanguages, n.ocrDpi);
                 // Scan for PII and feed every detected value's region straight into the redactor —
                 // the same one-click scan→auto-redact hand-off exposed by the web /auto-redact endpoint.
-                case GDPR_REDACT -> PdfRedactor.executeBytes(pdf, redactRegions(PiiScanner.scanBytes(pdf)), 0);
+                case GDPR_REDACT -> PdfRedactor.executeBytes(
+                    pdf, redactRegions(PiiScanner.scanBytes(pdf)), 0).data();
                 default -> throw new PipelineException("Not a map node: " + n.kind);
             };
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));
