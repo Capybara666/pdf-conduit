@@ -264,7 +264,7 @@
   "onboarding": {
     "welcome": {
       "title": "Benvenuto in PDF Conduit",
-      "message": "Strumenti PDF gratuiti che funzionano direttamente nel tuo browser: i tuoi file vengono elaborati all'istante e mai conservati. Prima volta qui? La procedura guidata è il modo più semplice per iniziare.",
+      "message": "Strumenti PDF gratuiti che funzionano direttamente nel tuo browser. I tuoi file vengono elaborati all'istante e mai conservati. Prima volta qui? La procedura guidata è il modo più semplice per iniziare.",
       "cta": "Prova la procedura guidata",
       "secondary": "Esplora tutti gli strumenti",
       "dismiss": "Ignora"

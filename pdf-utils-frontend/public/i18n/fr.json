@@ -264,7 +264,7 @@
   "onboarding": {
     "welcome": {
       "title": "Bienvenue sur PDF Conduit",
-      "message": "Des outils PDF gratuits qui fonctionnent directement dans votre navigateur : vos fichiers sont traités instantanément et jamais conservés. Première visite ? L'Assistant guidé est le moyen le plus simple de commencer.",
+      "message": "Des outils PDF gratuits qui fonctionnent directement dans votre navigateur. Vos fichiers sont traités instantanément et jamais conservés. Première visite ? L'Assistant guidé est le moyen le plus simple de commencer.",
       "cta": "Essayer l'Assistant guidé",
       "secondary": "Parcourir tous les outils",
       "dismiss": "Ignorer"
