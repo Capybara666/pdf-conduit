@@ -6,6 +6,8 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   ApiError,
+  BatchFailureEntry,
+  BatchFailuresInfo,
   BatchPiiReport,
   CapabilitiesInfo,
   CompressionInfo,
@@ -14,6 +16,7 @@ import {
   MetadataDto,
   OperationInfo,
   PiiReport,
+  RedactionInfo,
   RepairInfo,
   RunResult,
 } from './api.models';
@@ -262,7 +265,11 @@ export class ApiService {
     if (repair) {
       result.repair = repair;
     }
-    const batchFailures = headers.get('X-Batch-Failures');
+    const redaction = this.redactionFrom(headers);
+    if (redaction) {
+      result.redaction = redaction;
+    }
+    const batchFailures = this.batchFailuresFrom(headers);
     if (batchFailures) {
       result.batchFailures = batchFailures;
     }
@@ -315,17 +322,95 @@ export class ApiService {
    * Parse the repair outcome headers. Absent on batch (ZIP) responses and on any
    * server that predates them — then this returns `undefined` and the result
    * panel stays with the neutral success copy rather than guessing.
+   *
+   * `X-Repair-Findings` is a comma-separated list of backend `RepairFinding`
+   * ids, and is legitimately **empty** when a file was well-formed. An empty
+   * value therefore parses to `[]` ("nothing was wrong"), never to an error, and
+   * an absent header (an intermediary may strip an empty one) leaves the field
+   * off — both read as "no findings" in the panel.
    */
   private repairFrom(headers: HttpHeaders): RepairInfo | undefined {
     const wasDamaged = headers.get('X-Repair-Was-Damaged');
     const recovered = headers.get('X-Repair-Recovered');
-    if (wasDamaged == null && recovered == null) {
+    const findings = headers.get('X-Repair-Findings');
+    const pageCount = ApiService.countHeader(headers.get('X-Repair-Pages'));
+    if (wasDamaged == null && recovered == null && findings == null && pageCount === undefined) {
       return undefined;
     }
     const info: RepairInfo = {};
     if (wasDamaged != null) info.wasDamaged = wasDamaged.toLowerCase() === 'true';
     if (recovered != null) info.recovered = recovered.toLowerCase() === 'true';
+    if (findings != null) {
+      info.findings = findings
+        .split(',')
+        .map((id) => id.trim().toLowerCase())
+        .filter((id) => id !== '');
+    }
+    if (pageCount !== undefined) info.pageCount = pageCount;
     return info;
+  }
+
+  /**
+   * Parse what a redaction actually blacked out (`X-Redacted-Pages` /
+   * `X-Redacted-Regions`). Only the two redaction endpoints send these; anything
+   * else returns `undefined` and the panel makes no coverage claim at all.
+   */
+  private redactionFrom(headers: HttpHeaders): RedactionInfo | undefined {
+    const pages = ApiService.countHeader(headers.get('X-Redacted-Pages'));
+    const regions = ApiService.countHeader(headers.get('X-Redacted-Regions'));
+    if (pages === undefined && regions === undefined) {
+      return undefined;
+    }
+    const info: RedactionInfo = {};
+    if (pages !== undefined) info.pages = pages;
+    if (regions !== undefined) info.regions = regions;
+    return info;
+  }
+
+  /**
+   * Parse `X-Batch-Failures` into the inputs a partial batch skipped:
+   * `<file>: <reason>` entries joined by `"; "`, capped at five with a trailing
+   * `"; +N more"` (see the backend's `Responses.batchFailures`). The backend
+   * scrubs `;` out of both the filename and the reason, so splitting on it is
+   * unambiguous. A blank or unparseable header yields `undefined` — the panel
+   * then shows the plain success state instead of an empty "failures" list.
+   */
+  private batchFailuresFrom(headers: HttpHeaders): BatchFailuresInfo | undefined {
+    const raw = headers.get('X-Batch-Failures');
+    if (raw == null || raw.trim() === '') {
+      return undefined;
+    }
+    const entries: BatchFailureEntry[] = [];
+    let more = 0;
+    for (const part of raw.split(';').map((p) => p.trim())) {
+      if (part === '') continue;
+      const tail = /^\+\s*(\d+)\s+more$/i.exec(part);
+      if (tail) {
+        more += Number(tail[1]);
+        continue;
+      }
+      const colon = part.indexOf(':');
+      if (colon >= 0) {
+        entries.push({ filename: part.slice(0, colon).trim(), reason: part.slice(colon + 1).trim() });
+      } else {
+        entries.push({ filename: part, reason: '' });
+      }
+    }
+    if (entries.length === 0 && more === 0) {
+      return undefined;
+    }
+    return { entries, more, total: entries.length + more, raw };
+  }
+
+  /**
+   * A count header as a non-negative integer, or `undefined` when it is absent,
+   * blank or not a plain number. Never coerces junk to `0` — a fabricated zero
+   * would read as a measurement the server never made.
+   */
+  private static countHeader(raw: string | null): number | undefined {
+    if (raw == null || raw.trim() === '') return undefined;
+    const value = Number(raw.trim());
+    return Number.isInteger(value) && value >= 0 ? value : undefined;
   }
 
   /**

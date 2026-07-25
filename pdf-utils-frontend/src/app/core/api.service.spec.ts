@@ -465,7 +465,7 @@ describe('ApiService', () => {
       ]);
     });
 
-    it('leaves compression/repair undefined when the headers are absent', async () => {
+    it('leaves every outcome field undefined when the headers are absent', async () => {
       const result = await succeeding((req) =>
         req.flush(blob('%PDF-1.7', 'application/pdf'), {
           headers: { 'Content-Type': 'application/pdf' },
@@ -473,6 +473,7 @@ describe('ApiService', () => {
       );
       expect(result.compression).toBeUndefined();
       expect(result.repair).toBeUndefined();
+      expect(result.redaction).toBeUndefined();
       expect(result.batchFailures).toBeUndefined();
     });
 
@@ -489,6 +490,175 @@ describe('ApiService', () => {
         'repair',
       );
       expect(result.repair).toEqual({ wasDamaged: true, recovered: false });
+    });
+
+    it('parses the repair findings list and page count', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('%PDF-1.7', 'application/pdf'), {
+            headers: {
+              'Content-Type': 'application/pdf',
+              'X-Repair-Was-Damaged': 'true',
+              'X-Repair-Recovered': 'true',
+              'X-Repair-Findings': 'eof-missing,xref-rebuilt',
+              'X-Repair-Pages': '12',
+            },
+          }),
+        'repair',
+      );
+      expect(result.repair).toEqual({
+        wasDamaged: true,
+        recovered: true,
+        findings: ['eof-missing', 'xref-rebuilt'],
+        pageCount: 12,
+      });
+    });
+
+    it('reads an EMPTY findings header as "no findings", not as a defect', async () => {
+      // A well-formed input legitimately produces an empty header. Parsing it
+      // as anything but "nothing was wrong" would invent damage.
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('%PDF-1.7', 'application/pdf'), {
+            headers: {
+              'Content-Type': 'application/pdf',
+              'X-Repair-Was-Damaged': 'false',
+              'X-Repair-Findings': '',
+            },
+          }),
+        'repair',
+      );
+      expect(result.repair?.findings).toEqual([]);
+      expect(result.repair?.wasDamaged).toBeFalse();
+    });
+
+    it('omits findings entirely when an intermediary stripped the header', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('%PDF-1.7', 'application/pdf'), {
+            headers: { 'Content-Type': 'application/pdf', 'X-Repair-Was-Damaged': 'false' },
+          }),
+        'repair',
+      );
+      expect(result.repair).toEqual({ wasDamaged: false });
+      expect(result.repair?.findings).toBeUndefined();
+    });
+
+    it('ignores a non-numeric page count rather than reporting zero pages', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('%PDF-1.7', 'application/pdf'), {
+            headers: {
+              'Content-Type': 'application/pdf',
+              'X-Repair-Was-Damaged': 'true',
+              'X-Repair-Pages': 'unknown',
+            },
+          }),
+        'repair',
+      );
+      expect(result.repair?.pageCount).toBeUndefined();
+    });
+
+    it('parses what a redaction actually blacked out', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('%PDF-1.7', 'application/pdf'), {
+            headers: {
+              'Content-Type': 'application/pdf',
+              'X-Redacted-Pages': '2',
+              'X-Redacted-Regions': '3',
+            },
+          }),
+        'redact',
+      );
+      expect(result.redaction).toEqual({ pages: 2, regions: 3 });
+    });
+
+    it('parses the redaction counts on auto-redact too', async () => {
+      const captured = new Promise<RunResult>((resolve, reject) => {
+        api.autoRedact(new FormData()).subscribe({ next: resolve, error: reject });
+      });
+      http.expectOne('/api/auto-redact').flush(blob('%PDF-1.7', 'application/pdf'), {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'X-Redacted-Pages': '1',
+          'X-Redacted-Regions': '7',
+        },
+      });
+      expect((await captured).redaction).toEqual({ pages: 1, regions: 7 });
+    });
+
+    it('leaves redaction undefined on a server that predates the headers', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('%PDF-1.7', 'application/pdf'), {
+            headers: { 'Content-Type': 'application/pdf' },
+          }),
+        'redact',
+      );
+      expect(result.redaction).toBeUndefined();
+    });
+
+    it('parses a partial batch header into named failures', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('PK', 'application/zip'), {
+            headers: {
+              'Content-Type': 'application/zip',
+              'X-Batch-Failures': 'broken.pdf: Damaged file.; locked.pdf: Password required.',
+            },
+          }),
+        'rotate',
+      );
+
+      expect(result.batchFailures?.entries).toEqual([
+        { filename: 'broken.pdf', reason: 'Damaged file.' },
+        { filename: 'locked.pdf', reason: 'Password required.' },
+      ]);
+      expect(result.batchFailures?.more).toBe(0);
+      expect(result.batchFailures?.total).toBe(2);
+    });
+
+    it('counts the capped "+N more" tail as failures, not as a file named "+3 more"', async () => {
+      const listed = ['a.pdf: Damaged.', 'b.pdf: Damaged.', 'c.pdf: Damaged.', 'd.pdf: Damaged.', 'e.pdf: Damaged.'];
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('PK', 'application/zip'), {
+            headers: {
+              'Content-Type': 'application/zip',
+              'X-Batch-Failures': `${listed.join('; ')}; +3 more`,
+            },
+          }),
+        'rotate',
+      );
+
+      expect(result.batchFailures?.entries.length).toBe(5);
+      expect(result.batchFailures?.entries.map((e) => e.filename)).not.toContain('+3 more');
+      expect(result.batchFailures?.more).toBe(3);
+      expect(result.batchFailures?.total).toBe(8);
+    });
+
+    it('keeps an entry whose reason the backend left empty', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('PK', 'application/zip'), {
+            headers: { 'Content-Type': 'application/zip', 'X-Batch-Failures': 'odd.pdf:' },
+          }),
+        'rotate',
+      );
+      expect(result.batchFailures?.entries).toEqual([{ filename: 'odd.pdf', reason: '' }]);
+      expect(result.batchFailures?.total).toBe(1);
+    });
+
+    it('treats a blank batch-failures header as no failures at all', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('PK', 'application/zip'), {
+            headers: { 'Content-Type': 'application/zip', 'X-Batch-Failures': '  ' },
+          }),
+        'rotate',
+      );
+      expect(result.batchFailures).toBeUndefined();
     });
   });
 
