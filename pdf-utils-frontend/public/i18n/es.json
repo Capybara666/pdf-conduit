@@ -80,7 +80,7 @@
       "description": "Reordena, invierte o duplica páginas."
     },
     "nup": {
-      "label": "Páginas por hoja",
+      "label": "Diseño de impresión",
       "description": "Coloca varias páginas por hoja o dobla un cuadernillo."
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "Ordenando…"
     },
     "nup": {
-      "title": "Páginas por hoja",
+      "title": "Diseño de impresión",
       "description": "Coloca varias páginas por hoja o dobla un cuadernillo cosido a caballete.",
       "privacyLine": "Componemos tus archivos de forma privada y nunca los guardamos.",
       "hint": "Archivos PDF: varios archivos se devuelven como ZIP.",

@@ -80,7 +80,7 @@
       "description": "Herschik, keer om of dupliceer pagina's."
     },
     "nup": {
-      "label": "Pagina's per vel",
+      "label": "Afdrukindeling",
       "description": "Plaats meerdere pagina's per vel of vouw een boekje."
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "Herschikken…"
     },
     "nup": {
-      "title": "Pagina's per vel",
+      "title": "Afdrukindeling",
       "description": "Plaats meerdere pagina's per vel of vouw een boekje met rugnietje.",
       "privacyLine": "Je bestanden worden privé ingedeeld en nooit opgeslagen.",
       "hint": "PDF-bestanden. Meerdere bestanden komen terug als ZIP.",

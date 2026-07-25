@@ -80,7 +80,7 @@
       "description": "Reordene, inverta ou duplique páginas."
     },
     "nup": {
-      "label": "Páginas por folha",
+      "label": "Esquema de impressão",
       "description": "Coloque várias páginas por folha ou dobre um folheto."
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "A ordenar…"
     },
     "nup": {
-      "title": "Páginas por folha",
+      "title": "Esquema de impressão",
       "description": "Coloque várias páginas por folha ou dobre um folheto agrafado a cavalo.",
       "privacyLine": "Compomos os seus ficheiros de forma privada e nunca os guardamos.",
       "hint": "Ficheiros PDF. Vários ficheiros são devolvidos como ZIP.",

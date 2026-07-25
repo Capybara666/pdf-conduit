@@ -80,7 +80,7 @@
       "description": "Reorder, reverse or duplicate pages."
     },
     "nup": {
-      "label": "Pages per sheet",
+      "label": "Print layout",
       "description": "Place several pages per sheet, or fold a booklet."
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "Arranging…"
     },
     "nup": {
-      "title": "Pages per sheet",
+      "title": "Print layout",
       "description": "Place several pages per sheet, or fold a saddle-stitch booklet.",
       "privacyLine": "Your files are laid out privately and never stored.",
       "hint": "PDF files. Multiple files come back as a ZIP.",

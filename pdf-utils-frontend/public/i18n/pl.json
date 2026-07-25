@@ -80,7 +80,7 @@
       "description": "Zmień kolejność, odwróć lub powiel strony."
     },
     "nup": {
-      "label": "Strony na arkuszu",
+      "label": "Układ wydruku",
       "description": "Umieść 2, 4 lub więcej stron na jednym arkuszu albo złóż broszurę."
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "Porządkowanie…"
     },
     "nup": {
-      "title": "Strony na arkuszu",
+      "title": "Układ wydruku",
       "description": "Umieść 2, 4 lub więcej stron na jednym arkuszu albo przygotuj broszurę do wydruku i złożenia.",
       "privacyLine": "Nie zapisujemy Twoich plików.",
       "hint": "Pliki PDF. Kilka plików pobierzesz jako ZIP.",

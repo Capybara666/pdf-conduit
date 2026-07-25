@@ -80,7 +80,7 @@
       "description": "重新排序、反转或复制页面。"
     },
     "nup": {
-      "label": "多页合一",
+      "label": "打印版面",
       "description": "在一张纸上放置多页，或折叠成小册子。"
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "排列中…"
     },
     "nup": {
-      "title": "多页合一",
+      "title": "打印版面",
       "description": "在一张纸上放置多页，或折叠成骑马订小册子。",
       "privacyLine": "您的文件以私密方式拼版，我们绝不会保存。",
       "hint": "PDF 文件。多个文件将以 ZIP 返回。",
