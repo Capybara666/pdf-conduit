@@ -327,6 +327,11 @@
       "detail": "Bu sunucuda ofis belgelerini dönüştürme etkin değil.",
       "hint": "Yine de PDF'ler ve görsellerle çalışabilirsiniz."
     },
+    "ocr_disabled": {
+      "title": "OCR kullanılamıyor",
+      "detail": "Bu sunucuda taramalarda metin tanıma etkin değil.",
+      "hint": "Diğer tüm araçlar normal şekilde çalışıyor."
+    },
     "operation_failed": {
       "title": "Bu dosya işlenemedi",
       "detail": "İşlem bu girdide başarısız oldu.",

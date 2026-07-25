@@ -78,6 +78,15 @@ const BUILDERS: Record<string, (e: ApiError) => ErrorCopyKeys> = {
     detailKey: 'errors.office_disabled.detail',
     hintKey: 'errors.office_disabled.hint',
   }),
+  // Also a 415, but a different missing dependency (tesseract, not LibreOffice).
+  // Without its own entry the 415 fallback below would tell an OCR user that
+  // "office conversion is unavailable", which is simply the wrong explanation.
+  ocr_disabled: (e) => ({
+    titleKey: 'errors.ocr_disabled.title',
+    detailText: e.message,
+    detailKey: 'errors.ocr_disabled.detail',
+    hintKey: 'errors.ocr_disabled.hint',
+  }),
   operation_failed: (e) => ({
     titleKey: 'errors.operation_failed.title',
     detailText: e.message,

@@ -4,7 +4,12 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { downloadRunResult } from '../../core/download.util';
-import { NodeKindInfo, NodeKindName, PipelineValidationError } from '../../core/pipeline.models';
+import {
+  KIND_TO_OP,
+  NodeKindInfo,
+  NodeKindName,
+  PipelineValidationError,
+} from '../../core/pipeline.models';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { OpIconComponent } from '../../shared/op-icon/op-icon.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
@@ -28,33 +33,15 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
   { name: 'UNLOCK', label: 'Unlock', isSource: false, isReduce: false, isExport: false },
   { name: 'METADATA', label: 'Metadata', isSource: false, isReduce: false, isExport: false },
   { name: 'WATERMARK', label: 'Watermark', isSource: false, isReduce: false, isExport: false },
+  { name: 'CROP', label: 'Crop', isSource: false, isReduce: false, isExport: false },
   { name: 'NUP', label: 'N-up', isSource: false, isReduce: false, isExport: false },
   { name: 'PAGE_MARKS', label: 'Page Marks', isSource: false, isReduce: false, isExport: false },
-  // TODO(i18n): op.gdpr-redact.label — palette/inspector label for the GDPR-scan→redact node.
+  { name: 'OCR', label: 'OCR', isSource: false, isReduce: false, isExport: false },
   { name: 'GDPR_REDACT', label: 'GDPR Redact', isSource: false, isReduce: false, isExport: false },
+  { name: 'REPAIR', label: 'Repair', isSource: false, isReduce: false, isExport: false },
   { name: 'TO_IMAGES', label: 'To Images', isSource: false, isReduce: false, isExport: true },
   { name: 'TO_TEXT', label: 'To Text', isSource: false, isReduce: false, isExport: true },
 ];
-
-/** NodeKind → operation id used for i18n label lookup (`op.<id>.label`) + glyph. */
-const KIND_TO_OP: Record<string, string> = {
-  SOURCE: 'source',
-  MERGE: 'merge',
-  IMAGES_TO_PDF: 'to-pdf',
-  EXTRACT: 'extract',
-  COMPRESS: 'compress',
-  ROTATE: 'rotate',
-  ARRANGE: 'arrange',
-  PROTECT: 'protect',
-  UNLOCK: 'unlock',
-  METADATA: 'metadata',
-  WATERMARK: 'watermark',
-  NUP: 'nup',
-  PAGE_MARKS: 'page-marks',
-  GDPR_REDACT: 'gdpr-redact',
-  TO_IMAGES: 'to-images',
-  TO_TEXT: 'to-text',
-};
 
 /**
  * Free-form visual pipeline builder: a draggable-node canvas with drawn

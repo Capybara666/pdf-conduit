@@ -145,6 +145,25 @@ describe('ApiService', () => {
       expect(err.message).toBe('Beyond recovery.');
       expect(renderedDetail(err)).toBe('Beyond recovery.');
     });
+
+    it('gives ocr_disabled its own copy rather than the office-conversion 415', async () => {
+      // Both are 415, but they name different missing dependencies. Without a
+      // dedicated builder the shared 415 fallback would tell an OCR user to
+      // blame LibreOffice.
+      const err = await failing(
+        (req) =>
+          req.flush(blob(JSON.stringify({ code: 'ocr_disabled', error: 'OCR is not installed.' })), {
+            status: 415,
+            statusText: 'Unsupported Media Type',
+          }),
+        'ocr',
+      );
+      expect(err.code).toBe('ocr_disabled');
+      const copy = errorCopyKeys(err);
+      expect(copy.titleKey).toBe('errors.ocr_disabled.title');
+      expect(copy.hintKey).toBe('errors.ocr_disabled.hint');
+      expect(transloco.translate(copy.titleKey)).toBe('OCR is unavailable');
+    });
   });
 
   // --- non-JSON error bodies ---------------------------------------------
@@ -379,6 +398,54 @@ describe('ApiService', () => {
               'X-Original-Bytes': '2400000',
               'X-Result-Bytes': '900000',
               'X-Target-Reached': 'true',
+            },
+          }),
+        'compress',
+      );
+
+      expect(result.compression).toEqual({
+        originalBytes: 2400000,
+        resultBytes: 900000,
+        targetReached: true,
+      });
+    });
+
+    it('parses a missed target without inventing a floor', async () => {
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('%PDF-1.7', 'application/pdf'), {
+            headers: {
+              'Content-Type': 'application/pdf',
+              'X-Original-Bytes': '2400000',
+              'X-Result-Bytes': '2100000',
+              'X-Target-Reached': 'false',
+            },
+          }),
+        'compress',
+      );
+
+      // When the target is missed the compressor has already exhausted its
+      // ladder, so `resultBytes` *is* the smallest achievable size — there is no
+      // separate "estimated floor" to report.
+      expect(result.compression).toEqual({
+        originalBytes: 2400000,
+        resultBytes: 2100000,
+        targetReached: false,
+      });
+    });
+
+    it('ignores the retired X-Target-Feasible / X-Estimated-Floor-Bytes headers', async () => {
+      // Both were fabricated (feasible duplicated targetReached, the floor
+      // duplicated resultBytes) and were removed from the backend. A stale
+      // deployment that still sends them must not leak them into the result.
+      const result = await succeeding(
+        (req) =>
+          req.flush(blob('%PDF-1.7', 'application/pdf'), {
+            headers: {
+              'Content-Type': 'application/pdf',
+              'X-Original-Bytes': '2400000',
+              'X-Result-Bytes': '900000',
+              'X-Target-Reached': 'true',
               'X-Target-Feasible': 'false',
               'X-Estimated-Floor-Bytes': '850000',
             },
@@ -390,9 +457,12 @@ describe('ApiService', () => {
         originalBytes: 2400000,
         resultBytes: 900000,
         targetReached: true,
-        targetFeasible: false,
-        estimatedFloorBytes: 850000,
       });
+      expect(Object.keys(result.compression ?? {}).sort()).toEqual([
+        'originalBytes',
+        'resultBytes',
+        'targetReached',
+      ]);
     });
 
     it('leaves compression/repair undefined when the headers are absent', async () => {

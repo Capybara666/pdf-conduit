@@ -18,6 +18,8 @@ import { TestBed } from '@angular/core/testing';
 import { Translation, TranslocoService } from '@jsverse/transloco';
 
 import { LANGUAGE_CODES } from './languages';
+import { NAV_ITEMS } from '../operations';
+import { KIND_TO_OP } from '../pipeline.models';
 import { TRANSLOCO_TESTING_PROVIDERS, translocoTesting } from '../../testing/transloco-testing';
 
 /**
@@ -155,6 +157,36 @@ describe('i18n locale dictionaries', () => {
         .map(([k]) => k),
     );
     expect(bad).toEqual([]);
+  });
+
+  /**
+   * The operation catalogs and the `op.*` namespace are edited by different
+   * branches (a new sidebar operation here, a new pipeline NodeKind there), and
+   * a textual merge happily keeps both halves out of step. A missing `op.<id>.*`
+   * entry is invisible at build time and surfaces as the raw dotted key in the
+   * sidebar, the palette chip and the node card.
+   */
+  describe('operation catalog copy', () => {
+    it('has a label and a description for every NAV_ITEMS operation', () => {
+      const missing = sorted(
+        NAV_ITEMS.flatMap((item) =>
+          [`op.${item.id}.label`, `op.${item.id}.description`].filter((k) => !base.has(k)),
+        ),
+      );
+      expect(missing).withContext('op.* keys missing from en.json').toEqual([]);
+    });
+
+    it('has a label for every pipeline NodeKind', () => {
+      // SOURCE is not an operation — the canvas labels it `pipeline.canvas.source`.
+      const missing = sorted(
+        Object.values(KIND_TO_OP)
+          .filter((op) => op !== 'source')
+          .map((op) => `op.${op}.label`)
+          .filter((k) => !base.has(k)),
+      );
+      expect(missing).withContext('op.*.label keys missing from en.json').toEqual([]);
+      expect(base.has('pipeline.canvas.source')).toBe(true);
+    });
   });
 
   /**

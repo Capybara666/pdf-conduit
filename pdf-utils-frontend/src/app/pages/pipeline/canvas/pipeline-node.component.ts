@@ -1,31 +1,9 @@
 import { Component, ElementRef, EventEmitter, Input, Output, inject } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
-import { CanvasNode } from '../../../core/pipeline.models';
+import { CanvasNode, KIND_TO_OP } from '../../../core/pipeline.models';
 import { OpIconComponent } from '../../../shared/op-icon/op-icon.component';
 import { CARD_W, PORT_TOP } from './pipeline-geometry';
-
-/**
- * NodeKind → operation id, used both for the `op.<id>.label` i18n lookup and to
- * resolve the glyph from `OP_ICONS`. SOURCE maps to the dedicated `source` key.
- */
-const KIND_TO_OP: Record<string, string> = {
-  SOURCE: 'source',
-  MERGE: 'merge',
-  IMAGES_TO_PDF: 'to-pdf',
-  EXTRACT: 'extract',
-  COMPRESS: 'compress',
-  ROTATE: 'rotate',
-  ARRANGE: 'arrange',
-  PROTECT: 'protect',
-  UNLOCK: 'unlock',
-  METADATA: 'metadata',
-  WATERMARK: 'watermark',
-  NUP: 'nup',
-  PAGE_MARKS: 'page-marks',
-  TO_IMAGES: 'to-images',
-  TO_TEXT: 'to-text',
-};
 
 /**
  * A draggable node card on the pipeline canvas.
