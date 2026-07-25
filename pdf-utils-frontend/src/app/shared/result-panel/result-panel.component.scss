@@ -95,6 +95,16 @@
 // Technical error identifiers (code · HTTP status) — kept for debugging /
 // accessibility but deliberately de-emphasised so the human sentence above
 // stays the focus.
+// The server's own sentence. Secondary to the translated copy above it, but
+// still plainly legible — it is where the concrete limit / page / file is named.
+.server-detail {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
 .meta {
   margin: 0.35rem 0 0;
   font-size: 0.72rem;

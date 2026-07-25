@@ -337,6 +337,11 @@
       "detail": "Der Vorgang ist bei dieser Eingabe fehlgeschlagen.",
       "hint": "Prüfen Sie, ob die Datei ein gültiges, unverschlüsseltes PDF ist, und versuchen Sie es erneut."
     },
+    "output_too_large": {
+      "title": "Das ist zu groß für einen Durchgang",
+      "detail": "Das Ergebnis wäre größer, als dieser Server auf einmal erzeugen kann.",
+      "hint": "Versuchen Sie es mit weniger Seiten oder weniger Dateien auf einmal oder mit niedrigerer Qualität bzw. DPI."
+    },
     "repair_failed": {
       "title": "Diese Datei konnte nicht repariert werden",
       "detail": "Der Schaden ist zu groß, um die Datei wiederherzustellen.",

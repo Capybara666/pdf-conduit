@@ -18,17 +18,9 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { ApiError, BatchFailuresInfo, RedactionInfo, RunResult } from '../../core/api.models';
 import { downloadRunResult, formatBytes } from '../../core/download.util';
-import { errorCopyKeys } from '../../core/error-copy';
+import { ResolvedErrorCopy, resolveErrorCopy } from '../../core/error-copy';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { countZipEntries } from './zip-entries.util';
-
-/** Resolved, translated error copy for display in the panel. */
-interface ResolvedCopy {
-  title: string;
-  detail: string;
-  hint?: string;
-  proLink?: boolean;
-}
 
 /** Which lifecycle state the panel is currently showing. */
 type Phase = 'idle' | 'loading' | 'error' | 'success';
@@ -142,16 +134,16 @@ export class ResultPanelComponent implements OnChanges, OnDestroy {
     return 'idle';
   }
 
-  /** Friendly, code-aware, translated presentation copy for the current error. */
-  get copy(): ResolvedCopy | null {
-    if (!this.error) return null;
-    const keys = errorCopyKeys(this.error);
-    return {
-      title: this.transloco.translate(keys.titleKey),
-      detail: keys.detailText || (keys.detailKey ? this.transloco.translate(keys.detailKey) : ''),
-      hint: keys.hintKey ? this.transloco.translate(keys.hintKey, keys.hintParams) : undefined,
-      proLink: keys.proLink,
-    };
+  /**
+   * Friendly, code-aware, translated presentation copy for the current error.
+   *
+   * The primary line is the user's own language; the server's English sentence
+   * (which is where the concrete limit / page / filename lives) comes back as
+   * `technical` and is rendered with the code and status, not in place of the
+   * translated copy. See `resolveErrorCopy`.
+   */
+  get copy(): ResolvedErrorCopy | null {
+    return this.error ? resolveErrorCopy(this.error, (k, p) => this.transloco.translate(k, p)) : null;
   }
 
   download(): void {

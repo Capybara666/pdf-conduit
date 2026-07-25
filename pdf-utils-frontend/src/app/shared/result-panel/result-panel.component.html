@@ -20,6 +20,12 @@
     <p class="actions">
       <button type="button" class="retry" (click)="onRetry()">{{ 'result.tryAgain' | transloco }}</button>
     </p>
+    <!-- The server's own sentence: English-only, but often the only place the
+         concrete limit / page / filename appears, so it stays on screen as a
+         secondary line under the translated copy above. -->
+    @if (copy?.technical) {
+      <p class="server-detail">{{ copy?.technical }}</p>
+    }
     <p class="meta" [title]="'result.technicalDetails' | transloco">
       <span class="tech-label">{{ 'result.technicalDetails' | transloco }}:</span>
       <span class="tech">{{ error.code }}</span>

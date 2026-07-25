@@ -337,6 +337,11 @@
       "detail": "A operação falhou com esta entrada.",
       "hint": "Verifique se o ficheiro é um PDF válido e não encriptado e tente novamente."
     },
+    "output_too_large": {
+      "title": "Isto é grande demais para uma só vez",
+      "detail": "O resultado seria maior do que este servidor consegue produzir de uma só vez.",
+      "hint": "Experimente menos páginas ou menos ficheiros de cada vez, ou uma qualidade ou um DPI mais baixos."
+    },
     "repair_failed": {
       "title": "Não foi possível reparar este ficheiro",
       "detail": "Os danos são demasiado graves para reconstruir o ficheiro.",

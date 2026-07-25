@@ -5,7 +5,7 @@ import { TranslocoService } from '@jsverse/transloco';
 
 import { ApiError, RunResult } from './api.models';
 import { ApiService } from './api.service';
-import { errorCopyKeys } from './error-copy';
+import { errorCopyKeys, resolveErrorCopy } from './error-copy';
 import { QuotaService } from './quota.service';
 import { ToastService } from './toast.service';
 import { TRANSLOCO_TESTING_PROVIDERS, translocoTesting } from '../testing/transloco-testing';
@@ -82,10 +82,14 @@ describe('ApiService', () => {
     return new Blob([text], { type });
   }
 
-  /** The detail line the result panel would actually render for this error. */
+  /** The primary detail line the result panel would actually render. */
   function renderedDetail(error: ApiError): string {
-    const keys = errorCopyKeys(error);
-    return keys.detailText || (keys.detailKey ? transloco.translate(keys.detailKey) : '');
+    return resolveErrorCopy(error, (key, params) => transloco.translate(key, params)).detail;
+  }
+
+  /** The secondary (English, server-supplied) line under it, if any. */
+  function renderedTechnical(error: ApiError): string | undefined {
+    return resolveErrorCopy(error, (key, params) => transloco.translate(key, params)).technical;
   }
 
   // --- codeForStatus ------------------------------------------------------
@@ -143,7 +147,10 @@ describe('ApiService', () => {
       );
       expect(err.code).toBe('repair_failed');
       expect(err.message).toBe('Beyond recovery.');
-      expect(renderedDetail(err)).toBe('Beyond recovery.');
+      // Localised copy leads; the server's English sentence stays as the
+      // secondary technical line rather than replacing it.
+      expect(renderedDetail(err)).toBe('The damage runs too deep to rebuild the file.');
+      expect(renderedTechnical(err)).toBe('Beyond recovery.');
     });
 
     it('gives ocr_disabled its own copy rather than the office-conversion 415', async () => {

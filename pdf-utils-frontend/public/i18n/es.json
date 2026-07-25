@@ -337,6 +337,11 @@
       "detail": "La operación falló con esta entrada.",
       "hint": "Comprueba que el archivo sea un PDF válido y sin cifrar e inténtalo de nuevo."
     },
+    "output_too_large": {
+      "title": "Esto es demasiado para una sola vez",
+      "detail": "El resultado sería más grande de lo que este servidor puede generar de una vez.",
+      "hint": "Prueba con menos páginas o menos archivos a la vez, o con una calidad o un DPI más bajos."
+    },
     "repair_failed": {
       "title": "No se pudo reparar este archivo",
       "detail": "El daño es demasiado grave para reconstruir el archivo.",

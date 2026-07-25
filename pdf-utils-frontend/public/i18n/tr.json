@@ -337,6 +337,11 @@
       "detail": "İşlem bu girdide başarısız oldu.",
       "hint": "Dosyanın geçerli, şifrelenmemiş bir PDF olduğundan emin olun ve tekrar deneyin."
     },
+    "output_too_large": {
+      "title": "Bu tek seferde yapılamayacak kadar büyük",
+      "detail": "Sonuç, bu sunucunun tek seferde üretebileceğinden daha büyük olurdu.",
+      "hint": "Aynı anda daha az sayfa ya da daha az dosya deneyin veya kaliteyi ya da DPI değerini düşürün."
+    },
     "repair_failed": {
       "title": "Bu dosya onarılamadı",
       "detail": "Hasar, dosyayı yeniden oluşturmak için fazla ağır.",

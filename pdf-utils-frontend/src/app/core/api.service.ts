@@ -27,7 +27,7 @@ import {
   RepairInfo,
   RunResult,
 } from './api.models';
-import { errorCopyKeys } from './error-copy';
+import { resolveErrorCopy } from './error-copy';
 import { QuotaService } from './quota.service';
 import { NOW, RunFile, RunObservable, RunTracker, filesOf, withRunTracker } from './run-progress';
 import { ToastService } from './toast.service';
@@ -587,16 +587,15 @@ export class ApiService {
     if (headers && error.code === 'quota_exceeded') {
       this.quota.update(headers, { quota: true });
     }
-    const copy = errorCopyKeys(error);
+    // Localised first: a toast has room for one sentence, so it must be the one
+    // in the user's language (the server's English text stays reachable on the
+    // result panel as its secondary technical line).
+    const copy = resolveErrorCopy(error, (key, params) => this.transloco.translate(key, params));
     if (copy.global) {
-      const t = (key?: string, params?: Record<string, unknown>) =>
-        key ? this.transloco.translate(key, params) : undefined;
-      const detail = copy.detailText || t(copy.detailKey);
-      const hint = t(copy.hintKey, copy.hintParams);
       this.toasts.show({
         kind: error.code === 'quota_exceeded' ? 'warning' : 'info',
-        title: t(copy.titleKey)!,
-        message: hint ?? detail,
+        title: copy.title,
+        message: copy.hint ?? copy.detail,
         action: copy.proLink
           ? { label: this.transloco.translate('result.seeProPlansShort'), link: ['/'], fragment: 'pro' }
           : undefined,

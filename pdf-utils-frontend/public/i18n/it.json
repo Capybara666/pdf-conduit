@@ -337,6 +337,11 @@
       "detail": "L'operazione non è riuscita su questo input.",
       "hint": "Verifica che il file sia un PDF valido e non crittografato e riprova."
     },
+    "output_too_large": {
+      "title": "È troppo grande per farlo in una volta sola",
+      "detail": "Il risultato sarebbe più grande di quanto questo server possa produrre in una volta.",
+      "hint": "Prova con meno pagine o meno file alla volta, oppure con una qualità o un DPI più bassi."
+    },
     "repair_failed": {
       "title": "Non è stato possibile riparare questo file",
       "detail": "Il danno è troppo esteso per ricostruire il file.",
