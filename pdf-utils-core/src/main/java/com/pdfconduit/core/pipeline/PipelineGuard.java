@@ -46,6 +46,18 @@ public interface PipelineGuard {
     default void checkDocument(byte[] pdf) throws PdfOperationException {}
 
     /**
+     * The same PDF-bomb ceiling as {@link #checkDocument(byte[])}, but on a page count that is
+     * already known <em>without</em> a document to parse — so an amplifying node can be refused
+     * <em>before</em> it materialises anything.
+     *
+     * <p>The case that needs it is {@code ARRANGE}: its order expression duplicates a page on every
+     * repeat, so {@code "1,1,1,…"} expands a one-page upload into an arbitrarily large document.
+     * The input page count is bounded and says nothing about that; the expanded order's length is
+     * the result's page count and is known from the parser, so it is what gets checked.
+     */
+    default void checkPageCount(int pages) throws PdfOperationException {}
+
+    /**
      * Raster-render ceiling. Called before any node rasterises pages, with the document about to be
      * rendered and the effective DPI the node asked for (to-images, OCR, GDPR redact). Implementors
      * reject both an excessive DPI and a page whose rendered pixel area would be too large.

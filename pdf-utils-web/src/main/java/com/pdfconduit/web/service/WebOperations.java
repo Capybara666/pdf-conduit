@@ -220,13 +220,23 @@ public class WebOperations {
 
     // ---------------------------------------------------------------- ARRANGE
 
-    /** Reorder a single input's pages per {@code order} (e.g. {@code 3,1,2}). */
+    /**
+     * Reorder a single input's pages per {@code order} (e.g. {@code 3,1,2}).
+     *
+     * <p>Arrange is a page-count <em>amplifier</em>: repeats in the order expression duplicate
+     * pages, so {@code 1,1,1,…} expands a one-page upload into a document of any size the
+     * expression names — an in-memory page bomb built from a request that passes every input-side
+     * limit. So the ceiling is checked on the expanded order's length (which <em>is</em> the result's
+     * page count) as well as on the input, and before the document is built, so nothing large is
+     * ever materialised.
+     */
     public NamedBytes arrange(NamedBytes in, String order)
             throws PdfOperationException, InvalidPageRangeException {
         byte[] pdf = routeToPdf(in);
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
             List<Integer> pageOrder = PageOrderParser.parse(order, lp.pageCount());
+            guardPageCountValue(pageOrder.size());
             byte[] out = PdfArranger.executeBytes(pdf, pageOrder);
             return new NamedBytes(MemoryOperations.outputName(OperationType.ARRANGE, in.filename()), out);
         } catch (IOException e) {

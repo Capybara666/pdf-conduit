@@ -8,6 +8,7 @@ import com.pdfconduit.core.analyze.PiiScanResult;
 import com.pdfconduit.core.analyze.PiiScanner;
 import com.pdfconduit.core.pipeline.Document.DocType;
 import com.pdfconduit.core.convert.DocumentConverter;
+import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.*;
 import com.pdfconduit.core.operations.PdfArranger;
@@ -423,7 +424,7 @@ public final class PipelineExecutor {
     public static Map<String, List<NamedBytes>> runInMemory(
             PipelineModel model,
             java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
-            Progress progress) throws PipelineException {
+            Progress progress) throws PipelineException, InvalidPageRangeException {
         return runInMemory(model, sourceResolver, Map.of(), progress);
     }
 
@@ -450,6 +451,23 @@ public final class PipelineExecutor {
         try { guard.checkOcrAllowed(); } catch (RuntimeException e) { throw new GuardFailure(e); }
     }
 
+    private static void guardPageCount(PipelineGuard guard, int pages) throws PdfOperationException {
+        try { guard.checkPageCount(pages); } catch (RuntimeException e) { throw new GuardFailure(e); }
+    }
+
+    /**
+     * Wraps a checked {@link InvalidPageRangeException} thrown while parsing a node's client-supplied
+     * page/order expression, so the executor's blanket "wrap anything into a PipelineException"
+     * handling passes it through untouched — a bad page range is the client's mistake and must reach
+     * the caller as itself (the web layer maps it to 400 {@code invalid_page_range}, exactly as on
+     * the single-operation endpoints), not as a 422 operation failure. Mirrors {@link GuardFailure};
+     * unwrapped by {@link #runInMemory}.
+     */
+    private static final class RangeFailure extends RuntimeException {
+        RangeFailure(InvalidPageRangeException cause) { super(cause); }
+        InvalidPageRangeException cause() { return (InvalidPageRangeException) getCause(); }
+    }
+
     /**
      * As {@link #runInMemory(PipelineModel, java.util.function.Function, Progress)}, but with a
      * {@code nodeImages} map supplying per-node uploaded asset bytes (keyed by node id). This is how
@@ -462,7 +480,7 @@ public final class PipelineExecutor {
             PipelineModel model,
             java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
             Map<String, byte[]> nodeImages,
-            Progress progress) throws PipelineException {
+            Progress progress) throws PipelineException, InvalidPageRangeException {
         return runInMemory(model, sourceResolver, nodeImages, PipelineGuard.NONE, progress);
     }
 
@@ -478,11 +496,13 @@ public final class PipelineExecutor {
             java.util.function.Function<PipelineNode, List<byte[]>> sourceResolver,
             Map<String, byte[]> nodeImages,
             PipelineGuard guard,
-            Progress progress) throws PipelineException {
+            Progress progress) throws PipelineException, InvalidPageRangeException {
         try {
             return runMemory(model, sourceResolver, nodeImages,
                 guard == null ? PipelineGuard.NONE : guard, progress);
         } catch (GuardFailure f) {
+            throw f.cause();
+        } catch (RangeFailure f) {
             throw f.cause();
         }
     }
@@ -533,6 +553,11 @@ public final class PipelineExecutor {
                     : runMapMem(n, inputs, images, guard);
             } catch (PipelineException | GuardFailure e) {
                 throw e;
+            } catch (InvalidPageRangeException e) {
+                // A bad page/order expression is a client mistake, not an operation failure: carry
+                // it out unwrapped so it maps to the same status/code the single-operation
+                // endpoints return for the identical expression.
+                throw new RangeFailure(e);
             } catch (Exception e) {
                 throw new PipelineException(n.kind.label + ": " + e.getMessage(), e);
             }
@@ -661,7 +686,7 @@ public final class PipelineExecutor {
                 case EXTRACT   -> PdfSplitter.combineBytes(pdf, rangeBytes(n.pages, pdf));
                 case COMPRESS  -> PdfCompressor.compressBytes(pdf, n.targetBytes).bytes();
                 case ROTATE    -> PdfRotator.executeBytes(pdf, rangeBytes(n.pages, pdf), n.angle);
-                case ARRANGE   -> PdfArranger.executeBytes(pdf, orderBytes(n.order, pdf));
+                case ARRANGE   -> arrangeBytes(n, pdf, guard);
                 case PROTECT   -> PdfProtector.executeBytes(pdf, n.password, n.ownerPassword);
                 // The upload was encrypted, so the page-count guard could not see inside it —
                 // re-check the decrypted result (mirrors the single-operation /api/unlock).
@@ -695,6 +720,21 @@ public final class PipelineExecutor {
             results.add(new MemDoc(out, DocType.PDF, baseName, "pdf"));
         }
         return results;
+    }
+
+    /**
+     * Arrange in memory. Arrange is the second page-count amplifier (after merge), and the cheaper
+     * one to abuse: repeats in the order expression <em>duplicate</em> pages, so {@code "1,1,1,…"}
+     * blows a one-page upload up to any size the expression names, from a request that satisfies
+     * every input-side ceiling. The parsed order's length <em>is</em> the result's page count, so
+     * the host's ceiling is applied to it BEFORE the document is built — nothing large is ever
+     * materialised.
+     */
+    private static byte[] arrangeBytes(PipelineNode n, byte[] pdf, PipelineGuard guard)
+            throws Exception {
+        List<Integer> order = orderBytes(n.order, pdf);
+        guardPageCount(guard, order.size());
+        return PdfArranger.executeBytes(pdf, order);
     }
 
     /** Applies the host's document ceiling to a node's result and returns it unchanged. */

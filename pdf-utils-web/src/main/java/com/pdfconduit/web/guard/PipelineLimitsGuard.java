@@ -54,12 +54,23 @@ public class PipelineLimitsGuard implements PipelineGuard {
     public void checkDocument(byte[] pdf) throws PdfOperationException {
         if (maxPages <= 0) return;
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
-            if (lp.pageCount() > maxPages) {
-                throw new PdfOperationException(
-                    "PDF exceeds the maximum page count (" + maxPages + ").");
-            }
+            checkPageCount(lp.pageCount());
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * The same ceiling on an already-known page count — how an amplifying node (ARRANGE, whose
+     * order expression duplicates pages) is refused before it builds anything. Same exception type
+     * as {@link #checkDocument}, so an expanded arrange answers exactly like a page-bomb upload
+     * (→ 422), matching {@code /api/arrange}.
+     */
+    @Override
+    public void checkPageCount(int pages) throws PdfOperationException {
+        if (maxPages > 0 && pages > maxPages) {
+            throw new PdfOperationException(
+                "PDF exceeds the maximum page count (" + maxPages + ").");
         }
     }
 

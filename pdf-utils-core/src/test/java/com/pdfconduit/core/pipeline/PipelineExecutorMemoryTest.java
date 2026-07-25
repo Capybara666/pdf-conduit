@@ -212,6 +212,83 @@ class PipelineExecutorMemoryTest {
         assertTrue(e.getMessage().contains("too many pages"));
     }
 
+    /**
+     * ARRANGE amplifies: repeats in the order expression duplicate pages, so a one-page input can
+     * be expanded without limit. The guard must see the EXPANDED count (5 here, not the input's 1)
+     * and must see it <em>before</em> the document is built — so the check is what stops the work,
+     * not a post-hoc complaint about something already in memory.
+     */
+    @Test
+    void arrangeGuardsTheExpandedPageCount() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        PipelineNode arrange = new PipelineNode("a", NodeKind.ARRANGE, 0, 0);
+        arrange.order = "1,1,1,1,1";
+        m.nodes.add(src);
+        m.nodes.add(arrange);
+        m.connections.add(new Connection("s", "a"));
+
+        int[] seen = {-1};
+        PipelineGuard guard = new PipelineGuard() {
+            @Override public void checkPageCount(int pages)
+                    throws com.pdfconduit.core.exception.PdfOperationException {
+                seen[0] = pages;
+                throw new com.pdfconduit.core.exception.PdfOperationException("too many pages");
+            }
+        };
+
+        byte[] pdf = pdfBytes(1);
+        PipelineException e = assertThrows(PipelineException.class,
+            () -> PipelineExecutor.runInMemory(m, node -> List.of(pdf), Map.of(), guard, null));
+        assertEquals(5, seen[0], "the guard must see the expanded order length, not the input count");
+        assertTrue(e.getMessage().contains("too many pages"));
+    }
+
+    /** Within the ceiling an arrange is still a plain reorder — the guard bounds abuse, not use. */
+    @Test
+    void arrangeWithinTheCeilingStillRuns() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        PipelineNode arrange = new PipelineNode("a", NodeKind.ARRANGE, 0, 0);
+        arrange.order = "2,1";
+        m.nodes.add(src);
+        m.nodes.add(arrange);
+        m.connections.add(new Connection("s", "a"));
+
+        PipelineGuard guard = new PipelineGuard() {
+            @Override public void checkPageCount(int pages)
+                    throws com.pdfconduit.core.exception.PdfOperationException {
+                if (pages > 10) throw new com.pdfconduit.core.exception.PdfOperationException("nope");
+            }
+        };
+
+        byte[] pdf = pdfBytes(2);
+        Map<String, List<NamedBytes>> out =
+            PipelineExecutor.runInMemory(m, node -> List.of(pdf), Map.of(), guard, null);
+        assertEquals(2, pageCount(out.get("a").get(0).data()));
+    }
+
+    /**
+     * A bad page expression must leave the executor as itself, not wrapped as an operation failure:
+     * hosts map {@code InvalidPageRangeException} to a client error (the web layer: 400
+     * {@code invalid_page_range}), and a pipeline must not downgrade that to a server-side 422.
+     */
+    @Test
+    void badPageExpressionPropagatesUnwrapped() throws Exception {
+        PipelineModel m = new PipelineModel();
+        PipelineNode src = new PipelineNode("s", NodeKind.SOURCE, 0, 0);
+        PipelineNode rotate = new PipelineNode("r", NodeKind.ROTATE, 0, 0);
+        rotate.pages = "abc";
+        rotate.angle = 90;
+        m.nodes.add(src);
+        m.nodes.add(rotate);
+        m.connections.add(new Connection("s", "r"));
+
+        byte[] pdf = pdfBytes(2);
+        assertThrows(com.pdfconduit.core.exception.InvalidPageRangeException.class,
+            () -> PipelineExecutor.runInMemory(m, node -> List.of(pdf), Map.of(), null, null));
+    }
+
     @Test
     void rejectsUnsupportedSourceBytes() {
         PipelineModel m = new PipelineModel();
