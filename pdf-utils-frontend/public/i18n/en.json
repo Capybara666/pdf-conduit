@@ -636,7 +636,7 @@
     },
     "sign": {
       "title": "Fill & Sign",
-      "description": "Fill fillable PDF form fields (AcroForm) and add a signature to your PDF, then flatten. Nothing is stored, everything runs in your session.",
+      "description": "Fill fillable PDF form fields (AcroForm) and add a signature to your PDF, then flatten. Your file is never stored.",
       "hint": "One PDF. We detect any fillable form fields. Then create a signature and drop it onto the page.",
       "dragHint": "Drag on a page to place your signature.",
       "chooseAnother": "Choose another PDF",

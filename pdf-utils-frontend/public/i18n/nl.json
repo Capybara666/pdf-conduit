@@ -636,7 +636,7 @@
     },
     "sign": {
       "title": "Invullen en ondertekenen",
-      "description": "Vul invulbare PDF-formuliervelden (AcroForm) in en voeg een handtekening toe, en zet alles daarna vast. Er wordt niets opgeslagen, alles gebeurt in je sessie.",
+      "description": "Vul invulbare PDF-formuliervelden (AcroForm) in en voeg een handtekening toe, en zet alles daarna vast. Je bestand wordt nooit opgeslagen.",
       "hint": "Eén PDF. We detecteren invulbare formuliervelden. Maak vervolgens een handtekening en plaats deze op de pagina.",
       "dragHint": "Sleep op een pagina om je handtekening te plaatsen.",
       "chooseAnother": "Kies een andere PDF",

@@ -636,7 +636,7 @@
     },
     "sign": {
       "title": "Doldur ve imzala",
-      "description": "Doldurulabilir PDF form alanlarını (AcroForm) doldurun ve bir imza ekleyin, ardından düzleştirin. Hiçbir şey saklanmaz, her şey oturumunuzda çalışır.",
+      "description": "Doldurulabilir PDF form alanlarını (AcroForm) doldurun ve bir imza ekleyin, ardından düzleştirin. Dosyanız asla saklanmaz.",
       "hint": "Tek bir PDF. Doldurulabilir form alanlarını algılarız. Ardından bir imza oluşturup sayfaya bırakın.",
       "dragHint": "İmzanızı yerleştirmek için sayfada sürükleyin.",
       "chooseAnother": "Başka bir PDF seç",

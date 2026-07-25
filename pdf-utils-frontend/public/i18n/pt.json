@@ -636,7 +636,7 @@
     },
     "sign": {
       "title": "Preencher e assinar",
-      "description": "Preencha campos de formulário PDF (AcroForm) e adicione uma assinatura, depois achate. Não guardamos nada; tudo acontece na sua sessão.",
+      "description": "Preencha campos de formulário PDF (AcroForm) e adicione uma assinatura, depois achate. O seu ficheiro nunca é guardado.",
       "hint": "Um PDF. Detetamos os campos de formulário preenchíveis. Depois crie uma assinatura e coloque-a na página.",
       "dragHint": "Arraste sobre uma página para colocar a sua assinatura.",
       "chooseAnother": "Escolher outro PDF",

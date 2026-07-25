@@ -636,7 +636,7 @@
     },
     "sign": {
       "title": "Compila e firma",
-      "description": "Compila i campi modulo PDF (AcroForm) e aggiungi una firma, poi appiattisci. Nulla viene conservato, tutto avviene nella tua sessione.",
+      "description": "Compila i campi modulo PDF (AcroForm) e aggiungi una firma, poi appiattisci. Il tuo file non viene mai conservato.",
       "hint": "Un solo PDF. Rileviamo i campi modulo compilabili. Poi crea una firma e trascinala sulla pagina.",
       "dragHint": "Trascina su una pagina per posizionare la firma.",
       "chooseAnother": "Scegli un altro PDF",

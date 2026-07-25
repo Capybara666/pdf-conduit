@@ -636,7 +636,7 @@
     },
     "sign": {
       "title": "Wypełnij i podpisz",
-      "description": "Wypełnij pola formularza (AcroForm), dodaj podpis i spłaszcz dokument. Nic nie zapisujemy, wszystko dzieje się w Twojej sesji.",
+      "description": "Wypełnij pola formularza (AcroForm), dodaj podpis i spłaszcz dokument. Nigdy nie zapisujemy Twojego pliku.",
       "hint": "Jeden PDF. Wykrywamy pola formularza; utwórz podpis i przeciągnij go na stronę.",
       "dragHint": "Przeciągnij po stronie, aby umieścić podpis.",
       "chooseAnother": "Wybierz inny PDF",

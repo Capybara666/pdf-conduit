@@ -636,7 +636,7 @@
     },
     "sign": {
       "title": "Ausfüllen & Signieren",
-      "description": "Füllen Sie ausfüllbare PDF-Formularfelder (AcroForm) aus und fügen Sie eine Signatur hinzu, dann wird alles fixiert. Nichts wird gespeichert, alles läuft in Ihrer Sitzung.",
+      "description": "Füllen Sie ausfüllbare PDF-Formularfelder (AcroForm) aus und fügen Sie eine Signatur hinzu, dann wird alles fixiert. Ihre Datei wird niemals gespeichert.",
       "hint": "Ein PDF. Wir erkennen ausfüllbare Formularfelder. Erstellen Sie dann eine Signatur und ziehen Sie sie auf die Seite.",
       "dragHint": "Ziehen Sie auf einer Seite, um Ihre Signatur zu platzieren.",
       "chooseAnother": "Anderes PDF wählen",

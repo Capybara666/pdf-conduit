@@ -636,7 +636,7 @@
     },
     "sign": {
       "title": "填写和签名",
-      "description": "填写可填写的 PDF 表单字段（AcroForm）并为 PDF 添加签名，然后将其扁平化。我们不保存任何内容，全部在您的会话中完成。",
+      "description": "填写可填写的 PDF 表单字段（AcroForm）并为 PDF 添加签名，然后将其扁平化。我们绝不保存您的文件。",
       "hint": "一个 PDF。我们会检测可填写的表单字段。然后创建签名并将其放到页面上。",
       "dragHint": "在页面上拖动以放置您的签名。",
       "chooseAnother": "选择其他 PDF",
