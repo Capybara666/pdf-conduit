@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "Höher = schärfer und größer (36–600).",
       "dpiError": "Geben Sie eine DPI zwischen 36 und 600 ein.",
+      "dpiHelpRange": "Höher = schärfer und größer ({{min}}–{{max}}).",
+      "dpiErrorRange": "Geben Sie eine DPI zwischen {{min}} und {{max}} ein.",
       "quality": "JPG-Qualität",
       "qualityHelp": "Höher = besseres Bild, größere Datei.",
       "pages": "Seiten",

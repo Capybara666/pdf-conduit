@@ -555,6 +555,8 @@
       "dpi": "DPI",
       "dpiHelp": "Wyższe = ostrzej i większy plik (36–600).",
       "dpiError": "Podaj DPI z zakresu 36–600.",
+      "dpiHelpRange": "Wyższe = ostrzej i większy plik ({{min}}–{{max}}).",
+      "dpiErrorRange": "Podaj DPI z zakresu {{min}}–{{max}}.",
       "quality": "Jakość JPG",
       "qualityHelp": "Wyższa = lepszy obraz i większy plik.",
       "pages": "Strony",

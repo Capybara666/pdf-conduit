@@ -88,4 +88,37 @@ describe('CapabilitiesService', () => {
 
     expect(caps.maxUploadMb()).toBe(25);
   });
+
+  /**
+   * `maxDpi` is `render.max-dpi` — 300 on the public preset, 1200 on the dev
+   * ones. The DPI forms used to hard-code 600, which is above the public limit
+   * and below the dev one, i.e. wrong in both deployments.
+   */
+  describe('maxDpi', () => {
+    it('adopts the advertised render ceiling — stricter than the fallback', () => {
+      expect(service({ ...full, maxDpi: 300 }).maxDpi()).toBe(300);
+    });
+
+    it('adopts the advertised render ceiling — more generous than the fallback', () => {
+      expect(service({ ...full, maxDpi: 1200 }).maxDpi()).toBe(1200);
+    });
+
+    it('keeps the environment fallback when the server omits it (older backend)', () => {
+      expect(service(full).maxDpi()).toBe(environment.maxDpi);
+    });
+
+    it('keeps the environment fallback when the call fails', () => {
+      expect(service({ ...full, maxDpi: 300 }, true).maxDpi()).toBe(environment.maxDpi);
+    });
+
+    it('never falls open to "no limit" on a nonsense value', () => {
+      for (const nonsense of [0, -1, 12.5, Infinity, NaN, null, 'lots', {}]) {
+        const caps = service({ ...full, maxDpi: nonsense });
+        expect(caps.maxDpi())
+          .withContext(`maxDpi=${JSON.stringify(nonsense)}`)
+          .toBe(environment.maxDpi);
+        TestBed.resetTestingModule();
+      }
+    });
+  });
 });

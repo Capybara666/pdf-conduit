@@ -20,4 +20,10 @@ export const environment = {
   maxUploadMb: 1024,
   /** Pre-response file count. Dev preset: `free-max-files: 500`. */
   maxFilesPerRequest: 500,
+  /**
+   * Pre-response render ceiling (DPI). The dev preset allows far more
+   * (`render.max-dpi: 1200`), so this only under-promises for the handful of
+   * milliseconds before `GET /api/capabilities` answers — the safe direction.
+   */
+  maxDpi: 600,
 };

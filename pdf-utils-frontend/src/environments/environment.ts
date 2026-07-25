@@ -19,4 +19,12 @@ export const environment = {
   maxUploadMb: 25,
   /** Pre-response file count. Public deployment: `quota.free-max-files: 15`. */
   maxFilesPerRequest: 15,
+  /**
+   * Pre-response render ceiling (DPI) for To Images / the pipeline TO_IMAGES
+   * node. Same contract as the two caps above: the server owns this number
+   * (`render.max-dpi`, advertised as `maxDpi`), and this is only what the first
+   * paint has to draw the form with. Deliberately the value the form used to
+   * hard-code, so nothing about the pre-response window changes.
+   */
+  maxDpi: 600,
 };

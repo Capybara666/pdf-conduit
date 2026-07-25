@@ -10,6 +10,13 @@ import { environment } from '../../environments/environment';
 const BYTES_PER_MB = 1024 * 1024;
 
 /**
+ * Lowest DPI the render forms offer. Unlike the ceiling this is a UI choice, not
+ * a server limit — the backend has no advertised floor — so it stays a constant
+ * and the DPI fields pair it with {@link CapabilitiesService.maxDpi}.
+ */
+export const MIN_RENDER_DPI = 36;
+
+/**
  * Server capability state, fetched once at startup (first injection — the
  * sidebar injects it, so the fetch happens as the shell renders):
  *
@@ -19,7 +26,8 @@ const BYTES_PER_MB = 1024 * 1024;
  * - `GET /api/capabilities` → `officeEnabled` (To PDF drops office inputs when
  *   off), `ocrLanguages` (the OCR page's language picker) and the two upload
  *   ceilings the drop zone guards with (`maxFileSizeBytes`,
- *   `maxFilesPerRequest`).
+ *   `maxFilesPerRequest`) plus the render ceiling the DPI fields cap at
+ *   (`maxDpi`).
  *
  * FAIL-OPEN by design: every signal defaults to "everything available", and a
  * failed fetch leaves the defaults untouched — the UI must behave exactly as
@@ -27,11 +35,11 @@ const BYTES_PER_MB = 1024 * 1024;
  * when the backend is unreachable or predates these fields. Never blank the
  * sidebar on error.
  *
- * The upload caps are the one exception to "fail open": they fall back to the
- * `environment` values rather than to "no limit", because they exist to stop a
- * doomed upload. The server's number always wins once it arrives — the
- * `environment` copy is only what the very first paint has to work with, and
- * the reason those constants may not be trusted as the source of truth.
+ * The upload caps and the render ceiling are the one exception to "fail open":
+ * they fall back to the `environment` values rather than to "no limit", because
+ * they exist to stop a doomed request. The server's number always wins once it
+ * arrives — the `environment` copy is only what the very first paint has to work
+ * with, and the reason those constants may not be trusted as the source of truth.
  */
 @Injectable({ providedIn: 'root' })
 export class CapabilitiesService {
@@ -60,6 +68,16 @@ export class CapabilitiesService {
    */
   readonly maxFilesPerRequest = signal(environment.maxFilesPerRequest);
 
+  /**
+   * Highest DPI the server will render at (`render.max-dpi`) — what the To
+   * Images form and the pipeline TO_IMAGES inspector cap their input at, so the
+   * form stops calling a value valid that the backend answers with 422
+   * `output_too_large`. Seeded from `environment.maxDpi`, replaced by the
+   * server's advertised `maxDpi` when it lands; an older backend that does not
+   * send the field keeps the fallback rather than going unbounded.
+   */
+  readonly maxDpi = signal(environment.maxDpi);
+
   constructor() {
     this.api
       .getOperations()
@@ -82,6 +100,12 @@ export class CapabilitiesService {
         if (mb !== null) this.maxUploadMb.set(mb);
         if (isPositiveCount(caps.maxFilesPerRequest)) {
           this.maxFilesPerRequest.set(caps.maxFilesPerRequest);
+        }
+        // Read structurally: `maxDpi` is newer than the checked-in generated
+        // schema, and a backend that predates it simply leaves the fallback.
+        const dpi = (caps as { maxDpi?: unknown }).maxDpi;
+        if (isPositiveCount(dpi)) {
+          this.maxDpi.set(dpi);
         }
       });
   }
