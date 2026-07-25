@@ -480,6 +480,24 @@ class OperationsControllerTest {
         assertThat(result.getResponse().getContentAsByteArray()).isNotEmpty();
     }
 
+    /**
+     * A non-PDF upload still renders. The request-wide render pre-flight routes every input to PDF
+     * before anything is rasterised and hands the routed bytes to the per-file pass; routing keys
+     * off the file NAME, so a converted upload that kept its {@code .png} name must be recognised
+     * as the PDF it now is instead of being fed back through the image converter.
+     */
+    @Test
+    void toImages_imageUpload_isConvertedThenRendered() throws Exception {
+        MvcResult result = mvc().perform(multipart("/api/to-images")
+                .file(new MockMultipartFile("files", "logo.png", "image/png", pngLogo()))
+                .param("format", "png")
+                .param("dpi", "72"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG))
+            .andReturn();
+        assertThat(result.getResponse().getContentAsByteArray()).isNotEmpty();
+    }
+
     @Test
     void toImages_multipleFiles_returnsZip() throws Exception {
         byte[] a = TestPdfs.blank(1);

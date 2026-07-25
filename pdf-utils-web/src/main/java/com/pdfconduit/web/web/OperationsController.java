@@ -23,6 +23,7 @@ import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.RedactRegionDto;
 import com.pdfconduit.web.dto.SignPlacementDto;
 import com.pdfconduit.web.guard.LoadGuard;
+import com.pdfconduit.web.guard.OutputBudget;
 import com.pdfconduit.web.service.RedactOutcome;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Params;
@@ -124,8 +125,13 @@ public class OperationsController {
         if (splitEvery != null || separate) {
             // A multi-part split is inherently multi-output, so it always zips (even for one file).
             int perPart = splitEvery != null ? splitEvery : 1;
-            BatchOutcome outcome = loadGuard.execute(bytes, () -> MemoryOperations.mapPartial(inputs,
-                in -> ops.extractSeparate(List.of(in), pages, perPart)));
+            // ONE tally for the request: mapPartial runs a file per call, so each call must be
+            // handed the same budget or the aggregate ceiling silently becomes a per-file one.
+            BatchOutcome outcome = loadGuard.execute(bytes, () -> {
+                OutputBudget.Tally budget = ops.newOutputTally();
+                return MemoryOperations.mapPartial(inputs,
+                    in -> ops.extractSeparate(in, pages, perPart, budget));
+            });
             return Responses.zip(outcome, "extract_results.zip");
         }
         // Combine: one PDF per input — a single file streams, several files zip.
@@ -573,8 +579,15 @@ public class OperationsController {
         boolean transparentBg = transparent != null && transparent;
         boolean gray = grayscale != null && grayscale;
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome images = loadGuard.execute(totalBytes(inputs), () -> MemoryOperations.mapPartial(
-            inputs, in -> ops.toImages(List.of(in), fmt, resolvedDpi, pages, q, transparentBg, gray)));
+        BatchOutcome images = loadGuard.execute(totalBytes(inputs), () -> {
+            // Two request-wide steps that a per-file map cannot do on its own: sum every file's
+            // pixels BEFORE anything is rasterised, then run the files against one shared byte
+            // budget. Both are the aggregate ceiling the per-page caps do not provide.
+            List<NamedBytes> routed = ops.prepareRender(inputs, resolvedDpi, pages);
+            OutputBudget.Tally budget = ops.newOutputTally();
+            return MemoryOperations.mapPartial(routed, in -> ops.toImages(List.of(in), fmt,
+                resolvedDpi, pages, q, transparentBg, gray, budget));
+        });
         MediaType type = fmt == ImageFormat.PNG ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
         return Responses.batch("to-images", images, type);
     }
