@@ -19,6 +19,7 @@ import picocli.CommandLine.Command;
         UnlockCommand.class,
         MetadataCommand.class,
         WatermarkCommand.class,
+        RepairCommand.class,
         PdfToImagesCommand.class,
         PdfToTextCommand.class,
         PipelineCommand.class,

@@ -2,6 +2,7 @@ package com.pdfconduit.web.error;
 
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.exception.PdfUnrecoverableException;
 import com.pdfconduit.core.pipeline.PipelineException;
 import com.pdfconduit.web.dto.ApiError;
 import org.slf4j.Logger;
@@ -39,6 +40,16 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<ApiError> onBadRequest(Exception e) {
         return body(HttpStatus.BAD_REQUEST, "bad_request", e.getMessage());
+    }
+
+    /**
+     * A file Repair could not rebuild at all. Same 422 family as any other operation failure, but a
+     * distinct code so the UI can say the honest thing — "this one cannot be recovered" — instead of
+     * a generic failure. Declared before the {@link PdfOperationException} handler it specialises.
+     */
+    @ExceptionHandler(PdfUnrecoverableException.class)
+    public ResponseEntity<ApiError> onUnrecoverable(PdfUnrecoverableException e) {
+        return body(HttpStatus.UNPROCESSABLE_ENTITY, "repair_failed", e.getMessage());
     }
 
     @ExceptionHandler({PdfOperationException.class, PipelineException.class})

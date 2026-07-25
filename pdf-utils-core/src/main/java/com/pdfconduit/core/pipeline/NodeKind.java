@@ -22,6 +22,8 @@ public enum NodeKind {
     OCR("OCR", OperationType.OCR),
     // Scan the PDF for GDPR/PII values and permanently redact every detected region in one step.
     GDPR_REDACT("GDPR Redact", OperationType.GDPR_REDACT),
+    // Tries to repair a damaged file — not every file can be recovered.
+    REPAIR("Repair", OperationType.REPAIR),
     // Terminal exports — output is not a PDF, so they cannot feed downstream nodes.
     TO_IMAGES("To Images", OperationType.PDF_TO_IMAGES),
     TO_TEXT("To Text", OperationType.PDF_TO_TEXT);
