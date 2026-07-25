@@ -16,6 +16,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * The free-tier per-file size cap: with the cap set to 100 bytes, any real PDF upload exceeds it
  * and is rejected with 413 {@code too_large} bearing a free-tier message — stricter than the
  * absolute multipart ceiling.
+ *
+ * <p>The cap applies to EVERY uploading {@code /api} endpoint, not just the quota-counting ones:
+ * {@code /api/render}, {@code /api/metadata/read} and {@code /api/form-fields} all parse an
+ * arbitrary document, so exempting them let a caller feed them up to the raw 100 MB multipart
+ * ceiling for free. See {@link FreeTierNonQuotaSizeTest} for the realistic-cap version.
  */
 @SpringBootTest(properties = {
     "pdfconduit.web.quota.enabled=true",
@@ -37,5 +42,35 @@ class FreeTierSizeTest {
             .andExpect(status().isPayloadTooLarge())
             .andExpect(jsonPath("$.code").value("too_large"))
             .andExpect(jsonPath("$.error", containsString("free-tier")));
+    }
+
+    @Test
+    void render_overFreeCap_returns413() throws Exception {
+        MockMultipartFile file = single(TestPdfs.blank(1));
+        mvc.perform(multipart("/api/render").file(file).param("page", "0"))
+            .andExpect(status().isPayloadTooLarge())
+            .andExpect(jsonPath("$.code").value("too_large"))
+            .andExpect(jsonPath("$.error", containsString("free-tier")));
+    }
+
+    @Test
+    void metadataRead_overFreeCap_returns413() throws Exception {
+        mvc.perform(multipart("/api/metadata/read").file(single(TestPdfs.blank(1))))
+            .andExpect(status().isPayloadTooLarge())
+            .andExpect(jsonPath("$.code").value("too_large"))
+            .andExpect(jsonPath("$.error", containsString("free-tier")));
+    }
+
+    @Test
+    void formFields_overFreeCap_returns413() throws Exception {
+        mvc.perform(multipart("/api/form-fields").file(single(TestPdfs.blank(1))))
+            .andExpect(status().isPayloadTooLarge())
+            .andExpect(jsonPath("$.code").value("too_large"))
+            .andExpect(jsonPath("$.error", containsString("free-tier")));
+    }
+
+    /** Single-file endpoints take the part under the name {@code file}, not {@code files}. */
+    private static MockMultipartFile single(byte[] pdf) {
+        return new MockMultipartFile("file", "a.pdf", "application/pdf", pdf);
     }
 }
