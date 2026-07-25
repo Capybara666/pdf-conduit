@@ -1,12 +1,12 @@
 import { NgClass } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { ApiError, BatchPiiReport, PiiReport, RedactRegion } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { downloadRunResult } from '../../core/download.util';
-import { errorCopyKeys } from '../../core/error-copy';
+import { ResolvedErrorCopy, resolveErrorCopy } from '../../core/error-copy';
 import { RedactHandoffService } from '../../core/redact-handoff.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
@@ -65,6 +65,7 @@ export class GdprScanPage {
   private readonly api = inject(ApiService);
   private readonly handoff = inject(RedactHandoffService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly files = signal<File[]>([]);
   protected readonly loading = signal(false);
@@ -267,9 +268,13 @@ export class GdprScanPage {
     return out;
   }
 
-  /** Translation keys for the current error (title/detail/hint), via the shared copy map. */
-  get errorKeys(): ReturnType<typeof errorCopyKeys> | null {
+  /**
+   * Translated copy for the current error, via the shared copy map. The primary
+   * detail is localised; the server's English sentence comes back as
+   * `technical` and is shown as a secondary line rather than in its place.
+   */
+  get errorCopy(): ResolvedErrorCopy | null {
     const e = this.error();
-    return e ? errorCopyKeys(e) : null;
+    return e ? resolveErrorCopy(e, (k, params) => this.transloco.translate(k, params)) : null;
   }
 }

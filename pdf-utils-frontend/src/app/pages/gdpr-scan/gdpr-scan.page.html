@@ -39,10 +39,14 @@
   <!-- Error state -->
   @if (error(); as e) {
     <div class="card error" role="alert">
-      <h2>{{ t(errorKeys!.titleKey) }}</h2>
-      <p>{{ errorKeys!.detailText || (errorKeys!.detailKey ? t(errorKeys!.detailKey!) : '') }}</p>
-      @if (errorKeys!.hintKey) {
-        <p class="hint-note">{{ t(errorKeys!.hintKey!, errorKeys!.hintParams) }}</p>
+      <h2>{{ errorCopy!.title }}</h2>
+      <p>{{ errorCopy!.detail }}</p>
+      @if (errorCopy!.hint) {
+        <p class="hint-note">{{ errorCopy!.hint }}</p>
+      }
+      <!-- The server's English sentence, kept as a secondary technical line. -->
+      @if (errorCopy!.technical) {
+        <p class="server-detail">{{ errorCopy!.technical }}</p>
       }
       <button type="button" class="btn" (click)="scan()">{{ t('result.tryAgain') }}</button>
     </div>

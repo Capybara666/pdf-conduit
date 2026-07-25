@@ -363,3 +363,10 @@ table.findings {
 .card.error p {
   margin: 0 0 0.5rem;
 }
+/* The raw server sentence: secondary to the translated copy above it. */
+.card.error .server-detail {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}

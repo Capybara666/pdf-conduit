@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { ResultPanelComponent } from './result-panel.component';
-import { BatchFailuresInfo, RedactionInfo, RepairInfo, RunResult } from '../../core/api.models';
+import { ApiError, BatchFailuresInfo, RedactionInfo, RepairInfo, RunResult } from '../../core/api.models';
 import { TRANSLOCO_TESTING_PROVIDERS, translocoTesting } from '../../testing/transloco-testing';
 
 /**
@@ -21,7 +22,9 @@ describe('ResultPanelComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ResultPanelComponent, translocoTesting()],
-      providers: [TRANSLOCO_TESTING_PROVIDERS],
+      // The error state can render the "See Pro plans" routerLink, which needs
+      // a router in the injector even though no navigation happens here.
+      providers: [TRANSLOCO_TESTING_PROVIDERS, provideRouter([])],
     }).compileComponents();
     fixture = TestBed.createComponent(ResultPanelComponent);
   });
@@ -70,6 +73,55 @@ describe('ResultPanelComponent', () => {
   function panel(): HTMLElement {
     return (fixture.nativeElement as HTMLElement).querySelector('.panel')!;
   }
+
+  // --- error copy ---------------------------------------------------------
+
+  describe('error state', () => {
+    function showError(error: ApiError): void {
+      fixture.componentRef.setInput('error', error);
+      fixture.detectChanges();
+    }
+
+    /** The primary sentence — the one a user reads first. */
+    function message(): string {
+      return (
+        (fixture.nativeElement as HTMLElement).querySelector('.message')?.textContent?.trim() ?? ''
+      );
+    }
+
+    /** The secondary line carrying the server's own (English) wording. */
+    function serverDetail(): string | null {
+      return (
+        (fixture.nativeElement as HTMLElement)
+          .querySelector('.server-detail')
+          ?.textContent?.trim() ?? null
+      );
+    }
+
+    it('shows the translated line first and the server sentence underneath', () => {
+      showError(new ApiError('processing_timeout', 'Processing exceeded 60 seconds.', 503));
+
+      expect(message()).toBe('The operation timed out before it finished.');
+      // Demoted, not dropped: the concrete limit is still on screen.
+      expect(serverDetail()).toBe('Processing exceeded 60 seconds.');
+    });
+
+    it('keeps the server sentence as the message where it is the only information', () => {
+      showError(new ApiError('operation_failed', 'The PDF is password protected.', 422));
+
+      expect(message()).toBe('The PDF is password protected.');
+      // No footnote repeating the line above it.
+      expect(serverDetail()).toBeNull();
+    });
+
+    it('shows no secondary line when the server said nothing usable', () => {
+      // An nginx HTML page is sanitised to '' before it gets here.
+      showError(new ApiError('server_busy', '', 502));
+
+      expect(message()).toBe('The server is handling a lot of requests.');
+      expect(serverDetail()).toBeNull();
+    });
+  });
 
   // --- redaction ----------------------------------------------------------
 
