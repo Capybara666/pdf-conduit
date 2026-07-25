@@ -25,8 +25,10 @@ import java.util.List;
  *   <li>{@code pdfconduit.web.render.max-total-output-pixels} — summed pixel area of every page the
  *       request will actually rasterise, checked <em>before</em> anything is rendered.</li>
  *   <li>{@code pdfconduit.web.processing.max-total-output-bytes} — running ceiling on the result
- *       bytes accumulated so far, checked after every produced part (see {@link OutputSizeGuard}),
- *       so a pathological input dies early rather than at the end.</li>
+ *       bytes accumulated so far, checked after every produced part (see {@link OutputSizeGuard})
+ *       on the multi-output paths and after every completed file (see {@link Tally#commitResults})
+ *       on the one-output-per-file MAP batches, so a pathological request dies early rather than
+ *       at the end.</li>
  * </ul>
  * Both surface as 422 {@code output_too_large} with an actionable message.
  *
@@ -116,6 +118,18 @@ public class OutputBudget {
         /** Folds a completed call's parts into the request total. */
         public void commit(List<byte[]> parts) throws OutputTooLargeException {
             for (byte[] p : parts) bytes += p.length;
+            checkBytes(bytes);
+        }
+
+        /**
+         * Folds a completed file's <em>named</em> results into the request total — the
+         * one-output-per-file MAP batches (rotate, compress, extract-combine, …), which produce a
+         * whole result per file rather than a stream of parts. Same ceiling, same 422; it simply
+         * lands after each file instead of after each part, because that is the granularity at
+         * which those operations allocate.
+         */
+        public void commitResults(List<NamedBytes> results) throws OutputTooLargeException {
+            for (NamedBytes r : results) bytes += r.data().length;
             checkBytes(bytes);
         }
 

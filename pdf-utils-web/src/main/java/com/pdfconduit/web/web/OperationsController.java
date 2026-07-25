@@ -47,6 +47,7 @@ import java.util.Map;
 
 import static com.pdfconduit.web.web.ControllerSupport.ensurePdf;
 import static com.pdfconduit.web.web.ControllerSupport.guardCount;
+import static com.pdfconduit.web.web.ControllerSupport.mapBounded;
 import static com.pdfconduit.web.web.ControllerSupport.totalBytes;
 
 /**
@@ -62,6 +63,12 @@ import static com.pdfconduit.web.web.ControllerSupport.totalBytes;
  * the skipped files are named in {@code X-Batch-Failures}; only when <em>every</em> input fails does
  * the request itself fail, with the first error now naming its file. REDUCE (merge) is untouched —
  * a merge missing an input is a different document, so it still fails as a whole.
+ *
+ * <p><b>Every MAP batch runs under one request-wide output budget</b>
+ * ({@link ControllerSupport#mapBounded}): the results accumulate in the heap and are copied again
+ * into the ZIP, so the sum is bounded while the batch runs and an over-budget request is refused
+ * with 422 {@code output_too_large} instead of OOM-ing. The budget is per REQUEST, so blowing it is
+ * a whole-request failure, never one file's {@code X-Batch-Failures} entry.
  */
 @RestController
 @RequestMapping("/api")
@@ -135,8 +142,8 @@ public class OperationsController {
             return Responses.zip(outcome, "extract_results.zip");
         }
         // Combine: one PDF per input — a single file streams, several files zip.
-        BatchOutcome results = loadGuard.execute(bytes,
-            () -> MemoryOperations.mapPartial(inputs, in -> ops.extractCombine(List.of(in), pages)));
+        BatchOutcome results = loadGuard.execute(bytes, () -> mapBounded(ops.newOutputTally(),
+            inputs, in -> ops.extractCombine(List.of(in), pages)));
         return Responses.batch("extract", results, MediaType.APPLICATION_PDF);
     }
 
@@ -172,8 +179,8 @@ public class OperationsController {
                 .contentLength(r.bytes().length)
                 .body(r.bytes());
         }
-        BatchOutcome results = loadGuard.execute(bytes, () -> MemoryOperations.mapPartial(inputs,
-            in -> ops.compressBatch(List.of(in), target, preset, grayscale)));
+        BatchOutcome results = loadGuard.execute(bytes, () -> mapBounded(ops.newOutputTally(),
+            inputs, in -> ops.compressBatch(List.of(in), target, preset, grayscale)));
         return Responses.zip(results, "compress_results.zip");
     }
 
@@ -186,8 +193,8 @@ public class OperationsController {
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome results = loadGuard.execute(totalBytes(inputs),
-            () -> MemoryOperations.mapPartial(inputs, in -> ops.rotate(List.of(in), pages, angle)));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.rotate(List.of(in), pages, angle)));
         return Responses.batch("rotate", results, MediaType.APPLICATION_PDF);
     }
 
@@ -212,8 +219,8 @@ public class OperationsController {
         guardCount(files, maxFiles);
         PageSize size = Params.pageSize(pageSize, PageSize.FIT);
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome results = loadGuard.execute(totalBytes(inputs),
-            () -> MemoryOperations.mapPartial(inputs, in -> ops.toPdf(List.of(in), size)));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.toPdf(List.of(in), size)));
         return Responses.batch("to-pdf", results, MediaType.APPLICATION_PDF);
     }
 
@@ -230,8 +237,9 @@ public class OperationsController {
         // Absent / any non-256 value → AES-128 (the compatibility default); 256 → AES-256.
         int bits = keyLength != null && keyLength == 256 ? 256 : 128;
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> MemoryOperations.mapPartial(
-            inputs, in -> ops.protect(List.of(in), userPassword, ownerPassword, bits)));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs,
+            in -> ops.protect(List.of(in), userPassword, ownerPassword, bits)));
         return Responses.batch("protect", results, MediaType.APPLICATION_PDF);
     }
 
@@ -244,8 +252,8 @@ public class OperationsController {
         guardCount(files, maxFiles);
         Params.require(password, "password");
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome results = loadGuard.execute(totalBytes(inputs),
-            () -> MemoryOperations.mapPartial(inputs, in -> ops.unlock(List.of(in), password)));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.unlock(List.of(in), password)));
         return Responses.batch("unlock", results, MediaType.APPLICATION_PDF);
     }
 
@@ -273,8 +281,8 @@ public class OperationsController {
         var wmPosition = parseEnum(WatermarkOptions.Position.class, position, WatermarkOptions.Position.CENTER);
         List<NamedBytes> inputs = uploads.readAll(files);
         long bytes = totalBytes(inputs) + (imageBytes != null ? imageBytes.length : 0);
-        BatchOutcome results = loadGuard.execute(bytes, () -> MemoryOperations.mapPartial(inputs,
-            in -> ops.watermark(List.of(in), hasText ? text : null, imageBytes,
+        BatchOutcome results = loadGuard.execute(bytes, () -> mapBounded(ops.newOutputTally(),
+            inputs, in -> ops.watermark(List.of(in), hasText ? text : null, imageBytes,
                 opacity != null ? opacity : 0.3,
                 rotation != null ? rotation : 45,
                 scale != null ? scale : 0.5,
@@ -309,8 +317,8 @@ public class OperationsController {
         double t = top != null ? top : 0, r = right != null ? right : 0;
         double b = bottom != null ? bottom : 0, l = left != null ? left : 0;
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome results = loadGuard.execute(totalBytes(inputs),
-            () -> MemoryOperations.mapPartial(inputs, in -> ops.crop(List.of(in), t, r, b, l, mm)));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.crop(List.of(in), t, r, b, l, mm)));
         return Responses.batch("crop", results, MediaType.APPLICATION_PDF);
     }
 
@@ -324,8 +332,8 @@ public class OperationsController {
         guardCount(files, maxFiles);
         var nupLayout = com.pdfconduit.core.model.NupLayout.fromId(layout);
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome results = loadGuard.execute(totalBytes(inputs),
-            () -> MemoryOperations.mapPartial(inputs, in -> ops.nup(List.of(in), nupLayout, booklet)));
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.nup(List.of(in), nupLayout, booklet)));
         return Responses.batch("nup", results, MediaType.APPLICATION_PDF);
     }
 
@@ -347,8 +355,9 @@ public class OperationsController {
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> MemoryOperations.mapPartial(
-            inputs, in -> ops.pageMarks(List.of(in), headerLeft, headerCenter, headerRight,
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs,
+            in -> ops.pageMarks(List.of(in), headerLeft, headerCenter, headerRight,
                 footerLeft, footerCenter, footerRight,
                 fontSize != null ? fontSize : 10f,
                 margin != null ? margin : 36f,
@@ -397,8 +406,8 @@ public class OperationsController {
                 .contentLength(r.bytes().length)
                 .body(r.bytes());
         }
-        BatchOutcome results = loadGuard.execute(bytes,
-            () -> MemoryOperations.mapPartial(inputs, in -> ops.repairBatch(List.of(in))));
+        BatchOutcome results = loadGuard.execute(bytes, () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.repairBatch(List.of(in))));
         return Responses.zip(results, "repair_results.zip");
     }
 
@@ -602,8 +611,8 @@ public class OperationsController {
         guardCount(files, maxFiles);
         TextFormat fmt = Params.textFormat(format, TextFormat.TXT);
         List<NamedBytes> inputs = uploads.readAll(files);
-        BatchOutcome outputs = loadGuard.execute(totalBytes(inputs),
-            () -> MemoryOperations.mapPartial(inputs, in -> ops.toText(List.of(in), fmt, pages)));
+        BatchOutcome outputs = loadGuard.execute(totalBytes(inputs), () -> mapBounded(
+            ops.newOutputTally(), inputs, in -> ops.toText(List.of(in), fmt, pages)));
         MediaType type = fmt == TextFormat.TXT
             ? new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8)
             : DOCX;
