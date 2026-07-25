@@ -197,7 +197,7 @@
     },
     "tools": {
       "title": "Kies een tool en ga aan de slag",
-      "subtitle": "Alles wat u nodig hebt voor PDF's, standaard privé.",
+      "subtitle": "Alles wat je nodig hebt voor PDF's, standaard privé.",
       "showMore": "Alle tools tonen",
       "showLess": "Minder tonen"
     },
@@ -239,20 +239,20 @@
       "title": "Zo werkt het",
       "subtitle": "Drie stappen. Geen account, niets te installeren.",
       "step1Title": "Kies een tool",
-      "step1Desc": "Kies wat u nodig hebt: samenvoegen, comprimeren, converteren, beveiligen en meer.",
-      "step2Title": "Voeg uw bestand toe",
-      "step2Desc": "Sleep het erin of blader. Uw bestanden worden nooit opgeslagen op onze servers.",
-      "step3Title": "Download uw resultaat",
-      "step3Desc": "Start en uw bestand wordt meteen verwerkt: uw voltooide PDF staat binnen enkele seconden klaar om te downloaden. Wanneer u weggaat, blijft er niets achter.",
+      "step1Desc": "Kies wat je nodig hebt: samenvoegen, comprimeren, converteren, beveiligen en meer.",
+      "step2Title": "Voeg je bestand toe",
+      "step2Desc": "Sleep het erin of blader. Je bestanden worden nooit opgeslagen op onze servers.",
+      "step3Title": "Download je resultaat",
+      "step3Desc": "Start en je bestand wordt meteen verwerkt: je voltooide PDF staat binnen enkele seconden klaar om te downloaden. Wanneer je weggaat, blijft er niets achter.",
       "wizardTitle": "Nieuw bij PDF Conduit?",
-      "wizardDesc": "Laat de begeleide Wizard u stap voor stap door het selecteren, ordenen en exporteren leiden.",
+      "wizardDesc": "Laat de begeleide Wizard je stap voor stap door het selecteren, ordenen en exporteren leiden.",
       "wizardCta": "Begeleide Wizard starten",
-      "privacyLink": "Ontdek hoe wij uw bestanden privé houden →"
+      "privacyLink": "Ontdek hoe wij je bestanden privé houden →"
     },
     "advanced": {
       "title": "Geavanceerde tools",
       "subtitle": "Klaar voor meer? Bouw stappenflows of controleer een document op persoonsgegevens.",
-      "wizardDesc": "Nieuw hier? Laat de wizard u stap voor stap begeleiden.",
+      "wizardDesc": "Nieuw hier? Laat de wizard je stap voor stap begeleiden.",
       "pipelineDesc": "Koppel meerdere bewerkingen aan elkaar tot één herbruikbare flow met een visuele knooppuntgraaf.",
       "gdprDesc": "Scan een PDF op persoonsgegevens (AVG / PII) en ga daarna direct naar redigeren."
     }
@@ -260,7 +260,7 @@
   "onboarding": {
     "welcome": {
       "title": "Welkom bij PDF Conduit",
-      "message": "Gratis PDF-tools die direct in uw browser draaien. Uw bestanden worden direct verwerkt en nooit opgeslagen. Nieuw hier? De begeleide Wizard is de makkelijkste manier om te beginnen.",
+      "message": "Gratis PDF-tools die direct in je browser draaien. Je bestanden worden direct verwerkt en nooit opgeslagen. Nieuw hier? De begeleide Wizard is de makkelijkste manier om te beginnen.",
       "cta": "Begeleide Wizard proberen",
       "secondary": "Alle tools bekijken",
       "dismiss": "Sluiten"
@@ -272,7 +272,7 @@
     "title": "Privacy",
     "description": "Hoe PDF Conduit met je bestanden omgaat. Kort gezegd: het bewaart ze niet.",
     "memoryTitle": "Je bestanden worden nooit opgeslagen",
-    "memoryBody": "Uw bestanden worden nooit opgeslagen. Elke bewerking verloopt volledig binnen één enkel verzoek: uw bestand wordt verwerkt en rechtstreeks aan u teruggestuurd, en daarna direct weggegooid. Er wordt niets bewaard en niets wordt ooit voor iets anders gebruikt.",
+    "memoryBody": "Je bestanden worden nooit opgeslagen. Elke bewerking verloopt volledig binnen één enkel verzoek: je bestand wordt verwerkt en rechtstreeks aan je teruggestuurd, en daarna direct weggegooid. Er wordt niets bewaard en niets wordt ooit voor iets anders gebruikt.",
     "exceptionTitle": "De enige tijdelijke uitzondering",
     "exceptionBody": "Het converteren van office- of tekstdocumenten (bijvoorbeeld .docx, .xlsx, .pptx) vereist een headless LibreOffice. Alleen voor die stap wordt het bestand naar een geïsoleerde tijdelijke map geschreven die onmiddellijk na de conversie wordt verwijderd. Gewone PDF's en afbeeldingen raken de schijf nooit aan.",
     "accountTitle": "Geen account, geen trackingmuur",
@@ -444,7 +444,7 @@
     "nup": {
       "title": "Pagina's per vel",
       "description": "Plaats meerdere pagina's per vel of vouw een boekje met rugnietje.",
-      "privacyLine": "Uw bestanden worden privé geïmposeerd en nooit opgeslagen.",
+      "privacyLine": "Je bestanden worden privé geïmposeerd en nooit opgeslagen.",
       "hint": "PDF-bestanden. Meerdere bestanden komen terug als ZIP.",
       "batchNote": "{{count}} bestanden geselecteerd. Elk wordt afzonderlijk geïmposeerd; de resultaten komen terug als ZIP.",
       "layout": "Lay-out",
@@ -474,7 +474,7 @@
     "toImages": {
       "title": "Naar afbeeldingen",
       "description": "Zet PDF-pagina's om naar PNG of JPG.",
-      "privacyLine": "Uw bestanden worden privé omgezet en nooit opgeslagen.",
+      "privacyLine": "Je bestanden worden privé omgezet en nooit opgeslagen.",
       "hint": "PDF-bestanden. Meerdere pagina's of bestanden komen terug als ZIP.",
       "batchNote": "{{count}} bestanden geselecteerd. Het paginabereik geldt voor elk; de resultaten komen terug als ZIP.",
       "format": "Formaat",
@@ -520,7 +520,7 @@
     "protect": {
       "title": "Beveiligen",
       "description": "Voeg wachtwoordversleuteling toe aan een PDF.",
-      "privacyLine": "Uw bestanden en wachtwoorden worden privé verwerkt en nooit opgeslagen.",
+      "privacyLine": "Je bestanden en wachtwoorden worden privé verwerkt en nooit opgeslagen.",
       "hint": "Eén of meer PDF's (meerdere bestanden → ZIP).",
       "userPassword": "Gebruikerswachtwoord",
       "userPasswordHelp": "Vereist om het document te openen.",
@@ -539,7 +539,7 @@
     "unlock": {
       "title": "Ontgrendelen",
       "description": "Verwijder een bekend wachtwoord uit een PDF.",
-      "privacyLine": "Uw bestanden en wachtwoorden worden privé verwerkt en nooit opgeslagen.",
+      "privacyLine": "Je bestanden en wachtwoorden worden privé verwerkt en nooit opgeslagen.",
       "hint": "Eén of meer beveiligde PDF's (meerdere bestanden → ZIP).",
       "password": "Wachtwoord",
       "passwordHelp": "Het huidige wachtwoord om de PDF('s) te openen.",
@@ -608,7 +608,7 @@
     "watermark": {
       "title": "Watermerk",
       "description": "Plaats tekst of een afbeelding over elke pagina.",
-      "privacyLine": "Uw bestanden worden privé gestempeld en nooit opgeslagen.",
+      "privacyLine": "Je bestanden worden privé gestempeld en nooit opgeslagen.",
       "hint": "Eén of meer PDF's om te stempelen (meerdere bestanden → ZIP).",
       "typeAria": "Type watermerk",
       "typeText": "Tekst",
@@ -769,7 +769,7 @@
       "autoRedactCta": "Alles wat is gedetecteerd automatisch zwart maken",
       "autoRedactAllCta": "Alle bestanden automatisch zwart maken",
       "autoRedactFile": "Automatisch zwart maken",
-      "autoRedactHint": "Eén klik maakt elke gedetecteerde waarde zwart en downloadt het bestand. Gratis. Uw bestand wordt nooit opgeslagen.",
+      "autoRedactHint": "Eén klik maakt elke gedetecteerde waarde zwart en downloadt het bestand. Gratis. Je bestand wordt nooit opgeslagen.",
       "autoRedactLoading": "Bezig met zwart maken…"
     },
     "crop": {
