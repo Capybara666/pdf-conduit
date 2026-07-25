@@ -247,11 +247,15 @@ export class CompressPage {
   /**
    * When the last run could not reach the target, a friendly heads-up: the smallest size that
    * was actually achievable for this file, alongside the target the user asked for.
+   *
+   * `resultBytes` IS that floor here — the backend only reports `targetReached: false` after the
+   * compressor has run its strongest ladder rung, so the delivered file is the smallest it can
+   * make. There is no separate estimate to prefer over it.
    */
   protected readonly floorNotice = computed(() => {
     const c = this.state.result()?.compression;
     if (!c || c.targetReached !== false) return null;
-    const floorBytes = c.estimatedFloorBytes ?? c.resultBytes;
+    const floorBytes = c.resultBytes;
     const target = this.lastTarget();
     if (floorBytes == null || !target) return null;
     return { floor: formatBytes(floorBytes), target };

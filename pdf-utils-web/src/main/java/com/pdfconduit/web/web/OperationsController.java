@@ -145,9 +145,10 @@ public class OperationsController {
             return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, Responses.contentDisposition(name))
+                // Only what CompressBytesResult actually knows. There is no separate "feasible"
+                // or "floor estimate": when targetReached is false the compressor has already run
+                // its strongest rung, so X-Result-Bytes IS the smallest size it could produce.
                 .header("X-Target-Reached", String.valueOf(r.targetReached()))
-                .header("X-Target-Feasible", String.valueOf(r.targetReached()))
-                .header("X-Estimated-Floor-Bytes", String.valueOf(r.resultBytes()))
                 .header("X-Original-Bytes", String.valueOf(r.originalBytes()))
                 .header("X-Result-Bytes", String.valueOf(r.resultBytes()))
                 .contentLength(r.bytes().length)

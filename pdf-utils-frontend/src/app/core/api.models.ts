@@ -60,15 +60,16 @@ export interface RunResult {
   batchFailures?: string;
 }
 
-/** Parsed compress response headers. */
+/**
+ * Parsed compress response headers (`X-Original-Bytes`, `X-Result-Bytes`,
+ * `X-Target-Reached`). That is everything the backend knows: when
+ * `targetReached` is false the compressor has already exhausted its ladder, so
+ * `resultBytes` is the smallest size it could produce for this file.
+ */
 export interface CompressionInfo {
   originalBytes?: number;
   resultBytes?: number;
   targetReached?: boolean;
-  /** Whether the requested target size was achievable (mirrors `targetReached`). */
-  targetFeasible?: boolean;
-  /** Approximate smallest size reachable for this file, in bytes. */
-  estimatedFloorBytes?: number;
 }
 
 /**

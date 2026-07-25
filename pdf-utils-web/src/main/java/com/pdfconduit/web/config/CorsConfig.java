@@ -24,9 +24,8 @@ public class CorsConfig implements WebMvcConfigurer {
             .allowedOrigins(allowedOrigins)
             .allowedMethods("GET", "POST")
             .allowedHeaders("*")
-            .exposedHeaders("Content-Disposition", "X-Target-Reached", "X-Target-Feasible",
-                "X-Estimated-Floor-Bytes", "X-Original-Bytes",
-                "X-Result-Bytes", "X-Batch-Failures",
+            .exposedHeaders("Content-Disposition", "X-Target-Reached",
+                "X-Original-Bytes", "X-Result-Bytes", "X-Batch-Failures",
                 "X-RateLimit-Limit", "X-RateLimit-Remaining", "Retry-After",
                 "X-Quota-Limit", "X-Quota-Remaining", "X-Quota-Reset")
             .maxAge(3600);
