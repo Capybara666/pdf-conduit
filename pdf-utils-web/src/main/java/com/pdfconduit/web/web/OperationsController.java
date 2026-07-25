@@ -22,6 +22,7 @@ import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.RedactRegionDto;
 import com.pdfconduit.web.dto.SignPlacementDto;
 import com.pdfconduit.web.guard.LoadGuard;
+import com.pdfconduit.web.service.RedactOutcome;
 import com.pdfconduit.web.service.WebOperations;
 import com.pdfconduit.web.support.Params;
 import com.pdfconduit.web.support.Responses;
@@ -395,18 +396,44 @@ public class OperationsController {
         List<RedactRegion> parsed = parseRegions(regions);
         NamedBytes in = uploads.read(file);
         int resolvedDpi = dpi != null ? dpi : 0;
-        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.redact(in, parsed, resolvedDpi, reOcr));
-        return Responses.file(result, MediaType.APPLICATION_PDF);
+        RedactOutcome result = loadGuard.execute(in.data().length,
+            () -> ops.redact(in, parsed, resolvedDpi, reOcr));
+        return redacted(result);
     }
 
     private List<RedactRegion> parseRegions(String regions) {
         Params.require(regions, "regions");
+        List<RedactRegion> parsed;
         try {
             RedactRegionDto[] dtos = json.readValue(regions, RedactRegionDto[].class);
-            return Arrays.stream(dtos).map(RedactRegionDto::toRegion).toList();
+            parsed = Arrays.stream(dtos).map(RedactRegionDto::toRegion).toList();
         } catch (JsonProcessingException e) {
+            // A rectangle rejected by RedactRegionDto arrives wrapped by Jackson; surface its own
+            // message so the client is told exactly which box is unusable, not "invalid JSON".
+            if (e.getCause() instanceof IllegalArgumentException bad) throw bad;
             throw new IllegalArgumentException("Invalid regions JSON: " + e.getOriginalMessage());
         }
+        if (parsed.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Nothing to redact: provide at least one region to black out.");
+        }
+        return parsed;
+    }
+
+    /**
+     * Streams a redaction result together with what was actually blacked out
+     * ({@code X-Redacted-Pages} / {@code X-Redacted-Regions}, both CORS-exposed), so a client never
+     * has to infer safety from the {@code _redacted} filename alone.
+     */
+    private static ResponseEntity<byte[]> redacted(RedactOutcome result) {
+        byte[] data = result.file().data();
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header(HttpHeaders.CONTENT_DISPOSITION, Responses.contentDisposition(result.file().filename()))
+            .header("X-Redacted-Pages", String.valueOf(result.redactedPages()))
+            .header("X-Redacted-Regions", String.valueOf(result.redactedRegions()))
+            .contentLength(data.length)
+            .body(data);
     }
 
     // --------------------------------------------------------------------- SIGN
@@ -483,8 +510,8 @@ public class OperationsController {
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         java.util.Set<com.pdfconduit.core.analyze.PiiCategory> cats = parseCategories(categories);
         NamedBytes in = uploads.read(file);
-        NamedBytes result = loadGuard.execute(in.data().length, () -> ops.autoRedact(in, cats));
-        return Responses.file(result, MediaType.APPLICATION_PDF);
+        RedactOutcome result = loadGuard.execute(in.data().length, () -> ops.autoRedact(in, cats));
+        return redacted(result);
     }
 
     /** Lenient parse of a comma-separated GDPR category filter; unknown names are ignored. */

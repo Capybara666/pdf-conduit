@@ -28,6 +28,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 "X-Original-Bytes", "X-Result-Bytes", "X-Batch-Failures",
                 "X-Repair-Recovered", "X-Repair-Was-Damaged", "X-Repair-Findings",
                 "X-Repair-Pages",
+                "X-Redacted-Pages", "X-Redacted-Regions",
                 "X-RateLimit-Limit", "X-RateLimit-Remaining", "Retry-After",
                 "X-Quota-Limit", "X-Quota-Remaining", "X-Quota-Reset")
             .maxAge(3600);

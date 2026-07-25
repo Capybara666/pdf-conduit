@@ -684,7 +684,8 @@ public final class PipelineExecutor {
                 case GDPR_REDACT -> {
                     // Redaction rasterises the affected pages, so it is render-guarded too.
                     guardRender(guard, pdf, PdfRedactor.DEFAULT_DPI);
-                    yield PdfRedactor.executeBytes(pdf, redactRegions(PiiScanner.scanBytes(pdf)), 0);
+                    yield PdfRedactor.executeBytes(
+                        pdf, redactRegions(PiiScanner.scanBytes(pdf)), 0).data();
                 }
                 // Repair sees the bytes as-is (a PDF MemDoc is passed through unchanged by
                 // ensurePdfBytes) — the damage it repairs lives in the byte structure. It neither

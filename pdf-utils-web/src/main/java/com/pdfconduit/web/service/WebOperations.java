@@ -14,6 +14,7 @@ import com.pdfconduit.core.model.ImageFormat;
 import com.pdfconduit.core.model.PageRange;
 import com.pdfconduit.core.model.PageSize;
 import com.pdfconduit.core.model.PdfMetadata;
+import com.pdfconduit.core.model.RedactBytesResult;
 import com.pdfconduit.core.model.RedactRegion;
 import com.pdfconduit.core.model.RepairBytesResult;
 import com.pdfconduit.core.model.SignPlacement;
@@ -406,22 +407,36 @@ public class WebOperations {
      * security-critical redaction — if OCR is disabled by config or Tesseract is not installed the
      * flag is a clean <b>no-op</b> (the redacted, non-searchable PDF is still returned), so an
      * optional searchability step can never discard or block the actual redaction.
+     *
+     * <p><b>Fails loudly.</b> An empty request is a 400 and every requested rectangle must actually
+     * be painted — a region the redactor could not apply (out-of-range page, degenerate box, client
+     * coordinate drift) aborts the request instead of streaming back an unredacted file under a
+     * {@code *_redacted.pdf} name. The applied counts travel back to the controller, which puts them
+     * in {@code X-Redacted-Pages} / {@code X-Redacted-Regions}.
      */
-    public NamedBytes redact(NamedBytes in, List<RedactRegion> regions, int dpi, boolean reOcr)
+    public RedactOutcome redact(NamedBytes in, List<RedactRegion> regions, int dpi, boolean reOcr)
             throws PdfOperationException {
+        requireRegions(regions);
         byte[] pdf = routeToPdf(in);
-        byte[] out;
+        RedactBytesResult redacted;
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
             // dpi <= 0 means "core default" (PdfRedactor.DEFAULT_DPI); guard against the effective value.
             guardRender(lp, dpi > 0 ? dpi : PdfRedactor.DEFAULT_DPI);
-            out = PdfRedactor.executeBytes(pdf, regions, dpi);
+            redacted = PdfRedactor.executeBytes(pdf, regions, dpi);
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
         }
+        // Belt and braces: the core now rejects un-appliable regions outright, so this can only
+        // fire if that contract ever regresses — and it must fire, not ship a quiet non-redaction.
+        if (redacted.redactedRegions() < regions.size()) {
+            throw new PdfOperationException("Only " + redacted.redactedRegions() + " of "
+                + regions.size() + " redaction region(s) could be applied; nothing was returned.");
+        }
+        byte[] out = redacted.data();
         if (reOcr && ocrEnabled && PdfOcr.available()) {
             // Only the rasterised pages lost their text layer — mirror PdfRedactor's grouping
-            // (zero-area regions are no-ops there) so OCR touches exactly those pages. The
+            // (every surviving region is valid and painted) so OCR touches exactly those pages. The
             // untouched pages keep their original, superior text layer instead of gaining a
             // duplicate invisible one, and each skipped page saves a full tesseract run.
             Set<Integer> rasterised = new HashSet<>();
@@ -430,7 +445,21 @@ public class WebOperations {
             }
             out = reOcr(out, rasterised);
         }
-        return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
+        return new RedactOutcome(
+            new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out),
+            redacted.redactedPages(), redacted.redactedRegions());
+    }
+
+    /**
+     * A redaction request with no rectangles is refused (→ 400): running it would hand back a
+     * byte-for-byte copy of the input named {@code *_redacted.pdf}, which is a lie about the file's
+     * safety. (The core redactor still allows an empty list — it claims nothing.)
+     */
+    private static void requireRegions(List<RedactRegion> regions) {
+        if (regions == null || regions.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Nothing to redact: provide at least one region to black out.");
+        }
     }
 
     /**
@@ -613,10 +642,15 @@ public class WebOperations {
      * permanently rasterised away (see {@link PdfRedactor}), not merely covered. Special-category
      * keyword flags carry no regions, so they are never "redacted" (nothing to black out).
      *
+     * <p>When the filtered scan yields <b>no</b> rectangles — an unredactable document, or a scan
+     * whose only hits are Art. 9 keyword flags, which carry no coordinates — the request is refused
+     * (→ 422 {@code operation_failed}) instead of returning the untouched upload named
+     * {@code *_redacted.pdf}. A file that claims to be redacted must have been redacted.
+     *
      * @param categories when non-empty, only findings in these GDPR categories are redacted;
      *                   empty/{@code null} ⇒ redact every detected value.
      */
-    public NamedBytes autoRedact(NamedBytes in, Set<PiiCategory> categories)
+    public RedactOutcome autoRedact(NamedBytes in, Set<PiiCategory> categories)
             throws PdfOperationException {
         byte[] pdf = routeToPdf(in);
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
@@ -632,8 +666,21 @@ public class WebOperations {
                     regions.add(new RedactRegion(r.page(), r.x(), r.y(), r.width(), r.height()));
                 }
             }
-            byte[] out = PdfRedactor.executeBytes(pdf, regions, 0);
-            return new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()), out);
+            if (regions.isEmpty()) {
+                throw new PdfOperationException("Nothing could be redacted: the scan found no values "
+                    + "with a location on the page. Keyword-flagged categories (e.g. health, "
+                    + "religion) carry no coordinates, so there is no box to black out — "
+                    + "use Redact and draw the areas yourself.");
+            }
+            RedactBytesResult redacted = PdfRedactor.executeBytes(pdf, regions, 0);
+            if (redacted.redactedRegions() < regions.size()) {
+                throw new PdfOperationException("Only " + redacted.redactedRegions() + " of "
+                    + regions.size() + " detected value(s) could be blacked out; nothing was returned.");
+            }
+            return new RedactOutcome(
+                new NamedBytes(MemoryOperations.outputName(OperationType.REDACT, in.filename()),
+                    redacted.data()),
+                redacted.redactedPages(), redacted.redactedRegions());
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
         }

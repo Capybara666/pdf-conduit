@@ -1,6 +1,7 @@
 package com.pdfconduit.core.operations;
 
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.model.RedactBytesResult;
 import com.pdfconduit.core.model.RedactOptions;
 import com.pdfconduit.core.model.RedactRegion;
 import com.pdfconduit.core.model.RedactResult;
@@ -56,15 +57,16 @@ public final class PdfRedactor {
     }
 
     /**
-     * In-memory variant: permanently redact {@code regions} from {@code pdf} (rasterising
-     * only the affected pages) and return the new PDF bytes.
+     * In-memory variant: permanently redact {@code regions} from {@code pdf} (rasterising only the
+     * affected pages) and return the new PDF bytes <em>together with what was actually applied</em>,
+     * so a caller can refuse to hand back a "redacted" file that had nothing blacked out.
      */
-    public static byte[] executeBytes(byte[] pdf, List<RedactRegion> regions, int dpi)
+    public static RedactBytesResult executeBytes(byte[] pdf, List<RedactRegion> regions, int dpi)
             throws PdfOperationException {
         try (PDDocument src = PdfLoader.load(pdf);
              PDDocument out = new PDDocument()) {
-            redact(src, out, regions, dpi);
-            return PdfLoader.toBytes(out);
+            Counts counts = redact(src, out, regions, dpi);
+            return new RedactBytesResult(PdfLoader.toBytes(out), counts.pages(), counts.regions());
         } catch (IOException e) {
             throw new PdfOperationException("Redaction failed: " + e.getMessage(), e);
         }
@@ -76,20 +78,23 @@ public final class PdfRedactor {
     /**
      * The shared algorithm: copy every page of {@code src} into {@code out}, rasterising
      * (and blacking out) only the pages that carry a region.
+     *
+     * <p>Every requested region is validated first (see {@link #validate}) and the pass then paints
+     * <em>all</em> of them, so the returned counts always equal what the caller asked for: a region
+     * can never be quietly dropped, leaving readable data under a file called "redacted".
      */
     private static Counts redact(PDDocument src, PDDocument out, List<RedactRegion> regions, int dpiIn)
-            throws IOException {
+            throws IOException, PdfOperationException {
         int dpi = Math.min(PdfToImageConverter.MAX_RENDER_DPI, dpiIn > 0 ? dpiIn : DEFAULT_DPI);
+        int total = src.getNumberOfPages();
+        validate(regions, total);
 
-        // Group non-empty regions by page; a zero-area rectangle is a no-op.
         Map<Integer, List<RedactRegion>> byPage = new LinkedHashMap<>();
         for (RedactRegion r : regions) {
-            if (r.width() <= 0 || r.height() <= 0) continue;
             byPage.computeIfAbsent(r.pageIndex(), k -> new ArrayList<>()).add(r);
         }
 
         PDFRenderer renderer = new PDFRenderer(src);
-        int total = src.getNumberOfPages();
         int redactedPages = 0, redactedRegions = 0;
 
         for (int i = 0; i < total; i++) {
@@ -102,6 +107,32 @@ public final class PdfRedactor {
             redactedPages++;
         }
         return new Counts(redactedPages, redactedRegions);
+    }
+
+    /**
+     * Rejects every region that could not be applied, <b>before</b> a single page is written.
+     * Redaction is security-critical, so an un-appliable rectangle is an error, never a skip:
+     * silently ignoring one used to return the untouched document — with the personal data fully
+     * readable — under a {@code *_redacted.pdf} name and no signal whatsoever. Mirrors
+     * {@link PdfSigner}'s out-of-range page check, which has always been strict.
+     *
+     * <p>An <em>empty</em> region list is still legal (nothing was asked for, nothing is claimed);
+     * callers that name their output "redacted" must reject that case themselves.
+     */
+    private static void validate(List<RedactRegion> regions, int pageCount) throws PdfOperationException {
+        for (RedactRegion r : regions) {
+            if (r.pageIndex() < 0 || r.pageIndex() >= pageCount) {
+                throw new PdfOperationException("Redaction region references page "
+                    + (r.pageIndex() + 1) + ", but the PDF has " + pageCount + " page(s).");
+            }
+            if (!(r.width() > 0) || !(r.height() > 0)
+                || !Double.isFinite(r.x()) || !Double.isFinite(r.y())
+                || !Double.isFinite(r.width()) || !Double.isFinite(r.height())) {
+                throw new PdfOperationException("Redaction region on page " + (r.pageIndex() + 1)
+                    + " has no area (width=" + r.width() + ", height=" + r.height()
+                    + "); it would cover nothing.");
+            }
+        }
     }
 
     /** Renders page {@code i}, blacks out {@code regions}, and appends it to {@code out} as an image page. */
