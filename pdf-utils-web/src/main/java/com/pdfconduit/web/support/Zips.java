@@ -18,7 +18,11 @@ public final class Zips {
 
     /** Zips {@code entries} (each named by its {@link NamedBytes#filename()}, de-duplicated). */
     public static byte[] zip(List<NamedBytes> entries) {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        // Size the buffer up front from the entries themselves. Already-compressed payloads (PNG,
+        // JPEG, PDF object streams) barely shrink, so the default 32-byte buffer would double its
+        // way there, and each doubling holds the old AND the new array at once — a needless second
+        // full copy of a result that is already the largest thing in the heap.
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream(estimatedSize(entries));
         Set<String> used = new HashSet<>();
         try (ZipOutputStream zip = new ZipOutputStream(buffer)) {
             for (NamedBytes e : entries) {
@@ -30,6 +34,13 @@ public final class Zips {
             throw new UncheckedIOException("Failed to build ZIP", e);
         }
         return buffer.toByteArray();
+    }
+
+    /** Summed entry size + a small per-entry allowance for the ZIP headers (clamped to int). */
+    private static int estimatedSize(List<NamedBytes> entries) {
+        long total = 64;
+        for (NamedBytes e : entries) total += e.data().length + 128L;
+        return (int) Math.min(Integer.MAX_VALUE - 8L, total);
     }
 
     /**

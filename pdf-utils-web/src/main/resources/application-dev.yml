@@ -24,8 +24,10 @@ pdfconduit:
       max-in-flight-bytes: 4294967296
     processing:
       timeout-seconds: 600
+      max-total-output-bytes: 4GB
     pdf:
       max-pages: 100000
     render:
       max-dpi: 1200
       max-output-pixels: 500000000
+      max-total-output-pixels: 20000000000

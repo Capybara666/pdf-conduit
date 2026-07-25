@@ -102,6 +102,21 @@ public final class PdfToImageConverter {
                                             PageRange pages, float jpegQuality,
                                             boolean transparentBackground, boolean grayscale)
             throws PdfOperationException {
+        return executeBytes(pdf, format, dpi, pages, jpegQuality, transparentBackground, grayscale, null);
+    }
+
+    /**
+     * As {@link #executeBytes(byte[], ImageFormat, int, PageRange, float, boolean, boolean)}, but
+     * reporting the accumulated encoded size to {@code outputGuard} after every page. Every page's
+     * image is held in the heap until the caller is done, so a caller with a memory budget (the web
+     * backend) can abort a runaway render early instead of OOM-ing at the end. {@code null} ⇒
+     * unbounded (the desktop/CLI default).
+     */
+    public static List<byte[]> executeBytes(byte[] pdf, ImageFormat format, int dpi,
+                                            PageRange pages, float jpegQuality,
+                                            boolean transparentBackground, boolean grayscale,
+                                            com.pdfconduit.core.service.OutputSizeGuard outputGuard)
+            throws PdfOperationException {
         try (PDDocument doc = PdfLoader.load(pdf)) {
             int total = doc.getNumberOfPages();
             List<Integer> pageNums = pages.isAll()
@@ -111,10 +126,14 @@ public final class PdfToImageConverter {
             PDFRenderer renderer = new PDFRenderer(doc);
             int renderDpi = Math.min(MAX_RENDER_DPI, Math.max(1, dpi));
             List<byte[]> outputs = new ArrayList<>(pageNums.size());
+            long accumulated = 0;
             for (int pageNum : pageNums) {
                 BufferedImage img = render(renderer, pageNum - 1, renderDpi, format,
                     transparentBackground, grayscale);
-                outputs.add(encode(img, format, jpegQuality));
+                byte[] encoded = encode(img, format, jpegQuality);
+                outputs.add(encoded);
+                accumulated += encoded.length;
+                if (outputGuard != null) outputGuard.check(accumulated);
             }
             return outputs;
         } catch (IOException e) {

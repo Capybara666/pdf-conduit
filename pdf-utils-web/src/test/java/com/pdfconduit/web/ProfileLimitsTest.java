@@ -45,4 +45,13 @@ class ProfileLimitsTest {
         assertTrue(props.pdf().maxPages() > 3000, "pdf.max-pages relaxed above base 3000");
         assertTrue(props.render().maxDpi() > 300, "render.max-dpi relaxed above base 300");
     }
+
+    /** The aggregate output budget is a per-env preset too — relaxed locally, strict in public. */
+    @Test
+    void localProfile_relaxesAggregateOutputBudget() {
+        assertTrue(props.render().maxTotalOutputPixels() > 500_000_000L,
+            "render.max-total-output-pixels relaxed above the strict base 500 MP");
+        assertTrue(props.processing().maxTotalOutputBytes().toBytes() > 64L * 1024 * 1024,
+            "processing.max-total-output-bytes relaxed above the strict base 64 MB");
+    }
 }

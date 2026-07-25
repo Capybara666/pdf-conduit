@@ -55,7 +55,7 @@ public final class PdfSplitter {
      */
     public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages)
             throws PdfOperationException {
-        return separateBytes(pdf, pages, 1);
+        return separateBytes(pdf, pages, 1, null);
     }
 
     /**
@@ -67,15 +67,45 @@ public final class PdfSplitter {
      */
     public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages,
                                              int pagesPerChunk) throws PdfOperationException {
+        return separateBytes(pdf, pages, pagesPerChunk, null);
+    }
+
+    /**
+     * As {@link #separateBytes(byte[], com.pdfconduit.core.model.PageRange)}, but reporting the
+     * accumulated output size to {@code outputGuard} after every page so a caller with a memory
+     * budget (the web backend) can abort a pathological split early instead of holding thousands
+     * of single-page PDFs in the heap. {@code null} ⇒ unbounded (the desktop/CLI default).
+     */
+    public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages,
+                                             com.pdfconduit.core.service.OutputSizeGuard outputGuard)
+            throws PdfOperationException {
+        return separateBytes(pdf, pages, 1, outputGuard);
+    }
+
+    /**
+     * The full in-memory SEPARATE variant: the selected pages cut into consecutive groups of
+     * {@code pagesPerChunk} (see {@link #separateBytes(byte[], com.pdfconduit.core.model.PageRange, int)}),
+     * each group → its own PDF's bytes, with the accumulated output size reported to
+     * {@code outputGuard} after every produced part ({@code null} ⇒ unbounded, the desktop/CLI
+     * default) so a memory-budgeted caller can abort a pathological split early.
+     */
+    public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages,
+                                             int pagesPerChunk,
+                                             com.pdfconduit.core.service.OutputSizeGuard outputGuard)
+            throws PdfOperationException {
         requireChunk(pagesPerChunk);
         try (PDDocument src = PdfLoader.load(pdf)) {
             List<Integer> pageNums = pages.isAll() ? allPages(src.getNumberOfPages()) : pages.pageNumbers();
             List<List<Integer>> chunks = chunk(pageNums, pagesPerChunk);
             List<byte[]> outputs = new ArrayList<>(chunks.size());
+            long accumulated = 0;
             for (List<Integer> group : chunks) {
                 try (PDDocument part = combineDoc(src, group)) {
-                    outputs.add(PdfLoader.toBytes(part));
+                    byte[] bytes = PdfLoader.toBytes(part);
+                    outputs.add(bytes);
+                    accumulated += bytes.length;
                 }
+                if (outputGuard != null) outputGuard.check(accumulated);
             }
             return outputs;
         } catch (IOException e) {
