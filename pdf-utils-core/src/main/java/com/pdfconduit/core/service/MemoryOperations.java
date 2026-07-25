@@ -1,6 +1,7 @@
 package com.pdfconduit.core.service;
 
 import com.pdfconduit.core.convert.DocumentConverter;
+import com.pdfconduit.core.exception.BatchFatal;
 import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.exception.PdfUnrecoverableException;
@@ -102,9 +103,11 @@ public final class MemoryOperations {
      * <ul>
      *   <li>if <em>every</em> input fails there is nothing to return, so the first failure is
      *       thrown (named) — an empty archive would be a worse answer than an error;</li>
-     *   <li>only {@link PdfOperationException} is tolerated. An
-     *       {@link InvalidPageRangeException} (the caller's own parameter is wrong, not the file)
-     *       and any runtime failure propagate and fail the whole request, as before;</li>
+     *   <li>only a <em>per-file</em> {@link PdfOperationException} is tolerated. An
+     *       {@link InvalidPageRangeException} (the caller's own parameter is wrong, not the file),
+     *       anything marked {@link BatchFatal} (a per-request ceiling: the batch as a whole is the
+     *       problem, so a partial ZIP would be the wrong answer) and any runtime failure propagate
+     *       and fail the whole request, as before;</li>
      *   <li>REDUCE operations (Merge) must never come through here — a merge missing an input is a
      *       different document, not a partial success.</li>
      * </ul>
@@ -118,6 +121,9 @@ public final class MemoryOperations {
             try {
                 outputs.addAll(work.run(in));
             } catch (PdfOperationException e) {
+                // A per-request ceiling is not this file's fault and must not be softened into one
+                // entry of X-Batch-Failures: fail the request, as the whole-batch guard intends.
+                if (e instanceof BatchFatal) throw e;
                 if (first == null) first = named(in.filename(), e);
                 failures.add(new BatchFailure(in.filename(), messageOf(e)));
             }

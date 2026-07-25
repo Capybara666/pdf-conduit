@@ -1,5 +1,6 @@
 package com.pdfconduit.web.error;
 
+import com.pdfconduit.core.exception.BatchFatal;
 import com.pdfconduit.core.exception.PdfOperationException;
 
 /**
@@ -15,8 +16,12 @@ import com.pdfconduit.core.exception.PdfOperationException;
  * callbacks and the existing {@code throws} signatures unchanged, while its own handler in
  * {@link com.pdfconduit.web.error.GlobalExceptionHandler} (a more specific match) wins over the
  * generic {@code operation_failed} mapping.
+ *
+ * <p>{@link BatchFatal} because the ceiling is on the <em>request</em>, not on one of its files: a
+ * partial-tolerant MAP batch ({@code MemoryOperations.mapPartial}) must fail outright rather than
+ * return the files rendered so far and blame the one that happened to tip the budget over.
  */
-public class OutputTooLargeException extends PdfOperationException {
+public class OutputTooLargeException extends PdfOperationException implements BatchFatal {
 
     public OutputTooLargeException(String message) {
         super(message);

@@ -39,13 +39,14 @@ import com.pdfconduit.core.operations.PdfWatermarker;
 import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.core.service.OperationType;
+import com.pdfconduit.core.util.FileTypeDetector;
 import com.pdfconduit.core.util.LoadedPdf;
 import com.pdfconduit.core.util.PageOrderParser;
 import com.pdfconduit.core.util.PageRangeParser;
 import com.pdfconduit.core.util.PdfLoader;
-import com.pdfconduit.core.operations.PdfRedactor;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OcrDisabledException;
+import com.pdfconduit.web.error.OutputTooLargeException;
 import com.pdfconduit.web.guard.OcrGuard;
 import com.pdfconduit.web.guard.OfficeGuard;
 import com.pdfconduit.web.guard.OutputBudget;
@@ -147,9 +148,14 @@ public class WebOperations {
     /**
      * As {@link #extractSeparate(NamedBytes, String, int)} but sharing one request-wide byte budget,
      * so a batch is bounded by what the whole response will carry, not by each file in isolation.
+     *
+     * <p>Public because a partial-tolerant batch runs one file per call (see
+     * {@code MemoryOperations.mapPartial}): the controller owns the request's single
+     * {@link #newOutputTally() tally} and hands the same one to every file, which is the only thing
+     * that keeps the ceiling per-request rather than per-file.
      */
-    private List<NamedBytes> extractSeparate(NamedBytes in, String pagesExpr, int pagesPerChunk,
-                                             OutputBudget.Tally tally)
+    public List<NamedBytes> extractSeparate(NamedBytes in, String pagesExpr, int pagesPerChunk,
+                                            OutputBudget.Tally tally)
             throws PdfOperationException, InvalidPageRangeException {
         byte[] pdf = routeToPdf(in);
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
@@ -594,12 +600,33 @@ public class WebOperations {
                                      String pagesExpr, float jpegQuality,
                                      boolean transparentBackground, boolean grayscale)
             throws PdfOperationException, InvalidPageRangeException {
-        // Route once (PDF uploads pass through unchanged — no extra copy) and keep the routed bytes
-        // so the guard pass and the render pass agree on exactly the same document.
-        List<byte[]> pdfs = new ArrayList<>(inputs.size());
-        for (NamedBytes in : inputs) pdfs.add(routeToPdf(in));
+        return toImages(inputs, format, dpi, pagesExpr, jpegQuality, transparentBackground,
+            grayscale, outputBudget.tally());
+    }
 
-        OutputBudget.Tally tally = outputBudget.tally();
+    /**
+     * As {@link #toImages(List, ImageFormat, int, String, float, boolean, boolean)} but against a
+     * caller-supplied request tally, so a partial-tolerant batch — which runs one file per call —
+     * still accumulates its result bytes across the whole request instead of restarting the budget
+     * for every file.
+     *
+     * <p>An input {@link #prepareRender} has already routed carries PDF bytes and is used as-is, so
+     * an office document is never converted twice; anything else is routed here exactly as before
+     * (including a file that failed the pre-flight, which re-fails here with its own message).
+     */
+    public List<NamedBytes> toImages(List<NamedBytes> inputs, ImageFormat format, int dpi,
+                                     String pagesExpr, float jpegQuality,
+                                     boolean transparentBackground, boolean grayscale,
+                                     OutputBudget.Tally tally)
+            throws PdfOperationException, InvalidPageRangeException {
+        // Route once (PDF uploads pass through unchanged — no extra copy) and keep the routed bytes
+        // so the guard pass and the render pass agree on exactly the same document. Routing keys off
+        // the file NAME, so already-routed bytes are recognised by their content instead.
+        List<byte[]> pdfs = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) {
+            pdfs.add(FileTypeDetector.isPdf(in.data()) ? in.data() : routeToPdf(in));
+        }
+
         List<PageRange> ranges = new ArrayList<>(inputs.size());
         for (byte[] pdf : pdfs) {
             try (LoadedPdf lp = LoadedPdf.open(pdf)) {
@@ -621,6 +648,53 @@ public class WebOperations {
                 format.extension()));
         }
         return out;
+    }
+
+    /**
+     * A fresh output tally for ONE request. A partial-tolerant batch runs each file through its own
+     * call, so the request's ceiling only stays a request ceiling if the caller creates the tally
+     * once here and passes the same one to every file.
+     */
+    public OutputBudget.Tally newOutputTally() {
+        return outputBudget.tally();
+    }
+
+    /**
+     * Whole-request pre-flight for a partial-tolerant batch render: routes every input to PDF once,
+     * guards it (page count, per-page render ceiling) and sums the pixel area the request will
+     * really rasterise into ONE tally — so a batch whose <em>total</em> is over the ceiling is
+     * rejected <b>before a single page is rendered</b>, which is precisely what the per-page
+     * ceilings cannot do.
+     *
+     * <p>Returns the routed uploads under their original filenames (the output names are built from
+     * the stem, so nothing is renamed), which is what lets the per-file pass that follows re-route
+     * nothing: an office document is converted exactly once, not twice. An input that cannot be
+     * routed or read is returned untouched and simply not counted — the per-file pass reproduces
+     * its failure and names it in {@code X-Batch-Failures}, so a per-file defect is never escalated
+     * into a whole-request error here. A blown budget is the opposite: it describes the request, so
+     * it propagates (422).
+     */
+    public List<NamedBytes> prepareRender(List<NamedBytes> inputs, int dpi, String pagesExpr)
+            throws PdfOperationException, InvalidPageRangeException {
+        OutputBudget.Tally preflight = outputBudget.tally();
+        List<NamedBytes> routed = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) {
+            try {
+                byte[] pdf = routeToPdf(in);
+                try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+                    guardPageCount(lp);
+                    preflight.addPixels(guardRender(lp, dpi, rendered(range(pagesExpr, lp))));
+                } catch (IOException e) {
+                    throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+                }
+                routed.add(new NamedBytes(in.filename(), pdf));
+            } catch (OutputTooLargeException e) {
+                throw e;                       // the SUM is too big — not this file's fault
+            } catch (PdfOperationException e) {
+                routed.add(in);                // left to the per-file pass, which names it
+            }
+        }
+        return routed;
     }
 
     // ---------------------------------------------------------------- TO-TEXT
