@@ -48,6 +48,7 @@ import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OcrDisabledException;
 import com.pdfconduit.web.guard.OcrGuard;
 import com.pdfconduit.web.guard.OfficeGuard;
+import com.pdfconduit.web.guard.OutputBudget;
 import com.pdfconduit.web.plan.PlanLimits;
 import com.pdfconduit.web.plan.PlanLimitsResolver;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -60,6 +61,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.IntPredicate;
 
 /**
  * The bridge from HTTP to {@code pdf-utils-core}, entirely in memory: one method per operation
@@ -77,16 +79,18 @@ public class WebOperations {
 
     private final OfficeGuard officeGuard;
     private final OcrGuard ocrGuard;
+    private final OutputBudget outputBudget;
     private final int maxPages;
     private final int maxDpi;
     private final long maxOutputPixels;
     private final boolean ocrEnabled;
     private final String ocrLanguages;
 
-    public WebOperations(OfficeGuard officeGuard, OcrGuard ocrGuard,
+    public WebOperations(OfficeGuard officeGuard, OcrGuard ocrGuard, OutputBudget outputBudget,
                          PlanLimitsResolver planLimits, WebProperties props) {
         this.officeGuard = officeGuard;
         this.ocrGuard = ocrGuard;
+        this.outputBudget = outputBudget;
         // Page-count and render ceilings are read from the resolved plan (today the constant FREE
         // plan built from WebProperties, so identical values); office availability stays a
         // system-level WebProperties toggle. The service guards by value with no request in scope,
@@ -137,10 +141,24 @@ public class WebOperations {
      */
     public List<NamedBytes> extractSeparate(NamedBytes in, String pagesExpr, int pagesPerChunk)
             throws PdfOperationException, InvalidPageRangeException {
+        return extractSeparate(in, pagesExpr, pagesPerChunk, outputBudget.tally());
+    }
+
+    /**
+     * As {@link #extractSeparate(NamedBytes, String, int)} but sharing one request-wide byte budget,
+     * so a batch is bounded by what the whole response will carry, not by each file in isolation.
+     */
+    private List<NamedBytes> extractSeparate(NamedBytes in, String pagesExpr, int pagesPerChunk,
+                                             OutputBudget.Tally tally)
+            throws PdfOperationException, InvalidPageRangeException {
         byte[] pdf = routeToPdf(in);
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
-            List<byte[]> pages = PdfSplitter.separateBytes(pdf, range(pagesExpr, lp), pagesPerChunk);
+            // Split is multi-output: every part is its own PDF held in the heap, so the run aborts
+            // (422) the moment the request's accumulated result outgrows the budget.
+            List<byte[]> pages = PdfSplitter.separateBytes(pdf, range(pagesExpr, lp), pagesPerChunk,
+                tally.guard());
+            tally.commit(pages);
             return nameMulti(OperationType.EXTRACT, in.filename(), pages, "pdf");
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
@@ -176,8 +194,11 @@ public class WebOperations {
     public List<NamedBytes> extractSeparate(List<NamedBytes> inputs, String pagesExpr,
                                             int pagesPerChunk)
             throws PdfOperationException, InvalidPageRangeException {
+        // One tally for the whole request: the ceiling is on everything the response will carry,
+        // not on each file in isolation.
+        OutputBudget.Tally tally = outputBudget.tally();
         List<NamedBytes> out = new ArrayList<>();
-        for (NamedBytes in : inputs) out.addAll(extractSeparate(in, pagesExpr, pagesPerChunk));
+        for (NamedBytes in : inputs) out.addAll(extractSeparate(in, pagesExpr, pagesPerChunk, tally));
         return out;
     }
 
@@ -418,11 +439,20 @@ public class WebOperations {
             throws PdfOperationException {
         requireRegions(regions);
         byte[] pdf = routeToPdf(in);
+        // Only the pages carrying a region are rasterised — mirror PdfRedactor's grouping so both
+        // the render budget below and the re-OCR pass below count exactly the pages that really get
+        // rendered. (The core now refuses a degenerate box outright, so this filter is belt and
+        // braces; a zero-area region can never reach the redactor as a silent no-op.)
+        Set<Integer> rasterised = new HashSet<>();
+        for (RedactRegion r : regions) {
+            if (r.width() > 0 && r.height() > 0) rasterised.add(r.pageIndex());
+        }
         RedactBytesResult redacted;
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
             // dpi <= 0 means "core default" (PdfRedactor.DEFAULT_DPI); guard against the effective value.
-            guardRender(lp, dpi > 0 ? dpi : PdfRedactor.DEFAULT_DPI);
+            outputBudget.checkPixels(
+                guardRender(lp, dpi > 0 ? dpi : PdfRedactor.DEFAULT_DPI, rasterised::contains));
             redacted = PdfRedactor.executeBytes(pdf, regions, dpi);
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
@@ -435,14 +465,9 @@ public class WebOperations {
         }
         byte[] out = redacted.data();
         if (reOcr && ocrEnabled && PdfOcr.available()) {
-            // Only the rasterised pages lost their text layer — mirror PdfRedactor's grouping
-            // (every surviving region is valid and painted) so OCR touches exactly those pages. The
-            // untouched pages keep their original, superior text layer instead of gaining a
+            // Only the rasterised pages lost their text layer, so OCR touches exactly those pages.
+            // The untouched pages keep their original, superior text layer instead of gaining a
             // duplicate invisible one, and each skipped page saves a full tesseract run.
-            Set<Integer> rasterised = new HashSet<>();
-            for (RedactRegion r : regions) {
-                if (r.width() > 0 && r.height() > 0) rasterised.add(r.pageIndex());
-            }
             out = reOcr(out, rasterised);
         }
         return new RedactOutcome(
@@ -471,7 +496,7 @@ public class WebOperations {
         int ocrDpi = maxDpi > 0 ? Math.min(PdfOcr.DEFAULT_DPI, maxDpi) : PdfOcr.DEFAULT_DPI;
         try (LoadedPdf lp = LoadedPdf.open(redacted)) {
             guardPageCount(lp);
-            guardRender(lp, ocrDpi);
+            outputBudget.checkPixels(guardRender(lp, ocrDpi, pages::contains));
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read redacted PDF: " + e.getMessage(), e);
         }
@@ -517,7 +542,8 @@ public class WebOperations {
         int ocrDpi = maxDpi > 0 ? Math.min(PdfOcr.DEFAULT_DPI, maxDpi) : PdfOcr.DEFAULT_DPI;
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
-            guardRender(lp, ocrDpi);
+            // OCR renders EVERY page, so the whole document counts against the render budget.
+            outputBudget.checkPixels(guardRender(lp, ocrDpi));
         } catch (IOException e) {
             throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
         }
@@ -537,31 +563,52 @@ public class WebOperations {
                                      float jpegQuality, boolean transparentBackground,
                                      boolean grayscale)
             throws PdfOperationException, InvalidPageRangeException {
-        byte[] pdf = routeToPdf(in);
-        try (LoadedPdf lp = LoadedPdf.open(pdf)) {
-            guardPageCount(lp);
-            guardRender(lp, dpi);
-            List<byte[]> images = PdfToImageConverter.executeBytes(pdf, format, dpi,
-                range(pagesExpr, lp), jpegQuality, transparentBackground, grayscale);
-            return nameMulti(OperationType.PDF_TO_IMAGES, in.filename(), images, format.extension());
-        } catch (IOException e) {
-            throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
-        }
+        return toImages(List.of(in), format, dpi, pagesExpr, jpegQuality,
+            transparentBackground, grayscale);
     }
 
     /**
      * Render selected pages of every input to images, concatenated. Each input's page images are
      * named from that input's filename ({@link #nameMulti}), so results from different source files
      * stay distinct; any residual name collision is de-duplicated when zipped.
+     *
+     * <p>Runs in two passes on purpose. The first pass guards every file (page count, per-page
+     * render ceiling) and sums the pixel area of the pages that will really be rendered into ONE
+     * per-request {@link OutputBudget} tally, so a request whose <em>total</em> is too big is
+     * rejected before a single page is rasterised — {@code pages × files} is exactly what the
+     * per-page ceilings do not bound. The second pass renders under a running byte ceiling, so
+     * even a request that passes the pixel estimate aborts the moment its accumulated images
+     * outgrow the budget, rather than OOM-ing on the final zip.
      */
     public List<NamedBytes> toImages(List<NamedBytes> inputs, ImageFormat format, int dpi,
                                      String pagesExpr, float jpegQuality,
                                      boolean transparentBackground, boolean grayscale)
             throws PdfOperationException, InvalidPageRangeException {
+        // Route once (PDF uploads pass through unchanged — no extra copy) and keep the routed bytes
+        // so the guard pass and the render pass agree on exactly the same document.
+        List<byte[]> pdfs = new ArrayList<>(inputs.size());
+        for (NamedBytes in : inputs) pdfs.add(routeToPdf(in));
+
+        OutputBudget.Tally tally = outputBudget.tally();
+        List<PageRange> ranges = new ArrayList<>(inputs.size());
+        for (byte[] pdf : pdfs) {
+            try (LoadedPdf lp = LoadedPdf.open(pdf)) {
+                guardPageCount(lp);
+                PageRange pages = range(pagesExpr, lp);
+                ranges.add(pages);
+                tally.addPixels(guardRender(lp, dpi, rendered(pages)));
+            } catch (IOException e) {
+                throw new PdfOperationException("Cannot read PDF: " + e.getMessage(), e);
+            }
+        }
+
         List<NamedBytes> out = new ArrayList<>();
-        for (NamedBytes in : inputs) {
-            out.addAll(toImages(in, format, dpi, pagesExpr, jpegQuality,
-                transparentBackground, grayscale));
+        for (int i = 0; i < pdfs.size(); i++) {
+            List<byte[]> images = PdfToImageConverter.executeBytes(pdfs.get(i), format, dpi,
+                ranges.get(i), jpegQuality, transparentBackground, grayscale, tally.guard());
+            tally.commit(images);
+            out.addAll(nameMulti(OperationType.PDF_TO_IMAGES, inputs.get(i).filename(), images,
+                format.extension()));
         }
         return out;
     }
@@ -658,12 +705,14 @@ public class WebOperations {
             guardRender(lp, PdfRedactor.DEFAULT_DPI);
             PiiScanResult scan = PiiScanner.scanBytes(pdf);
             List<RedactRegion> regions = new ArrayList<>();
+            Set<Integer> rasterised = new HashSet<>();
             for (PiiFinding f : scan.findings()) {
                 if (categories != null && !categories.isEmpty() && !categories.contains(f.category())) {
                     continue;
                 }
                 for (PiiRegion r : f.regions()) {
                     regions.add(new RedactRegion(r.page(), r.x(), r.y(), r.width(), r.height()));
+                    if (r.width() > 0 && r.height() > 0) rasterised.add(r.page());
                 }
             }
             if (regions.isEmpty()) {
@@ -672,6 +721,10 @@ public class WebOperations {
                     + "religion) carry no coordinates, so there is no box to black out — "
                     + "use Redact and draw the areas yourself.");
             }
+            // The findings decide which pages get rasterised, so the render budget can only be
+            // settled here — still before PdfRedactor renders anything.
+            outputBudget.checkPixels(
+                guardRender(lp, PdfRedactor.DEFAULT_DPI, rasterised::contains));
             RedactBytesResult redacted = PdfRedactor.executeBytes(pdf, regions, 0);
             if (redacted.redactedRegions() < regions.size()) {
                 throw new PdfOperationException("Only " + redacted.redactedRegions() + " of "
@@ -694,7 +747,8 @@ public class WebOperations {
         byte[] pdf = routeToPdf(in);
         try (LoadedPdf lp = LoadedPdf.open(pdf)) {
             guardPageCount(lp);
-            guardRender(lp, dpi);
+            // Exactly one page is rendered, so only that page counts against the render budget.
+            outputBudget.checkPixels(guardRender(lp, dpi, i -> i == pageIndex));
             PageRange page = PageRangeParser.parse(String.valueOf(pageIndex + 1), lp.pageCount());
             List<byte[]> images = PdfToImageConverter.executeBytes(pdf, ImageFormat.PNG, dpi, page, 1f);
             return images.get(0);
@@ -737,28 +791,57 @@ public class WebOperations {
     }
 
     /**
-     * Raster-render guard (render / to-images / redact): reject a DPI above the configured ceiling
-     * (→ 400) and any page whose rendered pixel area would exceed {@code maxOutputPixels} (→ 422),
-     * BEFORE any page is rasterised. Together these bound the memory a single render can allocate,
-     * so a huge {@code dpi} or an enormous page cannot OOM the JVM. {@code dpi} is the effective
-     * (already-defaulted, positive) value.
+     * Raster-render guard (render / to-images / redact / ocr) for a document whose every page will
+     * be rasterised. See {@link #guardRender(LoadedPdf, int, IntPredicate)}.
      */
-    private void guardRender(LoadedPdf lp, int dpi) throws PdfOperationException {
+    private long guardRender(LoadedPdf lp, int dpi) throws PdfOperationException {
+        return guardRender(lp, dpi, null);
+    }
+
+    /**
+     * Raster-render guard: reject a DPI above the configured ceiling (→ 400) and any page whose
+     * rendered pixel area would exceed the per-page {@code maxOutputPixels} (→ 422), BEFORE any
+     * page is rasterised. The per-page check still covers <em>every</em> page of the document,
+     * unchanged.
+     *
+     * <p>Per-page ceilings alone do not bound {@code pages × files}: the summed area of the pages
+     * this call will actually render is returned so the caller can accumulate it into the
+     * per-request {@link OutputBudget} — the guard that stops a legal-looking 800-page 300 DPI
+     * render from allocating more than the whole heap.
+     *
+     * @param rendered 0-based page indices that will really be rasterised; {@code null} ⇒ all pages
+     * @return summed pixel area of the pages that will be rendered
+     */
+    private long guardRender(LoadedPdf lp, int dpi, IntPredicate rendered)
+            throws PdfOperationException {
         if (maxDpi > 0 && dpi > maxDpi) {
             throw new IllegalArgumentException(
                 "Requested DPI " + dpi + " exceeds the maximum allowed (" + maxDpi + ").");
         }
-        if (maxOutputPixels <= 0) return;
+        long total = 0;
+        int index = 0;
         for (PDPage page : lp.document().getPages()) {
             PDRectangle box = page.getCropBox();
             double widthPx = box.getWidth() / 72.0 * dpi;
             double heightPx = box.getHeight() / 72.0 * dpi;
-            if (widthPx * heightPx > maxOutputPixels) {
+            double area = widthPx * heightPx;
+            if (maxOutputPixels > 0 && area > maxOutputPixels) {
                 throw new PdfOperationException(
                     "Rendering this document at " + dpi + " DPI would exceed the output-size "
                     + "limit; choose a lower DPI.");
             }
+            if (rendered == null || rendered.test(index)) total += (long) area;
+            index++;
         }
+        return total;
+    }
+
+    /** The 0-based pages a {@link PageRange} selects, as a predicate ({@code null} ⇒ all pages). */
+    private static IntPredicate rendered(PageRange pages) {
+        if (pages == null || pages.isAll()) return null;
+        Set<Integer> selected = new HashSet<>();
+        for (int pageNum : pages.pageNumbers()) selected.add(pageNum - 1);
+        return selected::contains;
     }
 
     /** PDF-bomb guard: reject a PDF whose page count exceeds the configured ceiling (→ 422). */
