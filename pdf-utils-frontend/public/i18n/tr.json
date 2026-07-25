@@ -80,7 +80,7 @@
       "description": "Sayfaları yeniden sıralayın, tersine çevirin veya çoğaltın."
     },
     "nup": {
-      "label": "Yaprak başına çok sayfa",
+      "label": "Tek yaprakta birden çok sayfa",
       "description": "Bir yaprağa birden fazla sayfa yerleştirin veya bir kitapçık katlayın."
     },
     "compress": {
@@ -192,7 +192,7 @@
     },
     "trust": {
       "aria": "Neden PDF Conduit",
-      "memoryTitle": "Asla saklanmaz",
+      "memoryTitle": "Dosyalarınızı asla saklamayız",
       "memoryDesc": "Dosyalarınız işlenir ve ardından silinir. Asla diske yazılmaz veya sunucularımızda tutulmaz.",
       "accountTitle": "Hesap gerekmez",
       "accountDesc": "Doğrudan başlayın. E-posta yok, parola yok, takip yok.",
@@ -668,7 +668,7 @@
       "description": "Belge bilgilerini görüntüleyin, düzenleyin veya kaldırın.",
       "hint": "PDF dosyaları. Aynı değişiklikler her dosyaya uygulanır (birden fazlası ZIP olarak döner).",
       "batchNote": "Aynı alanlar her dosyaya uygulanır. Önizleme yalnızca ilk dosyayı okur.",
-      "readCurrent": "Mevcut olanı oku",
+      "readCurrent": "Mevcut değerleri oku",
       "reading": "Okunuyor…",
       "titleField": "Başlık",
       "author": "Yazar",

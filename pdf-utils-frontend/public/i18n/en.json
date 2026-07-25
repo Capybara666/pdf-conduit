@@ -80,7 +80,7 @@
       "description": "Reorder, reverse or duplicate pages."
     },
     "nup": {
-      "label": "Pages per sheet",
+      "label": "Several pages on a sheet",
       "description": "Place several pages per sheet, or fold a booklet."
     },
     "compress": {
@@ -192,7 +192,7 @@
     },
     "trust": {
       "aria": "Why PDF Conduit",
-      "memoryTitle": "Never stored",
+      "memoryTitle": "We never store your files",
       "memoryDesc": "Your files are processed and then discarded. Never saved to disk or kept on our servers.",
       "accountTitle": "No account needed",
       "accountDesc": "Jump straight in. No email, no password, no tracking wall.",
@@ -668,7 +668,7 @@
       "description": "View, edit or strip document info.",
       "hint": "PDF files. The same changes apply to each (several come back as a ZIP).",
       "batchNote": "The same fields are applied to every file. The preview reads the first file only.",
-      "readCurrent": "Read current",
+      "readCurrent": "Read current values",
       "reading": "Reading…",
       "titleField": "Title",
       "author": "Author",

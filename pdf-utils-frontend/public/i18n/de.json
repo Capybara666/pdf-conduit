@@ -264,7 +264,7 @@
   "onboarding": {
     "welcome": {
       "title": "Willkommen bei PDF Conduit",
-      "message": "Kostenlose PDF-Werkzeuge direkt in Ihrem Browser – Ihre Dateien werden sofort verarbeitet und niemals gespeichert. Neu hier? Am einfachsten starten Sie mit dem geführten Assistenten.",
+      "message": "Kostenlose PDF-Werkzeuge direkt in Ihrem Browser. Ihre Dateien werden sofort verarbeitet und niemals gespeichert. Neu hier? Am einfachsten starten Sie mit dem geführten Assistenten.",
       "cta": "Geführten Assistenten ausprobieren",
       "secondary": "Alle Werkzeuge ansehen",
       "dismiss": "Schließen"

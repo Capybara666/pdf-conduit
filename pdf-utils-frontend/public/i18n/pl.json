@@ -668,7 +668,7 @@
       "description": "Wyświetl, edytuj lub usuń metadane dokumentu.",
       "hint": "Pliki PDF. Te same zmiany trafią do każdego (kilka pobierzesz jako ZIP).",
       "batchNote": "Te same pola zostaną zastosowane do każdego pliku. Podgląd pokazuje tylko pierwszy.",
-      "readCurrent": "Wczytaj obecne",
+      "readCurrent": "Wczytaj obecne wartości",
       "reading": "Wczytywanie…",
       "titleField": "Tytuł",
       "author": "Autor",

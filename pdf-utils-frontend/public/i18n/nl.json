@@ -668,7 +668,7 @@
       "description": "Bekijk, bewerk of verwijder documentgegevens.",
       "hint": "PDF-bestanden. Dezelfde wijzigingen gelden voor elk bestand (meerdere komen terug als ZIP).",
       "batchNote": "Dezelfde velden worden op elk bestand toegepast. Het voorbeeld leest alleen het eerste bestand.",
-      "readCurrent": "Huidige lezen",
+      "readCurrent": "Huidige waarden lezen",
       "reading": "Lezen…",
       "titleField": "Titel",
       "author": "Auteur",

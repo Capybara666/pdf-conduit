@@ -668,7 +668,7 @@
       "description": "Veja, edite ou remova as informações do documento.",
       "hint": "Ficheiros PDF. As mesmas alterações aplicam-se a cada um (vários são devolvidos como ZIP).",
       "batchNote": "Os mesmos campos são aplicados a cada ficheiro. A pré-visualização lê apenas o primeiro ficheiro.",
-      "readCurrent": "Ler atuais",
+      "readCurrent": "Ler os valores atuais",
       "reading": "A ler…",
       "titleField": "Título",
       "author": "Autor",

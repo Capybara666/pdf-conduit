@@ -264,7 +264,7 @@
   "onboarding": {
     "welcome": {
       "title": "Te damos la bienvenida a PDF Conduit",
-      "message": "Herramientas PDF gratuitas que funcionan directamente en tu navegador: procesamos tus archivos al instante y nunca los guardamos. ¿Es tu primera vez? El Asistente guiado es la forma más fácil de empezar.",
+      "message": "Herramientas PDF gratuitas que funcionan directamente en tu navegador. Procesamos tus archivos al instante y nunca los guardamos. ¿Es tu primera vez? El Asistente guiado es la forma más fácil de empezar.",
       "cta": "Probar el Asistente guiado",
       "secondary": "Explorar todas las herramientas",
       "dismiss": "Descartar"
@@ -668,7 +668,7 @@
       "description": "Consulta, edita o elimina la información del documento.",
       "hint": "Archivos PDF: los mismos cambios se aplican a cada uno (si son varios, se devuelven como ZIP).",
       "batchNote": "Los mismos campos se aplican a todos los archivos. La vista previa solo lee el primero.",
-      "readCurrent": "Leer actuales",
+      "readCurrent": "Leer los valores actuales",
       "reading": "Leyendo…",
       "titleField": "Título",
       "author": "Autor",
