@@ -572,6 +572,10 @@ export interface components {
             officeEnabled?: boolean;
             ocrEnabled?: boolean;
             ocrLanguages?: string[];
+            /** Format: int64 */
+            maxFileSizeBytes?: number;
+            /** Format: int32 */
+            maxFilesPerRequest?: number;
         };
         ApiError: {
             code?: string;
