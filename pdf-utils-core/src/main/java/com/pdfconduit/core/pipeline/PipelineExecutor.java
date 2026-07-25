@@ -572,7 +572,19 @@ public final class PipelineExecutor {
         return terminalOutputs;
     }
 
-    /** Reads a source node's uploaded bytes into MemDocs, detecting PDF vs image by magic bytes. */
+    /**
+     * Reads a source node's uploaded bytes into MemDocs, detecting image vs PDF by magic bytes.
+     *
+     * <p>Images are classified first, then PDFs — and PDFs through
+     * {@link com.pdfconduit.core.util.FileTypeDetector#looksLikePdf(byte[]) looksLikePdf}, not the
+     * strict offset-0 header test. A PDF whose header sits behind junk is precisely the input the
+     * REPAIR node exists for, so a source gate that demands {@code %PDF} at offset 0 would refuse
+     * one of the few classes of file the operation is for, before any node could see it (the desktop
+     * pipeline never had this problem: it classifies by extension). Everything else
+     * is unchanged — an image, an office document or random bytes is still classified as what it is
+     * and still fails here with the same message, so nothing unrecognisable reaches PDFBox as a
+     * "PDF".
+     */
     private static List<MemDoc> sourceDocs(PipelineNode n,
                                            java.util.function.Function<PipelineNode, List<byte[]>> resolver,
                                            PipelineGuard guard)
@@ -583,16 +595,25 @@ public final class PipelineExecutor {
         int i = 1;
         for (byte[] b : raw) {
             String baseName = "file" + i++;
-            if (com.pdfconduit.core.util.FileTypeDetector.isPdf(b)) {
+            if (com.pdfconduit.core.util.FileTypeDetector.isSupportedImage(b)) {
+                docs.add(new MemDoc(b, DocType.IMAGE, baseName, "img"));
+            } else if (com.pdfconduit.core.util.FileTypeDetector.looksLikePdf(b)) {
                 // Host ceilings (e.g. the web PDF-bomb page cap) apply to everything entering here.
                 try {
                     guardDocument(guard, b);
                 } catch (PdfOperationException e) {
-                    throw new PipelineException("Source " + baseName + ": " + e.getMessage(), e);
+                    // …with one exception: an ENCRYPTED upload cannot be opened, so the guard has
+                    // no page count to check and refusing here would reject the very input an
+                    // UNLOCK node exists for — with a message telling the user to unlock it first.
+                    // Let it through; the only node that can open it is UNLOCK, which re-applies
+                    // the identical ceiling to the decrypted result (see runMapMem's UNLOCK case),
+                    // and every other node still fails with this same clear message from its own
+                    // load. No ceiling is lost, and none is applied to bytes nobody can read.
+                    if (!isPasswordProtected(e)) {
+                        throw new PipelineException("Source " + baseName + ": " + e.getMessage(), e);
+                    }
                 }
                 docs.add(new MemDoc(b, DocType.PDF, baseName, "pdf"));
-            } else if (com.pdfconduit.core.util.FileTypeDetector.isSupportedImage(b)) {
-                docs.add(new MemDoc(b, DocType.IMAGE, baseName, "img"));
             } else {
                 throw new PipelineException(
                     "Source " + baseName + ": unsupported data (expected a PDF or image; "
@@ -600,6 +621,12 @@ public final class PipelineExecutor {
             }
         }
         return docs;
+    }
+
+    /** True when a failed load failed because the document is encrypted, not because it is broken. */
+    private static boolean isPasswordProtected(PdfOperationException e) {
+        return e.getCause() instanceof
+            org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
     }
 
     /** Names a node's produced outputs, disambiguating duplicate stems. */
