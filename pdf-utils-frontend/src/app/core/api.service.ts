@@ -395,13 +395,34 @@ export class ApiService {
       const message = typeof json.error === 'string' ? json.error : `Request failed (${status})`;
       return new ApiError(code, message, status, retryAfter);
     } catch {
-      return new ApiError(
-        this.codeForStatus(status),
-        text || `Request failed (${status})`,
-        status,
-        retryAfter,
-      );
+      // Not our `{code,error}` JSON. It is most likely a reverse-proxy error
+      // page (nginx answers 502/504 with a full HTML document), so only adopt
+      // the body when it still reads like a short plain-text server message —
+      // otherwise hand back an empty detail and let the localised `detailKey`
+      // in `error-copy.ts` provide the copy the user actually sees.
+      return new ApiError(this.codeForStatus(status), this.serverDetail(text), status, retryAfter);
     }
+  }
+
+  /**
+   * Longest non-JSON error body we will show verbatim. A genuine backend
+   * message is one short sentence; anything longer is infrastructure output,
+   * not copy meant for a user.
+   */
+  private static readonly MAX_DETAIL_CHARS = 200;
+
+  /**
+   * Sanitise a non-JSON error body into a detail line, or `''` when it is not
+   * fit to show (HTML/XML error page, or an implausibly long blob). `''` is the
+   * documented "server gave no message" value: every consumer of
+   * `ErrorCopyKeys.detailText` falls back to `detailKey` on a falsy value.
+   */
+  private serverDetail(text: string): string {
+    if (!text || /^\s*</.test(text)) {
+      return '';
+    }
+    const trimmed = text.trim();
+    return trimmed.length > 0 && trimmed.length <= ApiService.MAX_DETAIL_CHARS ? trimmed : '';
   }
 
   private retryAfterFrom(headers: HttpHeaders): number | undefined {
@@ -441,12 +462,23 @@ export class ApiService {
     return error;
   }
 
+  /**
+   * Map an HTTP status to an `error-copy.ts` builder key.
+   *
+   * The 408/502/504 rows matter in production even though the backend never
+   * emits them: nginx does. A redeploy (backend restarting) answers 502 and an
+   * operation past `proxy_read_timeout` answers 504 — both with an HTML error
+   * page. Without a mapping they fell through to `'error'`, which has no
+   * builder, so the generic copy showed the raw page body as its detail line.
+   */
   private codeForStatus(status: number): string {
     switch (status) {
       case 0:
         return 'network_error';
       case 400:
         return 'bad_request';
+      case 408:
+        return 'processing_timeout';
       case 413:
         return 'too_large';
       case 415:
@@ -457,8 +489,12 @@ export class ApiService {
         return 'rate_limited';
       case 500:
         return 'internal_error';
+      case 502:
+        return 'server_busy';
       case 503:
         return 'server_busy';
+      case 504:
+        return 'processing_timeout';
       default:
         return 'error';
     }

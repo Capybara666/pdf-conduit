@@ -31,7 +31,10 @@ export interface FileRejection {
  * - `accept` sets the native file-input filter (e.g. `.pdf,image/*`) and is
  *   also enforced client-side.
  * - `maxFileSizeMb` (default from `environment.maxUploadMb`) rejects oversize
- *   files before upload; `maxFiles` (0 = unlimited) caps the count.
+ *   files before upload; `maxFiles` (default from
+ *   `environment.maxFilesPerRequest`, `0` = unlimited) caps the count. Both
+ *   defaults mirror the backend free tier, so the drop zone refuses exactly
+ *   what the server would refuse — no earlier, no later.
  * - `pageDrop` (default off) opts into a whole-page drop overlay + clipboard
  *   paste so a host can enable it with a single prop.
  * - Emits `filesChange` whenever the accepted selection changes and `rejected`
@@ -58,8 +61,13 @@ export class FileDropZoneComponent implements OnInit, OnDestroy {
   @Input() showList = true;
   /** Reject files larger than this many MB (0 disables the size check). */
   @Input() maxFileSizeMb = environment.maxUploadMb;
-  /** Cap the number of accepted files (0 = unlimited). */
-  @Input() maxFiles = 0;
+  /**
+   * Cap the number of accepted files. Defaults to the backend's per-request
+   * free-tier limit (`environment.maxFilesPerRequest`) so a user is told up
+   * front instead of waiting out a large upload for a 413. Set `0` to opt out
+   * explicitly (unlimited); only meaningful with `multiple`.
+   */
+  @Input() maxFiles = environment.maxFilesPerRequest;
   /** Opt into a page-wide drop overlay + clipboard paste. Default off so
    *  existing pages are unaffected. */
   @Input() pageDrop = false;
