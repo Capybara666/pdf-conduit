@@ -6,6 +6,8 @@ import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.CapabilitiesInfo;
 import com.pdfconduit.web.dto.OperationInfo;
 import com.pdfconduit.web.guard.LoadGuard;
+import com.pdfconduit.web.quota.UploadCaps;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,10 +32,12 @@ public class InfoController {
 
     private final LoadGuard loadGuard;
     private final WebProperties props;
+    private final UploadCaps uploadCaps;
 
-    public InfoController(LoadGuard loadGuard, WebProperties props) {
+    public InfoController(LoadGuard loadGuard, WebProperties props, UploadCaps uploadCaps) {
         this.loadGuard = loadGuard;
         this.props = props;
+        this.uploadCaps = uploadCaps;
     }
 
     @GetMapping("/health")
@@ -65,12 +69,20 @@ public class InfoController {
      * offer the actually-installed OCR languages. The language list is discovered once (lazily,
      * cached by {@link PdfOcr}) — never per request — and is empty when OCR is disabled or the
      * {@code tesseract} binary is absent.
+     *
+     * <p>It also advertises the two upload ceilings so the SPA can refuse an over-limit file before
+     * the upload instead of hard-coding a copy of the server's limits. They come straight from
+     * {@link UploadCaps} — the component {@link com.pdfconduit.web.quota.QuotaInterceptor} enforces
+     * — and are resolved per request from the caller's principal/plan, so an env override or a
+     * future paid tier cannot make the advertisement lie.
      */
     @GetMapping("/capabilities")
-    public CapabilitiesInfo capabilities() {
+    public CapabilitiesInfo capabilities(HttpServletRequest request) {
         boolean ocrEnabled = props.ocrEnabled();
         List<String> ocrLanguages = ocrEnabled ? PdfOcr.installedLanguages() : List.of();
-        return new CapabilitiesInfo(props.officeEnabled(), ocrEnabled, ocrLanguages);
+        UploadCaps.Caps caps = uploadCaps.forRequest(request);
+        return new CapabilitiesInfo(props.officeEnabled(), ocrEnabled, ocrLanguages,
+            caps.maxFileSizeBytes(), caps.maxFilesPerRequest());
     }
 
     private boolean isAvailable(OperationType type) {
