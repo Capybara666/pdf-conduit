@@ -8,6 +8,7 @@ import { errorCopyKeys } from '../../core/error-copy';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
@@ -20,6 +21,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    OpProgressComponent,
     PageHeaderComponent,
     ResultPanelComponent,
     SpinnerComponent,
@@ -94,9 +96,14 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
         <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
+      <app-op-progress
+        [run]="state.tracker()"
+        [label]="'pages.metadata.loading' | transloco"
+        (cancel)="state.cancel()"
+        (dismiss)="state.dismiss()"
+      />
+
       <app-result-panel
-        [loading]="state.loading()"
-        [loadingLabel]="'pages.metadata.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
         (retry)="submit()"

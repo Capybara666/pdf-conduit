@@ -6,6 +6,7 @@ import { CapabilitiesService } from '../../core/capabilities.service';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -15,7 +16,7 @@ type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
 @Component({
   selector: 'app-to-pdf-page',
   standalone: true,
-  imports: [TranslocoModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [TranslocoModule, FileDropZoneComponent, OpProgressComponent, PageHeaderComponent, ResultPanelComponent],
   template: `
     <section class="op-page">
       <app-page-header
@@ -53,9 +54,14 @@ type PageSize = 'FIT' | 'A4' | 'A3' | 'LETTER';
         <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
+      <app-op-progress
+        [run]="state.tracker()"
+        [label]="'pages.toPdf.loading' | transloco"
+        (cancel)="state.cancel()"
+        (dismiss)="state.dismiss()"
+      />
+
       <app-result-panel
-        [loading]="state.loading()"
-        [loadingLabel]="'pages.toPdf.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
         (retry)="submit()"
