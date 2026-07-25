@@ -80,7 +80,7 @@
       "description": "Sayfaları yeniden sıralayın, tersine çevirin veya çoğaltın."
     },
     "nup": {
-      "label": "Tek yaprakta birden çok sayfa",
+      "label": "Yaprakta çok sayfa",
       "description": "Bir yaprağa birden fazla sayfa yerleştirin veya bir kitapçık katlayın."
     },
     "compress": {

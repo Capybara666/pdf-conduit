@@ -80,7 +80,7 @@
       "description": "Réordonnez, inversez ou dupliquez des pages."
     },
     "nup": {
-      "label": "Plusieurs pages par feuille",
+      "label": "Pages par feuille",
       "description": "Placez plusieurs pages par feuille ou pliez un livret."
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "Réorganisation en cours…"
     },
     "nup": {
-      "title": "Plusieurs pages par feuille",
+      "title": "Pages par feuille",
       "description": "Placez plusieurs pages par feuille ou pliez un livret piqué à cheval.",
       "privacyLine": "Vos fichiers sont mis en page en toute confidentialité et ne sont jamais conservés.",
       "hint": "Fichiers PDF. Plusieurs fichiers sont renvoyés dans un ZIP.",

@@ -69,7 +69,7 @@ type ExtractMode = 'one' | 'perPage' | 'every';
             <code>1</code>, <code>2-5</code>, <code>end-2</code>.
           </span>
         </div>
-        <div class="field">
+        <div class="field full">
           <span class="field-label" id="ex-mode-label">{{ 'pages.extract.output' | transloco }}</span>
           <div class="seg" role="group" aria-labelledby="ex-mode-label">
             <button

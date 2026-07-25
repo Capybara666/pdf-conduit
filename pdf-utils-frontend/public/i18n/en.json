@@ -80,7 +80,7 @@
       "description": "Reorder, reverse or duplicate pages."
     },
     "nup": {
-      "label": "Several pages on a sheet",
+      "label": "Pages per sheet",
       "description": "Place several pages per sheet, or fold a booklet."
     },
     "compress": {

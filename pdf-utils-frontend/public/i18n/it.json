@@ -80,7 +80,7 @@
       "description": "Riordina, inverti o duplica le pagine."
     },
     "nup": {
-      "label": "Più pagine per foglio",
+      "label": "Pagine per foglio",
       "description": "Disponi più pagine per foglio o piega un opuscolo."
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "Riordino in corso…"
     },
     "nup": {
-      "title": "Più pagine per foglio",
+      "title": "Pagine per foglio",
       "description": "Disponi più pagine per foglio o piega un opuscolo con punto metallico a sella.",
       "privacyLine": "I tuoi file vengono impaginati in privato e non vengono mai conservati.",
       "hint": "File PDF: più file vengono restituiti come ZIP.",

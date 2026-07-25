@@ -80,7 +80,7 @@
       "description": "Seiten neu ordnen, umkehren oder duplizieren."
     },
     "nup": {
-      "label": "Mehrere Seiten pro Blatt",
+      "label": "Seiten pro Blatt",
       "description": "Mehrere Seiten pro Blatt platzieren oder eine Broschüre falzen."
     },
     "compress": {
@@ -514,7 +514,7 @@
       "loading": "Wird angeordnet…"
     },
     "nup": {
-      "title": "Mehrere Seiten pro Blatt",
+      "title": "Seiten pro Blatt",
       "description": "Mehrere Seiten pro Blatt platzieren oder eine Broschüre mit Rückenheftung falzen.",
       "privacyLine": "Ihre Dateien werden privat angeordnet und niemals gespeichert.",
       "hint": "PDF-Dateien – mehrere Dateien werden als ZIP zurückgegeben.",

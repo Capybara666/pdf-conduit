@@ -350,6 +350,13 @@ button {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+/* Takes the whole grid row. For a field whose control is a set of choices, the
+   auto-fit column (min 220px) is too narrow: the options get squeezed, and a
+   sibling field appearing later lands beside them instead of below. */
+.form-grid .field.full {
+  grid-column: 1 / -1;
+}
+
 .field {
   display: flex;
   flex-direction: column;
