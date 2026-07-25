@@ -25,13 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * what the guards enforce — the SPA sizes its pre-upload guard from that response, so an
  * advertisement that ignored the active profile would refuse work this deployment would do.
  */
-@SpringBootTest(properties = {
-    // src/test/resources/application.yml SHADOWS the main application.yml (same classpath name),
-    // so the multipart ceiling would otherwise sit at Spring's 1 MB default instead of the 100 MB
-    // this service actually deploys with. Restate it here so the advertised per-file cap is the one
-    // a real local deployment reports. (Profile files, application-local.yml, are not shadowed.)
-    "spring.servlet.multipart.max-file-size=100MB"
-})
+// No per-test multipart override: src/test/resources/application.yml SHADOWS the main
+// application.yml (same classpath name), so it now RESTATES the deployed 100 MB multipart ceiling.
+// This test is what keeps that honest — drop the restatement and the advertised per-file cap below
+// falls back to Spring's 1 MB default and this fails. (Profile files are not shadowed.)
+@SpringBootTest
 @ActiveProfiles("local")
 @AutoConfigureMockMvc
 class ProfileLimitsTest {
