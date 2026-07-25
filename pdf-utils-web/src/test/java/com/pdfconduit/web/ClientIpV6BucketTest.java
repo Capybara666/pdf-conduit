@@ -22,7 +22,7 @@ class ClientIpV6BucketTest {
     private static ClientIp clientIp() {
         // Only 127.0.0.1 (the socket peer in the XFF-path tests) is a trusted proxy.
         return new ClientIp(new WebProperties(
-            null, null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null, null, null, null,
             List.of("127.0.0.1/32")));
     }
 

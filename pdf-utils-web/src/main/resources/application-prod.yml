@@ -28,6 +28,9 @@ pdfconduit:
       max-total-output-bytes: 64MB     # ~3x that peaks in heap while zipping (~1.15 GB heap)
     pdf:
       max-pages: 3000
+    pipeline:
+      max-nodes: 50
+      max-connections: 100
     render:
       max-dpi: 300
       max-output-pixels: 60000000      # ~60 MP/page

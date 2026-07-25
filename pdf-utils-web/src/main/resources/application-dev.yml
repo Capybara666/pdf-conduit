@@ -27,6 +27,9 @@ pdfconduit:
       max-total-output-bytes: 4GB
     pdf:
       max-pages: 100000
+    pipeline:
+      max-nodes: 2000
+      max-connections: 4000
     render:
       max-dpi: 1200
       max-output-pixels: 500000000

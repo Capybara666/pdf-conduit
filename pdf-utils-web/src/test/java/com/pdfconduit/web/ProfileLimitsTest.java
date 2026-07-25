@@ -44,6 +44,9 @@ class ProfileLimitsTest {
         assertTrue(props.concurrency().maxHeavyOps() > 4, "max-heavy-ops relaxed above base 4");
         assertTrue(props.pdf().maxPages() > 3000, "pdf.max-pages relaxed above base 3000");
         assertTrue(props.render().maxDpi() > 300, "render.max-dpi relaxed above base 300");
+        assertTrue(props.pipeline().maxNodes() > 50, "pipeline.max-nodes relaxed above base 50");
+        assertTrue(props.pipeline().maxConnections() > 100,
+            "pipeline.max-connections relaxed above base 100");
     }
 
     /** The aggregate output budget is a per-env preset too — relaxed locally, strict in public. */
