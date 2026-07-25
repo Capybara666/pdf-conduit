@@ -80,8 +80,8 @@
       "description": "Zmień kolejność, odwróć lub powiel strony."
     },
     "nup": {
-      "label": "Stron na arkusz",
-      "description": "Zmieść kilka stron na jednym arkuszu lub złóż broszurę."
+      "label": "Kilka stron na arkuszu",
+      "description": "Umieść 2, 4 lub więcej stron na jednym arkuszu albo złóż broszurę."
     },
     "compress": {
       "label": "Kompresuj",
@@ -153,7 +153,7 @@
     },
     "gdpr-redact": {
       "label": "Automatyczne zamazywanie danych",
-      "description": "Znajduje dane osobowe i automatycznie je zamazuje."
+      "description": "Znajdź dane osobowe i zamaż je automatycznie."
     }
   },
   "header": {
@@ -213,7 +213,7 @@
       "freePrice": "$0",
       "freePer": "/ na zawsze",
       "freeFeat1": "Wszystkie narzędzia PDF",
-      "freeFeat2": "Żadnych zapisywanych plików",
+      "freeFeat2": "Nigdy nie zapisujemy plików",
       "freeFeat3": "Dzienny limit operacji",
       "freeFeat4": "Standardowy limit rozmiaru pliku",
       "freeFeat5": "Bez konta",
@@ -400,14 +400,14 @@
     "uploadingPlain": "Wysyłanie…",
     "bytes": "{{done}} z {{total}}",
     "sent": "Wysłano {{done}}",
-    "stageWorking": "Pracujemy nad twoimi plikami…",
+    "stageWorking": "Pracujemy nad Twoimi plikami…",
     "stageLarger": "To większe zadanie. Wciąż trwa.",
     "stageLong": "Nadal pracujemy. Duże pliki mogą chwilę zająć.",
     "stageVeryLong": "To trwa dłużej niż zwykle. Możesz dalej czekać albo anulować i spróbować z mniejszym plikiem.",
     "elapsed": "Upłynęło {{time}}",
     "cancel": "Anuluj",
     "cancelled": "Anulowano",
-    "cancelledNote": "Przestajesz czekać na ten wynik. Nasz serwer może i tak dokończyć zadanie, a operacja nadal liczy się do dzisiejszego darmowego limitu.",
+    "cancelledNote": "Przerwano oczekiwanie na ten wynik. Nasz serwer może i tak dokończyć zadanie, a operacja nadal liczy się do dzisiejszego darmowego limitu.",
     "dismiss": "Zamknij"
   },
   "viewer": {
@@ -448,7 +448,7 @@
         "perPage": "Każda wybrana strona trafi do osobnego pliku (ZIP).",
         "every": "Wybrane strony potniemy na pliki po N stron (ZIP)."
       },
-      "every": "Stron w pliku",
+      "every": "Liczba stron w pliku",
       "everyHelp": "Od 1 do {{max}}. Ostatni plik może mieć mniej stron.",
       "submit": "Wyodrębnij",
       "loading": "Wyodrębnianie…"
@@ -516,17 +516,17 @@
       "loading": "Porządkowanie…"
     },
     "nup": {
-      "title": "Stron na arkusz",
-      "description": "Zmieść kilka stron na jednym arkuszu lub złóż broszurę.",
+      "title": "Kilka stron na arkuszu",
+      "description": "Umieść 2, 4 lub więcej stron na jednym arkuszu albo przygotuj broszurę do wydruku i złożenia.",
       "privacyLine": "Nie zapisujemy Twoich plików.",
       "hint": "Pliki PDF. Kilka plików pobierzesz jako ZIP.",
-      "batchNote": "Wybrano plików: {{count}}. Każdy jest układany osobno; wyniki pobierzesz jako ZIP.",
+      "batchNote": "Wybrano plików: {{count}}. Każdy układamy osobno, a wyniki pobierzesz jako ZIP.",
       "layout": "Układ",
-      "layout2up": "2 na stronę",
-      "layout4up": "4 na stronę (2×2)",
-      "layout6up": "6 na stronę (2×3)",
-      "layout8up": "8 na stronę (2×4)",
-      "layout9up": "9 na stronę (3×3)",
+      "layout2up": "2 na arkuszu",
+      "layout4up": "4 na arkuszu (2×2)",
+      "layout6up": "6 na arkuszu (2×3)",
+      "layout8up": "8 na arkuszu (2×4)",
+      "layout9up": "9 na arkuszu (3×3)",
       "mode": "Tryb",
       "booklet": "Broszura (szycie zeszytowe)",
       "bookletHelp": "Układa strony tak, aby po wydrukowaniu i złożeniu czytało się je po kolei.",
@@ -581,7 +581,7 @@
     },
     "ocr": {
       "title": "OCR",
-      "description": "Zamień skan w przeszukiwalny PDF. Dodaje niewidoczną warstwę tekstu.",
+      "description": "Zamień skan w przeszukiwalny PDF, dodając niewidoczną warstwę tekstu.",
       "hint": "Zeskanowany PDF lub obraz. Tekst będzie można zaznaczać.",
       "languages": "Języki",
       "languagesPlaceholder": "np. eng lub eng+deu (puste = eng)",
@@ -852,10 +852,10 @@
       "privacyLine": "Nie zapisujemy Twoich plików.",
       "hint": "Pliki PDF. Kilka plików pobierzesz jako ZIP.",
       "batchNote": "Wybrano plików: {{count}}. Marginesy dotyczą każdego z nich; wyniki pobierzesz jako ZIP.",
-      "top": "Góra",
-      "right": "Prawa",
-      "bottom": "Dół",
-      "left": "Lewa",
+      "top": "Górny",
+      "right": "Prawy",
+      "bottom": "Dolny",
+      "left": "Lewy",
       "unit": "Jednostka",
       "unitPt": "Punkty (pt)",
       "unitMm": "Milimetry (mm)",
