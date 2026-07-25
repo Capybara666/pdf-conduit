@@ -28,7 +28,7 @@
     "fileCount": "{count, plural, one {# Datei} other {# Dateien}}"
   },
   "dropzone": {
-    "defaultLabel": "Dateien hierher ziehen oder zum Durchsuchen klicken",
+    "defaultLabel": "Dateien hierher ziehen oder klicken, um sie auszuwählen",
     "upToSize": "bis zu {{size}} MB",
     "maxFiles": "max. {{count}} Dateien",
     "rejectedTitle": "Einige Dateien wurden nicht hinzugefügt",
@@ -73,14 +73,14 @@
     },
     "rotate": {
       "label": "Drehen",
-      "description": "Seiten um 90°, 180° oder 270° drehen."
+      "description": "Seiten um 90° nach rechts, um 180° oder um 270° nach links drehen."
     },
     "arrange": {
       "label": "Anordnen",
       "description": "Seiten neu ordnen, umkehren oder duplizieren."
     },
     "nup": {
-      "label": "Seiten pro Blatt",
+      "label": "Mehrere Seiten pro Blatt",
       "description": "Mehrere Seiten pro Blatt platzieren oder eine Broschüre falzen."
     },
     "compress": {
@@ -137,7 +137,7 @@
     },
     "pipeline": {
       "label": "Pipeline",
-      "description": "Vorgänge als Knotengraph verketten."
+      "description": "Vorgänge in einem Knotendiagramm verketten."
     },
     "gdpr-scan": {
       "label": "DSGVO-Scan",
@@ -183,27 +183,27 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Kostenlos · Ihre Dateien werden nie gespeichert",
+      "eyebrow": "Kostenlos · Wir speichern Ihre Dateien nie",
       "title": "Alle PDF-Werkzeuge, die Sie brauchen. In einem aufgeräumten Arbeitsbereich.",
       "lede": "PDFs in Sekunden zusammenführen, komprimieren, umwandeln, schützen und schwärzen. Sofort verarbeitet und niemals auf unseren Servern gespeichert. Kein Konto. Keine Installation.",
       "ctaStart": "Kostenlos starten",
       "ctaExplore": "Werkzeuge entdecken",
-      "note": "Dateien werden nie gespeichert · Keine Anmeldung nötig · Funktioniert auf jedem Gerät"
+      "note": "Wir speichern Ihre Dateien nie · Keine Anmeldung nötig · Funktioniert auf jedem Gerät"
     },
     "trust": {
       "aria": "Warum PDF Conduit",
-      "memoryTitle": "Nie gespeichert",
+      "memoryTitle": "Wir speichern nichts",
       "memoryDesc": "Ihre Dateien werden verarbeitet und danach verworfen. Nie auf die Festplatte geschrieben oder auf unseren Servern aufbewahrt.",
       "accountTitle": "Kein Konto nötig",
       "accountDesc": "Direkt loslegen. Keine E-Mail, kein Passwort, keine Tracking-Hürde.",
-      "browserTitle": "Öffnen im Browser",
+      "browserTitle": "Direkt im Browser",
       "browserDesc": "Nichts zu installieren. Funktioniert unter Windows, macOS, Linux und mobil."
     },
     "tools": {
       "title": "Werkzeug auswählen und loslegen",
       "subtitle": "Alles, was Sie für PDFs brauchen – standardmäßig privat.",
       "showMore": "Alle Werkzeuge anzeigen",
-      "showLess": "Weniger anzeigen"
+      "showLess": "Weniger Werkzeuge anzeigen"
     },
     "pro": {
       "soon": "Demnächst verfügbar",
@@ -213,7 +213,7 @@
       "freePrice": "$0",
       "freePer": "/ für immer",
       "freeFeat1": "Alle PDF-Werkzeuge",
-      "freeFeat2": "Es wird nie etwas gespeichert",
+      "freeFeat2": "Wir speichern nie etwas",
       "freeFeat3": "Tägliches Vorgangslimit",
       "freeFeat4": "Standard-Obergrenze für Dateigröße",
       "freeFeat5": "Kein Konto erforderlich",
@@ -225,7 +225,7 @@
       "proFeat2": "<b>Höhere Tageslimits</b> für große Stapel",
       "proFeat3": "<b>Stapel- &amp; API-Zugriff</b> zur Automatisierung von Abläufen",
       "proFeat4": "<b>Bevorzugte Verarbeitung</b> auch zu Spitzenzeiten",
-      "proFeat5": "Alles aus Kostenlos, natürlich",
+      "proFeat5": "Natürlich alles aus dem kostenlosen Tarif",
       "proCta": "Ich habe Interesse",
       "proCtaDone": "Danke für Ihr Interesse ✓",
       "proNote": "Die kostenlosen Werkzeuge bleiben für immer kostenlos. Der Pro-Preis steht noch nicht fest.",
@@ -247,7 +247,7 @@
       "step2Title": "Datei hinzufügen",
       "step2Desc": "Ziehen Sie sie hinein oder wählen Sie sie aus. Ihre Dateien werden niemals auf unseren Servern gespeichert.",
       "step3Title": "Ergebnis herunterladen",
-      "step3Desc": "Auf Los wird Ihre Datei sofort verarbeitet – Ihr fertiges PDF steht in Sekunden zum Download bereit. Wenn Sie gehen, bleibt nichts zurück.",
+      "step3Desc": "Klicken Sie auf Start – Ihre Datei wird sofort verarbeitet. Ihr fertiges PDF steht in Sekunden zum Download bereit. Wenn Sie gehen, bleibt nichts zurück.",
       "wizardTitle": "Neu bei PDF Conduit?",
       "wizardDesc": "Lassen Sie sich vom geführten Assistenten Schritt für Schritt durch Auswählen, Anordnen und Exportieren führen.",
       "wizardCta": "Geführten Assistenten starten",
@@ -257,7 +257,7 @@
       "title": "Erweiterte Werkzeuge",
       "subtitle": "Bereit für mehr? Erstellen Sie mehrstufige Abläufe oder prüfen Sie ein Dokument auf personenbezogene Daten.",
       "wizardDesc": "Neu hier? Der geführte Assistent begleitet Sie Schritt für Schritt.",
-      "pipelineDesc": "Verketten Sie mehrere Operationen zu einem wiederholbaren Ablauf mit einem visuellen Knotengraphen.",
+      "pipelineDesc": "Verketten Sie mehrere Vorgänge zu einem wiederholbaren Ablauf – in einem visuellen Knotendiagramm.",
       "gdprDesc": "Durchsuchen Sie ein PDF nach personenbezogenen Daten (DSGVO / PII) und schwärzen Sie sie direkt danach."
     }
   },
@@ -266,7 +266,7 @@
       "title": "Willkommen bei PDF Conduit",
       "message": "Kostenlose PDF-Werkzeuge direkt in Ihrem Browser – Ihre Dateien werden sofort verarbeitet und niemals gespeichert. Neu hier? Am einfachsten starten Sie mit dem geführten Assistenten.",
       "cta": "Geführten Assistenten ausprobieren",
-      "secondary": "Alle Werkzeuge durchsuchen",
+      "secondary": "Alle Werkzeuge ansehen",
       "dismiss": "Schließen"
     },
     "help": "Erste Schritte",
@@ -275,10 +275,10 @@
   "privacy": {
     "title": "Datenschutz",
     "description": "Wie PDF Conduit mit Ihren Dateien umgeht. Kurz gesagt: Es behält sie nicht.",
-    "memoryTitle": "Ihre Dateien werden nie gespeichert",
+    "memoryTitle": "Wir speichern Ihre Dateien nie",
     "memoryBody": "Ihre Dateien werden niemals gespeichert. Jede Operation läuft vollständig innerhalb einer einzigen Anfrage ab – Ihr Upload wird verarbeitet und direkt an Sie zurückgesendet und danach im selben Moment verworfen. Nichts bleibt erhalten und nichts wird jemals für andere Zwecke verwendet.",
     "exceptionTitle": "Die eine vorübergehende Ausnahme",
-    "exceptionBody": "Das Umwandeln von Office- oder Textdokumenten (zum Beispiel .docx, .xlsx, .pptx) erfordert ein headless LibreOffice. Nur für diesen Schritt wird die Datei in einen isolierten temporären Ordner geschrieben, der unmittelbar nach Abschluss der Umwandlung gelöscht wird. Reine PDFs und Bilder berühren die Festplatte nie.",
+    "exceptionBody": "Das Umwandeln von Office- oder Textdokumenten (zum Beispiel .docx, .xlsx, .pptx) benötigt ein LibreOffice, das im Hintergrund läuft. Nur für diesen Schritt wird die Datei in einen isolierten temporären Ordner geschrieben, der unmittelbar nach Abschluss der Umwandlung gelöscht wird. Reine PDFs und Bilder landen nie auf der Festplatte.",
     "accountTitle": "Kein Konto, keine Tracking-Hürde",
     "accountBody": "Sie müssen sich nicht registrieren, anmelden oder uns eine E-Mail-Adresse geben, um die kostenlosen Werkzeuge zu nutzen. Wir verlangen keine persönlichen Daten, um eine Datei zu verarbeiten.",
     "controllerTitle": "Verantwortlicher",
@@ -299,10 +299,10 @@
     "quota_exceeded": {
       "title": "Sie haben die kostenlosen Vorgänge für heute aufgebraucht",
       "detail": "Das kostenlose Tageslimit ist vorerst erreicht.",
-      "hint": "Höhere Tageslimits kommen mit PDF Conduit Pro. Es wird morgen zurückgesetzt. Oder sichern Sie sich unten frühzeitigen Zugang."
+      "hint": "Höhere Tageslimits kommen mit PDF Conduit Pro. Das Limit wird morgen zurückgesetzt. Oder sichern Sie sich unten frühzeitigen Zugang."
     },
     "rate_limited": {
-      "title": "Einen Moment langsamer",
+      "title": "Immer mit der Ruhe",
       "detail": "Zu viele Anfragen in kurzer Zeit.",
       "hintRetry": "{seconds, plural, one {Bitte versuchen Sie es in etwa # Sekunde erneut.} other {Bitte versuchen Sie es in etwa # Sekunden erneut.}}",
       "hintWait": "Bitte warten Sie ein paar Sekunden und versuchen Sie es erneut."
@@ -314,7 +314,7 @@
     },
     "processing_timeout": {
       "title": "Das hat zu lange gedauert",
-      "detail": "Beim Vorgang ist vor Abschluss eine Zeitüberschreitung aufgetreten.",
+      "detail": "Der Vorgang hat zu lange gedauert und wurde abgebrochen.",
       "hint": "Versuchen Sie es mit einer kleineren oder einfacheren Datei oder teilen Sie die Arbeit in Schritte auf."
     },
     "too_large": {
@@ -361,7 +361,7 @@
     "done": "Fertig",
     "original": "Original",
     "result": "Ergebnis",
-    "saved": "Gespart",
+    "saved": "Eingespart",
     "target": "Ziel",
     "targetReached": "erreicht",
     "targetNotReached": "nicht erreicht",
@@ -401,14 +401,14 @@
     "bytes": "{{done}} von {{total}}",
     "sent": "{{done}} gesendet",
     "stageWorking": "Ihre Dateien werden bearbeitet…",
-    "stageLarger": "Das ist ein größerer Auftrag. Es geht weiter.",
+    "stageLarger": "Das ist ein größerer Auftrag. Wir arbeiten noch daran.",
     "stageLong": "Läuft noch. Bei großen Dateien kann es etwas dauern.",
     "stageVeryLong": "Das dauert länger als sonst. Sie können weiter warten oder abbrechen und es mit einer kleineren Datei versuchen.",
     "elapsed": "{{time}} vergangen",
     "cancel": "Abbrechen",
     "cancelled": "Abgebrochen",
     "cancelledNote": "Sie warten nicht mehr auf dieses Ergebnis. Unser Server beendet den Auftrag möglicherweise trotzdem, und er zählt weiterhin zum heutigen kostenlosen Limit.",
-    "dismiss": "Ausblenden"
+    "dismiss": "Schließen"
   },
   "viewer": {
     "renderingPreview": "Vorschau wird gerendert…",
@@ -429,7 +429,7 @@
       "removeAria": "Entfernen",
       "submit": "Zusammenführen",
       "loading": "Wird zusammengeführt…",
-      "reorderHint": "Ziehen Sie die Liste unten, um die Reihenfolge festzulegen."
+      "reorderHint": "Ziehen Sie die Einträge unten, um die Reihenfolge festzulegen."
     },
     "extract": {
       "title": "Extrahieren",
@@ -462,7 +462,7 @@
       "targetHelp1": "Akzeptiert",
       "targetHelp2": "oder eine reine Byte-Anzahl.",
       "targetError": "Geben Sie eine Größe an, etwa",
-      "amountError": "Gib eine positive Zahl ein.",
+      "amountError": "Geben Sie eine positive Zahl ein.",
       "unitLabel": "Einheit",
       "submit": "Komprimieren",
       "loading": "Wird komprimiert…",
@@ -476,7 +476,7 @@
       "dpiEbook": "E-Book (150 DPI)",
       "dpiPrint": "Druck (300 DPI)",
       "grayscale": "Bilder in Graustufen umwandeln",
-      "grayscaleHelp": "Bilder ohne Farbe neu kodieren für kleinere Dateien.",
+      "grayscaleHelp": "Bilder ohne Farbe neu kodieren – das ergibt kleinere Dateien.",
       "floorNotice": "Die kleinstmögliche Größe für diese Datei beträgt etwa {{floor}}. Ihr Ziel von {{target}} kann nicht erreicht werden. Stattdessen wurde die kleinste Version gespeichert."
     },
     "repair": {
@@ -491,12 +491,12 @@
     },
     "rotate": {
       "title": "Drehen",
-      "description": "Seiten um 90°, 180° oder 270° drehen.",
+      "description": "Seiten um eine Vierteldrehung nach rechts (90° im Uhrzeigersinn), um 180° (auf den Kopf) oder um eine Vierteldrehung nach links (270° / 90° gegen den Uhrzeigersinn) drehen.",
       "hint": "Ein oder mehrere PDFs (mehrere Dateien → ZIP).",
       "angle": "Winkel",
       "angleAria": "Drehwinkel",
       "dir90": "Dreht um 90° im Uhrzeigersinn",
-      "dir180": "Dreht um 180° (umkehren)",
+      "dir180": "Dreht um 180° (auf den Kopf)",
       "dir270": "Dreht um 270° im Uhrzeigersinn",
       "pages": "Seiten",
       "pagesPlaceholder": "z. B. 1,3,5-8 (leer = alle)",
@@ -511,12 +511,12 @@
       "orderPlaceholder": "z. B. 3,1,2",
       "orderHelp1": "ordnet neu",
       "orderHelp2": "kehrt um",
-      "orderHelp3": "Wiederholungen duplizieren",
+      "orderHelp3": "dupliziert Seiten",
       "submit": "Anordnen",
       "loading": "Wird angeordnet…"
     },
     "nup": {
-      "title": "Seiten pro Blatt",
+      "title": "Mehrere Seiten pro Blatt",
       "description": "Mehrere Seiten pro Blatt platzieren oder eine Broschüre mit Rückenheftung falzen.",
       "privacyLine": "Ihre Dateien werden privat angeordnet und niemals gespeichert.",
       "hint": "PDF-Dateien – mehrere Dateien werden als ZIP zurückgegeben.",
@@ -636,12 +636,12 @@
     },
     "sign": {
       "title": "Ausfüllen & Signieren",
-      "description": "Fülle ausfüllbare PDF-Formularfelder (AcroForm) aus und füge eine Signatur hinzu, dann fixiere alles. Nichts wird gespeichert, alles läuft in deiner Sitzung.",
-      "hint": "Ein PDF. Wir erkennen ausfüllbare Formularfelder. Erstelle dann eine Signatur und ziehe sie auf die Seite.",
-      "dragHint": "Ziehe auf einer Seite, um deine Signatur zu platzieren.",
+      "description": "Füllen Sie ausfüllbare PDF-Formularfelder (AcroForm) aus und fügen Sie eine Signatur hinzu, dann wird alles fixiert. Nichts wird gespeichert, alles läuft in Ihrer Sitzung.",
+      "hint": "Ein PDF. Wir erkennen ausfüllbare Formularfelder. Erstellen Sie dann eine Signatur und ziehen Sie sie auf die Seite.",
+      "dragHint": "Ziehen Sie auf einer Seite, um Ihre Signatur zu platzieren.",
       "chooseAnother": "Anderes PDF wählen",
-      "needSignature": "Erstelle zuerst eine Signatur und ziehe dann ein Feld auf die Seite, um sie zu platzieren.",
-      "signature": "Deine Signatur",
+      "needSignature": "Erstellen Sie zuerst eine Signatur und ziehen Sie dann ein Feld auf die Seite, um sie zu platzieren.",
+      "signature": "Ihre Signatur",
       "tabDraw": "Zeichnen",
       "tabType": "Tippen",
       "tabUpload": "Hochladen",
@@ -650,8 +650,8 @@
       "typePlaceholder": "Namen eingeben",
       "currentSignature": "Aktuelle Signatur",
       "placements": "Platzierungen ({{count}})",
-      "placementsNoSig": "Erstelle eine Signatur, um mit dem Platzieren zu beginnen.",
-      "placementsEmpty": "Noch keine Platzierungen. Ziehe ein Feld dorthin, wo die Signatur erscheinen soll.",
+      "placementsNoSig": "Erstellen Sie eine Signatur, um mit dem Platzieren zu beginnen.",
+      "placementsEmpty": "Noch keine Platzierungen. Ziehen Sie ein Feld dorthin, wo die Signatur erscheinen soll.",
       "removePlacement": "Platzierung entfernen",
       "flatten": "Dokument fixieren",
       "flattenHint": "Bettet die Signatur und alle Formularfelder fest in die Seite ein, sodass sie nicht mehr bearbeitet werden können.",
@@ -660,7 +660,7 @@
       "formFields": "Formularfelder",
       "formFieldsHint": "Dieses PDF hat ausfüllbare Felder. Bearbeiten Sie sie unten und füllen Sie das Formular aus.",
       "fillForm": "Formular ausfüllen & herunterladen",
-      "fillFlatten": "Reduzieren (nicht mehr bearbeitbar)",
+      "fillFlatten": "Fixieren (nicht mehr bearbeitbar)",
       "noFields": "Keine ausfüllbaren Felder erkannt."
     },
     "metadata": {
@@ -668,7 +668,7 @@
       "description": "Dokumentinfos anzeigen, bearbeiten oder entfernen.",
       "hint": "PDF-Dateien – dieselben Änderungen gelten für jede Datei (mehrere werden als ZIP zurückgegeben).",
       "batchNote": "Dieselben Felder werden auf jede Datei angewendet. Die Vorschau liest nur die erste Datei.",
-      "readCurrent": "Aktuelle lesen",
+      "readCurrent": "Aktuelle Werte lesen",
       "reading": "Wird gelesen…",
       "titleField": "Titel",
       "author": "Autor",
@@ -751,7 +751,7 @@
     },
     "pipeline": {
       "title": "Pipeline",
-      "description": "Vorgänge als Knotengraph verketten.",
+      "description": "Vorgänge in einem Knotendiagramm verketten.",
       "sourceTitle": "Quelldateien",
       "sourceHint": "Diese speisen den SOURCE-Knoten; nachgelagerte Knoten verweisen per Name auf sie.",
       "nodes": "Knoten",
@@ -813,10 +813,10 @@
         "high": "Hoch",
         "noneExplain": "In diesem Dokument wurden keine personenbezogenen Daten gefunden.",
         "lowExplain": "Ein einzelner Identifikator mit geringem Risiko wurde gefunden.",
-        "mediumExplain": "Mehrere Identifikatoren mit geringem Risiko wurden gefunden, aber nichts Finanzielles, keine nationale Kennung und keine besondere Kategorie.",
-        "highExplain": "Finanz-, nationale Kennungs- oder besondere Kategoriedaten sind vorhanden – vor dem Teilen sorgfältig behandeln."
+        "mediumExplain": "Es wurden mehrere Identifikatoren mit geringem Risiko gefunden, aber keine Finanzdaten, nationalen Kennungen oder Daten besonderer Kategorien.",
+        "highExplain": "Es sind Finanzdaten, nationale Kennungen oder Daten besonderer Kategorien vorhanden. Gehen Sie vor dem Teilen sorgfältig damit um."
       },
-      "summary": "{count, plural, one {# personenbezogenes Datum auf {pages} Seiten gefunden.} other {# personenbezogene Daten auf {pages} Seiten gefunden.}}",
+      "summary": "{count, plural, one {# personenbezogene Angabe auf {pages} Seiten gefunden.} other {# personenbezogene Angaben auf {pages} Seiten gefunden.}}",
       "summaryClean": "Keine personenbezogenen Daten auf {{pages}} Seiten gefunden.",
       "byCategory": "Nach Kategorie",
       "higherRisk": "Höheres Risiko",
@@ -835,7 +835,7 @@
       "hintMulti": "Ein oder mehrere PDFs, Bilder oder Office-Dokumente.",
       "submitBatch": "{{count}} Dateien scannen",
       "highestRiskLabel": "höchstes Risiko",
-      "batchSummary": "{count, plural, one {# personenbezogenes Datum in {files} Dateien.} other {# personenbezogene Daten in {files} Dateien.}}",
+      "batchSummary": "{count, plural, one {# personenbezogene Angabe in {files} Dateien.} other {# personenbezogene Angaben in {files} Dateien.}}",
       "byCategoryAll": "Nach Kategorie (alle Dateien)",
       "perFile": "Pro Datei",
       "fileFindings": "{count, plural, one {# Fund auf {pages} Seiten} other {# Funde auf {pages} Seiten}}",
@@ -865,10 +865,10 @@
     },
     "pageMarks": {
       "title": "Seitenmarkierungen",
-      "description": "Füge jeder Seite Seitenzahlen sowie Kopf- und Fußzeilentext hinzu.",
+      "description": "Fügen Sie jeder Seite Seitenzahlen sowie Kopf- und Fußzeilentext hinzu.",
       "hint": "Ein oder mehrere PDFs zum Markieren (mehrere Dateien → ZIP).",
-      "privacyLine": "Deine Dateien werden privat markiert und niemals gespeichert.",
-      "tokensHelp": "Verwende Tokens in jedem Feld: '{page}' aktuelle Seite, '{pages}' Gesamtzahl, '{n}' Seitennummer, '{date}' heute.",
+      "privacyLine": "Ihre Dateien werden privat markiert und niemals gespeichert.",
+      "tokensHelp": "Verwenden Sie Tokens in jedem Feld: '{page}' aktuelle Seite, '{pages}' Gesamtzahl, '{n}' Seitennummer, '{date}' heute.",
       "header": "Kopfzeile",
       "footer": "Fußzeile",
       "left": "Links",
@@ -882,7 +882,7 @@
       "prefixPlaceholder": "z. B. ACME-",
       "skipFirst": "Erste Seite überspringen",
       "submit": "Seitenmarkierungen hinzufügen",
-      "needSlot": "Gib in mindestens einem Feld Text ein (z. B. '{page}' / '{pages}').",
+      "needSlot": "Geben Sie in mindestens einem Feld Text ein (z. B. '{page}' / '{pages}').",
       "loading": "Wird markiert…"
     }
   },
@@ -913,7 +913,7 @@
       "sourceTitle": "Quelldateien",
       "sourceFiles": "Enthaltene Dateien",
       "addNode": "Knoten hinzufügen",
-      "inspector": "Inspektor",
+      "inspector": "Eigenschaften",
       "inspectorEmpty": "Wählen Sie einen Knoten, um seine Einstellungen zu bearbeiten.",
       "noParams": "Dieser Knoten hat keine Einstellungen.",
       "uploadFirst": "Laden Sie Dateien hoch, um diese Quelle zu speisen.",
@@ -935,7 +935,7 @@
         "all": "alle",
         "separate": "getrennt",
         "order": "Reihenfolge: {{order}}",
-        "natural": "natürlich",
+        "natural": "unverändert",
         "target": "Ziel: {{size}}",
         "pageSize": "Seitengröße: {{size}}",
         "merge": "Zu einem zusammenführen",
@@ -974,7 +974,7 @@
       "US_SSN": "US-Sozialversicherungsnummer",
       "HEALTH": "Gesundheitsdaten",
       "RELIGION": "Religiöse Überzeugungen",
-      "ETHNICITY": "Ethnische Zugehörigkeit / Rasse",
+      "ETHNICITY": "Ethnische / rassische Herkunft",
       "POLITICAL_OPINION": "Politische Meinungen",
       "TRADE_UNION": "Gewerkschaftszugehörigkeit",
       "SEXUAL_ORIENTATION": "Sexuelle Orientierung",
