@@ -7,9 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Every operation endpoint must be classified HEAVY (S5/P2) so it runs under the load-guard's
- * concurrency / in-flight-byte / processing-timeout wrapper and the heavy rate bucket — including
- * the ones that previously slipped through (extract, arrange, protect, unlock, metadata, to-text).
- * Only the cheap read-only / catalog endpoints stay excluded.
+ * concurrency / in-flight-byte / processing-timeout wrapper and the heavy rate bucket. Only the
+ * cheap read-only / catalog endpoints stay excluded.
  */
 class EndpointsHeavyTest {
 

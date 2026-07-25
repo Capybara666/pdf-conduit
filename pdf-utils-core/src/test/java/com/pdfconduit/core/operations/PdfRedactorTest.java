@@ -83,9 +83,9 @@ class PdfRedactorTest {
     }
 
     /**
-     * A zero-area rectangle can cover nothing. It used to be dropped silently, so the caller got
-     * the untouched document back at a path they had named "redacted" — with the data still
-     * readable. Both APIs must now refuse, and write no output at all.
+     * A zero-area rectangle can cover nothing. Dropping it silently would hand the caller the
+     * untouched document at a path they had named "redacted" — with the data still readable. Both
+     * APIs must refuse, and write no output at all.
      */
     @Test
     void emptyRectanglesAreRejected() throws Exception {

@@ -442,9 +442,8 @@ describe('ApiService', () => {
     });
 
     it('ignores the retired X-Target-Feasible / X-Estimated-Floor-Bytes headers', async () => {
-      // Both were fabricated (feasible duplicated targetReached, the floor
-      // duplicated resultBytes) and were removed from the backend. A stale
-      // deployment that still sends them must not leak them into the result.
+      // Neither is part of the header contract any more. A stale deployment
+      // that still sends them must not leak them into the result.
       const result = await succeeding(
         (req) =>
           req.flush(blob('%PDF-1.7', 'application/pdf'), {

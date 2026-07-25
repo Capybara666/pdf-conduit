@@ -10,8 +10,8 @@
  * resolves `op.<id>.label` / `op.<id>.description` through Transloco
  * (`sidebar.component.html`, `home.page.html`), and `locales.spec.ts` proves
  * those keys exist for every entry below. English copy in this file would be
- * rendered by nothing and would rot silently — it already had, which is why the
- * `label`/`description` fields are gone.
+ * rendered by nothing and would rot silently, so there are no `label` /
+ * `description` fields to put it in.
  */
 
 export interface NavItem {
@@ -196,8 +196,8 @@ export const OP_ICONS: Record<string, string> = {
   // wrench *inside* a document turns to mush, and the tool alone is the clearer
   // "fix this" signal.
   // Sized to the same optical extent as its neighbours: the ink spans ~4-20 on
-  // both axes, like compress (3.5-20.5). The first draft only reached 4.8-19.2
-  // *diagonally*, so it read noticeably smaller than every other glyph.
+  // both axes, measured on the axes rather than diagonally — a glyph sized on
+  // its diagonal reads noticeably smaller than the rest of the set.
   repair: g(
     '<circle cx="16.4" cy="7.6" r="3.7" fill="currentColor" stroke="none" opacity=".18"/>' +
       '<path d="M20.04 8.24 A3.7 3.7 0 1 1 15.76 3.96"/>' +

@@ -9,8 +9,8 @@
  * until it does. The server owns these limits: as soon as it advertises
  * `maxFileSizeBytes` / `maxFilesPerRequest`, those win (see
  * `core/capabilities.service.ts`). Keep them roughly aligned with the public
- * deployment (`application-prod.yml`) so the pre-response window behaves, but a
- * stale value here can no longer make the UI disagree with the backend.
+ * deployment (`application-prod.yml`) so the pre-response window behaves; once
+ * the server answers, a stale value here cannot make the UI disagree with it.
  */
 export const environment = {
   production: true,
@@ -23,8 +23,7 @@ export const environment = {
    * Pre-response render ceiling (DPI) for To Images / the pipeline TO_IMAGES
    * node. Same contract as the two caps above: the server owns this number
    * (`render.max-dpi`, advertised as `maxDpi`), and this is only what the first
-   * paint has to draw the form with. Deliberately the value the form used to
-   * hard-code, so nothing about the pre-response window changes.
+   * paint has to draw the form with.
    */
   maxDpi: 600,
 };

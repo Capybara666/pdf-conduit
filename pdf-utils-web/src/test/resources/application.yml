@@ -23,8 +23,8 @@ spring:
     multipart:
       # RESTATED from src/main/resources/application.yml (which this file shadows — see above).
       # UploadCaps folds this ceiling into the EFFECTIVE per-file cap that /api/capabilities
-      # advertises and QuotaInterceptor enforces, so Spring's 1 MB / 10 MB defaults made every
-      # upload-size assertion measure a ceiling the service never deploys with.
+      # advertises and QuotaInterceptor enforces, so Spring's 1 MB / 10 MB defaults would make
+      # every upload-size assertion measure a ceiling the service never deploys with.
       max-file-size: 100MB
       max-request-size: 200MB
 

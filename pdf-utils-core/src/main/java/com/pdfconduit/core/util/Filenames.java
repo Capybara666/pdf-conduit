@@ -4,11 +4,12 @@ package com.pdfconduit.core.util;
  * The one place a user-supplied file name is reduced to something safe to use — path stripped,
  * traversal neutralised, a sane fallback when nothing usable is left.
  *
- * <p>Four near-identical copies of this logic used to live in the web layer and in
- * {@code service/MemoryOperations} (upload naming, ZIP entry naming, output-stem naming). They
- * drifted: only one dropped leading dots, only two removed the extension — so a hardening fix
- * applied to one silently missed the others. The three methods here keep those genuinely different
- * jobs distinct and explicit, while sharing the single path-stripping implementation:
+ * <p>Every surface that names an upload, a ZIP entry or an output stem (the web layer,
+ * {@code service/MemoryOperations}) must route through here rather than re-deriving it: a copy
+ * drifts on the details — whether leading dots are dropped, whether the extension is removed — and
+ * a hardening fix applied to one copy silently misses the rest. The three methods keep those
+ * genuinely different jobs distinct and explicit, while sharing the single path-stripping
+ * implementation:
  *
  * <ul>
  *   <li>{@link #basename(String, String)} — an upload's own name (path stripped, trimmed);</li>

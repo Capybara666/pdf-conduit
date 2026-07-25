@@ -20,10 +20,10 @@ final class ControllerSupport {
      *
      * <p>Every one-output-per-file operation (rotate, compress, extract-combine, watermark, …)
      * accumulates one full result per input in the heap and then copies the lot again into a ZIP,
-     * exactly like the multi-output paths — but nothing bounded that sum: the only ceilings were the
-     * multipart limit and the free-tier caps, so a 200 MB upload could be echoed back through an
-     * in-memory archive. Committing each file's results into ONE request-wide {@code tally} closes
-     * that, and does it while the batch runs, so an over-budget request is refused (422
+     * exactly like the multi-output paths — and nothing else bounds that sum: the multipart limit
+     * and the free-tier caps only bound the INPUT, so a 200 MB upload would otherwise be echoed
+     * back through an in-memory archive. Every file's results commit into ONE request-wide
+     * {@code tally} while the batch runs, so an over-budget request is refused (422
      * {@code output_too_large}) instead of OOM-ing at the end.
      *
      * <p><b>Partial tolerance is preserved exactly.</b> The commit happens only after a file's work

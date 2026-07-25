@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Proves that {@link GrayscaleConverter} converts EVERY image to grayscale regardless of the
- * source colorspace / {@link BufferedImage} type — the RGB path was working before, but
- * indexed/palette, alpha and (approximated here via a custom raster) non-RGB sources previously
- * stayed in colour.
+ * source colorspace / {@link BufferedImage} type — not just straightforward RGB, but also
+ * indexed/palette, alpha and (approximated here via a custom raster) non-RGB sources, each of
+ * which takes its own path through the converter.
  */
 class GrayscaleConverterTest {
 

@@ -580,10 +580,9 @@ public final class PipelineExecutor {
      * strict offset-0 header test. A PDF whose header sits behind junk is precisely the input the
      * REPAIR node exists for, so a source gate that demands {@code %PDF} at offset 0 would refuse
      * one of the few classes of file the operation is for, before any node could see it (the desktop
-     * pipeline never had this problem: it classifies by extension). Everything else
-     * is unchanged — an image, an office document or random bytes is still classified as what it is
-     * and still fails here with the same message, so nothing unrecognisable reaches PDFBox as a
-     * "PDF".
+     * pipeline classifies by extension instead). Everything else is classified as what it is — an
+     * image, an office document or random bytes still fails here with the same message, so nothing
+     * unrecognisable reaches PDFBox as a "PDF".
      */
     private static List<MemDoc> sourceDocs(PipelineNode n,
                                            java.util.function.Function<PipelineNode, List<byte[]>> resolver,

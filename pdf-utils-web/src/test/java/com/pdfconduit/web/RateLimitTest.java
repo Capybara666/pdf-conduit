@@ -60,8 +60,8 @@ class RateLimitTest {
     /**
      * {@code /api/form-fields} is read-only and quota-free, but it fully parses an arbitrary upload
      * and routes office documents through LibreOffice — so it MUST consume general-bucket tokens.
-     * While it sat on the unmetered cheap allow-list, this burst was accepted indefinitely at zero
-     * cost, saturating the load-guard and both soffice permits.
+     * On the unmetered cheap allow-list this burst would be accepted indefinitely at zero cost,
+     * saturating the load-guard and both soffice permits.
      */
     @Test
     void formFields_exceedingBurst_returns429() throws Exception {

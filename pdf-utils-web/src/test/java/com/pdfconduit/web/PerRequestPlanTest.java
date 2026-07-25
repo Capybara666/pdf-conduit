@@ -24,14 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * The page-count and render ceilings must come from the plan resolved <b>per request</b>, not from a
  * snapshot taken in a singleton's constructor.
  *
- * <p>They used to be read once in {@code WebOperations}' (and {@code PipelineLimitsGuard}'s)
- * constructor, which made them process-wide: the {@code PlanLimitsResolver} / {@code
- * PrincipalResolver} seam existed but was dead for exactly the three limits a paid tier would most
- * want to raise, and no restart-free change could ever move them.
- *
  * <p>This test swaps in a resolver whose plan CHANGES BETWEEN REQUESTS, against a live context, and
  * shows the very same request is accepted or rejected accordingly — which a constructor snapshot
- * cannot do. It also covers the thread hop that made this non-trivial: the operations run on
+ * cannot do. It also covers the thread hop that makes this non-trivial: the operations run on
  * {@code LoadGuard}'s bounded executor, not on the request thread, so the resolved plan has to be
  * carried across.
  */

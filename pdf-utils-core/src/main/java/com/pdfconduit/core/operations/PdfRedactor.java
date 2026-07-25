@@ -112,9 +112,9 @@ public final class PdfRedactor {
     /**
      * Rejects every region that could not be applied, <b>before</b> a single page is written.
      * Redaction is security-critical, so an un-appliable rectangle is an error, never a skip:
-     * silently ignoring one used to return the untouched document — with the personal data fully
+     * silently ignoring one would hand back the untouched document — with the personal data fully
      * readable — under a {@code *_redacted.pdf} name and no signal whatsoever. Mirrors
-     * {@link PdfSigner}'s out-of-range page check, which has always been strict.
+     * {@link PdfSigner}'s strict out-of-range page check.
      *
      * <p>An <em>empty</em> region list is still legal (nothing was asked for, nothing is claimed);
      * callers that name their output "redacted" must reject that case themselves.

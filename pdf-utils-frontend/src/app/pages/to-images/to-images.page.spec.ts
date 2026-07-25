@@ -9,13 +9,13 @@ import { environment } from '../../../environments/environment';
 import { TRANSLOCO_TESTING_PROVIDERS, translocoTesting } from '../../testing/transloco-testing';
 
 /**
- * The DPI field used to hard-code `max="600"` while the backend refuses
- * anything above `render.max-dpi` (300 in the strict/public preset): the form
- * called a value valid and the server answered 422. The ceiling now comes from
- * `GET /api/capabilities` (`maxDpi`), and the four things a user can see or hit
- * — the `max` attribute, the validator, the help text and the error text — must
- * all quote the SAME number. A spec that only checked the validator would miss
- * copy still promising 600.
+ * The backend refuses anything above `render.max-dpi` (300 in the strict/public
+ * preset), so a hard-coded `max` on the DPI field would call a value valid that
+ * the server answers 422 for. The ceiling comes from `GET /api/capabilities`
+ * (`maxDpi`), and the four things a user can see or hit — the `max` attribute,
+ * the validator, the help text and the error text — must all quote the SAME
+ * number. A spec that only checked the validator would miss copy still
+ * promising a figure the server will not render.
  */
 describe('ToImagesPage — DPI ceiling', () => {
   let fixture: ComponentFixture<ToImagesPage>;
@@ -97,7 +97,7 @@ describe('ToImagesPage — DPI ceiling', () => {
     build({ ...baseCaps, maxDpi: 300 });
 
     expectEverythingAgreesOn(300);
-    // The bug was copy promising a range the server never accepted.
+    // Copy must not promise a range the server does not accept.
     expect(helpText()).not.toContain('600');
   });
 

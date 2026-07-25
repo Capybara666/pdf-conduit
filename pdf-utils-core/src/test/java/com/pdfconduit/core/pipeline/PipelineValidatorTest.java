@@ -37,7 +37,7 @@ class PipelineValidatorTest {
         m.connections.add(new Connection("s", "c"));
 
         // Images (and other formats) are converted to PDF automatically, so a
-        // non-PDF source feeding any operation is no longer an error.
+        // non-PDF source feeding any operation is valid.
         assertTrue(PipelineValidator.validate(m).isEmpty());
     }
 

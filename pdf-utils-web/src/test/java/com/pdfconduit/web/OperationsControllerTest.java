@@ -351,8 +351,8 @@ class OperationsControllerTest {
     }
 
     /**
-     * A region past the last page used to be dropped silently: 200 OK, {@code a_redacted.pdf},
-     * personal data fully intact. It must now fail — never a 2xx.
+     * A region past the last page must fail — never a 2xx. Dropping it silently would answer
+     * 200 OK with {@code a_redacted.pdf} and the personal data fully intact.
      */
     @Test
     void redact_pageIndexPastLastPage_isRejected() throws Exception {
@@ -409,8 +409,8 @@ class OperationsControllerTest {
 
     /**
      * Art. 9 keyword flags (health, religion, …) carry no coordinates, so there is nothing to
-     * black out. This used to stream the ORIGINAL file back as {@code a_redacted.pdf}, 200 OK —
-     * the most dangerous possible lie. It must be an honest 422 with no file at all.
+     * black out. Streaming the ORIGINAL file back as {@code a_redacted.pdf}, 200 OK, would be the
+     * most dangerous possible lie: it must be an honest 422 with no file at all.
      */
     @Test
     void autoRedact_onlyKeywordFindings_refusesInsteadOfFakingARedactedFile() throws Exception {

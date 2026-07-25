@@ -20,11 +20,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * The aggregate output budget on the <b>one-output-per-file</b> MAP batches — {@code /api/extract}
  * in combine mode and its siblings (rotate, compress, watermark, metadata, …).
  *
- * <p>The budget originally covered only the multi-output paths ({@code to-images},
- * {@code extract?separate}), so these were bounded solely by the multipart ceiling and the free-tier
- * caps: a 200 MB upload could be turned into ~200 MB of results, held in the heap and copied again
- * into an in-memory ZIP. They accumulate exactly like the multi-output paths, so they now get
- * exactly the same running ceiling — 422 {@code output_too_large}, never an OOM.
+ * <p>These accumulate exactly like the multi-output paths ({@code to-images},
+ * {@code extract?separate}): a 200 MB upload turns into ~200 MB of results, held in the heap and
+ * copied again into an in-memory ZIP, which the multipart ceiling and the free-tier caps do not
+ * bound. They therefore run under exactly the same running ceiling — 422
+ * {@code output_too_large}, never an OOM.
  *
  * <p>The byte ceiling is set absurdly low so an abort is provably the budget and not a coincidence
  * of input size, and the pixel ceiling is raised out of the way so a 422 can only have come from the
@@ -65,9 +65,9 @@ class OutputBudgetBatchTest {
         return request;
     }
 
-    // ------------------------------------------------------- the gap that was open
+    // ------------------------------------------------- one output per input file
 
-    /** Combine-mode extract: one PDF per input, accumulated and zipped — now bounded. */
+    /** Combine-mode extract: one PDF per input, accumulated and zipped — bounded like the rest. */
     @Test
     void extractCombine_accumulatedBytesOverBudget_rejectedAsOutputTooLarge() throws Exception {
         mvc.perform(batch("/api/extract", MANY))

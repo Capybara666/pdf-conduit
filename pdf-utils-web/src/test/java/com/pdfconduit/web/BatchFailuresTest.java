@@ -26,9 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Partial-tolerant MAP batches: one unusable file must not cost the user the whole upload.
  *
- * <p>The failing case that motivated this: fifteen PDFs compressed, number fourteen is
- * password-protected — the request used to 422 with "The PDF is password-protected." and no file
- * name, so the only way to find the culprit was to re-upload subsets.
+ * <p>The case that matters: fifteen PDFs compressed, number fourteen is password-protected. The
+ * other fourteen results must still come back, and the response must NAME the bad file — a bare
+ * 422 "The PDF is password-protected." leaves re-uploading subsets as the only way to find it.
  */
 @SpringBootTest
 @AutoConfigureMockMvc

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 /**
  * Free-tier daily-quota facade. Counting is delegated to a {@link QuotaStore} (in-memory today,
  * a shared store later) so multi-instance correctness is a store swap, not a logic change. The
- * daily <em>limit</em> no longer lives here: it is a {@link com.pdfconduit.web.plan.PlanLimits}
+ * daily <em>limit</em> is not owned here: it is a {@link com.pdfconduit.web.plan.PlanLimits}
  * value the caller passes in, so a later paid tier raises the limit without touching this class.
  * Only successful operations are counted (the interceptor increments in {@code afterCompletion} on
  * a 2xx), so failed requests never burn quota.

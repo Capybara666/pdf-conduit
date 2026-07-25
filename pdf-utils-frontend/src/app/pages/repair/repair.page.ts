@@ -35,9 +35,6 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         (filesChange)="files.set($event)"
       />
 
-      <!-- The "not every file can be recovered" caveat lives in the page description
-           now: as a second note here it sat under the drop zone repeating the
-           description's own first sentence back at the reader. -->
       <p class="hint-note" role="note">{{ 'pages.repair.privacyLine' | transloco }}</p>
       @if (files().length > 1) {
         <p class="help">{{ 'pages.repair.batchNote' | transloco: { count: files().length } }}</p>
