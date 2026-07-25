@@ -275,7 +275,7 @@
   "privacy": {
     "title": "Confidentialité",
     "description": "Comment PDF Conduit traite vos fichiers. En bref : il ne les conserve pas.",
-    "memoryTitle": "Vos fichiers ne sont jamais conservés",
+    "memoryTitle": "Nous ne conservons jamais vos fichiers",
     "memoryBody": "Vos fichiers ne sont jamais conservés. Chaque opération se déroule entièrement au sein d'une seule requête : votre fichier est traité puis renvoyé directement, avant d'être supprimé dans l'instant. Nous ne gardons rien, et rien n'est jamais utilisé à d'autres fins.",
     "exceptionTitle": "La seule exception temporaire",
     "exceptionBody": "La conversion de documents bureautiques ou texte (par exemple .docx, .xlsx, .pptx) nécessite un LibreOffice en mode sans interface. Pour cette étape uniquement, le fichier est écrit dans un dossier temporaire isolé qui est supprimé immédiatement après la fin de la conversion. Les simples PDF et images ne touchent jamais le disque.",

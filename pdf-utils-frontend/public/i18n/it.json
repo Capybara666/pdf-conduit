@@ -275,7 +275,7 @@
   "privacy": {
     "title": "Privacy",
     "description": "Come PDF Conduit gestisce i tuoi file. In breve: non li conserva.",
-    "memoryTitle": "I tuoi file non vengono mai conservati",
+    "memoryTitle": "Non conserviamo mai i tuoi file",
     "memoryBody": "I tuoi file non vengono mai conservati. Ogni operazione si svolge interamente all'interno di una singola richiesta: il file caricato viene elaborato e restituito direttamente a te, per poi essere eliminato in quello stesso istante. Non tratteniamo nulla e nulla viene mai usato per altri scopi.",
     "exceptionTitle": "L'unica eccezione temporanea",
     "exceptionBody": "La conversione di documenti Office o di testo (ad esempio .docx, .xlsx, .pptx) richiede un LibreOffice headless. Solo per quel passaggio, il file viene scritto in una cartella temporanea isolata che viene eliminata immediatamente al termine della conversione. I PDF e le immagini semplici non toccano mai il disco.",

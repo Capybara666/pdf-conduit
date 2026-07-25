@@ -275,7 +275,7 @@
   "privacy": {
     "title": "Gizlilik",
     "description": "PDF Conduit dosyalarınızı nasıl işler. Kısacası: onları saklamaz.",
-    "memoryTitle": "Dosyalarınız asla saklanmaz",
+    "memoryTitle": "Dosyalarınızı asla saklamayız",
     "memoryBody": "Dosyalarınız asla saklanmaz. Her işlem tamamen tek bir istek içinde gerçekleşir: yüklediğiniz dosya işlenir, doğrudan size geri gönderilir ve hemen ardından silinir. Hiçbir şey tutulmaz ve hiçbir şey asla başka bir amaçla kullanılmaz.",
     "exceptionTitle": "Tek geçici istisna",
     "exceptionBody": "Ofis veya metin belgelerini (örneğin .docx, .xlsx, .pptx) dönüştürmek için başsız bir LibreOffice gerekir. Yalnızca o adım için dosya, dönüştürme tamamlandıktan hemen sonra silinen izole bir geçici klasöre yazılır. Düz PDF'ler ve görseller diske hiç dokunmaz.",

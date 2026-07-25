@@ -2,7 +2,7 @@
   "width": {
     "label": "Szerokość układu",
     "fixed": "Stała",
-    "wide": "Szeroka"
+    "wide": "Pełna"
   },
   "common": {
     "download": "Pobierz",
@@ -275,7 +275,7 @@
   "privacy": {
     "title": "Prywatność",
     "description": "Jak PDF Conduit traktuje Twoje pliki. W skrócie: nie zapisuje ich.",
-    "memoryTitle": "Twoje pliki nie są nigdzie zapisywane",
+    "memoryTitle": "Nigdy nie zapisujemy Twoich plików",
     "memoryBody": "Nie zapisujemy Twoich plików. Cała operacja mieści się w jednym żądaniu: przesłany plik jest przetwarzany, odsyłany prosto do Ciebie i natychmiast usuwany. Niczego nie zachowujemy i do niczego innego nie wykorzystujemy.",
     "exceptionTitle": "Jeden tymczasowy wyjątek",
     "exceptionBody": "Konwersja dokumentów Office i tekstowych (np. .docx, .xlsx, .pptx) wymaga LibreOffice. Tylko na czas tego kroku plik trafia do odizolowanego folderu tymczasowego, usuwanego zaraz po konwersji. PDF-y i obrazy nigdy nie trafiają na dysk.",
@@ -668,7 +668,7 @@
       "description": "Wyświetl, edytuj lub usuń metadane dokumentu.",
       "hint": "Pliki PDF. Te same zmiany trafią do każdego (kilka pobierzesz jako ZIP).",
       "batchNote": "Te same pola zostaną zastosowane do każdego pliku. Podgląd pokazuje tylko pierwszy.",
-      "readCurrent": "Wczytaj obecne wartości",
+      "readCurrent": "Wczytaj z pliku",
       "reading": "Wczytywanie…",
       "titleField": "Tytuł",
       "author": "Autor",
@@ -890,7 +890,7 @@
     "loading": "Ładowanie stron…",
     "toolbar": "Narzędzia wyboru stron",
     "selectAll": "Wszystkie",
-    "none": "Żadne",
+    "none": "Odznacz wszystkie",
     "invert": "Odwróć",
     "odd": "Nieparzyste",
     "even": "Parzyste",
