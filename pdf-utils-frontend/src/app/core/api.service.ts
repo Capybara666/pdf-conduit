@@ -1,7 +1,14 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpHeaders,
+  HttpResponse,
+} from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, filter, finalize, map, tap, throwError } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import {
@@ -22,6 +29,7 @@ import {
 } from './api.models';
 import { errorCopyKeys } from './error-copy';
 import { QuotaService } from './quota.service';
+import { NOW, RunFile, RunObservable, RunTracker, filesOf, withRunTracker } from './run-progress';
 import { ToastService } from './toast.service';
 import { NodeKindInfo, PipelineModelJson, PipelineValidationError } from './pipeline.models';
 
@@ -41,6 +49,7 @@ export class ApiService {
   private readonly quota = inject(QuotaService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly now = inject(NOW);
   private readonly base = `${environment.apiBase}/api`;
 
   // ---- Catalog / health -------------------------------------------------
@@ -129,15 +138,60 @@ export class ApiService {
    * POST a multipart body to any operation endpoint and stream back the binary
    * result. `endpoint` may be a bare op id (`"merge"`) or an explicit path
    * (`"metadata/read"`); a leading `/api` or `/` is tolerated.
+   *
+   * The request is observed as an event stream (`reportProgress`) so the caller
+   * can show a real upload percentage and then an honest "the server is working"
+   * wait — a 25 MB upload on a slow uplink is minutes of otherwise dead air, and
+   * users read dead air as a hang, reload, and burn a second quota unit. The
+   * progress rides on the returned observable as `.run` ({@link RunObservable}),
+   * so none of the typed wrappers below have to thread a callback.
+   *
+   * Unsubscribing aborts the underlying XHR; `finalize` then marks the tracker
+   * cancelled (a no-op once the request has succeeded or failed).
    */
-  runOperation(endpoint: string, formData: FormData): Observable<RunResult> {
+  runOperation(endpoint: string, formData: FormData): RunObservable {
     const url = this.resolve(endpoint);
-    return this.http
-      .post(url, formData, { observe: 'response', responseType: 'blob' })
+    const run = new RunTracker(this.now);
+    const files = filesOf(formData);
+    const request = this.http
+      .post(url, formData, { observe: 'events', reportProgress: true, responseType: 'blob' })
       .pipe(
-        map((res) => this.toRunResult(res)),
-        catchError((err) => this.toApiError(err)),
+        tap((event) => this.track(run, event, files)),
+        filter((event): event is HttpResponse<Blob> => event.type === HttpEventType.Response),
+        map((res) => {
+          run.succeed();
+          return this.toRunResult(res);
+        }),
+        catchError((err) => {
+          run.fail();
+          return this.toApiError(err);
+        }),
+        finalize(() => run.cancel()),
       );
+    return withRunTracker(request, run);
+  }
+
+  /**
+   * Fold one HTTP event into the tracker. `UploadProgress` without a `total`
+   * (the browser cannot always compute one) leaves the tracker indeterminate
+   * rather than inventing a percentage; the first byte of the RESPONSE means the
+   * server is done thinking, so it also ends the upload phase for that case.
+   */
+  private track(run: RunTracker, event: HttpEvent<unknown>, files: readonly RunFile[]): void {
+    switch (event.type) {
+      case HttpEventType.Sent:
+        run.begin(files);
+        break;
+      case HttpEventType.UploadProgress:
+        run.upload(event.loaded, event.total);
+        break;
+      case HttpEventType.ResponseHeader:
+      case HttpEventType.DownloadProgress:
+        run.processing();
+        break;
+      default:
+        break;
+    }
   }
 
   // ---- Typed convenience wrappers (thin; forms build the FormData) ------
@@ -230,8 +284,12 @@ export class ApiService {
       .pipe(catchError((err) => this.toApiError(err)));
   }
 
-  /** `POST /api/pipeline/run` → ZIP of terminal outputs. */
-  runPipeline(formData: FormData): Observable<RunResult> {
+  /**
+   * `POST /api/pipeline/run` → ZIP of terminal outputs. Typed as a
+   * {@link RunObservable} because the pipeline page drives the waiting indicator
+   * from `.run` itself (it does not use `OperationState`).
+   */
+  runPipeline(formData: FormData): RunObservable {
     return this.runOperation('pipeline/run', formData);
   }
 

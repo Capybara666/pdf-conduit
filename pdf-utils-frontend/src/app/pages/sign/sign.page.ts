@@ -6,6 +6,7 @@ import { FormField } from '../../core/api.models';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { PdfViewerComponent, RegionRect } from '../../shared/pdf-viewer/pdf-viewer.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -37,6 +38,7 @@ function isFillable(f: FormField): boolean {
   imports: [
     TranslocoModule,
     FileDropZoneComponent,
+    OpProgressComponent,
     PageHeaderComponent,
     PdfViewerComponent,
     ResultPanelComponent,
@@ -295,9 +297,14 @@ function isFillable(f: FormField): boolean {
               <button type="button" class="btn" (click)="clearWork()">{{ 'common.clear' | transloco }}</button>
             </div>
 
+            <app-op-progress
+              [run]="state.tracker()"
+              [label]="'pages.sign.loading' | transloco"
+              (cancel)="state.cancel()"
+              (dismiss)="state.dismiss()"
+            />
+
             <app-result-panel
-              [loading]="state.loading()"
-              [loadingLabel]="'pages.sign.loading' | transloco"
               [error]="state.error()"
               [result]="state.result()"
               (retry)="submit()"

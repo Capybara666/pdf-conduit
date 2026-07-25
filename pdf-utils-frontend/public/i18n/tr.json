@@ -389,6 +389,22 @@
     "expandPreview": "Önizlemeyi büyüt",
     "close": "Kapat"
   },
+  "progress": {
+    "label": "İşlem ilerlemesi",
+    "uploading": "Yükleniyor %{{percent}}",
+    "uploadingPlain": "Yükleniyor…",
+    "bytes": "{{total}} içinden {{done}}",
+    "sent": "{{done}} gönderildi",
+    "stageWorking": "Dosyalarınız üzerinde çalışılıyor…",
+    "stageLarger": "Bu daha büyük bir iş. Devam ediyor.",
+    "stageLong": "Hâlâ çalışıyor. Büyük dosyalar biraz zaman alabilir.",
+    "stageVeryLong": "Bu her zamankinden uzun sürüyor. Beklemeye devam edebilir ya da iptal edip daha küçük bir dosyayla deneyebilirsiniz.",
+    "elapsed": "{{time}} geçti",
+    "cancel": "İptal",
+    "cancelled": "İptal edildi",
+    "cancelledNote": "Bu sonucu beklemeyi bıraktınız. Sunucumuz işi yine de bitirebilir ve bu işlem bugünkü ücretsiz sınıra sayılmaya devam eder.",
+    "dismiss": "Kapat"
+  },
   "viewer": {
     "renderingPreview": "Önizleme oluşturuluyor…",
     "renderError": "Bu PDF oluşturulamadı.",

@@ -389,6 +389,22 @@
     "expandPreview": "Powiększ podgląd",
     "close": "Zamknij"
   },
+  "progress": {
+    "label": "Postęp operacji",
+    "uploading": "Wysyłanie {{percent}}%",
+    "uploadingPlain": "Wysyłanie…",
+    "bytes": "{{done}} z {{total}}",
+    "sent": "Wysłano {{done}}",
+    "stageWorking": "Pracujemy nad twoimi plikami…",
+    "stageLarger": "To większe zadanie. Wciąż trwa.",
+    "stageLong": "Nadal pracujemy. Duże pliki mogą chwilę zająć.",
+    "stageVeryLong": "To trwa dłużej niż zwykle. Możesz dalej czekać albo anulować i spróbować z mniejszym plikiem.",
+    "elapsed": "Upłynęło {{time}}",
+    "cancel": "Anuluj",
+    "cancelled": "Anulowano",
+    "cancelledNote": "Przestajesz czekać na ten wynik. Nasz serwer może i tak dokończyć zadanie, a operacja nadal liczy się do dzisiejszego darmowego limitu.",
+    "dismiss": "Zamknij"
+  },
   "viewer": {
     "renderingPreview": "Generowanie podglądu…",
     "renderError": "Nie udało się wyświetlić tego PDF-a.",

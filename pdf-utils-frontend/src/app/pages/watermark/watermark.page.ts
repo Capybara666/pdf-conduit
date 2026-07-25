@@ -8,6 +8,7 @@ import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -24,6 +25,7 @@ type Position = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-ri
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    OpProgressComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -168,9 +170,14 @@ type Position = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-ri
         }
       </div>
 
+      <app-op-progress
+        [run]="state.tracker()"
+        [label]="'pages.watermark.loading' | transloco"
+        (cancel)="state.cancel()"
+        (dismiss)="state.dismiss()"
+      />
+
       <app-result-panel
-        [loading]="state.loading()"
-        [loadingLabel]="'pages.watermark.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
         (retry)="submit()"

@@ -389,6 +389,22 @@
     "expandPreview": "Vorschau vergrößern",
     "close": "Schließen"
   },
+  "progress": {
+    "label": "Fortschritt des Vorgangs",
+    "uploading": "Wird hochgeladen: {{percent}} %",
+    "uploadingPlain": "Wird hochgeladen…",
+    "bytes": "{{done}} von {{total}}",
+    "sent": "{{done}} gesendet",
+    "stageWorking": "Ihre Dateien werden bearbeitet…",
+    "stageLarger": "Das ist ein größerer Auftrag. Es geht weiter.",
+    "stageLong": "Läuft noch. Bei großen Dateien kann es etwas dauern.",
+    "stageVeryLong": "Das dauert länger als sonst. Sie können weiter warten oder abbrechen und es mit einer kleineren Datei versuchen.",
+    "elapsed": "{{time}} vergangen",
+    "cancel": "Abbrechen",
+    "cancelled": "Abgebrochen",
+    "cancelledNote": "Sie warten nicht mehr auf dieses Ergebnis. Unser Server beendet den Auftrag möglicherweise trotzdem, und er zählt weiterhin zum heutigen kostenlosen Limit.",
+    "dismiss": "Ausblenden"
+  },
   "viewer": {
     "renderingPreview": "Vorschau wird gerendert…",
     "renderError": "Dieses PDF konnte nicht gerendert werden.",

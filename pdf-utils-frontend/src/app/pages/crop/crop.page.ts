@@ -6,6 +6,7 @@ import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -17,6 +18,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    OpProgressComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -81,9 +83,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
+      <app-op-progress
+        [run]="state.tracker()"
+        [label]="'pages.crop.loading' | transloco"
+        (cancel)="state.cancel()"
+        (dismiss)="state.dismiss()"
+      />
+
       <app-result-panel
-        [loading]="state.loading()"
-        [loadingLabel]="'pages.crop.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
         (retry)="submit()"

@@ -389,6 +389,22 @@
     "expandPreview": "Ampliar vista previa",
     "close": "Cerrar"
   },
+  "progress": {
+    "label": "Progreso de la operación",
+    "uploading": "Subiendo {{percent}} %",
+    "uploadingPlain": "Subiendo…",
+    "bytes": "{{done}} de {{total}}",
+    "sent": "{{done}} enviados",
+    "stageWorking": "Trabajando con tus archivos…",
+    "stageLarger": "Es un trabajo más grande. Seguimos.",
+    "stageLong": "Seguimos trabajando. Los archivos grandes pueden tardar un poco.",
+    "stageVeryLong": "Esto está tardando más de lo normal. Puedes seguir esperando o cancelar y probar con un archivo más pequeño.",
+    "elapsed": "{{time}} transcurrido",
+    "cancel": "Cancelar",
+    "cancelled": "Cancelado",
+    "cancelledNote": "Has dejado de esperar este resultado. Puede que nuestro servidor termine el trabajo de todos modos, y sigue contando para el límite gratuito de hoy.",
+    "dismiss": "Descartar"
+  },
   "viewer": {
     "renderingPreview": "Generando vista previa…",
     "renderError": "No se pudo mostrar este PDF.",

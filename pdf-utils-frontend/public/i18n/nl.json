@@ -389,6 +389,22 @@
     "expandPreview": "Voorbeeld vergroten",
     "close": "Sluiten"
   },
+  "progress": {
+    "label": "Voortgang van de bewerking",
+    "uploading": "Uploaden {{percent}}%",
+    "uploadingPlain": "Uploaden…",
+    "bytes": "{{done}} van {{total}}",
+    "sent": "{{done}} verzonden",
+    "stageWorking": "Bezig met je bestanden…",
+    "stageLarger": "Dit is een grotere klus. We gaan door.",
+    "stageLong": "Nog steeds bezig. Grote bestanden kunnen even duren.",
+    "stageVeryLong": "Dit duurt langer dan gewoonlijk. Je kunt blijven wachten, of annuleren en het met een kleiner bestand proberen.",
+    "elapsed": "{{time}} verstreken",
+    "cancel": "Annuleren",
+    "cancelled": "Geannuleerd",
+    "cancelledNote": "Je wacht niet langer op dit resultaat. Onze server maakt de klus mogelijk toch af, en hij telt nog steeds mee voor de gratis limiet van vandaag.",
+    "dismiss": "Sluiten"
+  },
   "viewer": {
     "renderingPreview": "Voorbeeld weergeven…",
     "renderError": "Kan deze PDF niet weergeven.",

@@ -389,6 +389,22 @@
     "expandPreview": "プレビューを拡大",
     "close": "閉じる"
   },
+  "progress": {
+    "label": "処理の進行状況",
+    "uploading": "アップロード中 {{percent}}%",
+    "uploadingPlain": "アップロード中…",
+    "bytes": "{{total}} 中 {{done}}",
+    "sent": "{{done}} 送信済み",
+    "stageWorking": "ファイルを処理しています…",
+    "stageLarger": "大きめの処理です。続行中です。",
+    "stageLong": "まだ処理中です。大きなファイルは時間がかかることがあります。",
+    "stageVeryLong": "いつもより時間がかかっています。このまま待つことも、キャンセルして小さいファイルで試すこともできます。",
+    "elapsed": "経過 {{time}}",
+    "cancel": "キャンセル",
+    "cancelled": "キャンセルしました",
+    "cancelledNote": "この結果を待つのをやめました。サーバー側では処理が完了する場合があり、本日の無料利用回数にはカウントされたままです。",
+    "dismiss": "閉じる"
+  },
   "viewer": {
     "renderingPreview": "プレビューを描画中…",
     "renderError": "この PDF を描画できませんでした。",

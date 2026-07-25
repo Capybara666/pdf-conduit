@@ -7,6 +7,7 @@ import { CapabilitiesService } from '../../core/capabilities.service';
 import { OperationState } from '../../core/operation-state';
 import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -42,6 +43,7 @@ const LANG_LABELS: Record<string, string> = {
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    OpProgressComponent,
     PageHeaderComponent,
     ResultPanelComponent,
   ],
@@ -115,9 +117,14 @@ const LANG_LABELS: Record<string, string> = {
         <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
+      <app-op-progress
+        [run]="state.tracker()"
+        [label]="'pages.ocr.loading' | transloco"
+        (cancel)="state.cancel()"
+        (dismiss)="state.dismiss()"
+      />
+
       <app-result-panel
-        [loading]="state.loading()"
-        [loadingLabel]="'pages.ocr.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
         (retry)="submit()"

@@ -4,6 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ApiService } from '../../core/api.service';
 import { OperationState } from '../../core/operation-state';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
 
@@ -19,7 +20,7 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
 @Component({
   selector: 'app-repair-page',
   standalone: true,
-  imports: [TranslocoModule, FileDropZoneComponent, PageHeaderComponent, ResultPanelComponent],
+  imports: [TranslocoModule, FileDropZoneComponent, OpProgressComponent, PageHeaderComponent, ResultPanelComponent],
   template: `
     <section class="op-page">
       <app-page-header
@@ -55,9 +56,14 @@ import { ResultPanelComponent } from '../../shared/result-panel/result-panel.com
         <button type="button" class="btn" (click)="clear()">{{ 'common.clear' | transloco }}</button>
       </div>
 
+      <app-op-progress
+        [run]="state.tracker()"
+        [label]="'pages.repair.loading' | transloco"
+        (cancel)="state.cancel()"
+        (dismiss)="state.dismiss()"
+      />
+
       <app-result-panel
-        [loading]="state.loading()"
-        [loadingLabel]="'pages.repair.loading' | transloco"
         [error]="state.error()"
         [result]="state.result()"
         (retry)="submit()"

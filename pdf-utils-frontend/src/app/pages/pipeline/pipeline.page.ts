@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
 
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
@@ -10,8 +11,10 @@ import {
   NodeKindName,
   PipelineValidationError,
 } from '../../core/pipeline.models';
+import { RunTracker } from '../../core/run-progress';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { OpIconComponent } from '../../shared/op-icon/op-icon.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { PipelineCanvasComponent } from './canvas/pipeline-canvas.component';
 import { PipelineInspectorComponent } from './canvas/pipeline-inspector.component';
@@ -57,6 +60,7 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
     TranslocoModule,
     PageHeaderComponent,
     OpIconComponent,
+    OpProgressComponent,
     SpinnerComponent,
     PipelineCanvasComponent,
     PipelineInspectorComponent,
@@ -149,7 +153,16 @@ const FALLBACK_KINDS: NodeKindInfo[] = [
                   <button type="button" class="btn" [disabled]="busy() || !cv.nodes().length" (click)="validate(cv)">{{ 'pages.pipeline.validate' | transloco }}</button>
                   <button type="button" class="btn btn-primary" [disabled]="!cv.runnable() || busy()" (click)="run(cv)">{{ 'pages.pipeline.run' | transloco }}</button>
                 </div>
-                @if (busy()) { <app-spinner [label]="'pages.pipeline.running' | transloco" /> }
+                @if (runTracker()) {
+                  <app-op-progress
+                    [run]="runTracker()"
+                    [label]="'pages.pipeline.running' | transloco"
+                    (cancel)="cancelRun()"
+                    (dismiss)="runTracker.set(null)"
+                  />
+                } @else if (busy()) {
+                  <app-spinner [label]="'pages.pipeline.running' | transloco" />
+                }
 
                 @if (validationErrors() !== null) {
                   @if (validationErrors()!.length) {
@@ -434,6 +447,15 @@ export class PipelinePage implements OnInit, AfterViewInit {
   protected readonly result = signal<RunResult | null>(null);
   protected readonly validationErrors = signal<PipelineValidationError[] | null>(null);
 
+  /**
+   * Progress of the current `/pipeline/run` upload. A pipeline run is the
+   * heaviest thing this app can ask for (many files, several stages), so it gets
+   * the full waiting indicator; `validate` stays on the plain spinner because it
+   * uploads nothing but the graph.
+   */
+  protected readonly runTracker = signal<RunTracker | null>(null);
+  private runSub: Subscription | null = null;
+
   ngOnInit(): void {
     // Best-effort: use the backend's node-kind catalog; fall back if absent.
     this.api.getPipelineKinds().subscribe({
@@ -513,16 +535,30 @@ export class PipelinePage implements OnInit, AfterViewInit {
     // Each SOURCE node owns its uploads; gather them all (deduped by name) for the multipart request.
     for (const f of cv.allSourceFiles()) fd.append('files', f, f.name);
     for (const a of cv.assetFiles()) fd.append('nodeAssets', a, a.name);
-    this.api.runPipeline(fd).subscribe({
+    const request = this.api.runPipeline(fd);
+    this.runTracker.set(request.run);
+    this.runSub = request.subscribe({
       next: (r) => {
+        this.runSub = null;
+        this.runTracker.set(null);
         this.result.set(r);
         this.busy.set(false);
       },
       error: (e) => {
+        this.runSub = null;
+        this.runTracker.set(null);
         this.error.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
         this.busy.set(false);
       },
     });
+  }
+
+  /** Stop waiting for the pipeline result: aborts the upload and frees the page. */
+  cancelRun(): void {
+    this.runSub?.unsubscribe();
+    this.runSub = null;
+    this.runTracker()?.cancel();
+    this.busy.set(false);
   }
 
   save(): void {

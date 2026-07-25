@@ -389,6 +389,22 @@
     "expandPreview": "Ampliar pré-visualização",
     "close": "Fechar"
   },
+  "progress": {
+    "label": "Progresso da operação",
+    "uploading": "A enviar {{percent}}%",
+    "uploadingPlain": "A enviar…",
+    "bytes": "{{done}} de {{total}}",
+    "sent": "{{done}} enviados",
+    "stageWorking": "A trabalhar nos seus ficheiros…",
+    "stageLarger": "É um trabalho maior. Continua a decorrer.",
+    "stageLong": "Ainda a trabalhar. Ficheiros grandes podem demorar um pouco.",
+    "stageVeryLong": "Está a demorar mais do que o habitual. Pode continuar à espera ou cancelar e tentar com um ficheiro mais pequeno.",
+    "elapsed": "{{time}} decorridos",
+    "cancel": "Cancelar",
+    "cancelled": "Cancelado",
+    "cancelledNote": "Deixou de esperar por este resultado. O nosso servidor pode terminar o trabalho mesmo assim, e continua a contar para o limite gratuito de hoje.",
+    "dismiss": "Fechar"
+  },
   "viewer": {
     "renderingPreview": "A preparar pré-visualização…",
     "renderError": "Não foi possível apresentar este PDF.",
