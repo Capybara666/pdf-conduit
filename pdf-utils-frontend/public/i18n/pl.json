@@ -181,7 +181,7 @@
     "hero": {
       "eyebrow": "Za darmo · Nie zapisujemy Twoich plików",
       "title": "Wszystkie narzędzia PDF w jednym miejscu.",
-      "lede": "Scalaj, kompresuj, konwertuj, zabezpieczaj i zamazuj PDF-y w kilka sekund. Plik jest przetwarzany od razu i nigdy nie trafia na nasze serwery. Bez konta i bez instalacji.",
+      "lede": "Scalaj, kompresuj, konwertuj, zabezpieczaj i zamazuj PDF-y w kilka sekund. Plik jest przetwarzany od razu i nigdy nie jest zapisywany na naszych serwerach. Bez konta i bez instalacji.",
       "ctaStart": "Zacznij za darmo",
       "ctaExplore": "Poznaj narzędzia",
       "note": "Bez zapisywania plików · Bez rejestracji · Na każdym urządzeniu"
@@ -189,7 +189,7 @@
     "trust": {
       "aria": "Dlaczego PDF Conduit",
       "memoryTitle": "Nie zapisujemy plików",
-      "memoryDesc": "Twój plik jest przetwarzany i od razu usuwany. Nigdy nie trafia na dysk ani na nasze serwery.",
+      "memoryDesc": "Twój plik jest przetwarzany i od razu usuwany. Nigdy nie zapisujemy go na dysku ani nie przechowujemy na naszych serwerach.",
       "accountTitle": "Bez konta",
       "accountDesc": "Zaczynasz od razu, bez e-maila, hasła i rejestracji.",
       "browserTitle": "Działa w przeglądarce",
