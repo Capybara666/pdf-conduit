@@ -372,6 +372,22 @@
     "expandPreview": "Ingrandisci anteprima",
     "close": "Chiudi"
   },
+  "progress": {
+    "label": "Avanzamento dell'operazione",
+    "uploading": "Caricamento {{percent}}%",
+    "uploadingPlain": "Caricamento…",
+    "bytes": "{{done}} di {{total}}",
+    "sent": "{{done}} inviati",
+    "stageWorking": "Stiamo lavorando sui tuoi file…",
+    "stageLarger": "È un lavoro più impegnativo. Si continua.",
+    "stageLong": "Ancora al lavoro. I file grandi possono richiedere un po' di tempo.",
+    "stageVeryLong": "Sta impiegando più del solito. Puoi continuare ad aspettare oppure annullare e provare con un file più piccolo.",
+    "elapsed": "{{time}} trascorsi",
+    "cancel": "Annulla",
+    "cancelled": "Annullato",
+    "cancelledNote": "Hai smesso di aspettare questo risultato. Il nostro server potrebbe comunque completare il lavoro, e conta ancora nel limite gratuito di oggi.",
+    "dismiss": "Chiudi"
+  },
   "viewer": {
     "renderingPreview": "Generazione anteprima…",
     "renderError": "Impossibile visualizzare questo PDF.",

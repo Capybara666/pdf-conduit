@@ -372,6 +372,22 @@
     "expandPreview": "Expand preview",
     "close": "Close"
   },
+  "progress": {
+    "label": "Operation progress",
+    "uploading": "Uploading {{percent}}%",
+    "uploadingPlain": "Uploading…",
+    "bytes": "{{done}} of {{total}}",
+    "sent": "{{done}} sent",
+    "stageWorking": "Working on your files…",
+    "stageLarger": "This is a bigger job. Still going.",
+    "stageLong": "Still working. Large files can take a while.",
+    "stageVeryLong": "This is taking longer than usual. You can keep waiting, or cancel and try a smaller file.",
+    "elapsed": "{{time}} elapsed",
+    "cancel": "Cancel",
+    "cancelled": "Cancelled",
+    "cancelledNote": "You stopped waiting for this result. Our server may still finish the job, and it still counts toward today's free limit.",
+    "dismiss": "Dismiss"
+  },
   "viewer": {
     "renderingPreview": "Rendering preview…",
     "renderError": "Could not render this PDF.",

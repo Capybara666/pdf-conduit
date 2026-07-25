@@ -372,6 +372,22 @@
     "expandPreview": "展开预览",
     "close": "关闭"
   },
+  "progress": {
+    "label": "操作进度",
+    "uploading": "正在上传 {{percent}}%",
+    "uploadingPlain": "正在上传…",
+    "bytes": "{{total}} 中的 {{done}}",
+    "sent": "已发送 {{done}}",
+    "stageWorking": "正在处理你的文件…",
+    "stageLarger": "这是一个较大的任务，仍在进行。",
+    "stageLong": "仍在处理。大文件可能需要一些时间。",
+    "stageVeryLong": "这次比平时更久。你可以继续等待，也可以取消并改用更小的文件重试。",
+    "elapsed": "已用时 {{time}}",
+    "cancel": "取消",
+    "cancelled": "已取消",
+    "cancelledNote": "你已停止等待此结果。服务器仍可能完成该任务，并且它仍会计入今天的免费额度。",
+    "dismiss": "关闭"
+  },
   "viewer": {
     "renderingPreview": "正在渲染预览…",
     "renderError": "无法渲染此 PDF。",
