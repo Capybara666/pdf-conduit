@@ -55,13 +55,29 @@ public final class PdfSplitter {
      */
     public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages)
             throws PdfOperationException {
+        return separateBytes(pdf, pages, null);
+    }
+
+    /**
+     * As {@link #separateBytes(byte[], com.pdfconduit.core.model.PageRange)}, but reporting the
+     * accumulated output size to {@code outputGuard} after every page so a caller with a memory
+     * budget (the web backend) can abort a pathological split early instead of holding thousands
+     * of single-page PDFs in the heap. {@code null} ⇒ unbounded (the desktop/CLI default).
+     */
+    public static List<byte[]> separateBytes(byte[] pdf, com.pdfconduit.core.model.PageRange pages,
+                                             com.pdfconduit.core.service.OutputSizeGuard outputGuard)
+            throws PdfOperationException {
         try (PDDocument src = PdfLoader.load(pdf)) {
             List<Integer> pageNums = pages.isAll() ? allPages(src.getNumberOfPages()) : pages.pageNumbers();
             List<byte[]> outputs = new ArrayList<>(pageNums.size());
+            long accumulated = 0;
             for (int pageNum : pageNums) {
                 try (PDDocument one = singlePageDoc(src, pageNum)) {
-                    outputs.add(PdfLoader.toBytes(one));
+                    byte[] part = PdfLoader.toBytes(one);
+                    outputs.add(part);
+                    accumulated += part.length;
                 }
+                if (outputGuard != null) outputGuard.check(accumulated);
             }
             return outputs;
         } catch (IOException e) {

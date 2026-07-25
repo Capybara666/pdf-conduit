@@ -31,10 +31,13 @@ pdfconduit:
     processing:
       # Longer per-op wall-clock so debugging/big inputs don't abort (base: 60s).
       timeout-seconds: 600
+      # Generous aggregate result ceiling (base: 64MB).
+      max-total-output-bytes: 4GB
     pdf:
       # Allow very large PDFs locally (base: 3000).
       max-pages: 100000
     render:
-      # Permit high-DPI / large-pixel renders locally (base: 300 dpi / 60 MP).
+      # Permit high-DPI / large-pixel renders locally (base: 300 dpi / 60 MP / 500 MP per request).
       max-dpi: 1200
       max-output-pixels: 500000000
+      max-total-output-pixels: 20000000000

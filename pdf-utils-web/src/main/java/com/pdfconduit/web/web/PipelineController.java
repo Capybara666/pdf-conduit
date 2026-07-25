@@ -13,6 +13,7 @@ import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.dto.NodeKindInfo;
 import com.pdfconduit.web.dto.ValidationErrorDto;
 import com.pdfconduit.web.guard.LoadGuard;
+import com.pdfconduit.web.guard.OutputBudget;
 import com.pdfconduit.web.support.PipelineJson;
 import com.pdfconduit.web.support.Responses;
 import com.pdfconduit.web.support.Uploads;
@@ -46,10 +47,12 @@ public class PipelineController {
 
     private final Uploads uploads;
     private final LoadGuard loadGuard;
+    private final OutputBudget outputBudget;
 
-    public PipelineController(Uploads uploads, LoadGuard loadGuard) {
+    public PipelineController(Uploads uploads, LoadGuard loadGuard, OutputBudget outputBudget) {
         this.uploads = uploads;
         this.loadGuard = loadGuard;
+        this.outputBudget = outputBudget;
     }
 
     /**
@@ -126,6 +129,10 @@ public class PipelineController {
 
         List<NamedBytes> all = new ArrayList<>();
         for (List<NamedBytes> nodeOutputs : terminals.values()) all.addAll(nodeOutputs);
+        // Zipping copies the whole result set again (buffer + toByteArray), so refuse a result that
+        // is already over the per-request budget rather than tripling it in the heap first. The
+        // pipeline executor accumulates its terminals internally, so this is the last chokepoint.
+        outputBudget.checkResultBytes(all);
         return Responses.zip(all, "pipeline_results.zip");
     }
 

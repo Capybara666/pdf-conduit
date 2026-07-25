@@ -23,9 +23,9 @@ import java.util.List;
  * @param ratelimit          per-IP token-bucket rate limiting
  * @param quota              free-tier daily quota + per-file caps
  * @param concurrency        heavy-op concurrency + in-flight-byte anti-OOM guard
- * @param processing         per-operation processing timeout
+ * @param processing         per-operation processing timeout + aggregate output-byte ceiling
  * @param pdf                PDF-bomb guards (max page count)
- * @param render             raster-render guards (max DPI + total output-pixel ceiling)
+ * @param render             raster-render guards (max DPI + per-page and per-request pixel ceilings)
  * @param trustedProxies     CIDRs of proxies allowed to set {@code X-Forwarded-For} (client-IP trust)
  */
 @ConfigurationProperties("pdfconduit.web")
@@ -47,9 +47,9 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
         if (ratelimit == null) ratelimit = new RateLimit(true, null, null, null);
         if (quota == null) quota = new Quota(true, null, null, null);
         if (concurrency == null) concurrency = new Concurrency(null, null);
-        if (processing == null) processing = new Processing(null);
+        if (processing == null) processing = new Processing(null, null);
         if (pdf == null) pdf = new Pdf(null);
-        if (render == null) render = new Render(null, null);
+        if (render == null) render = new Render(null, null, null);
         if (trustedProxies == null || trustedProxies.isEmpty()) trustedProxies = DEFAULT_TRUSTED_PROXIES;
     }
 
@@ -122,10 +122,21 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
         }
     }
 
-    /** Per-operation processing timeout (seconds) for heavy work run on the bounded executor. */
-    public record Processing(Integer timeoutSeconds) {
+    /**
+     * Per-operation processing limits: a wall-clock {@code timeoutSeconds} for heavy work run on
+     * the bounded executor, and {@code maxTotalOutputBytes} — the aggregate ceiling on the result
+     * bytes ONE request may accumulate across all its files and pages. The multi-output operations
+     * (to-images, extract-separate, pipeline) materialise every part in the heap and then copy the
+     * lot again while zipping, so without this ceiling a legal request (many pages × many files)
+     * can allocate more than the whole heap; it is checked while the parts accumulate, so a
+     * pathological request is rejected (422) early instead of OOM-ing the JVM.
+     */
+    public record Processing(Integer timeoutSeconds, DataSize maxTotalOutputBytes) {
         public Processing {
             if (timeoutSeconds == null || timeoutSeconds < 1) timeoutSeconds = 60;
+            if (maxTotalOutputBytes == null || maxTotalOutputBytes.toBytes() < 1) {
+                maxTotalOutputBytes = DataSize.ofMegabytes(64);
+            }
         }
     }
 
@@ -140,13 +151,18 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
      * Raster-render guards for the page → image endpoints (render / to-images / redact). {@code
      * maxDpi} caps the requested DPI (a request above it is rejected, not silently clamped), and
      * {@code maxOutputPixels} rejects any single page whose rendered pixel area (page inches × DPI,
-     * squared) would exceed the ceiling — the two together bound a render's memory footprint so a
-     * single request cannot OOM the JVM.
+     * squared) would exceed the ceiling. Those two are <em>per page</em>: {@code
+     * maxTotalOutputPixels} additionally bounds the summed pixel area of every page a single
+     * request will actually rasterise, across all its files — without it, pages × files is
+     * unbounded and a legal 300 DPI render of a few hundred pages can allocate more than the heap.
      */
-    public record Render(Integer maxDpi, Long maxOutputPixels) {
+    public record Render(Integer maxDpi, Long maxOutputPixels, Long maxTotalOutputPixels) {
         public Render {
             if (maxDpi == null || maxDpi < 1) maxDpi = 300;
             if (maxOutputPixels == null || maxOutputPixels < 1) maxOutputPixels = 60_000_000L; // ~60 MP/page
+            if (maxTotalOutputPixels == null || maxTotalOutputPixels < 1) {
+                maxTotalOutputPixels = 500_000_000L; // ~500 MP per request (all files, all pages)
+            }
         }
     }
 

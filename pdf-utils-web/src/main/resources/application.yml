@@ -99,17 +99,28 @@ pdfconduit:
     concurrency:
       max-heavy-ops: ${PDFCONDUIT_WEB_CONCURRENCY_MAX_HEAVY_OPS:4}
       max-in-flight-bytes: ${PDFCONDUIT_WEB_CONCURRENCY_MAX_IN_FLIGHT_BYTES:536870912}
-    # Per-operation processing timeout (heavy work runs on a bounded executor).
+    # Per-operation processing timeout (heavy work runs on a bounded executor) + the aggregate
+    # ceiling on the RESULT bytes one request may accumulate. The multi-output ops (to-images,
+    # extract?separate, pipeline) hold every part in the heap and copy the lot again while zipping,
+    # so ~3x this value must fit alongside the other in-flight work in the container heap
+    # (1536m * 75% ~= 1.15 GB): 64MB -> ~192 MB per request. Checked while the parts accumulate, so
+    # an over-budget request is rejected (422 output_too_large) early instead of OOM-ing the JVM.
     processing:
       timeout-seconds: ${PDFCONDUIT_WEB_PROCESSING_TIMEOUT_SECONDS:60}
+      max-total-output-bytes: ${PDFCONDUIT_WEB_PROCESSING_MAX_TOTAL_OUTPUT_BYTES:64MB}
     # PDF-bomb guard: reject PDFs whose page count exceeds this ceiling.
     pdf:
       max-pages: ${PDFCONDUIT_WEB_PDF_MAX_PAGES:3000}
     # Raster-render guards (render / to-images / redact): cap requested DPI and per-page output
     # pixels so a huge dpi/dimension request can't allocate gigabytes and OOM the JVM.
+    # max-total-output-pixels additionally bounds pages x files -- the summed area of every page a
+    # single request will really rasterise -- which the per-page caps do NOT: 500 MP is ~57 A4
+    # pages at 300 dpi, ~230 at 150 dpi. Without it one 800-page scan at 300 dpi (~7000 MP) passes
+    # every per-page check and then allocates >1 GB of PNGs.
     render:
       max-dpi: ${PDFCONDUIT_WEB_RENDER_MAX_DPI:300}
       max-output-pixels: ${PDFCONDUIT_WEB_RENDER_MAX_OUTPUT_PIXELS:60000000}
+      max-total-output-pixels: ${PDFCONDUIT_WEB_RENDER_MAX_TOTAL_OUTPUT_PIXELS:500000000}
     # Proxies (CIDRs) trusted to set X-Forwarded-For. The real client IP is resolved as the
     # rightmost address NOT in this list; a forged XFF from an untrusted peer is ignored. Defaults
     # cover loopback + RFC-1918 private ranges (the docker-compose bridge subnet). Comma-separated.

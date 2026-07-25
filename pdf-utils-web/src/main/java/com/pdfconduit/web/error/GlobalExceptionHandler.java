@@ -49,6 +49,17 @@ public class GlobalExceptionHandler {
         return body(HttpStatus.UNPROCESSABLE_ENTITY, "operation_failed", e.getMessage());
     }
 
+    /**
+     * The result would blow the per-request output budget (too many pages × files to rasterise, or
+     * too many accumulated result bytes). Still 422 — the upload was fine, the *output* is not —
+     * but with its own code so the client can advise "fewer pages/files, lower DPI" precisely.
+     * Declared separately from {@link #onOperationFailed} so this more specific handler wins.
+     */
+    @ExceptionHandler(OutputTooLargeException.class)
+    public ResponseEntity<ApiError> onOutputTooLarge(OutputTooLargeException e) {
+        return body(HttpStatus.UNPROCESSABLE_ENTITY, "output_too_large", e.getMessage());
+    }
+
     @ExceptionHandler(OfficeDisabledException.class)
     public ResponseEntity<ApiError> onOfficeDisabled(OfficeDisabledException e) {
         return body(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "office_disabled", e.getMessage());

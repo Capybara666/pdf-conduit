@@ -25,8 +25,10 @@ pdfconduit:
       max-in-flight-bytes: 536870912   # 512 MiB
     processing:
       timeout-seconds: 60
+      max-total-output-bytes: 64MB     # ~3x that peaks in heap while zipping (~1.15 GB heap)
     pdf:
       max-pages: 3000
     render:
       max-dpi: 300
       max-output-pixels: 60000000      # ~60 MP/page
+      max-total-output-pixels: 500000000  # ~500 MP per request (all files x all pages)
