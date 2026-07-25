@@ -327,6 +327,11 @@
       "detail": "A conversão de documentos office não está ativada neste servidor.",
       "hint": "Pode continuar a trabalhar com PDF e imagens."
     },
+    "ocr_disabled": {
+      "title": "O OCR não está disponível",
+      "detail": "O reconhecimento de texto em digitalizações não está ativado neste servidor.",
+      "hint": "As restantes ferramentas continuam a funcionar normalmente."
+    },
     "operation_failed": {
       "title": "Não foi possível processar esse ficheiro",
       "detail": "A operação falhou com esta entrada.",

@@ -327,6 +327,11 @@
       "detail": "La conversion de documents bureautiques n'est pas activée sur ce serveur.",
       "hint": "Vous pouvez toujours travailler avec des PDF et des images."
     },
+    "ocr_disabled": {
+      "title": "L'OCR est indisponible",
+      "detail": "La reconnaissance de texte dans les scans n'est pas activée sur ce serveur.",
+      "hint": "Tous les autres outils fonctionnent normalement."
+    },
     "operation_failed": {
       "title": "Ce fichier n'a pas pu être traité",
       "detail": "L'opération a échoué sur ce fichier.",

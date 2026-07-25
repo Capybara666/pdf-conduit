@@ -1,27 +1,8 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
-import { CanvasNode } from '../../../core/pipeline.models';
+import { CanvasNode, KIND_TO_OP } from '../../../core/pipeline.models';
 import { FileDropZoneComponent } from '../../../shared/file-drop-zone/file-drop-zone.component';
-
-/** NodeKind → operation id used for the existing `op.<id>.label` i18n lookup. */
-const KIND_TO_OP: Record<string, string> = {
-  MERGE: 'merge',
-  IMAGES_TO_PDF: 'to-pdf',
-  EXTRACT: 'extract',
-  COMPRESS: 'compress',
-  ROTATE: 'rotate',
-  ARRANGE: 'arrange',
-  PROTECT: 'protect',
-  UNLOCK: 'unlock',
-  METADATA: 'metadata',
-  WATERMARK: 'watermark',
-  NUP: 'nup',
-  PAGE_MARKS: 'page-marks',
-  CROP: 'crop',
-  TO_IMAGES: 'to-images',
-  TO_TEXT: 'to-text',
-};
 
 /**
  * Parameter form for the currently-selected canvas node. Each kind renders only
@@ -203,8 +184,7 @@ const KIND_TO_OP: Record<string, string> = {
         }
         @case ('GDPR_REDACT') {
           <!-- No parameters — scans for PII and permanently redacts every detected value. -->
-          <!-- TODO(i18n): pipeline.canvas.gdprRedactHint -->
-          <p class="hint-note">Scans for personal data and permanently redacts every detected value.</p>
+          <p class="hint-note">{{ 'pipeline.canvas.gdprRedactHint' | transloco }}</p>
         }
         @default {
           <p class="hint-note">{{ 'pipeline.canvas.noParams' | transloco }}</p>

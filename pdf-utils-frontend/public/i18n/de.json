@@ -327,6 +327,11 @@
       "detail": "Das Umwandeln von Office-Dokumenten ist auf diesem Server nicht aktiviert.",
       "hint": "Sie können weiterhin mit PDFs und Bildern arbeiten."
     },
+    "ocr_disabled": {
+      "title": "OCR ist nicht verfügbar",
+      "detail": "Das Durchsuchbarmachen von Scans ist auf diesem Server nicht aktiviert.",
+      "hint": "Alle anderen Werkzeuge funktionieren wie gewohnt."
+    },
     "operation_failed": {
       "title": "Diese Datei konnte nicht verarbeitet werden",
       "detail": "Der Vorgang ist bei dieser Eingabe fehlgeschlagen.",

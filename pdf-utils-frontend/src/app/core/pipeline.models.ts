@@ -25,12 +25,48 @@ export type NodeKindName =
   | 'UNLOCK'
   | 'METADATA'
   | 'WATERMARK'
+  | 'CROP'
   | 'NUP'
   | 'PAGE_MARKS'
-  | 'CROP'
+  | 'OCR'
   | 'GDPR_REDACT'
+  | 'REPAIR'
   | 'TO_IMAGES'
   | 'TO_TEXT';
+
+/**
+ * NodeKind → operation id, used for the `op.<id>.label` i18n lookup and the
+ * `OP_ICONS` glyph registry key.
+ *
+ * ONE map for the whole pipeline UI (palette chips, canvas node cards,
+ * inspector header). It used to be copy-pasted into each of those three
+ * components, which silently drifted apart whenever a branch added a kind —
+ * a node whose kind is missing here renders with the SOURCE glyph and an
+ * untranslated Title-Cased label. Typing it as a total `Record<NodeKindName, …>`
+ * makes the compiler reject a new kind that forgets its entry, and
+ * `icons.spec.ts` proves every value resolves to a real glyph.
+ */
+export const KIND_TO_OP: Record<NodeKindName, string> = {
+  SOURCE: 'source',
+  MERGE: 'merge',
+  IMAGES_TO_PDF: 'to-pdf',
+  EXTRACT: 'extract',
+  COMPRESS: 'compress',
+  ROTATE: 'rotate',
+  ARRANGE: 'arrange',
+  PROTECT: 'protect',
+  UNLOCK: 'unlock',
+  METADATA: 'metadata',
+  WATERMARK: 'watermark',
+  CROP: 'crop',
+  NUP: 'nup',
+  PAGE_MARKS: 'page-marks',
+  OCR: 'ocr',
+  GDPR_REDACT: 'gdpr-redact',
+  REPAIR: 'repair',
+  TO_IMAGES: 'to-images',
+  TO_TEXT: 'to-text',
+};
 
 export type SplitModeName = 'COMBINE' | 'SEPARATE';
 /** Crop margin unit — friendly editing value; maps to the wire `cropMm` boolean. */

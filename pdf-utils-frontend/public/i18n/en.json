@@ -327,6 +327,11 @@
       "detail": "Converting office documents is not enabled on this server.",
       "hint": "You can still work with PDFs and images."
     },
+    "ocr_disabled": {
+      "title": "OCR is unavailable",
+      "detail": "Making scanned pages searchable is not enabled on this server.",
+      "hint": "All the other tools still work as usual."
+    },
     "operation_failed": {
       "title": "That file couldn't be processed",
       "detail": "The operation failed on this input.",

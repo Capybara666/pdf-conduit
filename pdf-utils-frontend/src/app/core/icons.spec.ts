@@ -1,25 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NAV_ITEMS, OP_ICONS } from './operations';
+import { KIND_TO_OP } from './pipeline.models';
 import { OpIconComponent } from '../shared/op-icon/op-icon.component';
 
-/** NodeKind keys the pipeline resolves through OP_ICONS (via KIND_TO_OP). */
-const NODE_KIND_OP_IDS = [
-  'source',
-  'merge',
-  'to-pdf',
-  'extract',
-  'compress',
-  'rotate',
-  'arrange',
-  'protect',
-  'unlock',
-  'metadata',
-  'watermark',
-  'page-marks',
-  'to-images',
-  'to-text',
-];
+/**
+ * NodeKind op ids the pipeline resolves through OP_ICONS. Derived from the real
+ * `KIND_TO_OP` (not a hand-copied list) so a newly-added NodeKind cannot land a
+ * glyph-less palette chip / node card without failing here.
+ */
+const NODE_KIND_OP_IDS = Object.values(KIND_TO_OP);
 
 const EMOJI = /\p{Extended_Pictographic}/u;
 

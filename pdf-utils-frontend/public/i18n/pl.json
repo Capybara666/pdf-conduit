@@ -327,6 +327,11 @@
       "detail": "Ten serwer nie ma włączonej konwersji dokumentów Office.",
       "hint": "Nadal możesz pracować z PDF-ami i obrazami."
     },
+    "ocr_disabled": {
+      "title": "OCR jest niedostępny",
+      "detail": "Ten serwer nie ma włączonego rozpoznawania tekstu ze skanów.",
+      "hint": "Pozostałe narzędzia działają normalnie."
+    },
     "operation_failed": {
       "title": "Nie udało się przetworzyć tego pliku",
       "detail": "Operacja nie powiodła się dla tego pliku.",

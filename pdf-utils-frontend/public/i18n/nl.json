@@ -327,6 +327,11 @@
       "detail": "Het converteren van officedocumenten is niet ingeschakeld op deze server.",
       "hint": "Je kunt nog steeds met PDF's en afbeeldingen werken."
     },
+    "ocr_disabled": {
+      "title": "OCR is niet beschikbaar",
+      "detail": "Tekstherkenning voor scans is niet ingeschakeld op deze server.",
+      "hint": "Alle andere hulpmiddelen werken gewoon."
+    },
     "operation_failed": {
       "title": "Dat bestand kon niet worden verwerkt",
       "detail": "De bewerking is mislukt op deze invoer.",

@@ -327,6 +327,11 @@
       "detail": "此服务器未启用办公文档转换。",
       "hint": "您仍可处理 PDF 和图片。"
     },
+    "ocr_disabled": {
+      "title": "OCR 不可用",
+      "detail": "此服务器未启用扫描件文字识别。",
+      "hint": "其他工具仍可正常使用。"
+    },
     "operation_failed": {
       "title": "该文件无法处理",
       "detail": "对此输入的操作失败。",
