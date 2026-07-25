@@ -6,6 +6,7 @@ import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.CapabilitiesInfo;
 import com.pdfconduit.web.dto.OperationInfo;
 import com.pdfconduit.web.guard.LoadGuard;
+import com.pdfconduit.web.plan.RequestPlan;
 import com.pdfconduit.web.quota.UploadCaps;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,11 +34,14 @@ public class InfoController {
     private final LoadGuard loadGuard;
     private final WebProperties props;
     private final UploadCaps uploadCaps;
+    private final RequestPlan requestPlan;
 
-    public InfoController(LoadGuard loadGuard, WebProperties props, UploadCaps uploadCaps) {
+    public InfoController(LoadGuard loadGuard, WebProperties props, UploadCaps uploadCaps,
+                          RequestPlan requestPlan) {
         this.loadGuard = loadGuard;
         this.props = props;
         this.uploadCaps = uploadCaps;
+        this.requestPlan = requestPlan;
     }
 
     @GetMapping("/health")
@@ -75,14 +79,23 @@ public class InfoController {
      * {@link UploadCaps} — the component {@link com.pdfconduit.web.quota.QuotaInterceptor} enforces
      * — and are resolved per request from the caller's principal/plan, so an env override or a
      * future paid tier cannot make the advertisement lie.
+     *
+     * <p>{@code maxDpi} closes the same gap for the render endpoints: the SPA's "PDF → Images" form
+     * and the pipeline inspector let a user pick a DPI, and a value above the server's ceiling is
+     * <em>rejected</em> (400), never clamped — so a form that offers more than the server accepts
+     * calls a value valid and then fails on submit. It is read from the {@link RequestPlan}-resolved
+     * {@link com.pdfconduit.web.plan.PlanLimits} — the very object
+     * {@code WebOperations.guardRender} and {@code PipelineLimitsGuard.checkRender} reject against
+     * — so advertised and enforced are the same number by construction, not by convention.
      */
     @GetMapping("/capabilities")
     public CapabilitiesInfo capabilities(HttpServletRequest request) {
         boolean ocrEnabled = props.ocrEnabled();
         List<String> ocrLanguages = ocrEnabled ? PdfOcr.installedLanguages() : List.of();
         UploadCaps.Caps caps = uploadCaps.forRequest(request);
+        int maxDpi = requestPlan.forRequest(request).maxDpi();
         return new CapabilitiesInfo(props.officeEnabled(), ocrEnabled, ocrLanguages,
-            caps.maxFileSizeBytes(), caps.maxFilesPerRequest());
+            caps.maxFileSizeBytes(), caps.maxFilesPerRequest(), maxDpi);
     }
 
     private boolean isAvailable(OperationType type) {
