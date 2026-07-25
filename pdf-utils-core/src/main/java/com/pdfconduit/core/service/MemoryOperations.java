@@ -187,7 +187,7 @@ public final class MemoryOperations {
      * Merge), returning its single output named from {@code type} and the first input's stem.
      *
      * <p>A REDUCE is never partial: a merge missing one of its inputs is a different document, so a
-     * bad input still fails the whole operation — only now the message names the file.
+     * bad input fails the whole operation — but the message names the file.
      */
     public static NamedBytes runReduce(OperationType type, List<byte[]> rawInputs,
                                        List<String> filenames, ReduceExecution reduce)

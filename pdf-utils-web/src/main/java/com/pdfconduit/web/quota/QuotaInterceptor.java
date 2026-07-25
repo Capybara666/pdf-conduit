@@ -37,7 +37,7 @@ import java.util.Map;
  * <p><strong>Scope split.</strong> The size/count caps apply to any {@code /api/**} multipart POST,
  * not just the quota-counting ones: {@code /api/render}, {@code /api/metadata/read} and
  * {@code /api/form-fields} all parse an arbitrary uploaded document, so letting them accept the raw
- * 100 MB multipart ceiling while every real operation is capped at 25 MB was a free way to pin the
+ * 100 MB multipart ceiling while every real operation is capped at 25 MB is a free way to pin the
  * load-guard. Only the <em>daily count</em> (check + increment) stays behind
  * {@link Endpoints#isQuotaOp(String)}, so inspecting a file still costs no operations.
  *

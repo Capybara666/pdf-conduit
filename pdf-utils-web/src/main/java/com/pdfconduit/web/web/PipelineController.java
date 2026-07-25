@@ -219,8 +219,8 @@ public class PipelineController {
     /**
      * The upload name a client-supplied pipeline reference points at — its trailing name component,
      * never a host path. Every one of these strings comes verbatim from the request's pipeline JSON,
-     * so a crafted value such as {@code "/"} or {@code ""} must be a clean 400, not an NPE (which
-     * {@code Path.of("/").getFileName()} used to produce) surfacing as a 500 plus a stack trace.
+     * so a crafted value such as {@code "/"} or {@code ""} must be a clean 400, not an NPE —
+     * {@code Path.of("/").getFileName()} is {@code null} — surfacing as a 500 plus a stack trace.
      */
     private static String name(String reference, String what, String nodeId) {
         String key = Uploads.basename(reference);

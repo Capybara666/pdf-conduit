@@ -164,8 +164,8 @@ export class ToImagesPage {
    * Highest DPI the SERVER will render at, straight off `GET /api/capabilities`
    * (`environment.maxDpi` until it answers, and if it fails or predates the
    * field). The `max` attribute, the validator and the help/error copy all read
-   * this one signal, so the form can no longer call a value valid that the
-   * backend refuses with 422 `output_too_large`.
+   * this one signal, so the form cannot call a value valid that the backend
+   * refuses with 422 `output_too_large`.
    */
   protected readonly maxDpi = inject(CapabilitiesService).maxDpi;
 

@@ -51,7 +51,7 @@ describe('error copy', () => {
       expect(keys.titleKey).toBe('errors.output_too_large.title');
       expect(keys.detailKey).toBe('errors.output_too_large.detail');
       expect(keys.hintKey).toBe('errors.output_too_large.hint');
-      // The generic branch is what this code used to hit; it must not any more.
+      // Must never fall through to the generic branch.
       expect(keys.titleKey).not.toBe('errors.generic.title');
     });
 

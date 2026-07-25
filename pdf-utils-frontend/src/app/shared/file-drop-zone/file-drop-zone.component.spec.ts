@@ -10,8 +10,8 @@ import { TRANSLOCO_TESTING_PROVIDERS, translocoTesting } from '../../testing/tra
  * The drop zone is the only place the client decides what is worth uploading,
  * so its two caps must track the backend free tier: too low and we refuse work
  * the service would have done, too high and the user waits out a doomed upload
- * for a 413. It no longer hard-codes them — it follows what the server
- * advertises, with `environment` as the pre-response fallback.
+ * for a 413. It follows what the server advertises, with `environment` as the
+ * pre-response fallback.
  */
 describe('FileDropZoneComponent', () => {
   let fixture: ComponentFixture<FileDropZoneComponent>;
@@ -54,7 +54,7 @@ describe('FileDropZoneComponent', () => {
   it('falls back to the environment caps until the server has answered', () => {
     expect(component.maxFileSizeMb).toBe(environment.maxUploadMb);
     expect(component.maxFiles).toBe(environment.maxFilesPerRequest);
-    // A drop zone with no count cap was the bug: the backend rejects the batch
+    // A drop zone with no count cap is useless: the backend rejects the batch
     // only after the whole upload has been sent.
     expect(component.maxFiles).toBeGreaterThan(0);
   });

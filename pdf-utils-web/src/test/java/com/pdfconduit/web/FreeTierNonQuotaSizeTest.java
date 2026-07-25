@@ -19,8 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * exactly like {@code /api/compress} — before it can occupy one of the four heavy load-guard slots
  * for up to the processing timeout, at zero quota cost. Normal small requests still succeed.
  *
- * <p>Previously the caps ran only for {@code Endpoints.isQuotaOp} paths, so these endpoints
- * accepted anything up to the raw multipart ceiling ({@code max-file-size: 100MB}).
+ * <p>The caps must therefore run for every uploading endpoint, not only the
+ * {@code Endpoints.isQuotaOp} ones — otherwise these accept anything up to the raw multipart
+ * ceiling ({@code max-file-size: 100MB}).
  */
 @SpringBootTest(properties = {
     "pdfconduit.web.quota.enabled=true",

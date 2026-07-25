@@ -8,13 +8,12 @@ import { PrivacyPage } from './privacy.page';
 import { TRANSLOCO_TESTING_PROVIDERS, translocoTesting } from '../../testing/transloco-testing';
 
 /**
- * The free-tier paragraph used to be assembled from three keys
- * (`limitsBody1` + `limitsLink` + `limitsBody2`) glued around an `<a>`, which
- * pinned every language to English word order — Polish and Korean both came
- * out ungrammatical. It is now ONE key with `{linkStart}`/`{linkEnd}`
- * arguments, so the whole sentence (including the link label) is translated as
- * a unit. These specs assert the assembled text, not just the fragments:
- * a regression that drops a part or injects stray whitespace shows up here.
+ * The free-tier paragraph is ONE key with `{linkStart}`/`{linkEnd}` arguments,
+ * so the whole sentence (including the link label) is translated as a unit.
+ * Assembling it from three keys glued around an `<a>` would pin every language
+ * to English word order, which comes out ungrammatical in Polish and Korean.
+ * These specs assert the assembled text, not just the fragments: a regression
+ * that drops a part or injects stray whitespace shows up here.
  */
 describe('PrivacyPage', () => {
   function setup(lang: string) {

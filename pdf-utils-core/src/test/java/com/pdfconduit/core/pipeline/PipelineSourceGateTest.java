@@ -339,7 +339,7 @@ class PipelineSourceGateTest {
         assertTrue(String.valueOf(e.getMessage()).contains("maximum page count"), e.toString());
     }
 
-    // --- no regression for healthy uploads --------------------------------
+    // --- healthy uploads ---------------------------------------------------
 
     @Test
     void healthyPdfsBehaveExactlyAsBefore() throws Exception {

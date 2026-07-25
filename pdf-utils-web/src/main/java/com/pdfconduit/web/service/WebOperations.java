@@ -462,7 +462,7 @@ public class WebOperations {
         byte[] pdf = routeToPdf(in);
         // Only the pages carrying a region are rasterised — mirror PdfRedactor's grouping so both
         // the render budget below and the re-OCR pass below count exactly the pages that really get
-        // rendered. (The core now refuses a degenerate box outright, so this filter is belt and
+        // rendered. (The core refuses a degenerate box outright, so this filter is belt and
         // braces; a zero-area region can never reach the redactor as a silent no-op.)
         Set<Integer> rasterised = new HashSet<>();
         for (RedactRegion r : regions) {

@@ -113,9 +113,10 @@ export class PrivacyPage {
   );
 
   /**
-   * The sentence split around its inline link. This replaced a three-key
-   * `body1 + link + body2` assembly, which forced every translator into
-   * English word order and produced ungrammatical Polish and Korean.
+   * The sentence split around its inline link. It is ONE translated key with
+   * `{linkStart}`/`{linkEnd}` markers, never a `body1 + link + body2` assembly:
+   * gluing fragments around an `<a>` pins every language to English word order,
+   * which is ungrammatical in Polish and Korean.
    */
   protected readonly limits = computed(() => {
     const text = this.limitsText();

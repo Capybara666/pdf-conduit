@@ -1,11 +1,11 @@
 package com.pdfconduit.web.plan;
 
 /**
- * The per-request entitlement set — everything the hardening guards previously read as the fixed
- * {@code free*} / limit values on {@link com.pdfconduit.web.config.WebProperties}. Today there is a
- * single {@link FreePlanLimits} plan built from those properties, so behaviour is unchanged; the
- * seam is that the quota interceptor, rate-limit filter and {@code WebOperations} guards read their
- * ceilings from a resolved {@code PlanLimits} rather than from {@code WebProperties} directly. A
+ * The per-request entitlement set — every ceiling the hardening guards enforce. Today there is a
+ * single {@link FreePlanLimits} plan, built from the {@code free*} / limit values on
+ * {@link com.pdfconduit.web.config.WebProperties}; the seam is that the quota interceptor,
+ * rate-limit filter and {@code WebOperations} guards read their ceilings from a resolved
+ * {@code PlanLimits} rather than from {@code WebProperties} directly. A
  * later paid tier is a different {@code PlanLimits} resolved per {@link
  * com.pdfconduit.web.principal.RequestPrincipal} — no guard logic changes.
  */

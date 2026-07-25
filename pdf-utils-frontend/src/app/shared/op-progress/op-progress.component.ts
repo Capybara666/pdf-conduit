@@ -106,10 +106,6 @@ const ELAPSED_VISIBLE_AFTER_MS = 3_000;
           }
         </div>
 
-        <!-- No file summary here: the page's own file list sits directly above this
-             card, so repeating the names/count read as a second list of the same
-             thing. Only the total size is worth restating, since it is what the
-             percentage is measured against. -->
         <div class="row foot">
           <span class="files">
             @if (files().length) {

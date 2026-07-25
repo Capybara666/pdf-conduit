@@ -5,14 +5,13 @@ import { LANGUAGE_CODES } from './languages';
 /**
  * Every locale's ICU plurals must compile under THAT locale's rules.
  *
- * <p>This exists because of a real, shipped regression: the messageformat
- * transpiler is constructed once with whatever `locales` it is given and only
- * calls `setLocale()` from `onLangChanged` — i.e. on a *change*. Booting
- * straight into a stored language fires no change, so the rules stayed English
- * and every Slavic `few`/`many` branch threw
+ * <p>The trap: the messageformat transpiler is constructed once with whatever
+ * `locales` it is given and only calls `setLocale()` from `onLangChanged` —
+ * i.e. on a *change*. Booting straight into a stored language fires no change,
+ * so the rules stay English and every Slavic `few`/`many` branch throws
  * "The plural case few is not valid in this locale" at render time, taking the
- * whole page down. It went unnoticed while the copy only used `one`/`other`,
- * which happen to be valid in English too.
+ * whole page down. Copy that uses only `one`/`other` hides it, since those are
+ * valid in English too.
  *
  * <p>The guard therefore checks both halves: each locale compiles under its own
  * rules, AND a locale that needs non-English categories genuinely fails under

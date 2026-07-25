@@ -173,9 +173,8 @@ describe('OpProgressComponent', () => {
   }));
 
   it('states the total size but never re-lists the files', () => {
-    // The page's own file list sits directly above this card, so repeating the
-    // names (or the count) read as a second list of the same thing. Only the
-    // total survives: it is what the percentage is measured against.
+    // The page's own file list sits directly above this card; only the total
+    // size belongs here, since it is what the percentage is measured against.
     const single = tracker();
     single.begin([{ name: 'report.pdf', size: 2048 }]);
     show(single);

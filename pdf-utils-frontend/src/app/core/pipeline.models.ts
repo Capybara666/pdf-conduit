@@ -39,10 +39,10 @@ export type NodeKindName =
  * `OP_ICONS` glyph registry key.
  *
  * ONE map for the whole pipeline UI (palette chips, canvas node cards,
- * inspector header). It used to be copy-pasted into each of those three
- * components, which silently drifted apart whenever a branch added a kind —
- * a node whose kind is missing here renders with the SOURCE glyph and an
- * untranslated Title-Cased label. Typing it as a total `Record<NodeKindName, …>`
+ * inspector header) — a copy in any of those three components drifts apart the
+ * moment a branch adds a kind, and a node whose kind is missing here renders
+ * with the SOURCE glyph and an untranslated Title-Cased label.
+ * Typing it as a total `Record<NodeKindName, …>`
  * makes the compiler reject a new kind that forgets its entry, and
  * `icons.spec.ts` proves every value resolves to a real glyph.
  */

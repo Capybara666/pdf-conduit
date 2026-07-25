@@ -43,7 +43,7 @@ import { DropdownOption, HeaderDropdownComponent } from './dropdown/dropdown.com
     <!--
       Theme dropdown: no leading icon — the two-tone colour swatch (rendered by
       the dropdown for each themed option and on the trigger) already conveys
-      "theme", so a separate palette glyph was redundant. The empty icon slot
+      "theme", so a separate palette glyph would be redundant. The empty icon slot
       collapses via .dd-icon:empty, so the trigger stays tight to the swatch.
     -->
     <app-header-dropdown

@@ -14,8 +14,8 @@ import {
 /**
  * `/api/pipeline/run` enforces exactly the same `render.max-dpi` as
  * `/api/to-images` (via `PipelineLimitsGuard.checkRender`), so the TO_IMAGES
- * node's DPI field must quote the same advertised ceiling as the To Images page.
- * It used to hard-code `max="600"` independently — two places to forget.
+ * node's DPI field must quote the same advertised ceiling as the To Images
+ * page — a `max` hard-coded here is a second place to forget.
  */
 describe('PipelineInspectorComponent — TO_IMAGES DPI ceiling', () => {
   let fixture: ComponentFixture<PipelineInspectorComponent>;

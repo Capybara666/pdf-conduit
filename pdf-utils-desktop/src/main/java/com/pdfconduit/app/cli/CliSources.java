@@ -9,9 +9,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Builds merge sources from CLI input paths. The routing logic now lives in the
- * shared core {@link InputSources} (so desktop and web share one implementation);
- * this class remains as the CLI's thin, stable entry point and delegates.
+ * Builds merge sources from CLI input paths by delegating to the shared core
+ * {@link InputSources} (one routing implementation for desktop and web); this
+ * class is the CLI's thin, stable entry point.
  *
  * <ul>
  *   <li>PDFs become page sources,</li>

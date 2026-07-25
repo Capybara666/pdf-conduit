@@ -115,7 +115,7 @@ class PipelineLimitsTest {
             .andExpect(jsonPath("$.error", containsString("maximum page count")));
     }
 
-    /** A pipeline within every ceiling still runs green (no regression). */
+    /** A pipeline within every ceiling still runs green. */
     @Test
     void smallPipeline_runsGreen() throws Exception {
         String json = model(

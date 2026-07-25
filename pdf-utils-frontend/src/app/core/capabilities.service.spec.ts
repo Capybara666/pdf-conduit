@@ -91,8 +91,8 @@ describe('CapabilitiesService', () => {
 
   /**
    * `maxDpi` is `render.max-dpi` — 300 on the public preset, 1200 on the dev
-   * ones. The DPI forms used to hard-code 600, which is above the public limit
-   * and below the dev one, i.e. wrong in both deployments.
+   * ones — so any figure hard-coded in the DPI forms is wrong in at least one
+   * deployment, in one direction or the other.
    */
   describe('maxDpi', () => {
     it('adopts the advertised render ceiling — stricter than the fallback', () => {

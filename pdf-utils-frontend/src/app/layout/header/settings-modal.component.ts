@@ -18,8 +18,7 @@ import { Theme, ThemeService } from '../../core/theme.service';
 /**
  * Mobile settings sheet. Below the rail breakpoint the header hides its inline
  * language + theme pickers to keep the top bar to one row; a gear button opens
- * this modal, which becomes the single, findable home for those settings on
- * phones (they no longer live at the foot of the nav drawer).
+ * this modal, which is the single, findable home for those settings on phones.
  *
  * Accessibility: `role="dialog"` + `aria-modal`, focus moved into the sheet on
  * open and a Tab focus trap kept inside it, Escape / backdrop-click / close

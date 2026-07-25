@@ -11,13 +11,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * The {@link PlanLimits} in force <b>for the current request</b> — the service-layer counterpart of
  * {@link com.pdfconduit.web.quota.UploadCaps}, which already resolves the upload ceilings this way.
  *
- * <p><strong>Why this exists.</strong> The page-count and raster-render ceilings used to be read
- * once in the constructors of the singleton beans that enforce them
- * ({@code WebOperations}, {@code PipelineLimitsGuard}), which made them process-wide: a future paid
- * plan could never raise them for its own caller, and the monetization seam
- * ({@link PlanLimitsResolver} + {@link com.pdfconduit.web.principal.PrincipalResolver}) was dead for
- * exactly the three limits a paid tier would most want to move. Resolving here instead keeps the
- * guards' logic identical while making every ceiling a per-caller value.
+ * <p><strong>Why this exists.</strong> The page-count and raster-render ceilings must be resolved
+ * here, per request — never read once in the constructor of the singleton beans that enforce them
+ * ({@code WebOperations}, {@code PipelineLimitsGuard}). A constructor snapshot is process-wide: a
+ * paid plan could never raise it for its own caller, which leaves the monetization seam
+ * ({@link PlanLimitsResolver} + {@link com.pdfconduit.web.principal.PrincipalResolver}) dead for
+ * exactly the three limits a paid tier would most want to move.
  *
  * <p><strong>Two threads, one plan.</strong> Heavy work does not run on the request thread — {@code
  * LoadGuard} hands it to a bounded executor — so a thread-bound lookup alone would silently fall

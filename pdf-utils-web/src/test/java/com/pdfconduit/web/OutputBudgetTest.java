@@ -14,10 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * The per-request AGGREGATE output budget — the guard the per-page render caps do not provide.
  *
- * <p>{@code render.max-output-pixels} only rejects one oversized page; nothing bounded
- * {@code pages × files}. A 300 DPI render of a few hundred perfectly ordinary pages passed every
- * guard and then materialised one PNG per page, zipped them into a {@code ByteArrayOutputStream}
- * and copied that again into the response body — over a gigabyte in a ~1.15 GB container heap,
+ * <p>{@code render.max-output-pixels} only rejects one oversized page; on its own nothing bounds
+ * {@code pages × files}. A 300 DPI render of a few hundred perfectly ordinary pages passes every
+ * per-page guard and would then materialise one PNG per page, zip them into a
+ * {@code ByteArrayOutputStream} and copy that again into the response body — over a gigabyte in a
+ * ~1.15 GB container heap,
  * with {@code -XX:+ExitOnOutOfMemoryError} turning it into a container restart (and, with it, a
  * reset of every user's in-memory quota).
  *
@@ -64,8 +65,8 @@ class OutputBudgetTest {
     }
 
     /**
-     * The core of the bug: three files that each pass every per-file guard, but whose SUM does not.
-     * Before the fix the request was accepted and rendered all three.
+     * The case that matters: three files that each pass every per-file guard, but whose SUM does
+     * not. Per-file clamps alone accept this request and render all three.
      */
     @Test
     void toImages_aggregateOverFiles_rejectedEvenThoughEachFilePasses() throws Exception {
@@ -89,7 +90,7 @@ class OutputBudgetTest {
             .andExpect(status().isOk());
     }
 
-    /** No regression: an ordinary small request is untouched by the new ceilings. */
+    /** An ordinary small request is untouched by the aggregate ceilings. */
     @Test
     void toImages_smallRequest_stillSucceeds() throws Exception {
         mvc.perform(multipart("/api/to-images").file(file(TestPdfs.blank(2), "a.pdf"))

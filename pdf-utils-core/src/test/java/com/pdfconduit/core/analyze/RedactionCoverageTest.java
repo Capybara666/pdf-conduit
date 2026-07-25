@@ -125,9 +125,9 @@ class RedactionCoverageTest {
     // --- fail-loudly guards: a region that cannot be applied must never yield a "redacted" file ---
 
     /**
-     * A region pointing past the last page used to be dropped on the floor: the caller got a
-     * byte-for-byte copy of the input back, with the PII fully readable, and no signal at all.
-     * Ground truth: the operation now fails, and no output bytes are produced to be mislabelled.
+     * A region pointing past the last page must not be dropped on the floor: that would hand the
+     * caller a byte-for-byte copy of the input, with the PII fully readable, and no signal at all.
+     * Ground truth: the operation fails, and no output bytes are produced to be mislabelled.
      */
     @Test
     void regionOnANonExistentPageIsRejected() throws Exception {
