@@ -560,6 +560,14 @@ input[type='radio'] {
 .hint-note {
   font-size: 0.8rem;
   color: var(--text-muted);
+  /* The page column already spaces its children with `gap`; the browser's
+     default <p> margin was adding to it, which opened a visible hole between
+     two consecutive notes (Repair carries both a privacy line and a caveat). */
+  margin: 0;
+}
+
+.hint-note + .hint-note {
+  margin-top: 0.3rem;
 }
 
 .reorder-list {
