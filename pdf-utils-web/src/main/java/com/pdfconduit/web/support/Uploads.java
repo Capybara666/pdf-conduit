@@ -4,6 +4,7 @@ import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
+import com.pdfconduit.core.util.Filenames;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OfficeDisabledException;
 import com.pdfconduit.web.guard.OfficeGuard;
@@ -75,12 +76,6 @@ public class Uploads {
 
     /** The upload's original basename (path stripped), falling back to {@code upload}. */
     public static String filename(MultipartFile file) {
-        String raw = file.getOriginalFilename();
-        if (raw == null || raw.isBlank()) return "upload";
-        String name = raw.replace('\\', '/');
-        int slash = name.lastIndexOf('/');
-        if (slash >= 0) name = name.substring(slash + 1);
-        name = name.strip();
-        return name.isBlank() ? "upload" : name;
+        return Filenames.basename(file.getOriginalFilename(), "upload");
     }
 }
