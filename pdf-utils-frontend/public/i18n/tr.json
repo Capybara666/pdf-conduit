@@ -73,14 +73,14 @@
     },
     "rotate": {
       "label": "Döndür",
-      "description": "Sayfaları 90°, 180° veya 270° döndürün."
+      "description": "Sayfaları çeyrek tur sağa (90°), ters çevirin (180°) veya çeyrek tur sola (270°) döndürün."
     },
     "arrange": {
       "label": "Sırala",
       "description": "Sayfaları yeniden sıralayın, tersine çevirin veya çoğaltın."
     },
     "nup": {
-      "label": "Yaprak başına çok sayfa",
+      "label": "Tek yaprakta birden çok sayfa",
       "description": "Bir yaprağa birden fazla sayfa yerleştirin veya bir kitapçık katlayın."
     },
     "compress": {
@@ -192,7 +192,7 @@
     },
     "trust": {
       "aria": "Neden PDF Conduit",
-      "memoryTitle": "Asla saklanmaz",
+      "memoryTitle": "Dosyalarınızı asla saklamayız",
       "memoryDesc": "Dosyalarınız işlenir ve ardından silinir. Asla diske yazılmaz veya sunucularımızda tutulmaz.",
       "accountTitle": "Hesap gerekmez",
       "accountDesc": "Doğrudan başlayın. E-posta yok, parola yok, takip yok.",
@@ -491,13 +491,13 @@
     },
     "rotate": {
       "title": "Döndür",
-      "description": "Sayfaları 90°, 180° veya 270° döndürün.",
+      "description": "Sayfaları çeyrek tur sağa (saat yönünde 90°), ters çevirin (180°) veya çeyrek tur sola (270° / saat yönünün tersine 90°) döndürün.",
       "hint": "Bir veya daha fazla PDF (birden fazla dosya → ZIP).",
       "angle": "Açı",
       "angleAria": "Döndürme açısı",
       "dir90": "90° saat yönünde döndürür",
       "dir180": "180° döndürür (ters çevir)",
-      "dir270": "270° saat yönünde döndürür",
+      "dir270": "270° saat yönünde döndürür (çeyrek tur sola)",
       "pages": "Sayfalar",
       "pagesPlaceholder": "örn. 1,3,5-8 (boş = tümü)",
       "submit": "Döndür",
@@ -668,7 +668,7 @@
       "description": "Belge bilgilerini görüntüleyin, düzenleyin veya kaldırın.",
       "hint": "PDF dosyaları. Aynı değişiklikler her dosyaya uygulanır (birden fazlası ZIP olarak döner).",
       "batchNote": "Aynı alanlar her dosyaya uygulanır. Önizleme yalnızca ilk dosyayı okur.",
-      "readCurrent": "Mevcut olanı oku",
+      "readCurrent": "Mevcut değerleri oku",
       "reading": "Okunuyor…",
       "titleField": "Başlık",
       "author": "Yazar",

@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Rodar",
-      "description": "Rode as páginas 90° para a direita, 180° ou 270° para a esquerda."
+      "description": "Rode as páginas um quarto de volta para a direita (90°), vire-as (180°) ou um quarto de volta para a esquerda (270°)."
     },
     "arrange": {
       "label": "Ordenar",
@@ -497,7 +497,7 @@
       "angleAria": "Ângulo de rotação",
       "dir90": "Roda 90° para a direita",
       "dir180": "Roda 180° (inverter)",
-      "dir270": "Roda 270° para a direita",
+      "dir270": "Roda 270° para a direita (um quarto de volta para a esquerda)",
       "pages": "Páginas",
       "pagesPlaceholder": "ex.: 1,3,5-8 (em branco = todas)",
       "submit": "Rodar",
@@ -668,7 +668,7 @@
       "description": "Veja, edite ou remova as informações do documento.",
       "hint": "Ficheiros PDF. As mesmas alterações aplicam-se a cada um (vários são devolvidos como ZIP).",
       "batchNote": "Os mesmos campos são aplicados a cada ficheiro. A pré-visualização lê apenas o primeiro ficheiro.",
-      "readCurrent": "Ler atuais",
+      "readCurrent": "Ler os valores atuais",
       "reading": "A ler…",
       "titleField": "Título",
       "author": "Autor",
@@ -816,8 +816,8 @@
         "mediumExplain": "Foram encontrados vários identificadores de baixo risco, mas nada financeiro, de identificação nacional ou de categoria especial.",
         "highExplain": "Existem dados financeiros, de identificação nacional ou de categoria especial. Trate-os com cuidado antes de partilhar."
       },
-      "summary": "{count, plural, one {# dado pessoal encontrado em {pages} páginas.} other {# dados pessoais encontrados em {pages} páginas.}}",
-      "summaryClean": "Não foram encontrados dados pessoais em {{pages}} páginas.",
+      "summary": "{count, plural, one {# dado pessoal encontrado em {pages, plural, one {# página} other {# páginas}}.} other {# dados pessoais encontrados em {pages, plural, one {# página} other {# páginas}}.}}",
+      "summaryClean": "{pages, plural, one {Não foram encontrados dados pessoais em # página.} other {Não foram encontrados dados pessoais em # páginas.}}",
       "byCategory": "Por categoria",
       "higherRisk": "Risco mais elevado",
       "findings": "Resultados",
@@ -835,10 +835,10 @@
       "hintMulti": "Um ou mais PDF, imagens ou documentos office.",
       "submitBatch": "Analisar {{count}} ficheiros",
       "highestRiskLabel": "risco máximo",
-      "batchSummary": "{count, plural, one {# dado pessoal em {files} ficheiros.} other {# dados pessoais em {files} ficheiros.}}",
+      "batchSummary": "{count, plural, one {# dado pessoal em {files, plural, one {# ficheiro} other {# ficheiros}}.} other {# dados pessoais em {files, plural, one {# ficheiro} other {# ficheiros}}.}}",
       "byCategoryAll": "Por categoria (todos os ficheiros)",
       "perFile": "Por ficheiro",
-      "fileFindings": "{count, plural, one {# resultado em {pages} páginas} other {# resultados em {pages} páginas}}",
+      "fileFindings": "{count, plural, one {# resultado em {pages, plural, one {# página} other {# páginas}}} other {# resultados em {pages, plural, one {# página} other {# páginas}}}}",
       "fileClean": "Sem dados pessoais",
       "autoRedactCta": "Ocultar tudo o que for detetado",
       "autoRedactAllCta": "Ocultar todos os ficheiros",

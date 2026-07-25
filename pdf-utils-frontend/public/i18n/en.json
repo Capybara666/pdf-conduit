@@ -73,14 +73,14 @@
     },
     "rotate": {
       "label": "Rotate",
-      "description": "Turn pages 90° right, flip 180°, or turn 270° left."
+      "description": "Turn pages a quarter-turn right (90°), flip them (180°), or a quarter-turn left (270°)."
     },
     "arrange": {
       "label": "Arrange",
       "description": "Reorder, reverse or duplicate pages."
     },
     "nup": {
-      "label": "Pages per sheet",
+      "label": "Several pages on a sheet",
       "description": "Place several pages per sheet, or fold a booklet."
     },
     "compress": {
@@ -192,7 +192,7 @@
     },
     "trust": {
       "aria": "Why PDF Conduit",
-      "memoryTitle": "Never stored",
+      "memoryTitle": "We never store your files",
       "memoryDesc": "Your files are processed and then discarded. Never saved to disk or kept on our servers.",
       "accountTitle": "No account needed",
       "accountDesc": "Jump straight in. No email, no password, no tracking wall.",
@@ -497,7 +497,7 @@
       "angleAria": "Rotation angle",
       "dir90": "Rotates 90° clockwise",
       "dir180": "Rotates 180° (flip)",
-      "dir270": "Rotates 270° clockwise",
+      "dir270": "Rotates 270° clockwise (a quarter-turn left)",
       "pages": "Pages",
       "pagesPlaceholder": "e.g. 1,3,5-8 (blank = all)",
       "submit": "Rotate",
@@ -668,7 +668,7 @@
       "description": "View, edit or strip document info.",
       "hint": "PDF files. The same changes apply to each (several come back as a ZIP).",
       "batchNote": "The same fields are applied to every file. The preview reads the first file only.",
-      "readCurrent": "Read current",
+      "readCurrent": "Read current values",
       "reading": "Reading…",
       "titleField": "Title",
       "author": "Author",
@@ -816,8 +816,8 @@
         "mediumExplain": "Several low-risk identifiers were found, but nothing financial, national-ID or special-category.",
         "highExplain": "Financial, national-ID or special-category data is present. Handle with care before sharing."
       },
-      "summary": "{count, plural, one {# piece of personal data found across {pages} pages.} other {# pieces of personal data found across {pages} pages.}}",
-      "summaryClean": "No personal data found across {{pages}} pages.",
+      "summary": "{count, plural, one {# piece of personal data found across {pages, plural, one {# page} other {# pages}}.} other {# pieces of personal data found across {pages, plural, one {# page} other {# pages}}.}}",
+      "summaryClean": "{pages, plural, one {No personal data found across # page.} other {No personal data found across # pages.}}",
       "byCategory": "By category",
       "higherRisk": "Higher risk",
       "findings": "Findings",
@@ -835,10 +835,10 @@
       "hintMulti": "One or more PDFs, images or office documents.",
       "submitBatch": "Scan {{count}} files",
       "highestRiskLabel": "highest risk",
-      "batchSummary": "{count, plural, one {# piece of personal data across {files} files.} other {# pieces of personal data across {files} files.}}",
+      "batchSummary": "{count, plural, one {# piece of personal data across {files, plural, one {# file} other {# files}}.} other {# pieces of personal data across {files, plural, one {# file} other {# files}}.}}",
       "byCategoryAll": "By category (all files)",
       "perFile": "Per file",
-      "fileFindings": "{count, plural, one {# finding across {pages} pages} other {# findings across {pages} pages}}",
+      "fileFindings": "{count, plural, one {# finding across {pages, plural, one {# page} other {# pages}}} other {# findings across {pages, plural, one {# page} other {# pages}}}}",
       "fileClean": "No personal data",
       "autoRedactCta": "Auto-redact everything detected",
       "autoRedactAllCta": "Auto-redact all files",

@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Draaien",
-      "description": "Draai pagina's 90° naar rechts, 180° of 270° naar links."
+      "description": "Draai pagina's een kwartslag naar rechts (90°), 180° (ondersteboven) of een kwartslag naar links (270°)."
     },
     "arrange": {
       "label": "Herschikken",
@@ -497,7 +497,7 @@
       "angleAria": "Rotatiehoek",
       "dir90": "Draait 90° met de klok mee",
       "dir180": "Draait 180° (ondersteboven)",
-      "dir270": "Draait 270° met de klok mee",
+      "dir270": "Draait 270° met de klok mee (een kwartslag naar links)",
       "pages": "Pagina's",
       "pagesPlaceholder": "bijv. 1,3,5-8 (leeg = alle)",
       "submit": "Draaien",
@@ -668,7 +668,7 @@
       "description": "Bekijk, bewerk of verwijder documentgegevens.",
       "hint": "PDF-bestanden. Dezelfde wijzigingen gelden voor elk bestand (meerdere komen terug als ZIP).",
       "batchNote": "Dezelfde velden worden op elk bestand toegepast. Het voorbeeld leest alleen het eerste bestand.",
-      "readCurrent": "Huidige lezen",
+      "readCurrent": "Huidige waarden lezen",
       "reading": "Lezen…",
       "titleField": "Titel",
       "author": "Auteur",
@@ -816,8 +816,8 @@
         "mediumExplain": "Er zijn meerdere identificatoren met laag risico gevonden, maar geen financiële gegevens, nationale ID's of bijzondere categorieën.",
         "highExplain": "Er zijn financiële gegevens, nationale ID's of bijzondere categorieën gevonden. Ga er zorgvuldig mee om voordat je deelt."
       },
-      "summary": "{count, plural, one {# persoonsgegeven gevonden op {pages} pagina's.} other {# persoonsgegevens gevonden op {pages} pagina's.}}",
-      "summaryClean": "Geen persoonsgegevens gevonden op {{pages}} pagina's.",
+      "summary": "{count, plural, one {# persoonsgegeven gevonden op {pages, plural, one {# pagina} other {# pagina's}}.} other {# persoonsgegevens gevonden op {pages, plural, one {# pagina} other {# pagina's}}.}}",
+      "summaryClean": "{pages, plural, one {Geen persoonsgegevens gevonden op # pagina.} other {Geen persoonsgegevens gevonden op # pagina's.}}",
       "byCategory": "Per categorie",
       "higherRisk": "Hoger risico",
       "findings": "Bevindingen",
@@ -835,10 +835,10 @@
       "hintMulti": "Eén of meer PDF's, afbeeldingen of Office-documenten.",
       "submitBatch": "{{count}} bestanden scannen",
       "highestRiskLabel": "hoogste risico",
-      "batchSummary": "{count, plural, one {# persoonsgegeven in {files} bestanden.} other {# persoonsgegevens in {files} bestanden.}}",
+      "batchSummary": "{count, plural, one {# persoonsgegeven in {files, plural, one {# bestand} other {# bestanden}}.} other {# persoonsgegevens in {files, plural, one {# bestand} other {# bestanden}}.}}",
       "byCategoryAll": "Per categorie (alle bestanden)",
       "perFile": "Per bestand",
-      "fileFindings": "{count, plural, one {# bevinding op {pages} pagina's} other {# bevindingen op {pages} pagina's}}",
+      "fileFindings": "{count, plural, one {# bevinding op {pages, plural, one {# pagina} other {# pagina's}}} other {# bevindingen op {pages, plural, one {# pagina} other {# pagina's}}}}",
       "fileClean": "Geen persoonsgegevens",
       "autoRedactCta": "Alles wat is gedetecteerd automatisch zwart maken",
       "autoRedactAllCta": "Alle bestanden automatisch zwart maken",

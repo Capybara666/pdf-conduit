@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Ruota",
-      "description": "Ruota le pagine di 90° a destra, capovolgile di 180° o ruotale di 270° a sinistra."
+      "description": "Ruota le pagine di un quarto di giro a destra (90°), capovolgile (180°) o ruotale di un quarto di giro a sinistra (270°)."
     },
     "arrange": {
       "label": "Riordina",
@@ -497,7 +497,7 @@
       "angleAria": "Angolo di rotazione",
       "dir90": "Ruota di 90° in senso orario",
       "dir180": "Ruota di 180° (capovolge)",
-      "dir270": "Ruota di 270° in senso orario",
+      "dir270": "Ruota di 270° in senso orario (un quarto di giro a sinistra)",
       "pages": "Pagine",
       "pagesPlaceholder": "es. 1,3,5-8 (vuoto = tutte)",
       "submit": "Ruota",
@@ -816,8 +816,8 @@
         "mediumExplain": "Sono stati trovati diversi identificatori a basso rischio, ma nulla di finanziario, di identificazione nazionale o di categoria particolare.",
         "highExplain": "Sono presenti dati finanziari, di identificazione nazionale o di categoria particolare: gestiscili con attenzione prima di condividerli."
       },
-      "summary": "{count, plural, one {# dato personale trovato in {pages} pagine.} other {# dati personali trovati in {pages} pagine.}}",
-      "summaryClean": "Nessun dato personale trovato in {{pages}} pagine.",
+      "summary": "{count, plural, one {# dato personale trovato in {pages, plural, one {# pagina} other {# pagine}}.} other {# dati personali trovati in {pages, plural, one {# pagina} other {# pagine}}.}}",
+      "summaryClean": "{pages, plural, one {Nessun dato personale trovato in # pagina.} other {Nessun dato personale trovato in # pagine.}}",
       "byCategory": "Per categoria",
       "higherRisk": "Rischio più elevato",
       "findings": "Risultati",
@@ -838,7 +838,7 @@
       "batchSummary": "{count, plural, one {# dato personale in {files} file.} other {# dati personali in {files} file.}}",
       "byCategoryAll": "Per categoria (tutti i file)",
       "perFile": "Per file",
-      "fileFindings": "{count, plural, one {# risultato in {pages} pagine} other {# risultati in {pages} pagine}}",
+      "fileFindings": "{count, plural, one {# risultato in {pages, plural, one {# pagina} other {# pagine}}} other {# risultati in {pages, plural, one {# pagina} other {# pagine}}}}",
       "fileClean": "Nessun dato personale",
       "autoRedactCta": "Oscura tutto automaticamente",
       "autoRedactAllCta": "Oscura tutti i file",

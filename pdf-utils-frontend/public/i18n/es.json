@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Girar",
-      "description": "Gira las páginas 90° a la derecha, 180° o 270° a la izquierda."
+      "description": "Gira las páginas un cuarto de vuelta a la derecha (90°), del revés (180°) o un cuarto de vuelta a la izquierda (270°)."
     },
     "arrange": {
       "label": "Ordenar",
@@ -264,7 +264,7 @@
   "onboarding": {
     "welcome": {
       "title": "Te damos la bienvenida a PDF Conduit",
-      "message": "Herramientas PDF gratuitas que funcionan directamente en tu navegador: procesamos tus archivos al instante y nunca los guardamos. ¿Es tu primera vez? El Asistente guiado es la forma más fácil de empezar.",
+      "message": "Herramientas PDF gratuitas que funcionan directamente en tu navegador. Procesamos tus archivos al instante y nunca los guardamos. ¿Es tu primera vez? El Asistente guiado es la forma más fácil de empezar.",
       "cta": "Probar el Asistente guiado",
       "secondary": "Explorar todas las herramientas",
       "dismiss": "Descartar"
@@ -497,7 +497,7 @@
       "angleAria": "Ángulo de rotación",
       "dir90": "Gira 90° en sentido horario",
       "dir180": "Gira 180° (voltear)",
-      "dir270": "Gira 270° en sentido horario",
+      "dir270": "Gira 270° en sentido horario (un cuarto de vuelta a la izquierda)",
       "pages": "Páginas",
       "pagesPlaceholder": "p. ej. 1,3,5-8 (en blanco = todas)",
       "submit": "Girar",
@@ -668,7 +668,7 @@
       "description": "Consulta, edita o elimina la información del documento.",
       "hint": "Archivos PDF: los mismos cambios se aplican a cada uno (si son varios, se devuelven como ZIP).",
       "batchNote": "Los mismos campos se aplican a todos los archivos. La vista previa solo lee el primero.",
-      "readCurrent": "Leer actuales",
+      "readCurrent": "Leer los valores actuales",
       "reading": "Leyendo…",
       "titleField": "Título",
       "author": "Autor",
@@ -816,8 +816,8 @@
         "mediumExplain": "Se encontraron varios identificadores de bajo riesgo, pero nada financiero, de identificación nacional ni de categoría especial.",
         "highExplain": "Hay datos financieros, de identificación nacional o de categoría especial: manéjalos con cuidado antes de compartir."
       },
-      "summary": "{count, plural, one {# dato personal encontrado en {pages} páginas.} other {# datos personales encontrados en {pages} páginas.}}",
-      "summaryClean": "No se encontraron datos personales en {{pages}} páginas.",
+      "summary": "{count, plural, one {# dato personal encontrado en {pages, plural, one {# página} other {# páginas}}.} other {# datos personales encontrados en {pages, plural, one {# página} other {# páginas}}.}}",
+      "summaryClean": "{pages, plural, one {No se encontraron datos personales en # página.} other {No se encontraron datos personales en # páginas.}}",
       "byCategory": "Por categoría",
       "higherRisk": "Mayor riesgo",
       "findings": "Hallazgos",
@@ -835,10 +835,10 @@
       "hintMulti": "Uno o varios PDF, imágenes o documentos de Office.",
       "submitBatch": "Analizar {{count}} archivos",
       "highestRiskLabel": "riesgo máximo",
-      "batchSummary": "{count, plural, one {# dato personal en {files} archivos.} other {# datos personales en {files} archivos.}}",
+      "batchSummary": "{count, plural, one {# dato personal en {files, plural, one {# archivo} other {# archivos}}.} other {# datos personales en {files, plural, one {# archivo} other {# archivos}}.}}",
       "byCategoryAll": "Por categoría (todos los archivos)",
       "perFile": "Por archivo",
-      "fileFindings": "{count, plural, one {# hallazgo en {pages} páginas} other {# hallazgos en {pages} páginas}}",
+      "fileFindings": "{count, plural, one {# hallazgo en {pages, plural, one {# página} other {# páginas}}} other {# hallazgos en {pages, plural, one {# página} other {# páginas}}}}",
       "fileClean": "Sin datos personales",
       "autoRedactCta": "Censurar todo lo detectado",
       "autoRedactAllCta": "Censurar todos los archivos",

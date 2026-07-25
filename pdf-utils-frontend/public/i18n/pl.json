@@ -73,7 +73,7 @@
     },
     "rotate": {
       "label": "Obróć",
-      "description": "Obróć strony o 90°, 180° lub 270°."
+      "description": "Obróć strony o ćwierć obrotu w prawo (90°), do góry nogami (180°) lub o ćwierć obrotu w lewo (270°)."
     },
     "arrange": {
       "label": "Uporządkuj",
@@ -491,13 +491,13 @@
     },
     "rotate": {
       "title": "Obróć",
-      "description": "Obróć strony o 90°, 180° lub 270°.",
+      "description": "Obróć strony o ćwierć obrotu w prawo (90° w prawo), do góry nogami (180°) lub o ćwierć obrotu w lewo (270° w prawo, czyli 90° w lewo).",
       "hint": "Jeden lub więcej PDF-ów (kilka plików → ZIP).",
       "angle": "Kąt",
       "angleAria": "Kąt obrotu",
       "dir90": "Obraca o 90° w prawo",
       "dir180": "Obraca o 180° (do góry nogami)",
-      "dir270": "Obraca o 270° w prawo",
+      "dir270": "Obraca o 270° w prawo (ćwierć obrotu w lewo)",
       "pages": "Strony",
       "pagesPlaceholder": "np. 1,3,5-8 (puste = wszystkie)",
       "submit": "Obróć",
@@ -668,7 +668,7 @@
       "description": "Wyświetl, edytuj lub usuń metadane dokumentu.",
       "hint": "Pliki PDF. Te same zmiany trafią do każdego (kilka pobierzesz jako ZIP).",
       "batchNote": "Te same pola zostaną zastosowane do każdego pliku. Podgląd pokazuje tylko pierwszy.",
-      "readCurrent": "Wczytaj obecne",
+      "readCurrent": "Wczytaj obecne wartości",
       "reading": "Wczytywanie…",
       "titleField": "Tytuł",
       "author": "Autor",
@@ -816,8 +816,8 @@
         "mediumExplain": "Wykryto kilka identyfikatorów niskiego ryzyka, bez danych finansowych, numerów identyfikacyjnych i danych szczególnych kategorii.",
         "highExplain": "Dokument zawiera dane finansowe, numery identyfikacyjne lub dane szczególnych kategorii. Zachowaj ostrożność przed udostępnieniem."
       },
-      "summary": "{count, plural, one {Wykryto # wystąpienie danych osobowych na {pages} stronach.} few {Wykryto # wystąpienia danych osobowych na {pages} stronach.} many {Wykryto # wystąpień danych osobowych na {pages} stronach.} other {Wykryto # wystąpienia danych osobowych na {pages} stronach.}}",
-      "summaryClean": "Brak danych osobowych na {{pages}} stronach.",
+      "summary": "{count, plural, one {Wykryto # wystąpienie danych osobowych na {pages, plural, one {# stronie} few {# stronach} many {# stronach} other {# stronach}}.} few {Wykryto # wystąpienia danych osobowych na {pages, plural, one {# stronie} few {# stronach} many {# stronach} other {# stronach}}.} many {Wykryto # wystąpień danych osobowych na {pages, plural, one {# stronie} few {# stronach} many {# stronach} other {# stronach}}.} other {Wykryto # wystąpienia danych osobowych na {pages, plural, one {# stronie} few {# stronach} many {# stronach} other {# stronach}}.}}",
+      "summaryClean": "{pages, plural, one {Brak danych osobowych na # stronie.} few {Brak danych osobowych na # stronach.} many {Brak danych osobowych na # stronach.} other {Brak danych osobowych na # stronach.}}",
       "byCategory": "Według kategorii",
       "higherRisk": "Wyższe ryzyko",
       "findings": "Wykryte dane",
@@ -835,10 +835,10 @@
       "hintMulti": "Pliki PDF, obrazy lub dokumenty Office.",
       "submitBatch": "{count, plural, one {Skanuj # plik} few {Skanuj # pliki} many {Skanuj # plików} other {Skanuj # pliku}}",
       "highestRiskLabel": "najwyższe ryzyko",
-      "batchSummary": "{count, plural, one {Wykryto # wystąpienie danych osobowych w {files} plikach.} few {Wykryto # wystąpienia danych osobowych w {files} plikach.} many {Wykryto # wystąpień danych osobowych w {files} plikach.} other {Wykryto # wystąpienia danych osobowych w {files} plikach.}}",
+      "batchSummary": "{count, plural, one {Wykryto # wystąpienie danych osobowych w {files, plural, one {# pliku} few {# plikach} many {# plikach} other {# plikach}}.} few {Wykryto # wystąpienia danych osobowych w {files, plural, one {# pliku} few {# plikach} many {# plikach} other {# plikach}}.} many {Wykryto # wystąpień danych osobowych w {files, plural, one {# pliku} few {# plikach} many {# plikach} other {# plikach}}.} other {Wykryto # wystąpienia danych osobowych w {files, plural, one {# pliku} few {# plikach} many {# plikach} other {# plikach}}.}}",
       "byCategoryAll": "Według kategorii (wszystkie pliki)",
       "perFile": "Według plików",
-      "fileFindings": "{count, plural, one {# wystąpienie na {pages} stronach} few {# wystąpienia na {pages} stronach} many {# wystąpień na {pages} stronach} other {# wystąpienia na {pages} stronach}}",
+      "fileFindings": "{count, plural, one {# wystąpienie na {pages, plural, one {# stronie} few {# stronach} many {# stronach} other {# stronach}}} few {# wystąpienia na {pages, plural, one {# stronie} few {# stronach} many {# stronach} other {# stronach}}} many {# wystąpień na {pages, plural, one {# stronie} few {# stronach} many {# stronach} other {# stronach}}} other {# wystąpienia na {pages, plural, one {# stronie} few {# stronach} many {# stronach} other {# stronach}}}}",
       "fileClean": "Brak danych osobowych",
       "autoRedactCta": "Zamaż wszystko automatycznie",
       "autoRedactAllCta": "Zamaż wszystkie pliki",
