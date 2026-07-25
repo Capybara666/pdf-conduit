@@ -4,6 +4,7 @@ import com.pdfconduit.core.convert.DocumentConverter;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
+import com.pdfconduit.core.util.Filenames;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.error.OfficeDisabledException;
 import com.pdfconduit.web.guard.OfficeGuard;
@@ -75,8 +76,7 @@ public class Uploads {
 
     /** The upload's original basename (path stripped), falling back to {@code upload}. */
     public static String filename(MultipartFile file) {
-        String name = basename(file.getOriginalFilename());
-        return name.isEmpty() ? "upload" : name;
+        return Filenames.basename(file.getOriginalFilename(), "upload");
     }
 
     /**
@@ -84,14 +84,10 @@ public class Uploads {
      * handled — {@code ""} when there is none (e.g. {@code null}, {@code ""}, {@code "/"}).
      * Deliberately string-based rather than {@code Path.of(x).getFileName()}: the latter returns
      * {@code null} for a root path, so feeding it crafted JSON produced an unhandled NPE (→ 500).
-     * Callers decide what an unusable name means — {@link #filename} falls back, the pipeline
-     * endpoint rejects it as a bad request.
+     * Callers decide what an unusable name means — {@link #filename} falls back to {@code upload},
+     * the pipeline endpoint rejects the empty result as a bad request.
      */
     public static String basename(String raw) {
-        if (raw == null || raw.isBlank()) return "";
-        String name = raw.replace('\\', '/');
-        int slash = name.lastIndexOf('/');
-        if (slash >= 0) name = name.substring(slash + 1);
-        return name.strip();
+        return Filenames.basename(raw, "");
     }
 }

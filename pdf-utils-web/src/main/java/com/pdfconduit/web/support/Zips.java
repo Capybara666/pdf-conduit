@@ -1,6 +1,7 @@
 package com.pdfconduit.web.support;
 
 import com.pdfconduit.core.service.NamedBytes;
+import com.pdfconduit.core.util.Filenames;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,17 +47,11 @@ public final class Zips {
     /**
      * Reduces an entry name to a safe basename: any path is stripped ({@code /} and {@code \}), and
      * any residual {@code ..} segment neutralised — so a crafted upload filename cannot write
-     * outside the archive root when the ZIP is later extracted (zip-slip).
+     * outside the archive root when the ZIP is later extracted (zip-slip). The rule itself lives in
+     * {@link Filenames#sanitizeEntry} so the same hardening covers every filename call site.
      */
     static String sanitize(String name) {
-        if (name == null || name.isBlank()) return "file";
-        String n = name.replace('\\', '/');
-        int slash = n.lastIndexOf('/');
-        if (slash >= 0) n = n.substring(slash + 1);
-        n = n.strip();
-        // Drop leading dots so "..", "..." collapse to a harmless name; keep normal dotted names.
-        while (n.startsWith(".")) n = n.substring(1);
-        return n.isBlank() ? "file" : n;
+        return Filenames.sanitizeEntry(name);
     }
 
     private static String uniqueEntry(Set<String> used, String name) {

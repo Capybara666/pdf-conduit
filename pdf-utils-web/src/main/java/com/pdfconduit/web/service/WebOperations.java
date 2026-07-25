@@ -783,10 +783,21 @@ public class WebOperations {
         }
     }
 
-    /** Converts + guards a batch of uploads to PDF bytes, preserving order (names kept by caller). */
+    /**
+     * Converts + guards a batch of uploads to PDF bytes, preserving order (names kept by caller).
+     * A file that cannot be routed or is over the page cap fails with its own name in the message —
+     * the in-memory loaders have no file name of their own, and "the PDF is password-protected" is
+     * useless when fifteen were uploaded.
+     */
     private List<byte[]> pdfData(List<NamedBytes> inputs) throws PdfOperationException {
         List<byte[]> out = new ArrayList<>(inputs.size());
-        for (NamedBytes in : inputs) out.add(toPdf(in));
+        for (NamedBytes in : inputs) {
+            try {
+                out.add(toPdf(in));
+            } catch (PdfOperationException e) {
+                throw MemoryOperations.named(in.filename(), e);
+            }
+        }
         return out;
     }
 
@@ -911,12 +922,7 @@ public class WebOperations {
     }
 
     private static String stem(String filename) {
-        String name = (filename == null || filename.isBlank()) ? "file" : filename;
-        int slash = Math.max(name.lastIndexOf('/'), name.lastIndexOf('\\'));
-        if (slash >= 0) name = name.substring(slash + 1);
-        int dot = name.lastIndexOf('.');
-        String stem = dot > 0 ? name.substring(0, dot) : name;
-        return stem.isBlank() ? "file" : stem;
+        return com.pdfconduit.core.util.Filenames.stem(filename);
     }
 
     private static String pad(int n, int width) {

@@ -4,6 +4,8 @@ import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
 import com.pdfconduit.core.model.PdfMetadata;
 import com.pdfconduit.core.pipeline.PipelineException;
+import com.pdfconduit.core.service.BatchOutcome;
+import com.pdfconduit.core.service.MemoryOperations;
 import com.pdfconduit.core.service.NamedBytes;
 import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.dto.MetadataDto;
@@ -60,8 +62,10 @@ public class MetadataController {
             throws IOException, PdfOperationException, InvalidPageRangeException, PipelineException {
         guardCount(files, maxFiles);
         List<NamedBytes> inputs = uploads.readAll(files);
-        List<NamedBytes> results = loadGuard.execute(totalBytes(inputs),
-            () -> ops.editMetadata(inputs, title, author, subject, keywords, strip));
+        // Partial-tolerant MAP batch (see OperationsController): one unusable file is skipped and
+        // named in X-Batch-Failures instead of failing the whole edit.
+        BatchOutcome results = loadGuard.execute(totalBytes(inputs), () -> MemoryOperations.mapPartial(
+            inputs, in -> ops.editMetadata(List.of(in), title, author, subject, keywords, strip)));
         return Responses.batch("metadata", results, MediaType.APPLICATION_PDF);
     }
 }

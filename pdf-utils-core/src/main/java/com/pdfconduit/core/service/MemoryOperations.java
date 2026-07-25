@@ -1,8 +1,13 @@
 package com.pdfconduit.core.service;
 
 import com.pdfconduit.core.convert.DocumentConverter;
+import com.pdfconduit.core.exception.InvalidPageRangeException;
 import com.pdfconduit.core.exception.PdfOperationException;
+import com.pdfconduit.core.exception.PdfUnrecoverableException;
 import com.pdfconduit.core.model.PageSize;
+import com.pdfconduit.core.util.Filenames;
+import com.pdfconduit.core.util.PdfLoader;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +63,11 @@ public final class MemoryOperations {
 
     /**
      * Runs {@code exec} once per input (MAP), returning one output per input as {@link NamedBytes}
-     * named {@code <stem><suffix>.pdf} from {@code type}. A failing input aborts with its message
-     * (the web layer maps a single request to a single response, so there is no partial batch here).
+     * named {@code <stem><suffix>.pdf} from {@code type}. A failing input aborts the batch — but
+     * with the offending file <em>named</em> ({@link #named}), so the caller never has to bisect an
+     * upload to find out which of fifteen files was the bad one.
+     *
+     * <p>For a batch that should survive a bad input, see {@link #mapPartial}.
      */
     public static List<NamedBytes> runBatch(OperationType type, List<byte[]> rawInputs,
                                             List<String> filenames, BytesExecution exec)
@@ -67,10 +75,78 @@ public final class MemoryOperations {
         List<NamedBytes> outputs = new ArrayList<>(rawInputs.size());
         for (int i = 0; i < rawInputs.size(); i++) {
             String filename = filenames.get(i);
-            byte[] out = runSingle(rawInputs.get(i), filename, exec);
+            byte[] out;
+            try {
+                out = runSingle(rawInputs.get(i), filename, exec);
+            } catch (PdfOperationException e) {
+                throw named(filename, e);
+            }
             outputs.add(new NamedBytes(outputName(type, filename), out));
         }
         return outputs;
+    }
+
+    /** The per-file work of a partial-tolerant batch: one input in, that input's outputs out. */
+    @FunctionalInterface
+    public interface FileWork {
+        List<NamedBytes> run(NamedBytes input) throws PdfOperationException, InvalidPageRangeException;
+    }
+
+    /**
+     * A <b>partial-tolerant</b> MAP batch: runs {@code work} per input and keeps going when one
+     * fails, returning every output that was produced plus a {@link BatchFailure} per bad input
+     * (both in input order). One password-protected file in a fifteen-file compress therefore costs
+     * the user that one file — not the whole upload.
+     *
+     * <p>Deliberate limits:
+     * <ul>
+     *   <li>if <em>every</em> input fails there is nothing to return, so the first failure is
+     *       thrown (named) — an empty archive would be a worse answer than an error;</li>
+     *   <li>only {@link PdfOperationException} is tolerated. An
+     *       {@link InvalidPageRangeException} (the caller's own parameter is wrong, not the file)
+     *       and any runtime failure propagate and fail the whole request, as before;</li>
+     *   <li>REDUCE operations (Merge) must never come through here — a merge missing an input is a
+     *       different document, not a partial success.</li>
+     * </ul>
+     */
+    public static BatchOutcome mapPartial(List<NamedBytes> inputs, FileWork work)
+            throws PdfOperationException, InvalidPageRangeException {
+        List<NamedBytes> outputs = new ArrayList<>(inputs.size());
+        List<BatchFailure> failures = new ArrayList<>();
+        PdfOperationException first = null;
+        for (NamedBytes in : inputs) {
+            try {
+                outputs.addAll(work.run(in));
+            } catch (PdfOperationException e) {
+                if (first == null) first = named(in.filename(), e);
+                failures.add(new BatchFailure(in.filename(), messageOf(e)));
+            }
+        }
+        if (outputs.isEmpty() && first != null) throw first;
+        return new BatchOutcome(List.copyOf(outputs), List.copyOf(failures));
+    }
+
+    /**
+     * {@code e} with {@code filename} prefixed to its message — the in-memory loaders have no file
+     * name to work with ("The PDF is password-protected."), so the batch layer adds it back.
+     *
+     * <p>Type and cause are preserved: a {@link PdfUnrecoverableException} stays unrecoverable (the
+     * web layer maps it to its own {@code repair_failed} code) and the original throwable is kept as
+     * the cause. An exception whose message already mentions the file, or an unknown subclass whose
+     * type could not be reproduced faithfully, is returned untouched.
+     */
+    public static PdfOperationException named(String filename, PdfOperationException e) {
+        String message = messageOf(e);
+        if (filename == null || filename.isBlank() || message.contains(filename)) return e;
+        String withName = filename + ": " + message;
+        Throwable cause = e.getCause() != null ? e.getCause() : e;
+        if (e.getClass() == PdfUnrecoverableException.class) {
+            return new PdfUnrecoverableException(withName, cause);
+        }
+        if (e.getClass() == PdfOperationException.class) {
+            return new PdfOperationException(withName, cause);
+        }
+        return e;
     }
 
     /**
@@ -103,24 +179,50 @@ public final class MemoryOperations {
     /**
      * Routes each raw input to PDF bytes and hands the list to {@code reduce} (a REDUCE op such as
      * Merge), returning its single output named from {@code type} and the first input's stem.
+     *
+     * <p>A REDUCE is never partial: a merge missing one of its inputs is a different document, so a
+     * bad input still fails the whole operation — only now the message names the file.
      */
     public static NamedBytes runReduce(OperationType type, List<byte[]> rawInputs,
                                        List<String> filenames, ReduceExecution reduce)
             throws PdfOperationException {
         List<byte[]> pdfs = new ArrayList<>(rawInputs.size());
         for (int i = 0; i < rawInputs.size(); i++) {
-            pdfs.add(toPdfBytes(rawInputs.get(i), filenames.get(i)));
+            String filename = filenames.get(i);
+            try {
+                pdfs.add(toPdfBytes(rawInputs.get(i), filename));
+            } catch (PdfOperationException e) {
+                throw named(filename, e);
+            }
         }
         byte[] out;
         try {
             out = reduce.run(pdfs);
         } catch (PdfOperationException e) {
-            throw e;
+            // The reduce works on a bundle, so it cannot say which input broke it — find out here.
+            String culprit = culprit(pdfs, filenames);
+            throw culprit != null ? named(culprit, e) : e;
         } catch (Exception e) {
             throw new PdfOperationException(messageOf(e), e);
         }
         String stem = filenames.isEmpty() ? type.id() : stemOf(filenames.get(0));
         return new NamedBytes(stem + type.suffix() + ".pdf", out);
+    }
+
+    /**
+     * Diagnostic-only: the first input that cannot be opened on its own ({@code null} if they all
+     * open), so a failed REDUCE can name the file that spoiled it. Deliberately runs <em>after</em>
+     * the failure — the happy path never pays for this second parse.
+     */
+    private static String culprit(List<byte[]> pdfs, List<String> filenames) {
+        for (int i = 0; i < Math.min(pdfs.size(), filenames.size()); i++) {
+            try (PDDocument ignored = PdfLoader.load(pdfs.get(i))) {
+                // opens cleanly — not this one
+            } catch (Exception e) {
+                return filenames.get(i);
+            }
+        }
+        return null;
     }
 
     /** In-memory input routing: PDF passthrough, image → Image-to-PDF, office → temp-dir exception. */
@@ -134,12 +236,7 @@ public final class MemoryOperations {
     }
 
     private static String stemOf(String filename) {
-        String name = (filename == null || filename.isBlank()) ? "file" : filename;
-        int slash = Math.max(name.lastIndexOf('/'), name.lastIndexOf('\\'));
-        if (slash >= 0) name = name.substring(slash + 1);
-        int dot = name.lastIndexOf('.');
-        String stem = dot > 0 ? name.substring(0, dot) : name;
-        return stem.isBlank() ? "file" : stem;
+        return Filenames.stem(filename);
     }
 
     private static String pad(int n, int width) {
