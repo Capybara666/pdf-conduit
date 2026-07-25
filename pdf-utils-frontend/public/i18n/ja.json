@@ -56,9 +56,9 @@
       "organise": "整理",
       "optimise": "最適化",
       "convert": "変換",
-      "secure": "保護",
+      "secure": "セキュリティ",
       "edit": "編集",
-      "advanced": "高度な設定"
+      "advanced": "高度な機能"
     },
     "menuToggle": "ナビゲーションメニューを切り替え"
   },
@@ -73,14 +73,14 @@
     },
     "rotate": {
       "label": "回転",
-      "description": "ページを 90°、180°、270° 回転します。"
+      "description": "ページを右へ 90°、180°（反転）、左へ 270° 回転します。"
     },
     "arrange": {
       "label": "並べ替え",
       "description": "ページの順序変更・反転・複製を行います。"
     },
     "nup": {
-      "label": "1枚に複数ページ",
+      "label": "ページ集約",
       "description": "1 枚に複数ページを配置したり、小冊子に折ったりします。"
     },
     "compress": {
@@ -105,7 +105,7 @@
     },
     "ocr": {
       "label": "OCR",
-      "description": "スキャンしたPDFをOCRで検索可能にします。"
+      "description": "スキャンした PDF を OCR で検索可能にします。"
     },
     "protect": {
       "label": "保護",
@@ -129,7 +129,7 @@
     },
     "watermark": {
       "label": "透かし",
-      "description": "すべてのページにテキストや画像を重ねて押印します。"
+      "description": "すべてのページにテキストや画像の透かしを重ねます。"
     },
     "wizard": {
       "label": "ウィザード",
@@ -140,8 +140,8 @@
       "description": "操作をノードグラフとして連結します。"
     },
     "gdpr-scan": {
-      "label": "GDPRスキャン",
-      "description": "PDF内の個人データ（GDPR / PII）をスキャンします。"
+      "label": "GDPR スキャン",
+      "description": "PDF 内の個人データ（GDPR / PII）をスキャンします。"
     },
     "crop": {
       "label": "トリミング",
@@ -183,16 +183,16 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "無料 · ファイルは保存されません",
+      "eyebrow": "無料 · ファイルをサーバーに残しません",
       "title": "必要な PDF ツールをすべて、1 つの洗練されたワークスペースに。",
       "lede": "PDF の結合・圧縮・変換・保護・墨消しを数秒で。すべて瞬時に処理され、当社のサーバーに保存されることはありません。アカウント不要。インストール不要。",
       "ctaStart": "無料で始める",
       "ctaExplore": "ツールを見る",
-      "note": "ファイルは保存されません · 登録不要 · どんなデバイスでも動作"
+      "note": "ファイルをサーバーに残しません · 登録不要 · あらゆるデバイスで動作"
     },
     "trust": {
       "aria": "PDF Conduit が選ばれる理由",
-      "memoryTitle": "保存されません",
+      "memoryTitle": "サーバーに残しません",
       "memoryDesc": "ファイルは処理後に破棄されます。ディスクに書き込むことも、サーバーに保持することもありません。",
       "accountTitle": "アカウント不要",
       "accountDesc": "そのまますぐに使えます。メールもパスワードもトラッキングも一切なし。",
@@ -200,7 +200,7 @@
       "browserDesc": "インストール不要。Windows、macOS、Linux、モバイルで動作します。"
     },
     "tools": {
-      "title": "ツールを選んで始めよう",
+      "title": "ツールを選んですぐに始めましょう",
       "subtitle": "PDF 作業に必要なものすべて。プライバシーはデフォルトで守られます。",
       "showMore": "すべてのツールを表示",
       "showLess": "表示を減らす"
@@ -213,7 +213,7 @@
       "freePrice": "$0",
       "freePer": "／ 永久",
       "freeFeat1": "すべての PDF ツール",
-      "freeFeat2": "何も保存されません",
+      "freeFeat2": "サーバーには何も残りません",
       "freeFeat3": "1 日あたりの操作回数制限",
       "freeFeat4": "標準のファイルサイズ上限",
       "freeFeat5": "アカウント不要",
@@ -237,7 +237,7 @@
       "tools": "ツール",
       "privacy": "プライバシー",
       "github": "GitHub",
-      "copy": "ファイルは処理され、保存されることはありません。無料でご利用いただけます。"
+      "copy": "ファイルは処理されるだけで、サーバーに保存されることはありません。無料でご利用いただけます。"
     },
     "how": {
       "title": "ご利用の流れ",
@@ -247,7 +247,7 @@
       "step2Title": "ファイルを追加する",
       "step2Desc": "ドラッグするか選択してください。ファイルが当社のサーバーに保存されることはありません。",
       "step3Title": "結果をダウンロードする",
-      "step3Desc": "実行すると、ファイルはすぐに処理され、完成した PDF を数秒でダウンロードできます。離れれば、何も残りません。",
+      "step3Desc": "実行すると、ファイルはすぐに処理され、完成した PDF を数秒でダウンロードできます。ページを離れれば、当社側には何も残りません。",
       "wizardTitle": "PDF Conduit は初めてですか？",
       "wizardDesc": "ガイド付きウィザードが、選択・並べ替え・書き出しを 1 ステップずつ案内します。",
       "wizardCta": "ガイド付きウィザードを始める",
@@ -258,13 +258,13 @@
       "subtitle": "さらに使いこなしたい方へ。複数ステップの処理を組んだり、書類の個人データを確認したりできます。",
       "wizardDesc": "はじめての方へ。ガイド付きウィザードが一歩ずつご案内します。",
       "pipelineDesc": "複数の操作をビジュアルなノードグラフでつなぎ、繰り返し使えるフローにまとめます。",
-      "gdprDesc": "PDF 内の個人データ（GDPR / PII）をスキャンし、そのまま黒塗りに進めます。"
+      "gdprDesc": "PDF 内の個人データ（GDPR / PII）をスキャンし、そのまま墨消しに進めます。"
     }
   },
   "onboarding": {
     "welcome": {
       "title": "PDF Conduit へようこそ",
-      "message": "ブラウザーでそのまま使える無料の PDF ツール。ファイルは即座に処理され、保存されることはありません。初めての方は、ガイド付きウィザードが最も簡単な始め方です。",
+      "message": "ブラウザからそのまま使える無料の PDF ツール。ファイルは即座に処理され、サーバーに保存されることはありません。初めての方は、ガイド付きウィザードが最も簡単な始め方です。",
       "cta": "ガイド付きウィザードを試す",
       "secondary": "すべてのツールを見る",
       "dismiss": "閉じる"
@@ -274,9 +274,9 @@
   },
   "privacy": {
     "title": "プライバシー",
-    "description": "PDF Conduit がファイルをどう扱うか。一言で言えば、保持しません。",
-    "memoryTitle": "ファイルは保存されません",
-    "memoryBody": "ファイルが保存されることは一切ありません。すべての操作は 1 回のリクエスト内で完結します。アップロードされたファイルは処理され、そのままお客様に返された後、その場ですぐに破棄されます。何も保持されず、他の目的に使われることも決してありません。",
+    "description": "PDF Conduit がお客様のファイルをどう扱うか。一言で言えば、当社側には残しません。",
+    "memoryTitle": "お客様のファイルをサーバーに保存しません",
+    "memoryBody": "お客様のファイルをサーバーに保存することは一切ありません。すべての操作は 1 回のリクエスト内で完結します。アップロードされたファイルは処理され、そのままお客様に返された後、その場ですぐに破棄されます。当社側には何も残らず、他の目的に使われることも決してありません。",
     "exceptionTitle": "唯一の一時的な例外",
     "exceptionBody": "オフィス文書やテキスト文書（例：.docx、.xlsx、.pptx）の変換には、ヘッドレスの LibreOffice が必要です。その工程に限り、ファイルは隔離された一時フォルダーに書き込まれ、変換完了後ただちに削除されます。通常の PDF や画像がディスクに触れることは一切ありません。",
     "accountTitle": "アカウントもトラッキングも不要",
@@ -329,7 +329,7 @@
     },
     "ocr_disabled": {
       "title": "OCR は利用できません",
-      "detail": "このサーバーではスキャンの文字認識が有効になっていません。",
+      "detail": "このサーバーではスキャン文書の文字認識が有効になっていません。",
       "hint": "ほかのツールは通常どおり使えます。"
     },
     "operation_failed": {
@@ -371,7 +371,7 @@
     "partialMore": "{count, plural, other {…ほか # 件}}",
     "partialHint": "処理できた分はすべてダウンロードに含まれています。",
     "failureNoReason": "理由は示されていません。",
-    "redactionApplied": "{pages, plural, other {# ページ}}の{regions, plural, other {# か所}}を完全に黒塗りしました。",
+    "redactionApplied": "{pages, plural, other {# ページ}}の{regions, plural, other {# か所}}を完全に墨消ししました。",
     "repairFindingsTitle": "問題点",
     "repairPages": "{count, plural, other {再構築後のファイルは # ページです。}}",
     "repairFinding": {
@@ -471,10 +471,10 @@
       "allNoopWarning": "目標がすべてのファイルのサイズ以上です。縮小するものがありません。",
       "dpi": "画像解像度",
       "dpiHelp": "埋め込み画像をこの解像度に制限してさらに縮小します。",
-      "dpiNone": "オリジナル(制限なし)",
-      "dpiScreen": "画面(72 DPI)",
-      "dpiEbook": "電子書籍(150 DPI)",
-      "dpiPrint": "印刷(300 DPI)",
+      "dpiNone": "オリジナル（制限なし）",
+      "dpiScreen": "画面（72 DPI）",
+      "dpiEbook": "電子書籍（150 DPI）",
+      "dpiPrint": "印刷（300 DPI）",
       "grayscale": "画像をグレースケールに変換",
       "grayscaleHelp": "画像を色なしで再エンコードしてファイルを小さくします。",
       "floorNotice": "このファイルで実現可能な最小サイズは約 {{floor}} です。目標の {{target}} には到達できません。代わりに最小のバージョンを保存しました。"
@@ -482,22 +482,22 @@
     "repair": {
       "title": "修復",
       "description": "破損した PDF を再構築して、もう一度開けるようにします。",
-      "hint": "PDFファイル。複数のファイルはZIPで返されます。",
-      "privacyLine": "ファイルが保存されることはありません。修復はプライベートに行われます。",
+      "hint": "PDF ファイル。複数のファイルは ZIP で返されます。",
+      "privacyLine": "ファイルをサーバーに保存することはありません。修復は非公開で行われます。",
       "honestNote": "これは破損したファイルの修復を試みる機能です。すべてのファイルを復元できるわけではありません。",
-      "batchNote": "{{count}} 件のファイルが選択されました。各ファイルを個別に修復し、結果はZIPで返されます。",
+      "batchNote": "{{count}} 個のファイルを選択中。各ファイルを個別に修復し、結果は ZIP で返されます。",
       "submit": "ファイルを修復",
       "loading": "修復中…"
     },
     "rotate": {
       "title": "回転",
-      "description": "ページを 90°、180°、270° 回転します。",
+      "description": "ページを右へ 4 分の 1 回転（時計回り 90°）、上下反転（180°）、左へ 4 分の 1 回転（270° / 反時計回り 90°）します。",
       "hint": "1 つ以上の PDF（複数ファイル → ZIP）。",
       "angle": "角度",
       "angleAria": "回転角度",
-      "dir90": "時計回りに90°回転",
-      "dir180": "180°回転（反転）",
-      "dir270": "時計回りに270°回転",
+      "dir90": "時計回りに 90° 回転",
+      "dir180": "180° 回転（上下反転）",
+      "dir270": "時計回りに 270° 回転",
       "pages": "ページ",
       "pagesPlaceholder": "例：1,3,5-8（空欄 = すべて）",
       "submit": "回転",
@@ -516,17 +516,17 @@
       "loading": "並べ替え中…"
     },
     "nup": {
-      "title": "1枚に複数ページ",
+      "title": "ページ集約",
       "description": "1 枚に複数ページを配置するか、中とじの小冊子に折ります。",
-      "privacyLine": "ファイルはプライベートに面付けされ、保存されることはありません。",
+      "privacyLine": "ファイルは非公開で面付けされ、サーバーに保存されることはありません。",
       "hint": "PDF ファイル。複数ファイルは ZIP で返されます。",
       "batchNote": "{{count}} 個のファイルを選択中。各ファイルは個別に面付けされ、結果は ZIP で返されます。",
       "layout": "レイアウト",
       "layout2up": "1 枚に 2 ページ",
-      "layout4up": "1 枚に 4 ページ (2×2)",
-      "layout6up": "1 枚に 6 ページ (2×3)",
-      "layout8up": "1 枚に 8 ページ (2×4)",
-      "layout9up": "1 枚に 9 ページ (3×3)",
+      "layout4up": "1 枚に 4 ページ（2×2）",
+      "layout6up": "1 枚に 6 ページ（2×3）",
+      "layout8up": "1 枚に 8 ページ（2×4）",
+      "layout9up": "1 枚に 9 ページ（3×3）",
       "mode": "モード",
       "booklet": "小冊子（中とじ）",
       "bookletHelp": "印刷して折り重ねたときに順番どおりに読めるようにページを並べ替えます。",
@@ -540,7 +540,7 @@
       "hintNoOffice": "画像（PNG、JPG、WebP など）。各入力がそれぞれ 1 つの PDF になります（複数 → ZIP）。このサーバーではオフィス文書は変換できません。",
       "pageSize": "ページサイズ",
       "sizeFit": "内容に合わせる",
-      "sizeLetter": "Letter",
+      "sizeLetter": "レター",
       "sizeHelp": "画像入力はこのページサイズに配置されます（オフィス文書は独自のサイズを保持します）。",
       "submit": "変換",
       "loading": "変換中…"
@@ -548,19 +548,19 @@
     "toImages": {
       "title": "画像に変換",
       "description": "PDF のページを PNG または JPG に書き出します。",
-      "privacyLine": "ファイルはプライベートに変換され、保存されることはありません。",
+      "privacyLine": "ファイルは非公開で変換され、サーバーに保存されることはありません。",
       "hint": "PDF ファイル。複数ページや複数ファイルは ZIP で返されます。",
       "batchNote": "{{count}} 個のファイルを選択中。ページ範囲は各ファイルに適用され、結果は ZIP で返されます。",
       "format": "形式",
       "dpi": "DPI",
       "dpiHelp": "高いほど鮮明で大きくなります（36〜600）。",
-      "dpiError": "36～600 の DPI を入力してください。",
+      "dpiError": "36〜600 の DPI を入力してください。",
       "quality": "JPG の画質",
-      "qualityHelp": "高いほど = 画質が良く、ファイルは大きくなります。",
+      "qualityHelp": "高いほど画質が良くなり、ファイルは大きくなります。",
       "pages": "ページ",
       "pagesPlaceholder": "例：1-3（空欄 = すべて）",
       "submit": "画像を書き出す",
-      "loading": "描画中…",
+      "loading": "書き出し中…",
       "color": "色",
       "transparent": "背景を透過",
       "transparentHelp": "PNG のみ。ページの背景が透明のままになります。",
@@ -581,11 +581,11 @@
     },
     "ocr": {
       "title": "OCR",
-      "description": "スキャンしたPDFを検索可能に。見えないテキスト層を追加します。",
-      "hint": "スキャンしたPDFまたは画像。テキストが選択可能になります。",
+      "description": "スキャンした PDF を検索可能に。透明テキストレイヤーを追加します。",
+      "hint": "スキャンした PDF または画像。テキストが選択可能になります。",
       "languages": "言語",
-      "languagesPlaceholder": "例: eng または eng+deu（空欄 = eng）",
-      "languagesHelp": "Tesseractの言語コード。言語パックがサーバーにインストールされている必要があります。",
+      "languagesPlaceholder": "例：eng または eng+deu（空欄 = eng）",
+      "languagesHelp": "Tesseract の言語コード。言語パックがサーバーにインストールされている必要があります。",
       "langAdvanced": "詳細設定：言語コードを手動で入力",
       "langNone": "言語が未選択のため、英語（eng）が使用されます。",
       "submit": "検索可能にする",
@@ -594,7 +594,7 @@
     "protect": {
       "title": "保護",
       "description": "PDF にパスワード暗号化を追加します。",
-      "privacyLine": "ファイルとパスワードはプライベートに処理され、保存されることはありません。",
+      "privacyLine": "ファイルとパスワードは非公開で処理され、サーバーに保存されることはありません。",
       "hint": "1 つ以上の PDF（複数ファイル → ZIP）。",
       "userPassword": "ユーザーパスワード",
       "userPasswordHelp": "文書を開くために必要です。",
@@ -613,7 +613,7 @@
     "unlock": {
       "title": "ロック解除",
       "description": "既知のパスワードを PDF から削除します。",
-      "privacyLine": "ファイルとパスワードはプライベートに処理され、保存されることはありません。",
+      "privacyLine": "ファイルとパスワードは非公開で処理され、サーバーに保存されることはありません。",
       "hint": "1 つ以上の保護された PDF（複数ファイル → ZIP）。",
       "password": "パスワード",
       "passwordHelp": "PDF を開くのに現在使用しているパスワード。",
@@ -632,16 +632,16 @@
       "removeRegion": "領域を削除",
       "submit": "墨消ししてダウンロード",
       "loading": "墨消し中…",
-      "keepSearchable": "テキストを検索可能に保つ (OCR)"
+      "keepSearchable": "テキストを検索可能に保つ（OCR）"
     },
     "sign": {
       "title": "入力と署名",
-      "description": "入力可能なPDFフォームフィールド（AcroForm）に記入し、署名を追加してからフラット化します。何も保存されず、すべてセッション内で処理されます。",
-      "hint": "PDFを1つ選択してください。入力可能なフォームフィールドを検出します。次に署名を作成し、ページにドロップします。",
+      "description": "入力可能な PDF フォームフィールド（AcroForm）に記入し、署名を追加してからフラット化します。サーバーには何も残らず、すべて 1 回のセッション内で処理されます。",
+      "hint": "PDF 1 つ。入力可能なフォームフィールドを自動で検出します。次に署名を作成し、ページにドロップします。",
       "dragHint": "ページ上をドラッグして署名を配置します。",
-      "chooseAnother": "別のPDFを選択",
+      "chooseAnother": "別の PDF を選択",
       "needSignature": "まず署名を作成し、ページ上にボックスをドラッグして配置してください。",
-      "signature": "あなたの署名",
+      "signature": "ご自身の署名",
       "tabDraw": "手描き",
       "tabType": "入力",
       "tabUpload": "アップロード",
@@ -649,7 +649,7 @@
       "useSignature": "この署名を使用",
       "typePlaceholder": "名前を入力",
       "currentSignature": "現在の署名",
-      "placements": "配置 ({{count}})",
+      "placements": "配置（{{count}}）",
       "placementsNoSig": "配置を始めるには署名を作成してください。",
       "placementsEmpty": "まだ配置がありません。署名を置く位置にボックスをドラッグしてください。",
       "removePlacement": "配置を削除",
@@ -681,23 +681,23 @@
     },
     "watermark": {
       "title": "透かし",
-      "description": "すべてのページにテキストや画像を重ねて押印します。",
-      "privacyLine": "ファイルはプライベートにスタンプされ、保存されることはありません。",
-      "hint": "押印する 1 つ以上の PDF（複数ファイル → ZIP）。",
+      "description": "すべてのページにテキストや画像の透かしを重ねます。",
+      "privacyLine": "ファイルは非公開で処理され、サーバーに保存されることはありません。",
+      "hint": "透かしを入れる 1 つ以上の PDF（複数ファイル → ZIP）。",
       "typeAria": "透かしの種類",
       "typeText": "テキスト",
       "typeImage": "画像",
       "text": "透かしテキスト",
-      "textPlaceholder": "例：CONFIDENTIAL",
+      "textPlaceholder": "例：社外秘",
       "image": "透かし画像",
-      "imageHint": "重ねる画像を1つ（PNG、JPG など）。",
+      "imageHint": "重ねる画像を 1 つ（PNG、JPG など）。",
       "opacity": "不透明度",
       "rotation": "回転",
       "scale": "拡大縮小",
       "submit": "透かしを適用",
       "needText": "透かしテキストを入力してください。",
       "needImage": "画像を選択してください。",
-      "loading": "押印中…",
+      "loading": "透かしを適用中…",
       "layout": "レイアウト",
       "layoutSingle": "単一",
       "layoutTile": "タイル",
@@ -729,7 +729,7 @@
       "pageSettingsTitle": "ページ設定",
       "imagePageSize": "画像入力のページサイズ",
       "sizeFit": "画像に合わせる",
-      "sizeLetter": "Letter",
+      "sizeLetter": "レター",
       "imagePageSizeHelp": "画像とオフィス文書は、結合前にこのサイズで PDF に変換されます。",
       "compressionTitle": "圧縮",
       "compressToggle": "書き出す PDF を目標サイズに向けて圧縮する",
@@ -799,22 +799,22 @@
     },
     "gdprScan": {
       "title": "GDPR / PII スキャン",
-      "description": "共有する前にPDF内の個人データを見つけます。",
-      "hint": "PDF、画像、またはオフィス文書を1つ。",
-      "privacyLine": "ファイルは非公開でスキャンされ、保存も誰かへの送信も行われません。",
+      "description": "共有する前に PDF 内の個人データを見つけます。",
+      "hint": "PDF、画像、またはオフィス文書を 1 つ。",
+      "privacyLine": "ファイルは非公開でスキャンされ、サーバーへの保存も第三者への送信も行われません。",
       "submit": "個人データをスキャン",
       "loading": "スキャン中…",
       "riskLabel": "リスク",
-      "riskBadgeAria": "リスクレベル: {{level}}",
+      "riskBadgeAria": "リスクレベル：{{level}}",
       "risk": {
         "none": "なし",
         "low": "低",
         "medium": "中",
         "high": "高",
         "noneExplain": "この文書から個人データは検出されませんでした。",
-        "lowExplain": "低リスクの識別子が1件見つかりました。",
-        "mediumExplain": "低リスクの識別子が複数見つかりましたが、金融・国民ID・特別カテゴリーのデータはありません。",
-        "highExplain": "金融・国民ID・特別カテゴリーのデータが含まれています。共有前に慎重に扱ってください。"
+        "lowExplain": "低リスクの識別子が 1 件見つかりました。",
+        "mediumExplain": "低リスクの識別子が複数見つかりましたが、金融・国民 ID・特別カテゴリーのデータはありません。",
+        "highExplain": "金融・国民 ID・特別カテゴリーのデータが含まれています。共有前に慎重に扱ってください。"
       },
       "summary": "{count, plural, other {{pages} ページで個人データが # 件見つかりました。}}",
       "summaryClean": "{{pages}} ページで個人データは見つかりませんでした。",
@@ -830,35 +830,35 @@
         "sample": "サンプル（マスク済み）",
         "occurrences": "件数"
       },
-      "redactCta": "検出したデータを黒塗り",
+      "redactCta": "検出したデータを墨消し",
       "redactHint": "ハイライトされた箇所を確認して適用してください（無料）。",
-      "hintMulti": "1つ以上のPDF、画像、またはオフィス文書。",
+      "hintMulti": "1 つ以上の PDF、画像、またはオフィス文書。",
       "submitBatch": "{{count}} 件のファイルをスキャン",
       "highestRiskLabel": "最高リスク",
       "batchSummary": "{count, plural, other {{files} 件のファイルで個人データ # 件。}}",
-      "byCategoryAll": "カテゴリ別（全ファイル）",
+      "byCategoryAll": "カテゴリー別（全ファイル）",
       "perFile": "ファイルごと",
       "fileFindings": "{count, plural, other {{pages} ページで # 件検出}}",
       "fileClean": "個人データなし",
       "autoRedactCta": "検出項目をすべて自動で墨消し",
       "autoRedactAllCta": "すべてのファイルを自動で墨消し",
       "autoRedactFile": "自動墨消し",
-      "autoRedactHint": "ワンクリックで検出された値をすべて黒塗りし、ファイルをダウンロードします（無料）。ファイルが保存されることはありません。",
+      "autoRedactHint": "ワンクリックで検出された値をすべて墨消しし、ファイルをダウンロードします（無料）。ファイルがサーバーに保存されることはありません。",
       "autoRedactLoading": "墨消し中…"
     },
     "crop": {
       "title": "トリミング",
       "description": "すべてのページの余白をトリミングします。",
-      "privacyLine": "ファイルはプライベートにトリミングされ、保存されることはありません。",
-      "hint": "PDFファイル。複数のファイルはZIPで返されます。",
-      "batchNote": "{{count}} 件のファイルが選択されました。余白は各ファイルに適用され、結果はZIPで返されます。",
+      "privacyLine": "ファイルは非公開でトリミングされ、サーバーに保存されることはありません。",
+      "hint": "PDF ファイル。複数のファイルは ZIP で返されます。",
+      "batchNote": "{{count}} 個のファイルを選択中。余白は各ファイルに適用され、結果は ZIP で返されます。",
       "top": "上",
       "right": "右",
       "bottom": "下",
       "left": "左",
       "unit": "単位",
-      "unitPt": "ポイント (pt)",
-      "unitMm": "ミリメートル (mm)",
+      "unitPt": "ポイント（pt）",
+      "unitMm": "ミリメートル（mm）",
       "unitHelp": "各余白は対応するページの端からトリミングされます。",
       "submit": "ページをトリミング",
       "loading": "トリミング中…"
@@ -866,23 +866,23 @@
     "pageMarks": {
       "title": "ページ番号・ヘッダー",
       "description": "すべてのページにページ番号とヘッダー・フッターのテキストを追加します。",
-      "hint": "マークする1つ以上のPDF（複数のファイル → ZIP）。",
-      "privacyLine": "ファイルはプライベートにマークされ、保存されることはありません。",
-      "tokensHelp": "任意のスロットでトークンを使用できます: '{page}' 現在のページ、'{pages}' 総ページ数、'{n}' ページ番号、'{date}' 今日の日付。",
+      "hint": "マークする 1 つ以上の PDF（複数ファイル → ZIP）。",
+      "privacyLine": "ファイルは非公開で処理され、サーバーに保存されることはありません。",
+      "tokensHelp": "任意のスロットでトークンを使えます：'{page}' 現在のページ、'{pages}' 総ページ数、'{n}' ページ番号、'{date}' 今日の日付。",
       "header": "ヘッダー",
       "footer": "フッター",
       "left": "左",
       "center": "中央",
       "right": "右",
-      "slotPlaceholder": "例: '{page}' / '{pages}'",
-      "fontSize": "フォントサイズ (pt)",
-      "margin": "余白 (pt)",
+      "slotPlaceholder": "例：'{page}' / '{pages}'",
+      "fontSize": "フォントサイズ（pt）",
+      "margin": "余白（pt）",
       "startNumber": "開始番号",
       "prefix": "Bates 接頭辞",
-      "prefixPlaceholder": "例: ACME-",
+      "prefixPlaceholder": "例：ACME-",
       "skipFirst": "最初のページをスキップ",
       "submit": "ページマークを追加",
-      "needSlot": "少なくとも1つのスロットにテキストを入力してください（例: '{page}' / '{pages}'）。",
+      "needSlot": "少なくとも 1 つのスロットにテキストを入力してください（例：'{page}' / '{pages}'）。",
       "loading": "マーク中…"
     }
   },
@@ -931,13 +931,13 @@
       "wmImageHint": "アップロードした画像がテキストの透かしの代わりに使用されます。",
       "summary": {
         "noFiles": "ファイルなし",
-        "pages": "ページ: {{pages}}",
+        "pages": "ページ：{{pages}}",
         "all": "すべて",
         "separate": "分割",
-        "order": "順序: {{order}}",
+        "order": "順序：{{order}}",
         "natural": "自然順",
-        "target": "目標: {{size}}",
-        "pageSize": "ページサイズ: {{size}}",
+        "target": "目標：{{size}}",
+        "pageSize": "ページサイズ：{{size}}",
         "merge": "1 つに結合",
         "hasPassword": "パスワード設定済み",
         "noPassword": "パスワードなし",
@@ -956,16 +956,16 @@
       "IDENTIFIER": "識別子",
       "CONTACT": "連絡先",
       "FINANCIAL": "金融データ",
-      "NATIONAL_ID": "国民ID",
-      "ONLINE_IDENTIFIER": "オンライン識別子 (IP / URL)",
+      "NATIONAL_ID": "国民 ID",
+      "ONLINE_IDENTIFIER": "オンライン識別子（IP / URL）",
       "SPECIAL_CATEGORY": "特別カテゴリー"
     },
     "type": {
       "EMAIL": "メールアドレス",
       "PHONE": "電話番号",
-      "IPV4": "IPアドレス（IPv4）",
-      "IPV6": "IPアドレス（IPv6）",
-      "URL_CREDENTIALS": "認証情報付きURL",
+      "IPV4": "IP アドレス（IPv4）",
+      "IPV6": "IP アドレス（IPv6）",
+      "URL_CREDENTIALS": "認証情報付き URL",
       "IBAN": "銀行口座（IBAN）",
       "CREDIT_CARD": "決済カード",
       "PESEL": "PESEL（PL）",
