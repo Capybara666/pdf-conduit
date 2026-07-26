@@ -722,7 +722,6 @@
       "selectHint": "PDF's, afbeeldingen en Office-documenten.",
       "arrangeTitle": "Herschikken & paginabereiken",
       "arrangeDesc": "Sleep om de volgorde te bepalen. Paginabereiken gelden alleen voor PDF's en een leeg bereik behoudt alle pagina's.",
-      "addFiles": "Meer bestanden toevoegen",
       "rangePlaceholder": "pagina's bijv. 1-3",
       "typeImage": "afbeelding",
       "typeDocument": "document",

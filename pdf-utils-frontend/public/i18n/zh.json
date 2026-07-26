@@ -722,7 +722,6 @@
       "selectHint": "PDF、图片和办公文档。",
       "arrangeTitle": "排列与页面范围",
       "arrangeDesc": "拖动以设置顺序。页面范围仅适用于 PDF，留空则保留全部页面。",
-      "addFiles": "添加更多文件",
       "rangePlaceholder": "页面，例如 1-3",
       "typeImage": "图片",
       "typeDocument": "文档",

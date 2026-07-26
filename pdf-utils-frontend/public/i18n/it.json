@@ -722,7 +722,6 @@
       "selectHint": "PDF, immagini e documenti Office.",
       "arrangeTitle": "Riordino e intervalli di pagine",
       "arrangeDesc": "Trascina per impostare l'ordine. Gli intervalli di pagine si applicano solo ai PDF e un intervallo vuoto mantiene tutte le pagine.",
-      "addFiles": "Aggiungi altri file",
       "rangePlaceholder": "pagine es. 1-3",
       "typeImage": "immagine",
       "typeDocument": "documento",

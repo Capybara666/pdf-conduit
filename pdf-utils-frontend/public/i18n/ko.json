@@ -722,7 +722,6 @@
       "selectHint": "PDF, 이미지, 오피스 문서.",
       "arrangeTitle": "순서 변경 및 페이지 범위",
       "arrangeDesc": "드래그하여 순서를 정하세요. 페이지 범위는 PDF에만 적용되며, 비워 두면 모든 페이지가 유지됩니다.",
-      "addFiles": "파일 더 추가",
       "rangePlaceholder": "페이지 예: 1-3",
       "typeImage": "이미지",
       "typeDocument": "문서",

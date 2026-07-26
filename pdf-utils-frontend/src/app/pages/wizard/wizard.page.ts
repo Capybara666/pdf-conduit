@@ -39,7 +39,7 @@ const STEP_KEYS = [
 /** Internal index of the page-settings step, which is only in the flow for non-PDF inputs. */
 const PAGE_SETTINGS_STEP = 2;
 
-/** Inputs the wizard accepts — shared by the step-1 drop zone and the step-2 "add more" picker. */
+/** Inputs the wizard accepts, offered by the drop zone on the select step. */
 const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
 
 /**
@@ -208,22 +208,6 @@ const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
               <li class="drop-marker" aria-hidden="true"></li>
             }
           </ul>
-
-          <!-- Add files without walking back to step 1; the hidden input is the
-               native picker the visible button stands in for. -->
-          <div class="list-actions">
-            <button type="button" class="btn" (click)="addInput.click()">
-              {{ 'pages.wizard.addFiles' | transloco }}
-            </button>
-            <input
-              #addInput
-              class="add-input"
-              type="file"
-              multiple
-              [accept]="accept"
-              (change)="onAddFiles($event)"
-            />
-          </div>
         }
 
         <!-- Step 3: page settings -->
@@ -427,14 +411,6 @@ const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
         display: flex;
         flex-direction: column;
         gap: 0.6rem;
-      }
-      .list-actions {
-        display: flex;
-        margin-top: 0.75rem;
-      }
-      /* The native picker is driven by the visible button, never shown itself. */
-      .add-input {
-        display: none;
       }
       .file-card {
         border: 1px solid var(--border);
@@ -741,16 +717,6 @@ export class WizardPage implements OnDestroy {
 
   onFiles(files: File[]): void {
     this.mergeFiles(files);
-  }
-
-  /** Open the native picker's result from step 2 through the same merge path. */
-  onAddFiles(ev: Event): void {
-    const input = ev.target as HTMLInputElement;
-    const picked = input.files ? Array.from(input.files) : [];
-    // Reset so picking the same file again still fires `change`.
-    input.value = '';
-    if (!picked.length) return;
-    this.mergeFiles([...this.selectedFiles(), ...picked]);
   }
 
   /**

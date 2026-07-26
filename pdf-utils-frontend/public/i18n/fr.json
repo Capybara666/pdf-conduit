@@ -722,7 +722,6 @@
       "selectHint": "PDF, images et documents bureautiques.",
       "arrangeTitle": "Réorganisation et plages de pages",
       "arrangeDesc": "Faites glisser pour définir l'ordre. Les plages de pages s'appliquent uniquement aux PDF et une plage vide conserve toutes les pages.",
-      "addFiles": "Ajouter d'autres fichiers",
       "rangePlaceholder": "pages ex. 1-3",
       "typeImage": "image",
       "typeDocument": "document",

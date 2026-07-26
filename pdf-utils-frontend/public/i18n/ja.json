@@ -722,7 +722,6 @@
       "selectHint": "PDF、画像、オフィス文書に対応。",
       "arrangeTitle": "並べ替えとページ範囲",
       "arrangeDesc": "ドラッグして順序を決めます。ページ範囲は PDF にのみ適用され、空欄のままならすべてのページが残ります。",
-      "addFiles": "さらにファイルを追加",
       "rangePlaceholder": "ページ 例：1-3",
       "typeImage": "画像",
       "typeDocument": "文書",

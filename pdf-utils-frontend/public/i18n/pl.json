@@ -722,7 +722,6 @@
       "selectHint": "Pliki PDF, obrazy i dokumenty Office.",
       "arrangeTitle": "Kolejność i zakresy stron",
       "arrangeDesc": "Przeciągaj, aby ustawić kolejność. Zakresy stron dotyczą tylko PDF-ów, a puste pole zachowuje wszystkie strony.",
-      "addFiles": "Dodaj więcej plików",
       "rangePlaceholder": "strony, np. 1-3",
       "typeImage": "obraz",
       "typeDocument": "dokument",
