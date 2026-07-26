@@ -13,7 +13,13 @@ import { environment } from '../../environments/environment';
  * a wrong fallback must never be able to outrank a real answer.
  */
 describe('CapabilitiesService', () => {
-  const full: CapabilitiesInfo = {
+  /**
+   * A capabilities payload with everything EXCEPT `maxDpi`. The omission is the
+   * point: the `maxDpi` cases below hand this straight to the service to model a
+   * backend that does not advertise a render ceiling, so the type has to allow
+   * the field to be absent rather than force a value in.
+   */
+  const full: Omit<CapabilitiesInfo, 'maxDpi'> = {
     officeEnabled: true,
     ocrEnabled: false,
     ocrLanguages: [],
