@@ -1,4 +1,4 @@
-import { Component, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
@@ -15,6 +15,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import {
   TargetSizeComponent,
   TargetUnit,
+  UNIT_BYTES,
   composeTargetSize,
 } from '../../shared/target-size/target-size.component';
 
@@ -34,6 +35,12 @@ const STEP_KEYS = [
   'pages.wizard.step4',
   'pages.wizard.step5',
 ];
+
+/** Internal index of the page-settings step, which is only in the flow for non-PDF inputs. */
+const PAGE_SETTINGS_STEP = 2;
+
+/** Inputs the wizard accepts — shared by the step-1 drop zone and the step-2 "add more" picker. */
+const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
 
 /**
  * Guided build-and-export flow mirroring the desktop wizard. It composes the
@@ -62,8 +69,10 @@ const STEP_KEYS = [
         [description]="'pages.wizard.description' | transloco"
       />
 
+      <!-- Only the steps currently in the flow are listed, and each dot is numbered
+           by its POSITION in that list so the sequence always reads 1..n. -->
       <ol class="stepper">
-        @for (s of steps; track s; let i = $index) {
+        @for (i of visibleSteps(); track i; let pos = $index) {
           <li [class.active]="i === step()" [class.done]="i < step()">
             <button
               type="button"
@@ -72,8 +81,8 @@ const STEP_KEYS = [
               [attr.aria-current]="i === step() ? 'step' : null"
               (click)="goTo(i)"
             >
-              <span class="dot">{{ i < step() ? '✓' : i + 1 }}</span>
-              <span class="lbl">{{ s | transloco }}</span>
+              <span class="dot">{{ i < step() ? '✓' : pos + 1 }}</span>
+              <span class="lbl">{{ steps[i] | transloco }}</span>
             </button>
           </li>
         }
@@ -84,9 +93,12 @@ const STEP_KEYS = [
         @if (step() === 0) {
           <h2 class="step-h">{{ 'pages.wizard.selectTitle' | transloco }}</h2>
           <p class="step-desc">{{ 'pages.wizard.selectDesc' | transloco }}</p>
+          <!-- The zone's own selection is fed back from the wizard's list, so it
+               stays in step with removals and with files added later. -->
           <app-file-drop-zone
             [multiple]="true"
-            accept=".pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx"
+            [accept]="accept"
+            [files]="selectedFiles()"
             [hint]="'pages.wizard.selectHint' | transloco"
             (filesChange)="onFiles($event)"
           />
@@ -196,6 +208,22 @@ const STEP_KEYS = [
               <li class="drop-marker" aria-hidden="true"></li>
             }
           </ul>
+
+          <!-- Add files without walking back to step 1; the hidden input is the
+               native picker the visible button stands in for. -->
+          <div class="list-actions">
+            <button type="button" class="btn" (click)="addInput.click()">
+              {{ 'pages.wizard.addFiles' | transloco }}
+            </button>
+            <input
+              #addInput
+              class="add-input"
+              type="file"
+              multiple
+              [accept]="accept"
+              (change)="onAddFiles($event)"
+            />
+          </div>
         }
 
         <!-- Step 3: page settings -->
@@ -231,6 +259,8 @@ const STEP_KEYS = [
                 <app-target-size [amount]="targetAmount" [unit]="targetUnit" inputId="wz-target" />
                 @if (targetAmount.invalid) {
                   <span class="err">{{ 'pages.wizard.targetError' | transloco }}</span>
+                } @else if (targetIsNoop()) {
+                  <span class="err">{{ 'pages.wizard.targetNoop' | transloco }}</span>
                 }
               </div>
             </div>
@@ -251,16 +281,18 @@ const STEP_KEYS = [
                 }
               </ol>
             </li>
-            <li>
-              <span>{{ 'pages.wizard.sumImageSize' | transloco }}</span>
-              <b>
-                @switch (pageSize()) {
-                  @case ('FIT') { {{ 'pages.wizard.sizeFit' | transloco }} }
-                  @case ('LETTER') { {{ 'pages.wizard.sizeLetter' | transloco }} }
-                  @default { {{ pageSize() }} }
-                }
-              </b>
-            </li>
+            @if (needsPageSettings()) {
+              <li>
+                <span>{{ 'pages.wizard.sumImageSize' | transloco }}</span>
+                <b>
+                  @switch (pageSize()) {
+                    @case ('FIT') { {{ 'pages.wizard.sizeFit' | transloco }} }
+                    @case ('LETTER') { {{ 'pages.wizard.sizeLetter' | transloco }} }
+                    @default { {{ pageSize() }} }
+                  }
+                </b>
+              </li>
+            }
             <li>
               <span>{{ 'pages.wizard.sumCompress' | transloco }}</span>
               <b>
@@ -395,6 +427,14 @@ const STEP_KEYS = [
         display: flex;
         flex-direction: column;
         gap: 0.6rem;
+      }
+      .list-actions {
+        display: flex;
+        margin-top: 0.75rem;
+      }
+      /* The native picker is driven by the visible button, never shown itself. */
+      .add-input {
+        display: none;
       }
       .file-card {
         border: 1px solid var(--border);
@@ -602,12 +642,17 @@ const STEP_KEYS = [
 export class WizardPage implements OnDestroy {
   private readonly transloco = inject(TranslocoService);
   protected readonly steps = STEP_KEYS;
+  protected readonly accept = ACCEPT;
   protected readonly formatBytes = formatBytes;
 
   protected readonly step = signal(0);
   /** Furthest step the user has advanced to; the stepper can jump anywhere up to it. */
   protected readonly reached = signal(0);
   protected readonly items = signal<WizardFile[]>([]);
+  /** The plain File list behind `items`, fed back into the drop zone's own selection.
+   *  Being a computed, it keeps one array reference per `items` change, so the drop
+   *  zone's input only fires when the selection actually changes. */
+  protected readonly selectedFiles = computed(() => this.items().map((it) => it.file));
   protected readonly dragIndex = signal<number | null>(null);
   /** Insertion index (0..items().length) where a drop would land, or null. */
   protected readonly dropIndex = signal<number | null>(null);
@@ -638,6 +683,21 @@ export class WizardPage implements OnDestroy {
   /** The backend `targetSize` string for the current amount + unit (e.g. "5MB"). */
   protected composedTarget(): string {
     return composeTargetSize(this.targetAmount.value, this.targetUnit.value);
+  }
+
+  /**
+   * True when the target is at or above the summed size of the selected inputs,
+   * so compression has nothing left to shrink.
+   *
+   * That sum only APPROXIMATES the merged output — merging shares resources,
+   * page ranges drop pages, and images/office inputs are re-rendered — so this
+   * is a warning, never a block on exporting.
+   */
+  protected targetIsNoop(): boolean {
+    const amount = this.targetAmount.value;
+    if (this.targetAmount.invalid || amount == null || !(amount > 0)) return false;
+    const total = this.items().reduce((sum, it) => sum + it.file.size, 0);
+    return total > 0 && amount * UNIT_BYTES[this.targetUnit.value] >= total;
   }
 
   constructor(private readonly api: ApiService) {}
@@ -680,12 +740,56 @@ export class WizardPage implements OnDestroy {
   }
 
   onFiles(files: File[]): void {
-    this.revokeUrls();
-    this.thumbs.clear();
-    this.pageCounts.clear();
-    this.expandedFile.set(null);
-    this.items.set(files.map((file) => ({ file, pages: '' })));
-    for (const file of files) void this.buildThumb(file);
+    this.mergeFiles(files);
+  }
+
+  /** Open the native picker's result from step 2 through the same merge path. */
+  onAddFiles(ev: Event): void {
+    const input = ev.target as HTMLInputElement;
+    const picked = input.files ? Array.from(input.files) : [];
+    // Reset so picking the same file again still fires `change`.
+    input.value = '';
+    if (!picked.length) return;
+    this.mergeFiles([...this.selectedFiles(), ...picked]);
+  }
+
+  /**
+   * Reconcile the selection with an incoming list, matched by `File` identity:
+   * a file already selected keeps its item (and therefore its page range), new
+   * files are appended in the incoming order, and files no longer listed are
+   * dropped along with their cached thumbnail. The drop zone accumulates and
+   * re-emits its whole selection, so adding one file arrives here as the full
+   * list — rebuilding items from it would throw away every chosen range.
+   */
+  private mergeFiles(files: File[]): void {
+    const existing = new Map(this.items().map((it) => [it.file, it] as const));
+    this.items.set(files.map((file) => existing.get(file) ?? { file, pages: '' }));
+
+    const kept = new Set(files);
+    const expanded = this.expandedFile();
+    if (expanded && !kept.has(expanded)) this.expandedFile.set(null);
+    for (const file of existing.keys()) {
+      if (!kept.has(file)) this.forget(file);
+    }
+    // Thumbnails are keyed by File, so only files without one are rendered.
+    for (const file of files) {
+      if (!this.thumbs.has(file)) void this.buildThumb(file);
+    }
+    this.ensureStepVisible();
+  }
+
+  /** Drop a removed file's cached thumbnail/page count, revoking its object URL
+   *  (image thumbnails only — PDF previews are data-URLs). */
+  private forget(file: File): void {
+    const url = this.thumbs.get(file);
+    this.thumbs.delete(file);
+    this.pageCounts.delete(file);
+    if (!url) return;
+    const at = this.objectUrls.indexOf(url);
+    if (at >= 0) {
+      URL.revokeObjectURL(url);
+      this.objectUrls.splice(at, 1);
+    }
   }
 
   /** Write a page range back by file identity (robust across drag-reorder). */
@@ -706,6 +810,8 @@ export class WizardPage implements OnDestroy {
     const [gone] = next.splice(i, 1);
     if (gone && this.expandedFile() === gone.file) this.expandedFile.set(null);
     this.items.set(next);
+    if (gone) this.forget(gone.file);
+    this.ensureStepVisible();
   }
 
   /** Render a small first-page thumbnail (PDF) or object-URL (image), cached by File. */
@@ -740,6 +846,8 @@ export class WizardPage implements OnDestroy {
     } catch {
       // Leave the thumbnail unset — the row simply shows no preview.
     } finally {
+      // A file removed while its preview was rendering must not stay cached.
+      if (!this.selectedFiles().includes(file)) this.forget(file);
       this.thumbTick.update((v) => v + 1);
     }
   }
@@ -804,15 +912,51 @@ export class WizardPage implements OnDestroy {
     this.dropIndex.set(null);
   }
 
+  /**
+   * True when the selection holds anything that has to be turned into PDF pages
+   * (image or office input) — the only case where the page-settings step's page
+   * size reaches the result. An all-PDF selection skips that step entirely.
+   */
+  needsPageSettings(): boolean {
+    return this.items().some((it) => this.fileKind(it.file) !== 'pdf');
+  }
+
+  /** The internal step indices currently in the flow, in order. */
+  visibleSteps(): number[] {
+    const all = [...this.steps.keys()];
+    return this.needsPageSettings() ? all : all.filter((i) => i !== PAGE_SETTINGS_STEP);
+  }
+
+  /** Nearest visible step after / before `from`; both accept a `from` that is
+   *  itself hidden, so they also rescue a step that just left the flow. */
+  private nextVisible(from: number): number {
+    const visible = this.visibleSteps();
+    return visible.find((i) => i > from) ?? visible[visible.length - 1];
+  }
+  private prevVisible(from: number): number {
+    const before = this.visibleSteps().filter((i) => i < from);
+    return before.length ? before[before.length - 1] : this.visibleSteps()[0];
+  }
+
+  /** Move off a step that is no longer part of the flow (the selection can turn
+   *  all-PDF while page settings is on screen), so nobody is left stranded. */
+  private ensureStepVisible(): void {
+    if (this.visibleSteps().includes(this.step())) return;
+    this.step.set(this.nextVisible(this.step()));
+  }
+
   canNext(): boolean {
     if (this.busy()) return false;
     if (this.step() === 0) return this.items().length > 0;
     return true;
   }
 
-  /** A stepper step is reachable when it is already unlocked and isn't the current one. */
+  /** A stepper step is reachable when it is in the flow, already unlocked, and
+   *  isn't the current one. */
   canGoTo(i: number): boolean {
-    return !this.busy() && i <= this.reached() && i !== this.step();
+    return (
+      !this.busy() && i <= this.reached() && i !== this.step() && this.visibleSteps().includes(i)
+    );
   }
 
   goTo(i: number): void {
@@ -821,12 +965,12 @@ export class WizardPage implements OnDestroy {
 
   next(): void {
     if (!this.canNext()) return;
-    const target = Math.min(this.step() + 1, this.steps.length - 1);
+    const target = this.nextVisible(this.step());
     this.step.set(target);
     this.reached.update((r) => Math.max(r, target));
   }
   back(): void {
-    this.step.set(Math.max(this.step() - 1, 0));
+    this.step.set(this.prevVisible(this.step()));
   }
   restart(): void {
     this.revokeUrls();
@@ -838,6 +982,12 @@ export class WizardPage implements OnDestroy {
     this.reached.set(0);
     this.result.set(null);
     this.error.set(null);
+    // "Start over" also drops the previous run's export settings, back to the
+    // values a first-time visitor sees.
+    this.pageSize.set('FIT');
+    this.compress.set(false);
+    this.targetAmount.reset(5);
+    this.targetUnit.reset('MB');
   }
 
   download(): void {
