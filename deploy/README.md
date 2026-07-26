@@ -58,13 +58,23 @@ Edit `.env` and set at minimum:
 |---|---|---|
 | `DOMAIN` | `pdf.example.com` | Domain Caddy provisions HTTPS for |
 | `ACME_EMAIL` | `you@example.com` | Let's Encrypt account / expiry notices |
+| `WWW_DOMAIN` | `www.pdf.example.com` | Optional: 301 the www host to the apex. Needs a DNS `CNAME www → apex`. Leave empty to disable |
 | `PDFCONDUIT_WEB_CORS_ALLOWED_ORIGINS` | `https://pdf.example.com` | Lock CORS to your real origin |
 | `PDFCONDUIT_WEB_OCR_ENABLED` | `true` | OCR is off by default in code; without this the public OCR page returns 415 |
+| `SPRING_PROFILES_ACTIVE` | `prod` | Strict public limit preset. The prod overlay forces this anyway — setting it here is the belt-and-braces against a deploy that forgets the overlay |
 
 ```bash
 # 3. Build images and bring the stack up (prod overlay = TLS + limits)
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
+
+> **Always deploy with both `-f` files.** `docker-compose.prod.yml` is what pins
+> the backend to the strict `prod` limit preset (and what terminates TLS). The
+> base `docker-compose.yml` alone defaults to the RELAXED `local` preset —
+> roughly 1 GB per file and 500 files per request — which is a developer setting
+> and must not face the internet. After `up`, confirm the preset in the backend
+> log: `docker compose ... logs backend | grep "profiles are active"` should say
+> `prod`.
 
 That's it. On first request to `https://pdf.example.com`, Caddy obtains a
 certificate automatically and serves the app over HTTPS thereafter. Certs are

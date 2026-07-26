@@ -120,9 +120,19 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
      * process will commit to concurrent heavy work, uploads, intermediates, results and working set
      * together (see {@link com.pdfconduit.web.cost.CostModel}).
      *
-     * <p>The two are not independent: the per-request result budget is derived as
-     * {@code maxWorkBytes ÷ maxHeavyOps ÷ 3}, so raising the slot count tightens each request's
-     * budget instead of quietly overcommitting the heap by that factor.
+     * <p>The two are not independent: {@code maxWorkBytes} also caps the per-request result budget
+     * at {@code maxWorkBytes ÷ 3} (see
+     * {@link com.pdfconduit.web.cost.CostModel#perRequestOutputBytes(com.pdfconduit.web.plan.PlanLimits)}).
+     * The 3 is the number of
+     * copies of the result set that coexist while a response is assembled — the results, the
+     * in-memory ZIP buffer built from them, and the response body handed to Tomcat — so a request
+     * may never be promised more result bytes than the pool can hold in triplicate.
+     *
+     * <p>{@code maxHeavyOps} deliberately does <em>not</em> divide that budget. What bounds the sum
+     * across concurrent requests is the reservation itself: each admitted request subtracts its
+     * estimate from the pool, so an extra slot cannot multiply the memory commitment — it simply
+     * stays empty once the pool is spoken for. Dividing by the slot count as well would shrink every
+     * request's entitlement to pay for concurrency the pool already accounts for.
      *
      * <p>{@code maxInFlightBytes} is the former name of the same pool, kept so a deployment that
      * sets it keeps a memory ceiling rather than silently falling back to the default.
@@ -147,8 +157,9 @@ public record WebProperties(String sofficePath, Integer maxFilesPerRequest, Offi
      * pathological request is rejected (422) early instead of OOM-ing the JVM.
      *
      * <p>This value is a <em>ceiling on the ceiling</em>: the budget actually granted is
-     * {@code min(this, concurrency.max-work-bytes ÷ max-heavy-ops ÷ 3)}, so it can never be set
-     * to more than the heap affords once every concurrency slot claims its share.
+     * {@code min(this, concurrency.max-work-bytes ÷ 3)}, so it can never be set to more than the
+     * pool can hold once the three coexisting copies of the result set (the results, the ZIP buffer
+     * and the response body) are counted.
      */
     public record Processing(Integer timeoutSeconds, DataSize maxTotalOutputBytes) {
         public Processing {

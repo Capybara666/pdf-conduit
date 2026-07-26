@@ -48,3 +48,10 @@ pdf-utils-desktop/pipeline.json
 
 # JetBrains project files (entire directory untracked for the public repo)
 .idea/
+
+# Deployment secrets. This repo is public and `.env` on the production host
+# holds the live configuration, so a stray `git add -A` there must not be able
+# to publish it. Only the committed template is exempt.
+.env
+.env.*
+!.env.example
