@@ -1,13 +1,16 @@
 import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { firstValueFrom } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { ApiError, RunResult } from '../../core/api.models';
 import { ApiService } from '../../core/api.service';
 import { downloadRunResult, formatBytes } from '../../core/download.util';
 import { loadPdf } from '../../core/pdfjs';
+import { RunTracker, runTrackerOf } from '../../core/run-progress';
+import { WorkStateService } from '../../core/work-state.service';
 import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zone.component';
+import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageGridComponent } from '../../shared/page-grid/page-grid.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
@@ -43,6 +46,14 @@ const PAGE_SETTINGS_STEP = 2;
 const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
 
 /**
+ * Rejection value used to unwind the export chain when the user cancels. It is
+ * NOT an error: `runExport` recognises it and returns without showing anything,
+ * which is what stops the chain between two stages instead of letting the
+ * remaining requests fire.
+ */
+const EXPORT_CANCELLED = Symbol('wizard export cancelled');
+
+/**
  * Guided build-and-export flow mirroring the desktop wizard. It composes the
  * existing REST operations: images/office inputs are converted via `to-pdf`
  * (honouring the chosen page size), PDF inputs with a page range are trimmed via
@@ -56,6 +67,7 @@ const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
     ReactiveFormsModule,
     TranslocoModule,
     FileDropZoneComponent,
+    OpProgressComponent,
     PageGridComponent,
     PageHeaderComponent,
     ResultPanelComponent,
@@ -162,23 +174,41 @@ const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
                     </span>
                   </span>
 
-                  @if (fileKind(it.file) === 'pdf') {
+                  <!-- Reorder without a mouse: the move buttons are the touch and
+                       keyboard path to the same swap the drag performs. -->
+                  <span class="row-actions">
+                    @if (fileKind(it.file) === 'pdf') {
+                      <button
+                        type="button"
+                        class="btn btn-ghost choose-btn"
+                        [class.on]="expandedFile() === it.file"
+                        (click)="toggleExpand(it.file)"
+                        [attr.aria-expanded]="expandedFile() === it.file"
+                      >
+                        {{ (expandedFile() === it.file ? 'common.done' : 'pages.wizard.choosePages') | transloco }}
+                      </button>
+                    }
                     <button
                       type="button"
-                      class="btn btn-ghost choose-btn"
-                      [class.on]="expandedFile() === it.file"
-                      (click)="toggleExpand(it.file)"
-                      [attr.aria-expanded]="expandedFile() === it.file"
-                    >
-                      {{ (expandedFile() === it.file ? 'common.done' : 'pages.wizard.choosePages') | transloco }}
-                    </button>
-                  }
-                  <button
-                    type="button"
-                    class="icon-btn"
-                    (click)="remove(i)"
-                    [attr.aria-label]="'common.remove' | transloco"
-                  >✕</button>
+                      class="icon-btn"
+                      (click)="moveUp(i)"
+                      [disabled]="i === 0"
+                      [attr.aria-label]="'common.moveUp' | transloco"
+                    >↑</button>
+                    <button
+                      type="button"
+                      class="icon-btn"
+                      (click)="moveDown(i)"
+                      [disabled]="i === items().length - 1"
+                      [attr.aria-label]="'common.moveDown' | transloco"
+                    >↓</button>
+                    <button
+                      type="button"
+                      class="icon-btn"
+                      (click)="remove(i)"
+                      [attr.aria-label]="'common.remove' | transloco"
+                    >✕</button>
+                  </span>
                 </div>
 
                 @if (fileKind(it.file) === 'pdf' && expandedFile() === it.file) {
@@ -255,53 +285,59 @@ const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
         @if (step() === 4) {
           <h2 class="step-h">{{ 'pages.wizard.reviewTitle' | transloco }}</h2>
           <p class="step-desc">{{ 'pages.wizard.reviewDesc' | transloco }}</p>
-          <ul class="summary">
-            <li><span>{{ 'pages.wizard.sumFiles' | transloco }}</span><b>{{ items().length }}</b></li>
-            <li>
-              <span>{{ 'pages.wizard.sumOrder' | transloco }}</span>
+          <!-- What the run will do, in sentences: a settings dump makes the user
+               decode labels, whereas these read straight through. -->
+          <div class="summary">
+            <p class="sum-line">
+              {{ 'pages.wizard.sumSentence' | transloco: { files: items().length } }}
+            </p>
+
+            @if (needsPageSettings()) {
+              <p class="sum-line">
+                @if (pageSize() === 'FIT') {
+                  {{ 'pages.wizard.sumPageSizeFit' | transloco }}
+                } @else {
+                  {{ 'pages.wizard.sumPageSizeNamed' | transloco: { size: pageSizeLabel() } }}
+                }
+              </p>
+            }
+
+            <p class="sum-line">
+              @if (!compress()) {
+                {{ 'pages.wizard.sumCompressNone' | transloco }}
+              } @else if (targetAmount.valid) {
+                {{ 'pages.wizard.sumCompressTo' | transloco: { target: composedTarget() } }}
+              } @else {
+                {{ 'pages.wizard.targetError' | transloco }}
+              }
+            </p>
+
+            <div class="sum-order">
+              <span class="sum-lbl">{{ 'pages.wizard.sumOrder' | transloco }}</span>
               <ol class="order-list">
                 @for (it of items(); track it.file) {
                   <li [title]="it.file.name">{{ it.file.name }}</li>
                 }
               </ol>
-            </li>
-            @if (needsPageSettings()) {
-              <li>
-                <span>{{ 'pages.wizard.sumImageSize' | transloco }}</span>
-                <b>
-                  @switch (pageSize()) {
-                    @case ('FIT') { {{ 'pages.wizard.sizeFit' | transloco }} }
-                    @case ('LETTER') { {{ 'pages.wizard.sizeLetter' | transloco }} }
-                    @default { {{ pageSize() }} }
-                  }
-                </b>
-              </li>
-            }
-            <li>
-              <span>{{ 'pages.wizard.sumCompress' | transloco }}</span>
-              <b>
-                @if (!compress()) {
-                  {{ 'pages.wizard.compressNo' | transloco }}
-                } @else if (targetAmount.valid) {
-                  {{ composedTarget() }}
-                } @else {
-                  {{ 'pages.wizard.targetError' | transloco }}
-                }
-              </b>
-            </li>
-          </ul>
-
-          @if (busy() || error() || result()) {
-            <app-result-panel
-              [loading]="busy()"
-              [loadingLabel]="progress()"
-              [error]="error()"
-              [result]="result()"
-              (retry)="runExport()"
-            />
-          }
+            </div>
+          </div>
         }
       </div>
+
+      <!-- Outside the step card: op-progress renders its own card, and both are
+           the run's outcome rather than part of the review content. The export is
+           a chain of requests, so op-progress owns the whole wait (per-stage
+           label + Cancel) and the result panel only the error/result. -->
+      @if (step() === 4) {
+        <app-op-progress
+          [run]="tracker()"
+          [label]="progress()"
+          (cancel)="cancelExport()"
+          (dismiss)="dismissProgress()"
+        />
+
+        <app-result-panel [error]="error()" [result]="result()" (retry)="runExport()" />
+      }
 
       <div class="btn-row">
         <button type="button" class="btn" [disabled]="step() === 0 || busy()" (click)="back()">{{ 'common.back' | transloco }}</button>
@@ -530,11 +566,26 @@ const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
         color: var(--text-muted);
         font-weight: 500;
       }
+      .row-actions {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+      }
       .choose-btn {
         flex: 0 0 auto;
         white-space: nowrap;
         font-size: 0.82rem;
         padding: 0.35rem 0.7rem;
+        margin-right: 0.2rem;
+      }
+      .row-actions .icon-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      .row-actions .icon-btn:disabled:hover {
+        color: var(--text-muted);
+        background: transparent;
       }
       .choose-btn.on {
         border-color: var(--accent);
@@ -556,49 +607,57 @@ const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
         font-size: 0.8rem;
         color: var(--text-muted);
       }
-      @media (max-width: 480px) {
-        .file-meta .name {
-          max-width: 40vw;
+      /* Narrow screens: the row cannot hold name + five controls on one line, so
+         the actions wrap to their own right-aligned line and the file name keeps
+         the full width above them. The grip goes with them — dragging is a
+         pointer-only affordance and the move buttons replace it here. */
+      @media (max-width: 560px) {
+        .file-head {
+          flex-wrap: wrap;
+        }
+        .grip {
+          display: none;
+        }
+        .row-actions {
+          flex: 1 0 100%;
+          justify-content: flex-end;
         }
         .choose-btn {
+          margin-right: auto;
           padding: 0.35rem 0.5rem;
         }
       }
       .summary {
-        list-style: none;
         margin: 0 0 1rem;
-        padding: 0;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.5rem;
-      }
-      /* Grid children default to min-width:auto, which lets a long value push the
-         tile (and the card) wider than the column — pin it to 0 so values clip
-         or wrap inside the tile instead. */
-      .summary > li {
         display: flex;
         flex-direction: column;
-        min-width: 0;
-        padding: 0.5rem 0.75rem;
-        background: var(--surface-2);
-        border-radius: 8px;
+        gap: 0.45rem;
       }
-      .summary > li > span {
-        font-size: 0.72rem;
-        text-transform: uppercase;
-        color: var(--text-muted);
-      }
-      .summary > li > b {
+      .sum-line {
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
         overflow-wrap: anywhere;
+      }
+      .sum-order {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-width: 0;
+        margin-top: 0.2rem;
+      }
+      .sum-lbl {
+        font-size: 0.8rem;
+        color: var(--text-muted);
       }
       /* One file per line, each ellipsized (full name in the tooltip); the index
          is a counter so the row's overflow:hidden cannot clip a list marker. */
       .order-list {
         list-style: none;
         counter-reset: order;
-        margin: 0.1rem 0 0;
+        margin: 0;
         padding: 0;
-        font-weight: 600;
+        font-size: 0.92rem;
       }
       .order-list li {
         counter-increment: order;
@@ -610,7 +669,7 @@ const ACCEPT = '.pdf,image/*,.docx,.odt,.rtf,.txt,.xlsx,.pptx';
       .order-list li::before {
         content: counter(order) '. ';
         color: var(--text-muted);
-        font-weight: 500;
+        font-variant-numeric: tabular-nums;
       }
     `,
   ],
@@ -656,6 +715,21 @@ export class WizardPage implements OnDestroy {
   protected readonly error = signal<ApiError | null>(null);
   protected readonly result = signal<RunResult | null>(null);
 
+  /**
+   * Progress of the export's CURRENT request (the chain publishes one tracker at
+   * a time). Stays set after a cancel so the post-cancel note remains readable;
+   * cleared when the user dismisses it or the next export starts.
+   */
+  protected readonly tracker = signal<RunTracker | null>(null);
+  /** Subscription of the in-flight request — dropping it is what aborts the XHR. */
+  private sub: Subscription | null = null;
+  /** Rejects the step the chain is currently awaiting, so a cancel unwinds it. */
+  private pendingReject: ((reason: unknown) => void) | null = null;
+  /** Set by a cancel, so a stage that issues no request also stops the chain. */
+  private cancelRequested = false;
+
+  private readonly workState = inject(WorkStateService);
+
   /** The backend `targetSize` string for the current amount + unit (e.g. "5MB"). */
   protected composedTarget(): string {
     return composeTargetSize(this.targetAmount.value, this.targetUnit.value);
@@ -676,10 +750,29 @@ export class WizardPage implements OnDestroy {
     return total > 0 && amount * UNIT_BYTES[this.targetUnit.value] >= total;
   }
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService) {
+    // Export settings survive a refresh; the selected files cannot (a browser
+    // File is not serialisable) and are re-added by the user.
+    this.workState.persist('wizard', {
+      pageSize: this.pageSize,
+      compress: this.compress,
+      targetAmount: this.targetAmount,
+      targetUnit: this.targetUnit,
+    });
+  }
 
   ngOnDestroy(): void {
+    // Leaving the page stops waiting on whatever the chain had in flight.
+    this.sub?.unsubscribe();
+    this.sub = null;
+    this.pendingReject = null;
     this.revokeUrls();
+  }
+
+  /** The page-size label shown in the select, for the review sentence. */
+  protected pageSizeLabel(): string {
+    const size = this.pageSize();
+    return size === 'LETTER' ? this.transloco.translate('pages.wizard.sizeLetter') : size;
   }
 
   isPdf(f: File): boolean {
@@ -769,6 +862,21 @@ export class WizardPage implements OnDestroy {
 
   toggleExpand(file: File): void {
     this.expandedFile.set(this.expandedFile() === file ? null : file);
+  }
+
+  /** Keyboard/touch reorder — the same swap the drag path commits on drop. */
+  moveUp(i: number): void {
+    if (i > 0) this.swap(i, i - 1);
+  }
+
+  moveDown(i: number): void {
+    if (i < this.items().length - 1) this.swap(i, i + 1);
+  }
+
+  private swap(a: number, b: number): void {
+    const next = this.items().slice();
+    [next[a], next[b]] = [next[b], next[a]];
+    this.items.set(next);
   }
 
   remove(i: number): void {
@@ -948,22 +1056,29 @@ export class WizardPage implements OnDestroy {
     this.reached.set(0);
     this.result.set(null);
     this.error.set(null);
-    // "Start over" also drops the previous run's export settings, back to the
-    // values a first-time visitor sees.
-    this.pageSize.set('FIT');
-    this.compress.set(false);
-    this.targetAmount.reset(5);
-    this.targetUnit.reset('MB');
+    this.tracker.set(null);
+    // "Start over" drops the previous run's export settings AND the saved copy
+    // of them: reset() restores the defaults captured on registration (the
+    // values a first-time visitor sees) and removes the stored entry, so the
+    // screen and sessionStorage cannot disagree.
+    this.workState.reset('wizard');
   }
 
   download(): void {
     if (this.result()) downloadRunResult(this.result()!);
   }
 
-  /** Convert → merge → optional compress, driven sequentially. */
+  /**
+   * Convert → merge → optional compress, driven sequentially: one request per
+   * non-trivial input, then the merge, then the optional compress. Each request
+   * goes through `runStep`, so the whole chain has a single live subscription
+   * and can be stopped at any point by {@link cancelExport}.
+   */
   async runExport(): Promise<void> {
     const items = this.items();
-    if (!items.length) return;
+    if (!items.length || this.busy()) return;
+    this.cancelRequested = false;
+    this.tracker.set(null);
     this.busy.set(true);
     this.error.set(null);
     this.result.set(null);
@@ -982,7 +1097,7 @@ export class WizardPage implements OnDestroy {
       }
 
       this.progress.set(this.transloco.translate('pages.wizard.merging'));
-      let out = await firstValueFrom(this.api.merge(this.formData('files', parts)));
+      let out = await this.runStep(this.api.merge(this.formData('files', parts)));
 
       const amount = this.targetAmount.value;
       if (this.compress() && this.targetAmount.valid && amount != null && amount > 0) {
@@ -990,16 +1105,103 @@ export class WizardPage implements OnDestroy {
         const fd = new FormData();
         fd.append('files', this.asFile(out), out.filename);
         fd.append('targetSize', this.composedTarget());
-        out = await firstValueFrom(this.api.compress(fd));
+        out = await this.runStep(this.api.compress(fd));
       }
 
+      // A cancel landing after the last response but before this line has no
+      // pending step left to reject, so the result is dropped here instead —
+      // otherwise the screen would show a finished file under a cancelled note.
+      if (this.cancelRequested) return;
       this.result.set(out);
     } catch (e) {
+      // A cancel is the user's own decision, not a failure: leave the screen
+      // quiet (no error panel, no result) and simply stop. The intermediate PDFs
+      // produced so far are dropped with this call's local state, so pressing
+      // Export again runs the whole chain from the original files.
+      if (e === EXPORT_CANCELLED) return;
       this.error.set(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
     } finally {
       this.busy.set(false);
       this.progress.set('');
+      this.sub = null;
+      this.pendingReject = null;
     }
+  }
+
+  /**
+   * Run one request of the chain: publish its progress, keep its subscription so
+   * it can be aborted, and settle a promise from the response.
+   *
+   * The subscription and the pending rejection are what make the chain
+   * cancellable — `OperationState` owns exactly one request and exposes no
+   * promise, so a multi-request flow has to hold them itself.
+   */
+  private runStep(obs: Observable<RunResult>): Promise<RunResult> {
+    // Cancelled while a stage that issues no request was running (a PDF taken
+    // as-is): stop before sending anything more.
+    if (this.cancelRequested) return Promise.reject(EXPORT_CANCELLED);
+
+    // An ApiService operation carries its own tracker (upload bytes and phase);
+    // anything else still gets one so the wait stays visible — indeterminate and
+    // labelled as processing, since nothing measurable is known about it.
+    const attached = runTrackerOf(obs);
+    if (attached) {
+      this.tracker.set(attached);
+    } else {
+      const fallback = new RunTracker();
+      fallback.processing();
+      this.tracker.set(fallback);
+    }
+
+    return new Promise<RunResult>((resolve, reject) => {
+      this.pendingReject = reject;
+      this.sub = obs.subscribe({
+        next: (r) => {
+          this.sub = null;
+          this.pendingReject = null;
+          resolve(r);
+        },
+        error: (e) => {
+          this.sub = null;
+          this.pendingReject = null;
+          reject(e instanceof ApiError ? e : new ApiError('unknown', String(e), 0));
+        },
+      });
+    });
+  }
+
+  /**
+   * Stop waiting on the export. Unsubscribing aborts the in-flight XHR; the
+   * awaited step is then rejected with the cancel sentinel so the chain unwinds
+   * between stages instead of hanging or firing its remaining requests.
+   *
+   * The tracker is left on `cancelled` so the honest caveat stays on screen — we
+   * stopped waiting, but the server may finish that request anyway and it still
+   * counts against the daily quota.
+   */
+  cancelExport(): void {
+    if (!this.busy()) return;
+    this.cancelRequested = true;
+    const reject = this.pendingReject;
+    this.pendingReject = null;
+    // Mark the tracker BEFORE unsubscribing, while it is still active; a stage
+    // between two requests has none active, so a cancelled marker stands in.
+    const run = this.tracker();
+    if (run?.active()) {
+      run.cancel();
+    } else {
+      const marker = new RunTracker();
+      marker.cancel();
+      this.tracker.set(marker);
+    }
+    this.sub?.unsubscribe();
+    this.sub = null;
+    reject?.(EXPORT_CANCELLED);
+  }
+
+  /** Dismiss the post-cancel note; the wizard is already back to a retryable state. */
+  dismissProgress(): void {
+    if (!this.busy()) this.tracker.set(null);
   }
 
   /** Produce a PDF File for one input: convert images/office, trim PDFs by range. */
@@ -1010,7 +1212,7 @@ export class WizardPage implements OnDestroy {
         fd.append('file', it.file, it.file.name);
         fd.append('pages', it.pages.trim());
         fd.append('separate', 'false');
-        const r = await firstValueFrom(this.api.extract(fd));
+        const r = await this.runStep(this.api.extract(fd));
         return this.asFile(r);
       }
       return it.file;
@@ -1019,7 +1221,7 @@ export class WizardPage implements OnDestroy {
     const fd = new FormData();
     fd.append('files', it.file, it.file.name);
     fd.append('pageSize', this.pageSize());
-    const r = await firstValueFrom(this.api.toPdf(fd));
+    const r = await this.runStep(this.api.toPdf(fd));
     return this.asFile(r);
   }
 
