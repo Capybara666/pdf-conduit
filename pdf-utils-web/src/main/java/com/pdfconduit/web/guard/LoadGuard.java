@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -149,9 +150,9 @@ public class LoadGuard {
             throw new ServerBusyException();
         }
 
-        // The permit + byte reservation are released exactly once, when the task actually finishes
-        // (see releaseOnce, wired to the future's completion) — NOT in a caller-side finally. A
-        // timed-out caller returns 503 while the task keeps its slot until it truly ends.
+        // The permit + byte reservation are released exactly once, by the WORKER, the instant its
+        // task terminates — NOT in a caller-side finally. A timed-out caller returns 503 while the
+        // task keeps its slot until it truly ends.
         AtomicBoolean released = new AtomicBoolean();
         Runnable releaseOnce = () -> {
             if (released.compareAndSet(false, true)) {
@@ -173,19 +174,36 @@ public class LoadGuard {
         // the task runs on, by which point Tomcat may have recycled the request).
         PlanLimits plan = requestPlan.current();
         CompletableFuture<T> result = new CompletableFuture<>();
-        Future<?> running = executor.submit(() -> {
-            RequestPlan.bind(plan);
-            try {
-                result.complete(task.get());
-            } catch (Throwable t) {
-                result.completeExceptionally(t);
-            } finally {
-                RequestPlan.unbind();   // pooled threads outlive the request
-            }
-        });
-        // Release the slot the moment the underlying work terminates (success, failure, or a late
-        // interrupt), regardless of whether the caller already timed out and walked away.
-        result.whenComplete((r, e) -> releaseOnce.run());
+        Future<?> running;
+        try {
+            running = executor.submit(() -> {
+                RequestPlan.bind(plan);
+                T value = null;
+                Throwable failure = null;
+                try {
+                    value = task.get();
+                } catch (Throwable t) {
+                    failure = t;
+                } finally {
+                    RequestPlan.unbind();   // pooled threads outlive the request
+                    // The work has genuinely terminated (success, failure, or a late interrupt), so
+                    // the slot goes back HERE — before the result is published. Releasing before
+                    // completing is what makes the pool accurate the moment a caller returns:
+                    // otherwise completing first unparks the caller, which can observe its own
+                    // just-finished reservation still charged and be shed on its next request. It
+                    // costs the timed-out case nothing: this line only runs when the task ends, so
+                    // a runaway task still holds its permit and its bytes long after its caller was
+                    // shed with 503.
+                    releaseOnce.run();
+                }
+                if (failure != null) result.completeExceptionally(failure);
+                else result.complete(value);
+            });
+        } catch (RejectedExecutionException e) {   // executor already shut down
+            releaseOnce.run();   // nothing will ever run, so nothing will ever release it
+            metrics.loadShed();
+            throw new ServerBusyException();
+        }
 
         try {
             return result.get(timeoutSeconds, TimeUnit.SECONDS);

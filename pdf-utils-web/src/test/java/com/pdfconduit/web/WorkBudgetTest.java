@@ -4,6 +4,7 @@ import com.pdfconduit.web.config.WebProperties;
 import com.pdfconduit.web.cost.CostModel;
 import com.pdfconduit.web.cost.WorkEstimate;
 import com.pdfconduit.web.error.OutputTooLargeException;
+import com.pdfconduit.web.error.ProcessingTimeoutException;
 import com.pdfconduit.web.error.ServerBusyException;
 import com.pdfconduit.web.guard.LoadGuard;
 import com.pdfconduit.web.observability.WebMetrics;
@@ -40,9 +41,15 @@ class WorkBudgetTest {
 
     /** A pool of 300 MB with FOUR permits, so the permits can never be the binding constraint. */
     private static WebProperties props() {
+        return props(null);
+    }
+
+    /** The same pool, with an explicit processing timeout for the load-shedding case. */
+    private static WebProperties props(Integer timeoutSeconds) {
         return new WebProperties(null, null, null, null, null, null, null,
             new WebProperties.Concurrency(4, 300 * MB, null),
-            null, null, null, null, null);
+            timeoutSeconds == null ? null : new WebProperties.Processing(timeoutSeconds, null),
+            null, null, null, null);
     }
 
     private static LoadGuard loadGuard(WebProperties props) {
@@ -96,13 +103,69 @@ class WorkBudgetTest {
         release.countDown();
     }
 
-    /** Once the pool frees up, the same request is admitted — the shed is transient, not a verdict. */
+    /**
+     * Once the pool frees up, the same request is admitted — the shed is transient, not a verdict.
+     *
+     * <p>Two 250 MB requests do not fit in a 300 MB pool <em>together</em>, so this only passes if
+     * the first reservation is already gone by the time its caller has its result in hand. That is
+     * the guarantee the worker gives by releasing before it publishes the result, and it is not
+     * academic: a client issuing its next request the instant the previous response lands would
+     * otherwise be shed by its own finished work.
+     */
     @Test
     void poolIsReleasedWhenWorkFinishes() throws Exception {
         LoadGuard guard = loadGuard(props());
         assertEquals("first", guard.execute(costing(250 * MB), () -> "first"));
+        assertEquals(0, guard.inFlightBytes(), "a finished request must give its reservation back");
         assertEquals("second", guard.execute(costing(250 * MB), () -> "second"));
         assertEquals(0, guard.inFlightBytes(), "a finished request must give its reservation back");
+    }
+
+    /**
+     * The other half of that rule, and the one it must never be traded for: the slot follows the
+     * WORK, not the caller. A task that outruns the processing timeout sheds its client with 503,
+     * but keeps its permit and its reserved bytes until it genuinely ends — that is what stops
+     * stuck work from piling up behind a caller-side release. Releasing on the caller's way out
+     * would make this test admit the second request into a pool that is still occupied.
+     */
+    @Test
+    void aShedCallerDoesNotHandBackASlotTheWorkStillHolds() throws Exception {
+        LoadGuard guard = loadGuard(props(1));
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch finish = new CountDownLatch(1);
+
+        assertThrows(ProcessingTimeoutException.class, () -> guard.execute(costing(250 * MB), () -> {
+            started.countDown();
+            // Deliberately deaf to the timeout's best-effort interrupt, exactly like the PDFBox
+            // work this guard exists to contain: the task ends when it ends, not when asked.
+            awaitIgnoringInterrupts(finish);
+            return "still running";
+        }), "work past the timeout must shed its caller");
+        assertTrue(started.await(10, TimeUnit.SECONDS), "the task must actually have started");
+
+        assertEquals(250 * MB, guard.inFlightBytes(),
+            "a shed caller must not give back bytes the running task is still using");
+        assertEquals(3, guard.availablePermits(),
+            "a shed caller must not give back the permit the running task is still holding");
+        assertThrows(ServerBusyException.class, () -> guard.execute(costing(250 * MB), () -> "no"),
+            "the pool is still occupied by the runaway task, so new work is shed");
+
+        finish.countDown();  // the release is the task's to make, and only once it truly ends
+        assertTrue(awaitPoolDrained(guard), "the slot must come back when the work finally ends");
+        assertEquals(4, guard.availablePermits());
+    }
+
+    /**
+     * Waits out the one release that IS asynchronous: a task whose caller already walked away has
+     * no one to hand its result to, so its release is only observable eventually.
+     */
+    private static boolean awaitPoolDrained(LoadGuard guard) throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (System.nanoTime() < deadline) {
+            if (guard.inFlightBytes() == 0) return true;
+            Thread.sleep(5);
+        }
+        return false;
     }
 
     /**
@@ -137,6 +200,19 @@ class WorkBudgetTest {
                 + CostModel.RESULT_COPIES + " copies");
         // The configured ceiling (64 MB) is the smaller of the two here, so it is what is granted.
         assertEquals(64 * MB, granted);
+    }
+
+    /** Waits for the latch and refuses to be interrupted out of it, clearing the flag on the way out. */
+    private static void awaitIgnoringInterrupts(CountDownLatch latch) {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (System.nanoTime() < deadline) {
+            try {
+                if (latch.await(50, TimeUnit.MILLISECONDS)) break;
+            } catch (InterruptedException ignored) {
+                // the point of the test: this task does not stop just because it was asked to
+            }
+        }
+        Thread.interrupted();   // don't leave the flag set on a pooled thread
     }
 
     private static void awaitQuietly(CountDownLatch latch) {
