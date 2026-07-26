@@ -41,8 +41,14 @@ services:
     environment:
       # Active Spring profile → which per-environment limit preset loads
       # (application-<profile>.yml). Base compose is local dev, so default to the
-      # RELAXED `local` preset; the prod overlay forces `prod` (strict public).
-      # Set SPRING_PROFILES_ACTIVE=dev to use the dev preset instead.
+      # RELAXED `local` preset. Set SPRING_PROFILES_ACTIVE=dev for the dev preset.
+      #
+      # WARNING: `local` is a developer preset (~1 GB per file, 500 files per
+      # request) and must never face the internet. This file has no idea whether
+      # it is public — docker-compose.prod.yml is what pins the backend to the
+      # strict `prod` preset, so a public deployment MUST include that overlay:
+      #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+      # Bringing this file up on its own puts a public box on developer limits.
       SPRING_PROFILES_ACTIVE: "${SPRING_PROFILES_ACTIVE:-local}"
       # HTTP port inside the container (keep aligned with EXPOSE 8080).
       SERVER_PORT: "8080"

@@ -20,6 +20,14 @@ import { TRANSLOCO_TESTING_PROVIDERS, translocoTesting } from '../../testing/tra
 describe('ToImagesPage — DPI ceiling', () => {
   let fixture: ComponentFixture<ToImagesPage>;
 
+  /**
+   * A server ceiling deliberately stricter than the built-in fallback, derived
+   * from it rather than written out. Spelling both as literals lets a spec pass
+   * by coincidence the day the two numbers happen to agree, which is exactly
+   * what a "the server overrules the fallback" test must never do.
+   */
+  const SERVER_MAX_DPI = Math.floor(environment.maxDpi / 2);
+
   const baseCaps = {
     officeEnabled: true,
     ocrEnabled: false,
@@ -94,23 +102,23 @@ describe('ToImagesPage — DPI ceiling', () => {
   }
 
   it('caps the field at the advertised maxDpi, on every surface', () => {
-    build({ ...baseCaps, maxDpi: 300 });
+    build({ ...baseCaps, maxDpi: SERVER_MAX_DPI });
 
-    expectEverythingAgreesOn(300);
+    expectEverythingAgreesOn(SERVER_MAX_DPI);
     // Copy must not promise a range the server does not accept.
-    expect(helpText()).not.toContain('600');
+    expect(helpText()).not.toContain(String(environment.maxDpi));
   });
 
   it('shows the advertised ceiling in the error message too', () => {
-    build({ ...baseCaps, maxDpi: 300 });
+    build({ ...baseCaps, maxDpi: SERVER_MAX_DPI });
 
     const dpi = dpiControl();
-    dpi.setValue(600);
+    dpi.setValue(environment.maxDpi);
     dpi.markAsTouched();
     fixture.detectChanges();
 
-    expect(errorText()).toContain('300');
-    expect(errorText()).not.toContain('600');
+    expect(errorText()).toContain(String(SERVER_MAX_DPI));
+    expect(errorText()).not.toContain(String(environment.maxDpi));
   });
 
   it('falls back to the hard-coded value when the server omits maxDpi (older backend)', () => {
@@ -120,7 +128,7 @@ describe('ToImagesPage — DPI ceiling', () => {
   });
 
   it('falls back to the hard-coded value when the capabilities call fails', () => {
-    build({ ...baseCaps, maxDpi: 300 }, true);
+    build({ ...baseCaps, maxDpi: SERVER_MAX_DPI }, true);
 
     expectEverythingAgreesOn(environment.maxDpi);
   });
@@ -145,17 +153,17 @@ describe('ToImagesPage — DPI ceiling', () => {
   });
 
   it('re-judges an already-typed value when the ceiling lands late', () => {
-    // Pre-response window: the fallback is in force and 600 looks fine.
+    // Pre-response window: the fallback is in force, so its own value passes.
     build(baseCaps);
     const dpi = dpiControl();
     dpi.setValue(environment.maxDpi);
     expect(dpi.valid).toBeTrue();
 
     // The response arrives with a stricter real limit.
-    TestBed.inject(CapabilitiesService).maxDpi.set(300);
+    TestBed.inject(CapabilitiesService).maxDpi.set(SERVER_MAX_DPI);
     fixture.detectChanges();
 
     expect(dpi.valid).withContext('must be re-validated, not left stale').toBeFalse();
-    expectEverythingAgreesOn(300);
+    expectEverythingAgreesOn(SERVER_MAX_DPI);
   });
 });

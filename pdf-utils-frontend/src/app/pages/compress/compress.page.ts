@@ -11,10 +11,12 @@ import { FileDropZoneComponent } from '../../shared/file-drop-zone/file-drop-zon
 import { OpProgressComponent } from '../../shared/op-progress/op-progress.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { ResultPanelComponent } from '../../shared/result-panel/result-panel.component';
-
-/** Target-size unit choices offered by the picker. */
-type TargetUnit = 'KB' | 'MB' | 'GB';
-const UNIT_BYTES: Record<TargetUnit, number> = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 };
+import {
+  TargetSizeComponent,
+  TargetUnit,
+  UNIT_BYTES,
+  composeTargetSize,
+} from '../../shared/target-size/target-size.component';
 
 /** Compress one or more PDFs toward a target size (e.g. "5MB"). */
 @Component({
@@ -27,6 +29,7 @@ const UNIT_BYTES: Record<TargetUnit, number> = { KB: 1024, MB: 1024 ** 2, GB: 10
     OpProgressComponent,
     PageHeaderComponent,
     ResultPanelComponent,
+    TargetSizeComponent,
   ],
   template: `
     <section class="op-page">
@@ -59,27 +62,12 @@ const UNIT_BYTES: Record<TargetUnit, number> = { KB: 1024, MB: 1024 ** 2, GB: 10
       <div class="card form-grid">
         <div class="field">
           <label for="cp-amount">{{ 'pages.compress.target' | transloco }}</label>
-          <div class="target-row">
-            <input
-              id="cp-amount"
-              type="number"
-              min="0"
-              step="any"
-              inputmode="decimal"
-              [formControl]="targetAmount"
-              [placeholder]="'pages.compress.targetPlaceholder' | transloco"
-            />
-            <select
-              id="cp-unit"
-              class="unit"
-              [formControl]="targetUnit"
-              [attr.aria-label]="'pages.compress.unitLabel' | transloco"
-            >
-              <option value="KB">KB</option>
-              <option value="MB">MB</option>
-              <option value="GB">GB</option>
-            </select>
-          </div>
+          <app-target-size
+            [amount]="targetAmount"
+            [unit]="targetUnit"
+            inputId="cp-amount"
+            [placeholder]="'pages.compress.targetPlaceholder' | transloco"
+          />
           <span class="help">
             {{ 'pages.compress.targetHelp1' | transloco }}
             <code>KB</code>/<code>MB</code>
@@ -180,19 +168,6 @@ const UNIT_BYTES: Record<TargetUnit, number> = { KB: 1024, MB: 1024 ** 2, GB: 10
         color: var(--danger);
         font-size: 0.8rem;
         white-space: nowrap;
-      }
-      .target-row {
-        display: flex;
-        gap: 0.5rem;
-        align-items: stretch;
-      }
-      .target-row input[type='number'] {
-        flex: 1 1 auto;
-        min-width: 0;
-      }
-      .target-row .unit {
-        flex: 0 0 auto;
-        width: auto;
       }
       .floor-note {
         margin-top: 1rem;
@@ -313,7 +288,7 @@ export class CompressPage {
 
   /** Compose the backend `targetSize` string from the numeric amount + unit (e.g. 5 + MB → "5MB"). */
   private composeTarget(): string {
-    return `${this.targetAmount.value}${this.targetUnit.value}`;
+    return composeTargetSize(this.targetAmount.value, this.targetUnit.value);
   }
 
   submit(): void {

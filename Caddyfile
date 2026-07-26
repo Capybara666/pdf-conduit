@@ -9,6 +9,13 @@
 #   DOMAIN     e.g. pdf.example.com   → real domain enables automatic HTTPS.
 #              Set DOMAIN=:80 for a plain-HTTP, no-cert local/domainless trial.
 #   ACME_EMAIL you@example.com        → contact for Let's Encrypt (expiry notices).
+#              May be left empty; Caddy then uses an anonymous ACME account.
+#   WWW_DOMAIN e.g. www.pdf.example.com → opt-in permanent redirect to the apex.
+#              Off unless set, which parks the block on a reserved,
+#              never-resolvable host (see the redirect site below). Note the
+#              placeholder default below covers WWW_DOMAIN being UNSET; an empty
+#              value would still be an empty site address, so compose supplies
+#              the same fallback for the empty case.
 #
 # Security headers: the AUTHORITATIVE set is applied by the frontend nginx
 # (pdf-utils-frontend/nginx.conf) — including the pdf.js-tuned CSP. Caddy adds a
@@ -16,7 +23,10 @@
 
 {
 	# ACME account email. Harmless when DOMAIN=:80 (no certs issued then).
-	email {$ACME_EMAIL}
+	# Quoted so an empty ACME_EMAIL stays ONE argument: the domainless trial
+	# ships ACME_EMAIL blank, and a bare placeholder would collapse to zero
+	# arguments and fail to adapt. Empty ⇒ anonymous ACME account.
+	email "{$ACME_EMAIL}"
 	# To avoid Let's Encrypt rate limits while testing, uncomment the staging CA:
 	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
 }
@@ -45,4 +55,18 @@
 		header_up X-Forwarded-Proto {scheme}
 		header_up X-Forwarded-Host {host}
 	}
+}
+
+# www → apex redirect, opt-in via WWW_DOMAIN (set it to www.<your domain> in
+# .env; DNS needs a CNAME www → apex). Caddy issues a certificate for the www
+# host too, so the redirect answers over HTTPS.
+#
+# The default parks this site on `http://www.invalid`: `.invalid` is reserved by
+# RFC 6761 and can never resolve, and the explicit `http://` scheme turns
+# automatic HTTPS off for this site, so an unconfigured deployment — including
+# the DOMAIN=:80 domainless trial — defines a route nothing can ever reach and
+# asks no CA for anything. That is what keeps the block inert instead of
+# demanding a certificate for a host the operator never named.
+{$WWW_DOMAIN:http://www.invalid} {
+	redir https://{$DOMAIN}{uri} permanent
 }

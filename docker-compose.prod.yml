@@ -36,6 +36,13 @@ services:
       # DOMAIN=:80 to serve plain HTTP with no certs (local/domainless trial).
       DOMAIN: "${DOMAIN:-:80}"
       ACME_EMAIL: "${ACME_EMAIL:-}"
+      # Opt-in www → apex redirect: set WWW_DOMAIN=www.<your domain> in .env.
+      # The fallback must be spelled out HERE and not left to the Caddyfile's
+      # own {$WWW_DOMAIN:...} default, because that default applies only to an
+      # UNSET variable — compose always sets the key, so an empty value would
+      # reach Caddy as an empty site address and fail to adapt. `:-` covers
+      # both unset and empty, keeping the block parked on the reserved host.
+      WWW_DOMAIN: "${WWW_DOMAIN:-http://www.invalid}"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data      # issued certs + ACME account — MUST persist

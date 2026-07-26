@@ -23,7 +23,8 @@ export const environment = {
    * Pre-response render ceiling (DPI) for To Images / the pipeline TO_IMAGES
    * node. Same contract as the two caps above: the server owns this number
    * (`render.max-dpi`, advertised as `maxDpi`), and this is only what the first
-   * paint has to draw the form with.
+   * paint has to draw the form with. It matches the public deployment's 300 so
+   * the form never offers a resolution the server would reject.
    */
-  maxDpi: 600,
+  maxDpi: 300,
 };
